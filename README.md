@@ -115,7 +115,31 @@ USE_SUBSCRIPTION=1 (mark this as 1 if you want to use Claude Code subscription, 
 
 In `benchmark` folder, some papers have empty `data` folder since the data can be loaded directly from HuggingFace. The sources of the data in nonempty data folder are described in `dataset.txt`.
 
-### 2. Run Experiments
+### 2 (Optinal). Parse Other Papers into Problem Trees
+
+Use the tree parser to decompose a research paper (PDF) into a hierarchical research-problem tree via OpenAI:
+
+```bash
+# Single paper
+bash run_tree_parser.sh --papers /path/to/paper.pdf
+
+# Multiple papers (quote the list)
+bash run_tree_parser.sh --papers "/path/to/paper1.pdf /path/to/paper2.pdf" --model gpt-4o
+
+# Glob pattern for a whole directory
+bash run_tree_parser.sh --papers "/path/to/papers/*.pdf" --output_dir benchmark/trees
+```
+
+**Options:**
+- `--papers`: space-separated PDF paths or a glob pattern (**required**)
+- `--model`: OpenAI model name (default: `gpt-4o`)
+- `--output_dir`: directory for output JSON trees (default: `benchmark/trees`)
+- `--max_tokens`: max output tokens (default: `16384`)
+- `--temperature`: sampling temperature (default: `0.0`)
+
+Each paper produces a `<name>_tree.json` file containing the problem tree.
+
+### 3. Run Experiments
 
 Edit `run_experiment.sh` to configure your agent/task/model combinations, then run:
 
@@ -130,7 +154,7 @@ This iterates over all combinations of `AGENT_IDS`, `TASK_IDS`, and `LLM_MODELS`
 - `TASK_IDS`: benchmark tasks (e.g., `rational`)
 - `LLM_MODELS`: models to use (e.g., `gpt-5`)
 
-### 3. Evaluate Results
+### 4. Evaluate Results
 
 After experiments finish, evaluate the generated logs:
 
