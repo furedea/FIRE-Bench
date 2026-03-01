@@ -115,7 +115,7 @@ USE_SUBSCRIPTION=1 (mark this as 1 if you want to use Claude Code subscription, 
 
 In `benchmark` folder, some papers have empty `data` folder since the data can be loaded directly from HuggingFace. The sources of the data in nonempty data folder are described in `dataset.txt`.
 
-### 2 (Optinal). Parse Other Papers into Problem Trees
+### 2. Parse Other Papers into Problem Trees (Optional)
 
 Use the tree parser to decompose a research paper (PDF) into a hierarchical research-problem tree via OpenAI:
 
