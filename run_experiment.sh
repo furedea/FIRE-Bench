@@ -21,8 +21,8 @@ set -e
 # ==============================
 # Default arguments
 # ==============================
-DEFAULT_AGENTS="opencode"      # example agents
-DEFAULT_TASKS="llm_value_consistency"   # example tasks
+DEFAULT_AGENTS="codex"      # example agents
+DEFAULT_TASKS="llm_value_consistency cot_in_planning to_cot_or_not_to_cot"   # example tasks
 DEFAULT_MODELS="gpt-5"          # example models
 DEFAULT_RUN_TIMES=1
 

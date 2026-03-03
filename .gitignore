@@ -5,3 +5,5 @@ env_template
 /runs
 /.openhands
 /.vscode
+/*/.env
+.env

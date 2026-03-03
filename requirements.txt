@@ -39,6 +39,7 @@ pypdfium2
 rapidocr
 shapely
 rtree
+pymupdf
 
 # NLP
 spacy
