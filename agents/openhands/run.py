@@ -48,7 +48,10 @@ def main():
 
     # Copy experiment setup
     instances_src = Main_Path / f"benchmark/papers/{task_id}/{figure_id}/data" if figure_id != "" else Main_Path / f"benchmark/papers/{task_id}/data"
-    shutil.copytree(instances_src, sandbox_volume_path)
+    if instances_src.exists():
+        shutil.copytree(instances_src, sandbox_volume_path)
+    else:
+        sandbox_volume_path.mkdir(parents=True, exist_ok=True)
     utils_src = Main_Path / "utils"
     shutil.copytree(utils_src, sandbox_volume_path / "utils")
 

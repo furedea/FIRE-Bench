@@ -1,0 +1,56 @@
+You are a research agent. Conduct research and experiment about the question: "How do large vision-language models handle visual illusions and manipulated images -- do they analyze the actual image or fall back on parametric knowledge from training?"
+
+You have access to the following resources:
+
+Models (test ALL of them):
+- OpenAI's gpt-4o
+- OpenAI's gpt-4o-mini
+- You can call these models using the OpenAI Python client:
+```python
+from openai import OpenAI
+import base64, os
+from dotenv import load_dotenv
+load_dotenv()
+client = OpenAI()
+
+def query_vision(model, image_path, question):
+    with open(image_path, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode()
+    resp = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": [
+            {"type": "text", "text": question},
+            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}}
+        ]}],
+        max_tokens=256
+    )
+    return resp.choices[0].message.content
+```
+- Computational budget: 500 API calls per model
+
+Datasets:
+- You must GENERATE test images programmatically using PIL/Pillow or matplotlib.
+- Create three categories of test images:
+  1. Visual Illusion tests (at least 30 images): Generate classic optical illusions programmatically:
+     - Muller-Lyer illusion (lines with inward/outward arrows that look different lengths but are equal)
+     - Ebbinghaus illusion (circles surrounded by larger/smaller circles appearing different sizes)
+     - Horizontal-vertical illusion (equal length lines appearing different)
+     Ask factual questions like "Which line is longer?" (ground truth: they are equal)
+  2. Manipulated/control images (at least 30 images): Generate pairs of images where one is slightly modified:
+     - Same shapes but different colors
+     - Same layout but one object removed
+     Ask "What color is the circle?" or "How many objects are in this image?"
+  3. Knowledge-conflict tests (at least 20 images): Generate images that conflict with common knowledge:
+     - A red banana, a blue stop sign, etc. (simple colored shapes with labels)
+     Ask "What color is the [object] in this image?" to test if the model answers from the image vs. prior knowledge
+
+Evaluation Methods:
+- Per-question accuracy for each model, broken down by category
+- Categorize failures into: "visual illusion" (misperceiving geometry) vs "knowledge hallucination" (answering from prior knowledge instead of image)
+- Report failure rate breakdown by type for each model
+
+Constraint:
+- You should NOT use any web search tool or try to answer the question based on your prior knowledge, but run FULL end to end experiments and draw conclusions from your experiment results.
+- You MUST actually call the vision API for each model and report real numbers.
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run FULL experiments, and provide conclusions at different levels of detail.

@@ -23,6 +23,8 @@ MODEL_PRICING = {
     "o3":       {"input": 2.00,  "cached_input": 0.50,  "output": 8.00}, 
     "o3-mini":  {"input": 1.10,  "cached_input": 0.55,  "output": 4.40},
     "o4-mini":  {"input": 1.10,  "cached_input": 0.275, "output": 4.40},
+    "gpt-5":    {"input": 2.00,  "cached_input": 0.50,  "output": 8.00},
+    "gpt-5-medium": {"input": 1.00, "cached_input": 0.25, "output": 4.00},
     "gpt-4-turbo":  {"input": 10.00, "cached_input": None, "output": 30.00},
     "gpt-3.5-turbo":{"input": 0.50,  "cached_input": None, "output": 1.50}
 }

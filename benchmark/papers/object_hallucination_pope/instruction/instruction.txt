@@ -1,0 +1,70 @@
+You are a research agent. Conduct research and experiment about the question: "How severely do large vision-language models hallucinate objects not present in images, and what properties of objects make them more prone to hallucination?"
+
+You have access to the following resources:
+
+Models (test ALL of them):
+- OpenAI's gpt-4o
+- OpenAI's gpt-4o-mini
+- You can call these models using the OpenAI Python client:
+```python
+from openai import OpenAI
+import base64, os
+from dotenv import load_dotenv
+load_dotenv()
+client = OpenAI()
+
+def query_vision(model, image_path, question):
+    with open(image_path, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode()
+    resp = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": [
+            {"type": "text", "text": question},
+            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}}
+        ]}],
+        max_tokens=64
+    )
+    return resp.choices[0].message.content
+```
+- Computational budget: 500 API calls per model
+
+Datasets:
+- Use real-world photographs for this study, NOT simple synthetic shapes (simple shapes on blank backgrounds are too easy and will not reveal hallucination behaviors).
+- Load real images from a publicly available dataset. For example:
+```python
+from datasets import load_dataset
+ds = load_dataset("nlphuji/flickr30k", split="test")
+# Each example has 'image' (PIL Image) and 'caption' fields
+# Or use COCO:
+# ds = load_dataset("detection-datasets/coco", split="val")
+```
+- If dataset loading fails, you can download a small set of real photographs from the internet using urllib, or generate complex, cluttered scenes with many overlapping real-world objects (NOT simple geometric shapes).
+- The key requirement is that images must be visually complex with multiple co-occurring objects to stress-test the model's object recognition.
+
+Experimental Design:
+- Select at least 50 diverse real-world images containing multiple objects each.
+- For each image, first identify the objects actually present (use the model itself or image metadata/captions).
+- Then ask the model "Is there a [object] in the image? Answer yes or no." for both:
+  - Objects that ARE present in the image (positive questions)
+  - Objects that are NOT present (negative questions)
+- Use three negative sampling strategies:
+  1. Random: randomly sample common object categories absent from the image
+  2. Popular: sample object categories that frequently appear across images but are absent from this particular image
+  3. Adversarial: sample objects visually or semantically similar to present objects (e.g., ask about "cat" when "dog" is present, or "guitar" when "violin" is present)
+- For each model and strategy, create at least 50 positive and 50 negative questions.
+
+Evaluation Methods:
+- Accuracy = correct answers / total questions, broken down BY MODEL and BY STRATEGY
+- Yes ratio = "yes" answers / total answers (to detect bias toward always saying "yes")
+- Precision = true positives / (true positives + false positives)
+- Recall = true positives / (true positives + false negatives)
+- F1 score
+- Compare across the three sampling strategies to see which elicits more hallucination
+- Report which object categories are most prone to hallucination
+
+Constraint:
+- You should NOT use any web search tool or try to answer the question based on your prior knowledge, but run FULL end to end experiments and draw conclusions from your experiment results.
+- You MUST actually call the vision API for each model and report real numbers. Do NOT output placeholder values.
+- You MUST use visually complex, real-world images. Do NOT use simple colored shapes on blank backgrounds.
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run FULL experiments, and provide conclusions at different levels of detail.

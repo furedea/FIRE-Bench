@@ -1,0 +1,63 @@
+You are a research agent. Conduct research and experiment about the question: "How well can foundation models reason mathematically when problems are presented visually through charts, geometry diagrams, function plots, and tables?"
+
+You have access to the following resources:
+
+Models (test ALL of them — this is a multi-model comparison study):
+- OpenAI's gpt-4o
+- OpenAI's gpt-4o-mini
+- You can call these models using the OpenAI Python client:
+```python
+from openai import OpenAI
+import base64, os, io
+from dotenv import load_dotenv
+load_dotenv()
+client = OpenAI()
+
+def query_vision(model, image_bytes_or_path, question):
+    if isinstance(image_bytes_or_path, bytes):
+        b64 = base64.b64encode(image_bytes_or_path).decode()
+    else:
+        with open(image_bytes_or_path, "rb") as f:
+            b64 = base64.b64encode(f.read()).decode()
+    resp = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": [
+            {"type": "text", "text": question},
+            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}}
+        ]}],
+        max_tokens=512
+    )
+    return resp.choices[0].message.content
+```
+- Computational budget: 500 API calls per model
+
+Datasets:
+- MathVista benchmark: load from HuggingFace
+```python
+from datasets import load_dataset
+ds = load_dataset("AI4Math/MathVista", split="testmini")
+```
+- The testmini split contains ~1000 examples with images, questions, and answers
+- Each example has fields: image, question, answer, metadata (including question_type, visual context type, etc.)
+- Visual context types include: geometry diagram, bar chart, line plot, table, scientific figure, etc.
+- If load_dataset fails, install datasets first: pip install datasets
+
+Experimental Design:
+- Sample 100 examples from the testmini split, stratified across different visual context types
+- For each example, send the image and question to EACH vision model
+- Extract the model's answer and compare to the ground truth
+- Break down performance by:
+  1. Visual context type (chart, geometry, table, etc.)
+  2. Question type (multiple choice vs free-form)
+
+Evaluation Methods:
+- Exact match accuracy (after answer normalization: lowercase, strip whitespace, handle numeric equivalence)
+- Per-category accuracy breakdown for each model
+- Compare model performance against each other and against reported human performance (~60%)
+- Report results in a table format with model as rows and categories as columns
+
+Constraint:
+- You should NOT use any web search tool or try to answer the question based on your prior knowledge, but run FULL end to end experiments and draw conclusions from your experiment results.
+- You MUST actually call the vision API for each model and report real numbers. Do NOT output placeholder values.
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run FULL experiments, and provide conclusions at different levels of detail.

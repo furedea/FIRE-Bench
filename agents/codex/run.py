@@ -1,5 +1,6 @@
 import subprocess
 import os
+import sys
 import time
 import random
 from pathlib import Path
@@ -18,7 +19,7 @@ def main():
     task_id = os.environ.get("TASK_ID", "")
     figure_id = os.environ.get("FIGURE_ID", "")
     LLM_MODEL = os.environ.get("LLM_MODEL", "")
-    
+
     # Timestamp for run naming
     timestamp = time.strftime("%Y%m%d%H%M%S")
     run_name = f"codex-run-{timestamp}"
@@ -36,7 +37,11 @@ def main():
 
     # Copy experiment setup
     instances_src = Main_Path / f"benchmark/papers/{task_id}/{figure_id}/data" if figure_id else Main_Path / f"benchmark/papers/{task_id}/data"
-    shutil.copytree(instances_src, sandbox_volume_path)
+    if instances_src.exists():
+        shutil.copytree(instances_src, sandbox_volume_path)
+    else:
+        # Some tasks generate data programmatically; create empty sandbox
+        sandbox_volume_path.mkdir(parents=True, exist_ok=True)
     utils_src = Main_Path / "utils"
     shutil.copytree(utils_src, sandbox_volume_path / "utils")
 
@@ -49,13 +54,13 @@ def main():
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
     # Write metadata to log
-    with open(log_file, "w") as f:
+    with open(log_file, "w", encoding="utf-8") as f:
         f.write(f"agent_id: {agent_id}\n")
         f.write(f"task_id: {task_id}\n")
         f.write(f"llm_model: {LLM_MODEL}\n")
         f.write("=" * 40 + "\n")
 
-    with open(instruction_file, "r") as f:
+    with open(instruction_file, "r", encoding="utf-8") as f:
         instruction_text = f.read().strip()
 
     # Load API keys and settings from .env
@@ -72,9 +77,17 @@ def main():
         f.write(f"GOOGLE_API_KEY={google_key}\n")
         f.write(f"HF_TOKEN={hf_token}\n")
 
+    # Resolve npx path: on Windows use npx.cmd
+    npx_cmd = "npx"
+    node_path = Path(r"C:\Program Files\nodejs")
+    if node_path.exists():
+        npx_candidate = node_path / "npx.cmd"
+        if npx_candidate.exists():
+            npx_cmd = str(npx_candidate)
+
     # Build Codex CLI command
     cmd = [
-        "npx", "@openai/codex@0.39.0",
+        npx_cmd, "@openai/codex@0.39.0",
         "--model", LLM_MODEL,
         "--config", "sandbox_mode=danger-full-access",
         "exec",
@@ -82,13 +95,16 @@ def main():
     ]
 
     env = os.environ.copy()
+    # Ensure Node.js is in PATH
+    if node_path.exists():
+        env["PATH"] = str(node_path) + os.pathsep + env.get("PATH", "")
     if use_subscription:
         print("Subscription is only available for Claude Code right now, still need OPENAI_API_KEY.")
     else:
         print(f"Running Codex with API key authentication")
 
     # Run the Codex command and log output
-    with open(log_file, "a") as f:
+    with open(log_file, "a", encoding="utf-8") as f:
         process = subprocess.run(cmd, cwd=sandbox_volume_path, env=env, stdout=f, stderr=subprocess.STDOUT)
 
     print(f"Run complete. Logs saved to {log_file}")

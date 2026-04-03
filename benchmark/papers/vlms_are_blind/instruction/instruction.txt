@@ -1,0 +1,52 @@
+You are a research agent. Conduct research and experiment about the question: "Can state-of-the-art vision-language models perform trivially simple visual tasks like counting circles, detecting line intersections, or identifying overlapping shapes?"
+
+You have access to the following resources:
+
+Models (test ALL of them — this is a multi-model comparison study):
+- OpenAI's gpt-4o
+- OpenAI's gpt-4o-mini
+- You can call these models using the OpenAI Python client:
+```python
+from openai import OpenAI
+import base64, os
+from dotenv import load_dotenv
+load_dotenv()
+client = OpenAI()
+
+def query_vision(model, image_path, question):
+    with open(image_path, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode()
+    resp = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": [
+            {"type": "text", "text": question},
+            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}}
+        ]}],
+        max_tokens=256
+    )
+    return resp.choices[0].message.content
+```
+- Computational budget: 500 API calls per model
+
+Datasets:
+- You must GENERATE the test images programmatically using Python (PIL/Pillow or matplotlib).
+- Design at least 5 different simple visual tasks, for example:
+  1. Counting: Generate images with N circles/squares (N from 2 to 10) and ask the model to count them
+  2. Line intersection: Generate images with two lines and ask whether they intersect
+  3. Overlapping shapes: Generate images with colored shapes and ask which shape is on top
+  4. Grid counting: Generate grids and ask how many rows/columns
+  5. Nested shapes: Generate a shape inside another and ask which is inside
+- Generate at least 20 images per task (100+ total)
+- Ensure ground truth is known for each generated image
+
+Evaluation Methods:
+- Exact match accuracy for each task, broken down BY MODEL
+- Report per-task accuracy and overall average accuracy for each model
+- Compare model accuracies against expected human performance (~100%)
+
+Constraint:
+- You should NOT use any web search tool or try to answer the question based on your prior knowledge, but run FULL end to end experiments and draw conclusions from your experiment results.
+- Install Pillow if needed: pip install Pillow
+- You MUST actually call the vision API for each model and report real numbers. Do NOT output placeholder values.
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run FULL experiments, and provide conclusions at different levels of detail.

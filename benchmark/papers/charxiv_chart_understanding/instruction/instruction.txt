@@ -1,0 +1,64 @@
+You are a research agent. Conduct research and experiment about the question: "Can multimodal LLMs accurately understand and reason about real-world scientific charts, as opposed to simplified template charts?"
+
+You have access to the following resources:
+
+Models (test ALL of them):
+- OpenAI's gpt-4o
+- OpenAI's gpt-4o-mini
+- You can call these models using the OpenAI Python client:
+```python
+from openai import OpenAI
+import base64, os, io
+from dotenv import load_dotenv
+load_dotenv()
+client = OpenAI()
+
+def query_vision(model, image_bytes_or_path, question):
+    if isinstance(image_bytes_or_path, bytes):
+        b64 = base64.b64encode(image_bytes_or_path).decode()
+    else:
+        with open(image_bytes_or_path, "rb") as f:
+            b64 = base64.b64encode(f.read()).decode()
+    resp = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": [
+            {"type": "text", "text": question},
+            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}}
+        ]}],
+        max_tokens=512
+    )
+    return resp.choices[0].message.content
+```
+- Computational budget: 500 API calls per model
+
+Datasets:
+- Generate synthetic charts programmatically using matplotlib, covering:
+  1. Simple bar charts (at least 20): vary number of bars, values, labels
+  2. Line plots (at least 20): single and multi-line, with clear trends
+  3. Pie charts (at least 10): with labeled segments
+  4. Scatter plots (at least 10): with visible clusters or trends
+- For each chart, create two types of questions with known ground-truth answers:
+  1. Descriptive questions: "What is the value of bar X?", "What is the title?", "How many lines are plotted?"
+  2. Reasoning questions: "Which category has the highest value?", "What is the approximate difference between X and Y?", "Is the trend increasing or decreasing?"
+
+Experimental Design:
+- Generate at least 60 charts total with 2 questions each (120 questions)
+- For each question, query EACH model and record the response
+- Compare model answer to ground truth
+- Break down accuracy by:
+  1. Chart type (bar, line, pie, scatter)
+  2. Question type (descriptive vs reasoning)
+  3. Model
+
+Evaluation Methods:
+- Accuracy for descriptive questions per model
+- Accuracy for reasoning questions per model
+- Overall accuracy per model
+- Report results in a table comparing models across chart types and question types
+
+Constraint:
+- You should NOT use any web search tool or try to answer the question based on your prior knowledge, but run FULL end to end experiments and draw conclusions from your experiment results.
+- You MUST actually call the vision API for each model and report real numbers. Do NOT output placeholder values.
+- Install matplotlib if needed: pip install matplotlib
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run FULL experiments, and provide conclusions at different levels of detail.
