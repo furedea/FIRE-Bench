@@ -16,42 +16,47 @@ load_dotenv()
 # Prompt
 # ---------------------------------------------------------------------------
 
-TREE_PARSING_PROMPT = """\
+TREE_PARSING_PROMPT = # Tree Parsing Prompt
+"""
+
 You are a research-paper expert specializing in methodological analysis and problem
 decomposition of scientific studies.
 
 **GOAL**
+- Fully comprehend the paper, understand its core research problems and experiments.
+- Parse the paper and construct a **three-level research-problem tree**:
+  * **Root node** — the single, broadest research problem tackled by the paper.
+  * **Depth-1 nodes (Research Questions)** — concrete, self-contained research
+    questions that the authors pose or implicitly address to tackle the root problem.
+    Each depth-1 node must be phrased as a clear, answerable research question
+    (e.g., "How does X compare to Y on task Z?" or "Does method A improve
+    performance under condition B?").
+  * **Leaf nodes** — fully specified experimental tasks (datasets, models, metrics,
+    or protocols) that directly answer the parent research question and map to a
+    figure, table, or named result section in the paper.
 
-- Fully comprehend the paper, understand its core research problems and experiments
-- Then, parse the given paper and construct a hierarchical **research-problem tree**
-  that mirrors the authors' logic as follows:
-
-  * **Root node** -- the single, more essential, broadest research problem tackled by
-    the paper.
-  * **Intermediate nodes** -- progressively narrower sub-problems/questions/objectives
-    that the authors introduce to tackle the root.
-  * **Leaf nodes** -- fully specified experimental tasks (datasets, models, metrics, or
-    protocols) that map to a *figure, table, or named result section* in the paper.
-    Continue decomposing until every branch ends in such a leaf. There is no depth limit.
+The tree has exactly three levels: Root → Research Questions → Experiments.
+Do NOT add deeper intermediate layers.
 
 ---
 
 ### Reading & Extraction Rules
 
 1. **Locate the root** in the title, abstract, introduction, or discussion.
-2. **Recursively decompose** each problem by following explicit textual cues
-   (headings, "first... second...", "to this end...", method overviews, figure/table
-   captions, bullet lists, etc.).
+2. **Derive research questions** by examining the paper's headings, stated objectives,
+   hypotheses, "RQ" labels, discussion structure, and figure/table captions. Each
+   research question should be narrow enough that its child leaves can conclusively
+   answer it, yet broad enough to group related experiments.
 3. **Identify leaves**: a node is a leaf *only if* it describes a concrete experiment
    and you can cite the corresponding Figure / Table / Section ID.
-4. **Capture all layers**--do **not** skip intermediate hypotheses, objectives, or
-   analysis steps the paper explicitly discusses.
-5. **Stay faithful** to the paper's wording for technical terms; paraphrase only for
+4. **Stay faithful** to the paper's wording for technical terms; paraphrase only for
    brevity or clarity.
-6. **No outside invention**--derive every node from the paper alone. If information
+5. **No outside invention** — derive every node from the paper alone. If information
    is missing, mark the node with [uncertain].
 
-Strictly output the tree in a JSON format:
+---
+
+Strictly output the tree in the following JSON format:
 
 ```json
 {
@@ -63,44 +68,39 @@ Strictly output the tree in a JSON format:
   },
   "problem_tree": {
     "node": "Root: broadest research problem tackled by the paper",
-    "type": "root node",
-    "description": "a detailed description of the research problem in this node",
-    "evidence": "references back to the original paper to back up the construction of this node",
+    "type": "root",
+    "description": "Detailed description of the overarching research problem",
+    "evidence": "References back to the original paper (e.g., title, abstract, Sec. 1)",
     "children": [
       {
-        "node": "Intermediate sub-problem / objective 1",
-        "type": "depth-1 node",
-        "description": "a detailed description of the research problem in this node",
-        "evidence": "references back to the original paper to back up the construction of this node",
+        "node": "RQ1: [A concrete research question phrased as a question]",
+        "type": "research_question",
+        "description": "What this question investigates and why it matters to the root problem",
+        "evidence": "References back to the original paper supporting this question",
         "children": [
           {
-            "node": "Narrower question or method component",
-            "type": "depth-2 node",
-            "description": "a detailed description of the research problem in this node",
-            "evidence": "references back to the original paper to back up the construction of this node",
-            "children": [
-              {
-                "type": "leaf node",
-                "task": "Concrete experimental task (as phrased by paper)",
-                "dataset": ["..."],
-                "model_or_method": ["..."],
-                "metrics": ["..."],
-                "protocol_or_setup": "key settings/splits/hyperparams if stated",
-                "evidence": {
-                  "figure": "Fig. X",
-                  "table": "Table Y",
-                  "section": "Sec. Z or Result subsection name"
-                },
-                "conclusion": "explicit and detailed conclusions derived from experiments in this current leaf node",
-                "status": ""  // leave empty or set to "[uncertain]" if any item is missing in the paper
-              }
-            ]
+            "type": "leaf",
+            "task": "Concrete experimental task (as phrased by the paper)",
+            "dataset": ["..."],
+            "model_or_method": ["..."],
+            "metrics": ["..."],
+            "protocol_or_setup": "Key settings/splits/hyperparams if stated",
+            "evidence": {
+              "figure": "Fig. X",
+              "table": "Table Y",
+              "section": "Sec. Z or result subsection name"
+            },
+            "conclusion": "Explicit and detailed conclusions from this experiment",
+            "status": ""
           }
         ]
       },
       {
-        "node": "Intermediate sub-problem / objective 2",
-        "children": [ /* ...more branches ending in leaves... */ ]
+        "node": "RQ2: [Another concrete research question]",
+        "type": "research_question",
+        "description": "...",
+        "evidence": "...",
+        "children": []
       }
     ]
   }

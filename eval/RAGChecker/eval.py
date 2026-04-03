@@ -55,7 +55,7 @@ def evaluate_single_prompt_pc(claim, ground_truth):
             {"role": "user", "content": _judge_prompt}
         ],
         temperature=0.0,
-        max_tokens=1024
+        max_completion_tokens=1024
     )
     result = parse_gpt_response(response.choices[0].message.content)
     return result
@@ -100,7 +100,7 @@ def evaluate_single_prompt_rc(claim, conclusion):
             {"role": "user", "content": _judge_prompt}
         ],
         temperature=0.0,
-        max_tokens=1024
+        max_completion_tokens=1024
     )
     result = parse_gpt_response(response.choices[0].message.content)
     return result
@@ -132,7 +132,7 @@ def decompose_conclusion(conclusion):
             {"role": "user", "content": f"Input statement: {conclusion}"}
         ],
         temperature=0.0,
-        max_tokens=1024
+        max_completion_tokens=1024
     )
     return parse_gpt_response(response.choices[0].message.content)
 
@@ -273,7 +273,7 @@ def dump_results_to_json(results, output_dir="results", prefix="eval_results"):
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4, ensure_ascii=False)
 
-    print(f"\n[✓] Results saved to: {output_path}")
+    print(f"\n[OK] Results saved to: {output_path}")
     return output_path
 
 
@@ -471,7 +471,7 @@ def main():
     dump_results_to_json(error_eval_stats)
     print("\n=== Evaluation Complete ===")
 
-    do_error_analysis = True
+    do_error_analysis = False  # Disabled: requires PDF papers in eval/RAGChecker/papers/
 
     if do_error_analysis:
         error_analysis_outputs = []
@@ -480,7 +480,10 @@ def main():
             print("False Positives:", fp_claims)
             print("False Negatives:", fn_claims)
 
-            task = log_path.split("/")[3] if "openai" not in log_path else log_path.split("/")[4]
+            # Normalize path separators for cross-platform compatibility
+            normalized_path = log_path.replace("\\", "/")
+            parts = normalized_path.split("/")
+            task = parts[3] if "openai" not in normalized_path else parts[4]
             fp_results, fn_results = analyze_claims(
                 fp_claims, fn_claims, eval_stat["results"][0].get("gt_answer"), eval_stat["results"][0].get("query"),
                 f"./eval/RAGChecker/papers/{task}.pdf",  # fixed folder
