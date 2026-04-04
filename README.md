@@ -139,7 +139,82 @@ bash run_tree_parser.sh --papers "/path/to/papers/*.pdf" --output_dir benchmark/
 
 Each paper produces a `<name>_tree.json` file containing the problem tree.
 
-### 3. Run Experiments
+### 3. Benchmark Your Own Agent
+
+You can use FIRE-Bench to evaluate any agent system beyond the built-in ones (Codex, Claude Code, OpenHands).
+
+#### Benchmark Task Structure
+
+Each task in `benchmark/papers/<task_id>/` contains:
+
+```
+benchmark/papers/<task_id>/
+├── instruction/
+│   ├── instruction.txt       # Research prompt for the agent
+│   └── instruction_gt.txt    # (some tasks) Ground-truth experimental plan
+└── data/                     # (optional) Datasets for the task
+```
+
+- **`instruction.txt`** defines the research question, available resources (models, datasets), and constraints.
+- **`data/`** contains task-specific datasets. Some tasks load data directly from HuggingFace instead (described in the instruction).
+
+There are 35 benchmark tasks spanning topics such as CoT reasoning, hallucination, bias, safety, multimodal understanding, and more.
+
+#### Step A: Prepare the Agent's Working Directory
+
+For each task you want to evaluate, set up a working directory for your agent:
+
+1. Copy `benchmark/papers/<task_id>/data/` (if it exists) into the working directory as `data/`
+2. Copy the project-level `utils/` folder into the working directory (provides `LLMInference` and other shared helpers)
+3. Create a `.env` file with API keys so the agent can call LLMs during experiments
+
+#### Step B: Run Your Agent
+
+Read the prompt from `benchmark/papers/<task_id>/instruction/instruction.txt` and pass it to your agent as the task instruction. The agent should:
+
+- Design and execute experiments using the provided datasets and models
+- Produce a final conclusion summarizing its findings
+
+#### Step C: Save Output in the Expected Log Format
+
+The evaluation pipeline reads logs from:
+
+```
+log/<agent_name>/<model_name>/<task_id>/<timestamp>/log.log
+```
+
+Each `log.log` must begin with three metadata lines followed by the full agent output:
+
+```
+agent_id: <your_agent_name>
+task_id: <task_id>
+llm_model: <model_name>
+========================================
+<full agent trajectory and output>
+```
+
+The evaluator extracts the agent's final conclusion from the log. It recognizes three formats — append **one** of these at the end of your log:
+
+| Format | How to emit |
+|---|---|
+| **JSON (simplest)** | Append a JSON line: `{"result": "<final conclusion>"}` |
+| **OpenHands-style** | Include `final_thought='<conclusion>', outputs=` in the log |
+| **Codex-style** | Bracket conclusions between `[YYYY-MM-DDTHH:MM:SS]` timestamp lines |
+
+#### Step D: Evaluate
+
+Run the evaluation pipeline on your logs:
+
+```bash
+bash run_eval.sh --agents <your_agent_name> --models <model_name> --tasks <task_id>
+
+# Or evaluate everything at once
+bash run_eval.sh --agents all --models all --tasks all
+```
+
+The pipeline decomposes both the agent's conclusion and the ground-truth into atomic claims, then computes **Precision**, **Recall**, and **F₁** via claim-level analysis.
+
+### 4. Run Built-in Experiments
 
 Edit `run_experiment.sh` to configure your agent/task/model combinations, then run:
 
@@ -154,7 +229,7 @@ This iterates over all combinations of `AGENT_IDS`, `TASK_IDS`, and `LLM_MODELS`
 - `TASK_IDS`: benchmark tasks (e.g., `rational`)
 - `LLM_MODELS`: models to use (e.g., `gpt-5`)
 
-### 4. Evaluate Results
+### 5. Evaluate Results
 
 After experiments finish, evaluate the generated logs:
 
