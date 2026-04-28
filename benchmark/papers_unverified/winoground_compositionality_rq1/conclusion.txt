@@ -1,0 +1,1 @@
+Models perform poorly on the Winoground task across all categories, indicating significant areas for improvement in model design, particularly concerning linguistic and visual tags.

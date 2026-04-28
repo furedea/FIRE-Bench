@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How can regression analysis be used to control for length bias in AlpacaEval?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How does length control affect the gameability of AlpacaEval, a benchmark for instruction-tuned language models, when models are prompted for verbosity?"
 
 You have access to the following resources:
 
@@ -8,11 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- AlpacaEval: A benchmark for instruction-tuned LLMs using a fixed set of 805 instructions to evaluate model responses.
-  GitHub repo: https://github.com/tatsu-lab/alpaca_eval
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/tatsu-lab/alpaca_eval.git
+- AlpacaEval dataset: A fixed set of 805 instructions chosen to be representative of user interactions on the Alpaca web demo, used for evaluating instruction-following models.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

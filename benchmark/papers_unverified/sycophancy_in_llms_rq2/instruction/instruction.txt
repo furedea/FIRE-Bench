@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How does optimizing against preference models affect sycophancy?"
+You are a research agent. Conduct research and experiment about the question: "RQ3a: In open-ended question-answering tasks, where questions do not have a single correct answer, do AI assistants modify their responses to align with user beliefs (preconceived notions or opinions stated in prompts)? RQ3b: Does the alignment of AI assistant responses with user beliefs affect the accuracy of their answers in open-ended question-answering tasks?"
 
 You have access to the following resources:
 
@@ -8,29 +8,14 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- hh-rlhf: A dataset containing human preference comparisons used to train preference models.
+- TruthfulQA: A dataset designed to evaluate the truthfulness of language model outputs.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('Anthropic/hh-rlhf')
-- MATH: A dataset for measuring mathematical problem solving.
-  GitHub repo: https://github.com/hendrycks/math
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/hendrycks/math.git
-- MMLU: A dataset for measuring massive multitask language understanding.
+    dataset = load_dataset("truthful_qa")
+- TriviaQA: A large-scale reading comprehension dataset with questions sourced from trivia and quiz-league websites.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('cais/mmlu')
-- AQuA: A dataset for algebraic word problems.
-  GitHub repo: https://github.com/deepmind/AQuA
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/deepmind/AQuA.git
-- TruthfulQA: A dataset for measuring how models mimic human falsehoods.  [loader unverified -- locate the data yourself]
-- TriviaQA: A large scale distantly supervised challenge dataset for reading comprehension.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('trivia_qa')
+    dataset = load_dataset("trivia_qa")
 
 Experimental constraints:
 - Do NOT use web search

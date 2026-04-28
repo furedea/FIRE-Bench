@@ -1,19 +1,27 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How effective is the data collected from Chatbot Arena in reflecting real-world LLM use cases?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does Chatbot Arena, a platform for evaluating conversational AI systems, rank large language models (LLMs, AI systems designed to understand and generate human language) in terms of accuracy and stability using pairwise comparison data?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4-turbo via API
-- Load with HuggingFace: meta-llama/Llama-2-70b-chat
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Chatbot Arena: Crowdsourced user prompts and pairwise preference votes collected from the Chatbot Arena platform.  [generate programmatically]
-- MMLU: A benchmark for measuring massive multitask language understanding.  [loader unverified -- locate the data yourself]
-- HellaSwag: A dataset for evaluating commonsense reasoning in AI models.  [loader unverified -- locate the data yourself]
-- GSM-8K: A dataset for evaluating mathematical problem-solving abilities of AI models.  [loader unverified -- locate the data yourself]
-- MT-Bench: A benchmark for evaluating LLMs using GPT-4 as a judge.  [loader unverified -- locate the data yourself]
-- AlpacaEval: An automatic evaluator of instruction-following models.  [loader unverified -- locate the data yourself]
+- MMLU: A benchmark for evaluating language models on a wide range of tasks, including language understanding, mathematics, coding, and logical reasoning.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/mmlu")
+- HellaSwag: A dataset for evaluating commonsense reasoning in language models.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/hellaswag")
+- GSM-8K: A dataset for evaluating mathematical problem-solving abilities of language models.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/gsm8k")
+- MT-Bench: A benchmark for evaluating language models using pairwise comparisons and human judgment.  [loader unverified -- locate the data yourself]
+- AlpacaEval: A benchmark for evaluating instruction-following models using human preferences.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -25,82 +33,46 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Topic Modeling and Diversity Analysis
+### 1. Estimation of Win Matrix and Bradley-Terry Coefficients
 - **Procedure**: 
-  - Use BERTopic to transform user prompts from Chatbot Arena into representation vectors using OpenAI's text embedding model (`text-embedding-3-small`).
-  - Reduce the dimensionality of these vectors from 1,536 to 5 using UMAP.
-  - Apply HDBSCAN to identify topic clusters with a minimum cluster size of 32.
-  - Sample 10 prompts from each topic cluster and use GPT-4-Turbo for topic summarization.
+  - Use pairwise comparison data collected from Chatbot Arena.
+  - For each pair of models, record the outcome of the comparison (which model was preferred).
+  - Apply the Bradley-Terry model to estimate the probability that one model is preferred over another.
+  - Use the E-values method to ensure the statistical validity of the rankings.
+  - Implement an adaptive sampling strategy to focus on model pairs with similar performance, thereby improving sample efficiency.
+- **Input Format**: 
+  - Each data point consists of a pair of models and the user's preference.
+  - No specific input prompt is required as the data is collected from live interactions.
 - **What to Record**: 
-  - Number of clusters identified.
-  - Size and similarity of each cluster.
-  - Diversity metrics of the clusters.
-- **Correspondence**: Section 6.1, Figure 3.
-
-### 2. Model Differentiation Using Arena Prompts
-- **Procedure**: 
-  - Sample 30 prompts from selected topic clusters.
-  - Compare the performance of Llama-2-70b-chat and GPT-4 using these prompts.
-  - Use GPT-4-Turbo as a judge to evaluate model responses in pairwise comparisons.
-- **What to Record**: 
-  - Win-rate of GPT-4 against Llama-2-70b-chat for each topic cluster.
-  - Examples of prompts and model responses.
-- **Correspondence**: Section 6.2, Table 2.
-
-### 3. Building a Challenging Benchmark
-- **Procedure**: 
-  - Run the topic modeling pipeline to select challenging questions from each topic cluster.
-  - Use a similar procedure as in Zheng et al. (2023a) for prompt selection.
-  - Evaluate model performance using these prompts.
-- **What to Record**: 
-  - Performance scores of models on the constructed benchmark.
-  - Comparison with existing benchmarks like MT-Bench.
-- **Correspondence**: Section 6.2, Figure 4.
-
-### 4. Vote Quality Validation
-- **Procedure**: 
-  - Randomly select 160 battles between GPT-4-Turbo and other models.
-  - Have experts label their preference per comparison.
-  - Use GPT-4 as a judge for pairwise comparisons.
-- **What to Record**: 
-  - Agreement rates between crowd-users, experts, and GPT-4-judge.
-  - Win-rate of GPT-4-Turbo across different evaluators.
-- **Correspondence**: Section 6.3, Tables 3 and 4.
+  - Raw pairwise comparison outcomes.
+  - Estimated win matrix for each model pair.
+  - Bradley-Terry coefficients for each model.
+  - Confidence intervals for the estimated coefficients.
+- **Correspondence**: 
+  - This experiment corresponds to the analysis presented in Section 5 and Figure 5 of the paper.
 
 ## Evaluation Details
 
-### Metrics and Computation
-- **Topic Diversity**: 
-  - Compute the number of unique clusters and their sizes.
-  - Use cosine similarity to measure the similarity between cluster centroids.
-- **Model Win-Rate**: 
-  - Calculate the proportion of wins for each model in pairwise comparisons.
-  - Use a scoring system where wins, ties, and losses are assigned scores of 10, 5, and 0, respectively.
-
-### Normalization and Pre-processing
-- **Model Outputs**: 
-  - Ensure outputs are parsed correctly for evaluation.
-  - Use consistent formatting for prompts and responses to avoid bias.
-
-### Aggregation Strategy
-- **Per-Sample to Overall**: 
-  - Aggregate win-rates and scores across all samples to derive overall performance metrics.
-  - Use confidence intervals to report uncertainty in model rankings.
+- **Metric Definitions**:
+  - **Win Matrix Accuracy**: The proportion of pairwise comparisons correctly predicted by the estimated win matrix.
+  - **Ranking Stability**: The consistency of model rankings across different samples and estimation methods.
+- **Computation**:
+  - Use the formula for the Bradley-Terry model: \( P(H_t = 1) = \frac{1}{1 + e^{\xi_{m'} - \xi_m}} \), where \( \xi \) are the Bradley-Terry coefficients.
+  - Estimate the win matrix using the formula: \( \hat{\theta}_T = \frac{1}{T} \sum_{t=1}^{T} X_t \), where \( X_t(a) = \frac{1}{P_t(a)} H_t 1\{A_t = a\} \).
+- **Normalization and Pre-processing**:
+  - Ensure that the probability of sampling any model pair \( P_t(a) \) is greater than a small positive threshold to maintain regularity conditions.
+- **Aggregation Strategy**:
+  - Aggregate individual comparison outcomes to estimate the win matrix.
+  - Use the estimated win matrix to compute Bradley-Terry coefficients and derive model rankings.
 
 ## Implementation Notes
 
-### Key Pitfalls
-- **Prompt Ambiguity**: 
-  - Ensure prompts are clear and unambiguous to avoid inconsistent evaluations.
-- **Model Bias**: 
-  - Be aware of potential biases in model responses due to prompt phrasing.
-
-### Special Prompt Templates
-- **Judgment Prompts**: 
-  - Use a standardized system prompt for GPT-4-Turbo when evaluating model responses to ensure consistency.
-
-### Order of Operations
-- **Data Processing**: 
-  - Perform dimensionality reduction before clustering in the topic modeling pipeline.
-- **Evaluation**: 
-  - Conduct pairwise comparisons before aggregating results for final analysis.
+- **Pitfalls and Caveats**:
+  - Ensure that the sampling strategy does not introduce bias by over-sampling certain model pairs.
+  - Be cautious of the assumptions underlying the Bradley-Terry model, particularly the logistic relationship between model preferences.
+- **Special Prompt Templates**:
+  - Not applicable as the data is collected from live user interactions without predefined prompts.
+- **Order of Operations**:
+  - First, estimate the win matrix from the raw comparison data.
+  - Then, compute the Bradley-Terry coefficients using the estimated win matrix.
+  - Finally, derive model rankings and confidence intervals for the coefficients.

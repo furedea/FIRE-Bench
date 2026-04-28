@@ -1,0 +1,1 @@
+LLMs deviate from the narrow fractal parameter range characteristic of natural language when factors like decoding temperature and prompting method are adjusted, even if log-perplexity scores remain stable.

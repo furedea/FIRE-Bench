@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How does LongBench facilitate the evaluation of long context understanding in LLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How do large language models perform on single-document and multi-document question answering tasks when evaluated with LongBench, which includes datasets like NarrativeQA, Qasper, MultiFieldQA, HotpotQA, and DuReader?"
 
 You have access to the following resources:
 
@@ -8,7 +8,33 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- LongBench: A bilingual, multi-task benchmark for evaluating long context understanding in large language models, comprising 21 datasets across 6 task categories in both English and Chinese.  [loader unverified -- locate the data yourself]
+- NarrativeQA: A dataset consisting of long stories along with questions posed to test reading comprehension.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("narrativeqa")
+- Qasper: A dataset featuring QA over NLP papers, annotated by NLP practitioners.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("qasper")
+- MultiFieldQA: A manually curated dataset with documents and articles from multiple sources, including legal documents, government reports, encyclopedias, and academic papers.  [generate programmatically]
+  Generation code:
+    # Synthetic generation process for MultiFieldQA
+    import random
+    def generate_multifieldqa():
+        fields = ["legal documents", "government reports", "encyclopedias", "academic papers"]
+        documents = [f"Document from {field}" for field in fields]
+        questions = [f"What is the main topic of the document from {field}?" for field in fields]
+        answers = [f"The main topic of the document from {field} is XYZ." for field in fields]
+        return [{"document": doc, "question": q, "answer": a} for doc, q, a in zip(documents, questions, answers)]
+    dataset = generate_multifieldqa()
+- HotpotQA: A dataset involving multi-hop questions directly written by native speakers given two related paragraphs.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hotpot_qa")
+- DuReader: A Chinese dataset developed based on Baidu Search and Baidu Zhidao, comprising questions and related documents.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("dureader")
 
 Experimental constraints:
 - Do NOT use web search

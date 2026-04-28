@@ -1,0 +1,1 @@
+Tokenization lengths differ significantly across languages, with some requiring more tokens than English. Tokenizers targeting specific languages show better parity but still have disparities. Multilingual models improve parity but do not achieve uniformity, and byte-level models also exhibit significant disparities for some language pairs.

@@ -1,24 +1,17 @@
 task_id: emergent_abilities_mirage_rq0
 paper_type: empirical_study
-research_question: 'RQ1: Do nonlinear or discontinuous metrics create the appearance
-  of emergent abilities in language models?'
+research_question: "RQ1: Do emergent abilities, defined as unexpected performance improvements, in the InstructGPT/GPT-3 model family on arithmetic tasks disappear when nonlinear metrics like Accuracy are replaced with linear metrics like Token Edit Distance, using 2-shot multiplication and addition tasks?"
 study_type: meta-analysis
 data_sources:
-- name: BIG-Bench
-  source: external
-  description: A benchmark used to analyze emergent abilities in language models,
-    focusing on tasks with claimed emergent abilities.
-  url: https://github.com/google/BIG-bench
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/google/BIG-bench.git
-
-    '
+  - name: "BIG-Bench"
+    source: unknown
+    description: "A benchmark used to analyze emergent abilities in large language models, containing various tasks and metrics."
 analytical_tools:
-- Meta-analysis
-- Statistical analysis
+  - "Python"
+  - "NumPy"
+  - "Matplotlib"
+  - "SciPy"
 references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

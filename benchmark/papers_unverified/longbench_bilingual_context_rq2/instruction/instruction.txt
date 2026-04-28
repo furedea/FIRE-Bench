@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How do context compression techniques impact LLM performance on LongBench?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: How do large language models perform on few-shot learning tasks using LongBench, which includes datasets like TREC, TriviaQA, SAMSum, and LSHT?"
 
 You have access to the following resources:
 
@@ -8,7 +8,19 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- LongBench: A bilingual, multi-task benchmark for evaluating long context understanding, comprising 21 datasets across 6 task categories in both English and Chinese.  [loader unverified -- locate the data yourself]
+- TREC: A question classification task involving 50 fine classes.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("trec")
+- TriviaQA: Contains question-answer pairs labeled with evidence passages.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("trivia_qa")
+- SAMSum: Contains messenger-like conversations with human-annotated summaries.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("samsum")
+- LSHT: A Chinese news classification task with 24 classes.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

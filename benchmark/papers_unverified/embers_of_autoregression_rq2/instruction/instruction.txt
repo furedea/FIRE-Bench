@@ -1,20 +1,16 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ3: How does input probability affect the performance of LLMs?"
+You are a research agent. Conduct an empirical study answering the question: "RQ3: How does the probability of the input affect the performance of large language models (GPT-3.5 and GPT-4) on tasks like shift ciphers, reversal, Pig Latin, acronyms, and counting?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- Global Voices: A collection of news articles used to generate high-probability and low-probability sentences for evaluating LLM performance on tasks like rot-13 encoding.  [loader unverified -- locate the data yourself]
-- WikiBio dataset: A dataset containing biographical information, used to evaluate LLM performance on birthday retrieval tasks with varying input probabilities.
-  GitHub repo: https://github.com/DavidGrangier/wikipedia-biography-dataset
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/DavidGrangier/wikipedia-biography-dataset.git
+- Global Voices: A collection of recent news articles used to generate high-probability sentences for evaluating language models.  [loader unverified -- locate the data yourself]
+- C4 corpus: A large corpus of web-crawled text used to estimate the frequency of numbers and words for counting tasks.  [loader unverified -- locate the data yourself]
 
 Analytical tools / techniques available:
-- NLTK
-- RoBERTa
 - GPT-2
-- Levenshtein distance
+- RoBERTa
+- NLTK
+- Hugging Face Datasets
 
 Study constraints:
 - Do NOT use web search

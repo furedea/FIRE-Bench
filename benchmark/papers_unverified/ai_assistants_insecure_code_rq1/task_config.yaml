@@ -1,14 +1,14 @@
 task_id: ai_assistants_insecure_code_rq1
 paper_type: empirical_study
-research_question: 'RQ2: Do users trust AI assistants to write secure code?'
-study_type: user study
+research_question: "RQ2: How does user trust in AI assistants (software tools that provide automated coding suggestions) to write secure code affect their perception of code security in tasks involving encryption, signing, file path handling, SQL operations, and C string manipulation?"
+study_type: user-study
 data_sources:
-- name: Post-study survey responses
-  source: unknown
-  description: Survey responses collected from participants regarding their trust
-    in AI-generated code security.
+  - name: "User Study Data"
+    source: synthetic
+    description: "Data collected from a user study where participants interacted with AI code assistants to solve security-related programming tasks."
 analytical_tools:
-- Likert-scale survey analysis
+  - "Likert-scale analysis"
+  - "Logistic regression"
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

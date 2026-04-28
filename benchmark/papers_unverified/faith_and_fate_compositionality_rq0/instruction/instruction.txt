@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How do transformer LLMs perform on compositional tasks requiring multi-step reasoning?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How do transformer-based large language models (LLMs) perform on compositional tasks such as multi-digit multiplication, logic grid puzzles, and dynamic programming problems across zero-shot, few-shot, and fine-tuning settings? RQ2: What are the underlying mechanisms used by transformer-based large language models (LLMs) to solve compositional tasks like multi-digit multiplication, logic grid puzzles, and dynamic programming problems?"
 
 You have access to the following resources:
 
@@ -8,9 +8,40 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Multi-digit multiplication: A task involving the multiplication of multi-digit numbers, requiring step-by-step arithmetic operations.  [generate programmatically]
-- Logic grid puzzles: A logic puzzle task often used as a benchmark for solving constraint satisfaction problems, involving a list of houses with different attributes.  [generate programmatically]
-- Dynamic programming problem: A classic problem involving finding a subsequence with the highest sum, such that no two numbers in the subsequence are adjacent in the original sequence.  [generate programmatically]
+- Generated multiplication problems: Synthetic dataset of multiplication problems with up to 5-digit numbers.  [generate programmatically]
+  Generation code:
+    def generate_multiplication_problems(max_digits=5):
+        import random
+        problems = []
+        for _ in range(1000):  # Generate 1000 problems
+            x = random.randint(10**(max_digits-1), 10**max_digits - 1)
+            y = random.randint(10**(max_digits-1), 10**max_digits - 1)
+            problems.append((x, y, x * y))
+        return problems
+- Generated logic grid puzzles: Synthetic dataset of logic grid puzzles with varying sizes and complexity.  [generate programmatically]
+  Generation code:
+    def generate_logic_grid_puzzles(num_puzzles=1000, max_size=5):
+        import random
+        puzzles = []
+        for _ in range(num_puzzles):
+            size = random.randint(2, max_size)
+            puzzle = {"houses": size, "attributes": ["color", "pet", "drink"], "clues": []}
+            # Generate random clues
+            for _ in range(size * 2):
+                clue_type = random.choice(["same_house", "direct_left", "besides"])
+                puzzle["clues"].append(clue_type)
+            puzzles.append(puzzle)
+        return puzzles
+- Generated dynamic programming sequences: Synthetic dataset of sequences with integers in the range [-5, 5] for dynamic programming tasks.  [generate programmatically]
+  Generation code:
+    def generate_dp_sequences(max_length=10, num_sequences=1000):
+        import random
+        sequences = []
+        for _ in range(num_sequences):
+            length = random.randint(2, max_length)
+            sequence = [random.randint(-5, 5) for _ in range(length)]
+            sequences.append(sequence)
+        return sequences
 
 Experimental constraints:
 - Do NOT use web search

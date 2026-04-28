@@ -1,24 +1,40 @@
 task_id: parametric_vs_nonparametric_memory_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: How much factual knowledge is memorized by LMs and what factors
-  affect the memorization?'
+research_question: "RQ1: How much factual knowledge is memorized by large language models (GPT-Neo, OPT, GPT-3) and what factors (entity popularity, relationship type) affect this memorization on open-domain QA datasets (POPQA, EntityQuestions)?"
 models:
   api:
-  - gpt-4o
+    - gpt-3.5-turbo
   huggingface:
-  - EleutherAI/gpt-neo-2.7B
-  - facebook/opt-13b
-  - openai/gpt-3
+    - EleutherAI/gpt-neo-2.7B
+    - facebook/opt-13b
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: POPQA
-  source: synthetic
-  description: A dataset with 14k questions about long-tail entities, created by sampling
-    knowledge triples from Wikidata and converting them into natural language questions.
-- name: EntityQuestions
-  source: unknown
-  description: An open-domain QA dataset with a long-tail distribution.
+  - name: "POPQA"
+    source: synthetic
+    loader: |
+      # Synthetic dataset generation code
+      import random
+      from datasets import Dataset
+
+      def generate_popqa():
+          questions = []
+          for _ in range(14000):
+              entity = f"Entity_{random.randint(1, 10000)}"
+              relation = random.choice(["occupation", "capital of", "author"])
+              answer = f"Answer_{random.randint(1, 10000)}"
+              question = f"What is the {relation} of {entity}?"
+              questions.append({"question": question, "answer": answer})
+          return Dataset.from_dict({"question": [q["question"] for q in questions], "answer": [q["answer"] for q in questions]})
+
+      popqa_dataset = generate_popqa()
+    description: "A synthetic dataset with 14k questions about long-tail entities, created by converting knowledge triples from Wikidata into natural language questions."
+  - name: "EntityQuestions"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      entity_questions = load_dataset("entity_questions")
+    description: "An open-domain QA dataset with a long-tail distribution, focusing on entity-centric questions."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

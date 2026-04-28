@@ -1,32 +1,24 @@
-You are a research agent. Conduct research about the question: "RQ2: How effective is the V∗Bench benchmark in evaluating MLLMs' visual grounding capabilities?"
+You are a research agent. Conduct research about the question: "RQ2: What is the effectiveness of a visual search algorithm in reducing search length and improving search efficiency when locating target objects within high-resolution images, compared to random and sequential search strategies?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- SEAL (Show, sEArch, and TelL): SEAL is a meta-architecture for multimodal large language models (MLLMs) that integrates an LLM-guided visual search mechanism, V∗, to enhance visual grounding capabilities. It uses a visual working memory to store and process visual information, allowing the model to focus on specific visual elements in high-resolution images. This approach improves the model's ability to reason about and search for needed visual information, addressing limitations in current MLLMs that rely on pre-trained vision encoders.
-  - Component: LLM-guided visual search mechanism (V∗)
-  - Component: Visual Working Memory (VWM)
-  - Component: Integration with MLLMs like LLaVA
-- Baseline for comparison: GPT-4V
-- Baseline for comparison: Gemini Pro
-- Baseline for comparison: LLaVA-1.5
+- V∗ Visual Search Algorithm: V∗ is an LLM-guided visual search mechanism designed to enhance multimodal large language models (MLLMs) by efficiently locating target objects within high-resolution images. It leverages the world knowledge of LLMs to perform informed searches, building a visual working memory (VWM) that aids in precise visual grounding and reasoning.
+  - Component: LLM-guided visual search process using contextual cues and common sense knowledge
+  - Component: Visual Working Memory (VWM) to store and process visual information
+  - Component: Integration with MLLMs to improve visual grounding and reasoning
+- Baseline for comparison: Random Search Strategy
+- Baseline for comparison: Sequential Search Strategy
 
 Datasets for training and evaluation:
-- V∗Bench: A benchmark designed to evaluate MLLMs' ability to process high-resolution images and focus on visual details, consisting of tasks like attribute recognition and spatial relationship reasoning.  [generate programmatically]
+- V∗Bench: A benchmark designed to evaluate MLLMs' ability to process high-resolution images and focus on visual details, specifically for visual grounding tasks.  [generate programmatically]
   Generation code:
-    # Example code snippet for generating synthetic data
     import numpy as np
-    from PIL import Image
     
-    def generate_synthetic_image():
-        # Create a high-resolution synthetic image
-        width, height = 2246, 1582
-        image = np.random.randint(0, 255, (height, width, 3), dtype=np.uint8)
-        return Image.fromarray(image)
-    
-    def load_v_star_bench():
-        # Generate a list of synthetic images for the benchmark
-        return [generate_synthetic_image() for _ in range(191)]
+    def generate_v_star_bench():
+        # Synthetic generation of high-resolution images with target objects
+        images = np.random.rand(191, 2246, 1582, 3)  # Example shape
+        return images
 
 Experimental constraints:
 - Do NOT use web search

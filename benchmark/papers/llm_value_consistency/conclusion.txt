@@ -1,0 +1,1 @@
+Different large language models do not consistently exhibit the same value structure as humans. The consistency of value profiles in LLMs depends on the way the model is prompted, with personality-endowed prompts improving consistency.

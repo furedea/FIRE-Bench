@@ -1,0 +1,1 @@
+Large language models rely on pattern matching rather than accurately discerning relevant information when solving mathematical problems, as evidenced by significant performance drops when irrelevant information is added.

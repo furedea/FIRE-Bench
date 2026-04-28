@@ -1,0 +1,1 @@
+Large vision-language models, like GPT-4V, tend to fall back on parametric knowledge from training rather than accurately analyzing the actual image when handling visual illusions and manipulated images.

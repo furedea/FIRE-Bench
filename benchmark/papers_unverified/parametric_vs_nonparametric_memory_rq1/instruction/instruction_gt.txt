@@ -1,19 +1,17 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: To what extent can non-parametric memories alleviate the shortcomings of parametric memories of LMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: To what extent can non-parametric memories (retrieval-augmented language models using external data sources like BM25 and Contriever) improve the performance of large language models with parametric memories (internal model weights) on long-tail factual knowledge (information about less popular entities) when evaluated on the POPQA and EntityQuestions datasets?"
 
 You have access to the following resources:
 
 Models:
 - gpt-4o via API
 - Load with HuggingFace: EleutherAI/gpt-neo-2.7B
-- Load with HuggingFace: EleutherAI/gpt-j-6B
-- Load with HuggingFace: EleutherAI/gpt-neox-20B
 - Load with HuggingFace: facebook/opt-13b
-- Load with HuggingFace: openai/gpt-3.5-turbo
+- Load with HuggingFace: EleutherAI/gpt-neox-20b
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- POPQA: A dataset with 14k questions about long-tail entities, created by sampling knowledge triples from Wikidata and converting them into natural language questions.  [generate programmatically]
-- EntityQuestions: An open-domain QA dataset with a long-tail distribution, covering a wide range of entity popularity.  [loader unverified -- locate the data yourself]
+- POPQA: A dataset with 14k questions about long-tail entities, created by converting knowledge triples from Wikidata into natural language questions.  [generate programmatically]
+- EntityQuestions: An open-domain QA dataset with a long-tail distribution, covering less popular entities.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -25,54 +23,53 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Retrieval-Augmented Language Models Evaluation
+### 1. Retrieval-Augmented Language Model Evaluation
 - **Procedure**: 
-  - Use the POPQA and EntityQuestions datasets.
-  - For each question, retrieve context from Wikipedia using BM25 and Contriever retrieval systems.
+  - For each question in the POPQA and EntityQuestions datasets, retrieve relevant context using BM25 and Contriever from a December 2018 Wikipedia dump.
   - Concatenate the retrieved context with the original question.
-  - Use the models to predict answers in a zero-shot or few-shot prompting manner.
-  - For few-shot prompting, use a simple template: "Q: <question> A:".
-  - Use 15-shot prompting for GPT-Neo and OPT models, and zero-shot for GPT-3 to reduce API costs.
+  - Use the GenRead method to generate context for comparison.
+  - Evaluate using zero-shot prompting for GPT-3 and 15-shot prompting for GPT-Neo and OPT models.
+  - Use the template "Q: <question> A:" for all questions.
 - **What to Record**: 
   - Record the accuracy of each model on the datasets.
-  - Record the retrieval recall@1 for each question.
+  - Record the retrieval success rate (recall@1) for each question.
 - **Correspondence**: 
-  - This experiment corresponds to Figure 7 and Table 1 in Section 5 of the paper.
+  - Results are discussed in Section 5 and visualized in Figure 7.
 
 ### 2. Adaptive Retrieval Method
 - **Procedure**: 
-  - Implement the Adaptive Retrieval method by setting a popularity threshold for each relationship type.
-  - Use retrieval for questions below the threshold and rely on parametric memory for others.
-  - Determine the threshold using a development set to maximize adaptive accuracy.
+  - Determine a popularity threshold for each relationship type using a development set.
+  - For questions below the threshold, use retrieval-augmented input; otherwise, use the original input.
+  - Evaluate the adaptive retrieval method on the remaining dataset.
 - **What to Record**: 
-  - Record the accuracy of the Adaptive Retrieval method.
-  - Record the proportion of questions for which retrieval is used.
-  - Measure the inference latency and API costs.
+  - Record the accuracy of the adaptive retrieval method.
+  - Record the proportion of questions for which retrieval was used.
 - **Correspondence**: 
-  - This experiment corresponds to Figures 9, 10, 11, and 12 in Section 6 of the paper.
+  - Results are discussed in Section 6 and visualized in Figures 9 and 10.
 
 ## Evaluation Details
 
-- **Metric Definitions**:
-  - **Accuracy**: A prediction is marked correct if any substring of the prediction is an exact match of any of the gold answers.
+- **Metric Definitions**: 
+  - **Accuracy**: A prediction is correct if any substring of the prediction matches any of the gold answers exactly.
   - **Recall@1**: Whether a gold answer is included in the top 1 retrieved document.
 
-- **Normalization and Pre-processing**:
-  - Normalize model outputs by stripping whitespace and converting to lowercase before matching with gold answers.
+- **Normalization and Pre-processing**: 
+  - Normalize entity popularity using log-popularity, calculated from Wikipedia page views.
+  - Use a simple template for question formatting to ensure consistency across models.
 
-- **Aggregation Strategy**:
-  - Compute accuracy per sample, then aggregate to per-condition (e.g., retrieval vs. non-retrieval) and overall accuracy.
+- **Aggregation Strategy**: 
+  - Compute accuracy per sample, then aggregate per condition (retrieval method), and finally compute overall accuracy.
+  - Use Wilson 95% confidence intervals for error bars in visualizations.
 
 ## Implementation Notes
 
-- **Pitfalls and Caveats**:
-  - Retrieval can mislead models on questions about popular entities due to incorrect or irrelevant context.
-  - Ensure that the retrieval system is correctly configured to access the December 2018 Wikipedia dump.
+- **Pitfalls and Caveats**: 
+  - Retrieval can mislead models on popular entities due to incorrect or irrelevant context.
+  - Ensure that retrieval systems are correctly configured to access the December 2018 Wikipedia dump.
 
-- **Prompt Templates**:
-  - Use the simple template "Q: <question> A:" for all questions.
-  - Ensure consistency in the few-shot examples used across different runs.
+- **Special Prompt Templates**: 
+  - Use the template "Q: <question> A:" for all questions to maintain consistency.
 
-- **Order of Operations**:
-  - First, determine the popularity threshold using the development set.
-  - Then, apply the Adaptive Retrieval method using the determined thresholds on the test set.
+- **Order of Operations**: 
+  - First, determine the popularity threshold using a development set.
+  - Then, apply the adaptive retrieval method on the test set based on the determined thresholds.

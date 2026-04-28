@@ -1,28 +1,27 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How effective is the data collected from Chatbot Arena in reflecting real-world LLM use cases?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does Chatbot Arena, a platform for evaluating conversational AI systems, rank large language models (LLMs, AI systems designed to understand and generate human language) in terms of accuracy and stability using pairwise comparison data?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4-turbo via API
-- Load with HuggingFace: meta-llama/Llama-2-70b-chat
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Chatbot Arena: Crowdsourced user prompts and pairwise preference votes collected from the Chatbot Arena platform.  [generate programmatically]
-- MMLU: A benchmark for measuring massive multitask language understanding.
+- MMLU: A benchmark for evaluating language models on a wide range of tasks, including language understanding, mathematics, coding, and logical reasoning.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('cais/mmlu')
-- HellaSwag: A dataset for evaluating commonsense reasoning in AI models.
+    dataset = load_dataset("cais/mmlu")
+- HellaSwag: A dataset for evaluating commonsense reasoning in language models.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('hellaswag')
-- GSM-8K: A dataset for evaluating mathematical problem-solving abilities of AI models.
+    dataset = load_dataset("openai/hellaswag")
+- GSM-8K: A dataset for evaluating mathematical problem-solving abilities of language models.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('openai/gsm8k')
-- MT-Bench: A benchmark for evaluating LLMs using GPT-4 as a judge.  [loader unverified -- locate the data yourself]
-- AlpacaEval: An automatic evaluator of instruction-following models.  [loader unverified -- locate the data yourself]
+    dataset = load_dataset("openai/gsm8k")
+- MT-Bench: A benchmark for evaluating language models using pairwise comparisons and human judgment.  [loader unverified -- locate the data yourself]
+- AlpacaEval: A benchmark for evaluating instruction-following models using human preferences.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

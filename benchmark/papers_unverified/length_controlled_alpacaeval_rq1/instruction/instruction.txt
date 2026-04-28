@@ -1,13 +1,15 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Does length-controlled AlpacaEval improve correlation with human evaluations compared to the original AlpacaEval?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Does controlling for response length in evaluations using the AlpacaEval dataset, a benchmark for assessing language model outputs, improve the Spearman correlation with human evaluation rankings in the LMSYS Chatbot Arena, a platform for comparing chatbot performance?"
 
 You have access to the following resources:
 
 Models:
 - gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Chatbot Arena: A dataset used for evaluating language models through live human interactions, where users rate the quality of responses from anonymized LMs.  [loader unverified -- locate the data yourself]
+- AlpacaEval: A benchmark for assessing language model outputs, focusing on instruction-following models.  [loader unverified -- locate the data yourself]
+- Chatbot Arena: A platform for comparing chatbot performance through human evaluation rankings.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

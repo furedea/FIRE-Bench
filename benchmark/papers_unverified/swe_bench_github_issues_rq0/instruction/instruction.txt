@@ -1,14 +1,15 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How effective are current language models at resolving issues in SWE-bench?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do state-of-the-art language models perform in resolving software engineering issues from real-world GitHub repositories using the SWE-bench framework, a benchmark for evaluating code patch generation by assessing the percentage of issues resolved and patches applied?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4-32k-0613 via API
-- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- gpt-4-32k via API
+- Load with HuggingFace: meta-llama/Llama-2-7b
+- Load with HuggingFace: meta-llama/Llama-2-13b
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- SWE-bench: An evaluation framework consisting of 2,294 software engineering problems drawn from real GitHub issues and corresponding pull requests across 12 popular Python repositories.  [loader unverified -- locate the data yourself]
+- SWE-bench: A benchmark consisting of 2,294 software engineering problems drawn from real GitHub issues and corresponding pull requests across 12 popular Python repositories.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

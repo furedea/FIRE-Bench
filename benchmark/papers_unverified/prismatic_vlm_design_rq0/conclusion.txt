@@ -1,0 +1,1 @@
+Single-stage training improves the performance of visually-conditioned language models (VLMs) across visual question answering, object localization, and challenge tasks, while also reducing compute cost compared to multi-stage training.

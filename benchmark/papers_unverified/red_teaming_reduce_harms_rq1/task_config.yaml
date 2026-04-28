@@ -1,18 +1,17 @@
 task_id: red_teaming_reduce_harms_rq1
 paper_type: llm_evaluation
-research_question: 'RQ2: What types of harmful outputs are uncovered by red teaming?'
+research_question: "RQ2: What types of harmful outputs are uncovered by red teaming, a process where simulated attacks are conducted to identify vulnerabilities, and how can these outputs be categorized and analyzed using a large dataset of attacks and various visualization and annotation techniques?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: 38,961 red team attacks dataset
-  source: unknown
-  description: A dataset of red team attacks on language models to analyze and learn
-    from, including various types of harmful outputs.
+  - name: "Red team dataset of 38,961 attacks"
+    source: unknown
+    description: "A dataset of red team attacks on language models to analyze and categorize harmful outputs."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

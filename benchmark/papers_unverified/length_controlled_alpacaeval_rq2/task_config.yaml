@@ -1,26 +1,17 @@
 task_id: length_controlled_alpacaeval_rq2
 paper_type: llm_evaluation
-research_question: 'RQ3: How does length-controlled AlpacaEval affect the robustness
-  and interpretability of the evaluation metric?'
+research_question: "RQ3: How does a length-controlled evaluation dataset (where response lengths are adjusted to a standard) for chatbot performance compare in terms of robustness and interpretability to other length correction methods (such as length-normalized and length-balanced win rates), as measured by correlation with human judgments, susceptibility to manipulation, and improvement in performance against adversarial inputs?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: AlpacaEval dataset
-  source: external
-  description: A set of 805 instructions used to evaluate instruction-following models,
-    originally designed for the Alpaca web demo.
-  url: https://github.com/tatsu-lab/alpaca_eval
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/tatsu-lab/alpaca_eval.git
-
-    '
+  - name: "AlpacaEval"
+    source: unknown
+    description: "A benchmark for instruction-tuned LLMs that uses LLMs to estimate response quality, focusing on reducing length bias."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

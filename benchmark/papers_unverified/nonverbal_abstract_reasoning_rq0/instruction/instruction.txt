@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "Do MLLMs demonstrate faithful nonverbal abstract reasoning abilities?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: Do multi-modal large language models (MLLMs, which process and integrate information from multiple modalities such as text and images) demonstrate faithful nonverbal abstract reasoning abilities using Raven’s Progressive Matrices (RPM, a set of visual puzzles designed to assess abstract reasoning) benchmarks, specifically on the IQ50, RAVEN-S, and CCSE datasets in zero-shot and few-shot settings?"
 
 You have access to the following resources:
 
@@ -8,13 +8,9 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet.  [loader unverified -- locate the data yourself]
-- RAVEN-S: A visual reasoning dataset containing 3,500 synthetic samples in seven categories, sampled from the RAVEN dataset.
-  GitHub repo: https://github.com/WellyZhang/RAVEN
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/WellyZhang/RAVEN.git
-- CCSE: A dataset of 175 visual abstractions and reasoning problems from the China Civil Service Examination.  [loader unverified -- locate the data yourself]
+- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet, augmented with textual description and hint annotations.  [generate programmatically]
+- RAVEN-S: A visual reasoning dataset containing 3,500 synthetic samples in seven categories, each with a 3x3 matrix of images and eight options.  [generate programmatically]
+- CCSE: A dataset of 175 visual abstractions and reasoning problems from the China Civil Service Examination, each containing a matrix or sequence of images with four options.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

@@ -1,26 +1,20 @@
-You are a research agent. Conduct research about the question: "Can models generalize to tasks in languages they have never intentionally seen?"
+You are a research agent. Conduct research about the question: "Can models finetuned on multilingual datasets with English prompts generalize to tasks in languages not intentionally seen during pretraining or finetuning?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- BLOOMZ and mT0: BLOOMZ and mT0 are finetuned variants of the pretrained multilingual BLOOM and mT5 model families. They are designed to improve crosslingual generalization by finetuning on English tasks with English prompts, allowing for task generalization to non-English languages that appear only in the pretraining corpus. The models are further enhanced by finetuning on multilingual tasks with English and machine-translated prompts.
-  - Component: Multitask finetuning on English and multilingual tasks
-  - Component: Use of English and machine-translated prompts
-  - Component: Evaluation on zero-shot task generalization in unseen languages
+- BLOOMZ and mT0: BLOOMZ and mT0 are finetuned variants of the BLOOM and mT5 model families, respectively. They are designed to enhance crosslingual generalization by finetuning on multilingual datasets with English prompts. This approach allows the models to generalize to tasks in languages that were not intentionally seen during pretraining or finetuning.
+  - Component: Multitask finetuning on multilingual datasets with English prompts
+  - Component: Evaluation on tasks in languages not intentionally seen during pretraining or finetuning
 - Baseline for comparison: BLOOM
 - Baseline for comparison: mT5
-- Baseline for comparison: XGLM
 - Reference hint: https://github.com/bigscience-workshop/xmtf
 
 Datasets for training and evaluation:
-- XNLI: A dataset for evaluating cross-lingual sentence representations.
+- xP3: A composite of supervised datasets in 46 languages with English and machine-translated prompts.
   Loading code:
     from datasets import load_dataset
-    dataset = load_dataset("xnli")
-- XCOPA: A multilingual dataset for causal commonsense reasoning.
-  Loading code:
-    from datasets import load_dataset
-    dataset = load_dataset("xcopa")
+    dataset = load_dataset("bigscience/xP3")
 
 Experimental constraints:
 - Do NOT use web search
@@ -40,37 +34,42 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Zero-shot Task Generalization in Unseen Languages
+### 1. Crosslingual Generalization Evaluation
 - **Procedure**: 
-  - Evaluate the zero-shot task performance of BLOOMZ and mT0 models on languages that were not intentionally included during pretraining or finetuning.
-  - Use the XNLI and XCOPA datasets for evaluation.
-  - For each dataset, select languages with minimal representation in the pretraining corpus, such as Thai, Turkish, and Greek.
-  - For XNLI, compute the log-likelihood of each possible completion and select the highest scoring option.
-  - Use 5 random prompts from PromptSource for each language split and report the median result.
+  - Finetune BLOOMZ and mT0 models on the xP3 dataset, which consists of multilingual datasets with English prompts.
+  - Evaluate the models on tasks in languages that were not intentionally seen during pretraining or finetuning.
+  - Use a consistent set of prompts across all language splits for each evaluation dataset.
+  - Select 5 prompts at random from PromptSource for each evaluation dataset and report the median performance across these prompts.
+- **Input Format**: 
+  - Use English prompts for all multilingual datasets during finetuning.
+  - For evaluation, use the same English prompts across all language splits.
 - **What to Record**: 
-  - Record the accuracy for each language and task.
-  - Collect raw outputs and log-likelihood scores for each completion.
+  - Record the accuracy of the models on each task and language.
+  - Report the median accuracy across the 5 prompts for each language split.
 - **Correspondence**: 
-  - This experiment corresponds to Figure 5 and Section 4.2 in the paper.
+  - This experiment corresponds to Figure 5 and Table 9 in the paper, which show the zero-shot task and language generalization using English prompts on tasks and languages not intentionally seen during pretraining nor finetuning.
 
 ## Evaluation Details
 
-- **Metrics**: 
-  - Use accuracy as the primary metric for evaluating zero-shot task performance.
-  - For tasks involving multiple-choice questions, use rank classification based on log-likelihood scores.
-- **Normalization**: 
-  - Normalize log-likelihood scores by the length of the target to ensure fair comparison across different target lengths.
+- **Metric Definitions**: 
+  - Accuracy is used as the primary metric for evaluating the models' performance on the tasks.
+  - Compute accuracy as the number of correct predictions divided by the total number of predictions for each task and language.
+- **Normalization and Pre-processing**: 
+  - Ensure that all model outputs are in the expected format for comparison with the ground truth labels.
+  - Normalize outputs by converting them to lowercase and removing any extraneous whitespace or punctuation if necessary.
 - **Aggregation Strategy**: 
-  - Compute per-sample accuracy, then aggregate to per-language accuracy, and finally report the overall accuracy across all evaluated languages.
+  - Compute per-sample accuracy for each prompt.
+  - Aggregate these to obtain per-condition (per-language) accuracy by taking the median across the 5 prompts.
+  - Report the overall accuracy for each task and language as the median of the per-condition accuracies.
 
 ## Implementation Notes
 
 - **Prompt Selection**: 
-  - Use 5 random prompts from PromptSource for each language split to ensure variability and robustness in evaluation.
-  - Do not tune prompts based on validation data to maintain the integrity of zero-shot evaluation.
+  - Use a consistent set of prompts across all language splits to ensure comparability.
+  - Randomly select 5 prompts from PromptSource for each evaluation dataset and use these consistently across all language splits.
 - **Output Parsing**: 
-  - Ensure that the model outputs are parsed correctly to extract the predicted labels for accuracy computation.
+  - Ensure that the model outputs are parsed correctly to match the expected format for evaluation.
+  - Implement logic to handle any discrepancies in output format, such as additional whitespace or punctuation.
 - **Order of Operations**: 
-  - First, evaluate the model on each language using the selected prompts.
-  - Then, compute the log-likelihood scores and normalize them.
-  - Finally, aggregate the results and report the median accuracy for each language.
+  - Finetune the models on the xP3 dataset before conducting any evaluations.
+  - Ensure that the evaluation on unseen languages is conducted only after the models have been fully finetuned.

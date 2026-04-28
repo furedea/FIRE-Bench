@@ -1,0 +1,1 @@
+The key challenges in developing robust autonomous agents for complex web-based tasks in WebArena are early stopping, observation bias, and failure in observation interpretation.

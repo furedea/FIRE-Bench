@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How can the red teaming process be improved and standardized?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: How can a dataset of red team attacks, which are simulated adversarial interactions designed to test vulnerabilities, be used to improve the safety of language models?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- 38,961 red team attacks dataset: A dataset of red team attacks on language models to analyze and learn from, including various types of harmful outputs.  [loader unverified -- locate the data yourself]
+- Red team dataset of 38,961 attacks: A dataset of adversarial interactions designed to test vulnerabilities in language models, used to analyze and improve model safety.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

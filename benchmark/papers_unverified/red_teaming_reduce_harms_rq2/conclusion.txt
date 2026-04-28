@@ -1,0 +1,1 @@
+A dataset of red team attacks can improve the safety of language models by helping to understand model vulnerabilities and develop automated red teaming techniques.

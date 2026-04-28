@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Can LCLMs effectively perform Retrieval-Augmented Generation (RAG) tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can Long-Context Language Models (LCLMs, which process extended sequences of text) effectively perform Retrieval-Augmented Generation (RAG, a task involving retrieving relevant information from a corpus to generate responses) on datasets like NQ, TopiOCQA, and HotPotQA, as measured by subspan exact match metrics?"
 
 You have access to the following resources:
 
@@ -11,19 +11,27 @@ Datasets:
 - NQ: A dataset for question answering with phrase-level answer annotations.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('nq_open')
-- TopiOCQA: A multi-turn conversational question answering dataset.  [loader unverified -- locate the data yourself]
-- HotPotQA: A multi-hop question answering dataset.
+    nq = load_dataset("nq")
+- TopiOCQA: A multi-turn conversational question answering dataset.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('hotpot_qa')
-- MuSiQue: A multi-hop question answering dataset.
-  GitHub repo: https://github.com/stonybrooknlp/musique
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/stonybrooknlp/musique.git
-- QAMPARI: A multi-target question answering dataset requiring set operations.  [loader unverified -- locate the data yourself]
-- QUEST: A multi-target question answering dataset requiring set operations.  [loader unverified -- locate the data yourself]
+    topiocqa = load_dataset("McGill-NLP/topiocqa")
+- HotPotQA: A dataset for multi-hop question answering.
+  Loading code:
+    from datasets import load_dataset
+    hotpotqa = load_dataset("hotpotqa")
+- MuSiQue: A dataset for multi-hop question answering.
+  Loading code:
+    from datasets import load_dataset
+    musique = load_dataset("allenai/musique")
+- QAMPARI: A benchmark for open-domain questions with many answers.
+  Loading code:
+    from datasets import load_dataset
+    qampari = load_dataset("samsam3232/qampari")
+- QUEST: A retrieval dataset of entity-seeking queries with implicit set operations.
+  Loading code:
+    from datasets import load_dataset
+    quest = load_dataset("google-research/language", "quest")
 
 Experimental constraints:
 - Do NOT use web search

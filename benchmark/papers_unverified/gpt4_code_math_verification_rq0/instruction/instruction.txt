@@ -1,30 +1,22 @@
-You are a research agent. Conduct research about the question: "RQ1: How does code generation and execution impact GPT-4 Code Interpreter's performance in solving math problems?"
+You are a research agent. Conduct research about the question: "RQ1: How does the frequency of code usage affect the mathematical problem-solving capabilities of GPT-4 Code Interpreter on the MATH dataset?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Explicit Code-Based Self-Verification (CSV): The paper introduces a novel prompting method called explicit code-based self-verification (CSV) to enhance the mathematical reasoning capabilities of the GPT-4 Code Interpreter. This method encourages the model to use code to self-verify its answers, automatically amending its solution when verification fails, thereby improving accuracy in solving math problems.
-  - Component: Zero-shot prompt for code-based self-verification
-  - Component: Integration of code generation and execution for solution verification
-  - Component: Weighted majority voting based on verification states
+- Explicit Code-Based Self-Verification (CSV): The paper introduces a novel prompting method called explicit code-based self-verification (CSV) to enhance the mathematical reasoning capabilities of the GPT-4 Code Interpreter. This method encourages the model to use code to self-verify its answers, allowing it to automatically amend its solutions when verification fails. The approach leverages the model's ability to generate and execute code, evaluate outputs, and rectify solutions, thereby improving accuracy in solving mathematical problems.
+  - Component: Explicit code-based self-verification prompting technique
+  - Component: Integration of code generation and execution for self-verification
+  - Component: Weighted majority voting strategy based on verification states
 - Baseline for comparison: GPT-4
 - Baseline for comparison: GPT-3.5
-- Baseline for comparison: PAL (Program-Aided Language model)
+- Baseline for comparison: Chain-of-Thought (CoT)
+- Baseline for comparison: Program-Aided Language model (PAL)
 
 Datasets for training and evaluation:
-- MATH: A dataset designed to measure mathematical problem-solving abilities, containing challenging math word problems.
-  GitHub repo: https://github.com/hendrycks/math
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/hendrycks/math.git
-- GSM8K: A dataset of grade school math problems used to evaluate arithmetic and reasoning capabilities.
+- MATH: A challenging dataset of mathematical word problems designed to test the problem-solving abilities of models.
   Loading code:
     from datasets import load_dataset
-    dataset = load_dataset("gsm8k")
-- MMLU-Math: A subset of the MMLU benchmark focusing on mathematical problem-solving tasks.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('cais/mmlu')
+    dataset = load_dataset("hendrycks/math")
 
 Experimental constraints:
 - Do NOT use web search

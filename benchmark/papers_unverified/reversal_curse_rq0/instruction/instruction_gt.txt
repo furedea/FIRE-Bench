@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: Do LLMs trained on 'A is B' fail to generalize to 'B is A'?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: Do auto-regressive language models (e.g., GPT-3, Llama-1, which predict the next word in a sequence) trained on synthetic facts (artificially generated data) of the form 'A is B' generalize to the reverse form 'B is A' in the context of a synthetic dataset of fictitious facts?"
 
 You have access to the following resources:
 
@@ -22,37 +22,43 @@ Please design and execute experiments to investigate this research question. Doc
 
 ### 1. Finetuning on Synthetic Facts
 - **Procedure**: 
-  - Finetune the model on a synthetic dataset where each document is of the form "<name> is <description>".
-  - Evaluate the model by prompting it with questions in both the original and reversed order: "Who is <description>?" and "Who is <name>?".
+  - Finetune the models on a synthetic dataset where each document is of the form "<name> is <description>".
+  - Evaluate the models by prompting them with questions in both the original and reversed order: 
+    - Original: "Who is <name>?" 
+    - Reversed: "Who is <description>?"
   - Use a dataset containing 30 base facts, each paraphrased 30 times, resulting in 900 documents per subset.
-  - Include auxiliary examples where both orders are present in the finetuning dataset.
+  - Include paraphrases that match the original order to aid generalization.
   - Perform a hyperparameter sweep to determine the best settings for finetuning.
 - **What to Record**: 
   - Exact-match accuracy for each prompt.
   - Log-probabilities for the correct name versus a random name.
 - **Correspondence**: 
-  - Figure 2, Table 1, Section 2.1
+  - Figure 3: Setup for Experiment 1.
+  - Table 1: Results for Experiment 1.
+  - Section 2.1: Experiment 1 details.
 
-### 2. Testing Real-World Knowledge
+### 2. Real-World Knowledge Reversal
 - **Procedure**: 
-  - Use GPT-4 to query for parent-child relationships among 1000 celebrities.
-  - Evaluate the model's ability to answer questions in both directions: "Who is <celebrity>'s parent?" and "Who is <parent>'s child?".
-  - Use a few-shot prompting strategy to guide the model's responses.
+  - Test models on real-world facts about celebrities and their parents, using prompts like "Who is <celebrity>'s parent?" and "Who is <parent>'s child?".
+  - Use a list of 1000 popular celebrities and query for their parents to create child-parent pairs.
+  - Evaluate the model's ability to identify the child when given the parent and vice versa.
 - **What to Record**: 
-  - Success rate for identifying parents and children.
-  - Comparison of accuracy between the two directions.
+  - Accuracy of identifying the parent versus the child.
 - **Correspondence**: 
-  - Figure 1, Figure 5, Section 2.2
+  - Figure 1: Example of failure in GPT-4.
+  - Figure 5: Ordering effect in recalling the parent vs. the child.
+  - Section 2.2: Experiment 2 details.
 
 ### 3. Reversing Instructions
 - **Procedure**: 
   - Create a dataset of question-answer pairs presented as instructions and examples.
-  - Finetune models on instructions in one order and test generalization to the reverse order.
-  - Use a dataset containing 1100 question-answer pairs, with 1000 pairs having corresponding examples.
+  - Train models on instructions in one order and test on examples in both the same and reversed order.
+  - Use datasets containing 1100 question-answer pairs each, with 1000 pairs having corresponding examples.
 - **What to Record**: 
   - Exact-match accuracy on held-out question-answer pairs.
 - **Correspondence**: 
-  - Figure 6, Section 2.3
+  - Figure 6: Results for Experiment 3.
+  - Section 2.3: Experiment 3 details.
 
 ## Evaluation Details
 
@@ -62,18 +68,19 @@ Please design and execute experiments to investigate this research question. Doc
 
 - **Log-Probability Comparison**: 
   - For each prompt, calculate the log-probability of the correct name and compare it to a random name.
-  - Use statistical tests (t-test and Kolmogorov–Smirnov test) to determine if there is a significant difference.
+  - Use statistical tests (t-test and Kolmogorov–Smirnov test) to determine if there is a significant difference between the probabilities.
 
 ## Implementation Notes
 
 - **Prompt Templates**: 
-  - Use specific templates for generating prompts, such as "Who is <description>?" and "Who is <name>?".
-  - Ensure that paraphrases match the ordering of name and description in the original sentence.
+  - Use specific templates for generating paraphrases and prompts, as detailed in Table 2 and Appendix B.1.
+  - Ensure that paraphrases maintain the original order of name and description.
 
 - **Hyperparameter Tuning**: 
-  - Conduct a hyperparameter sweep to find the optimal learning rate and batch size for finetuning.
-  - Use the best performing hyperparameters to finetune models of different sizes.
+  - Conduct a hyperparameter sweep to find optimal learning rates and batch sizes for finetuning, as detailed in Appendix B.2 and B.4.
+
+- **Data Augmentation**: 
+  - Include paraphrases of each sentence to aid generalization, ensuring they match the original order.
 
 - **Order of Operations**: 
-  - Finetune models on the synthetic dataset before evaluating on real-world knowledge.
-  - Ensure that auxiliary examples are included during finetuning to promote generalization.
+  - Finetune models on the dataset before evaluating on held-out prompts to test generalization capabilities.

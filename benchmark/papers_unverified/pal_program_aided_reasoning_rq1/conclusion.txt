@@ -1,0 +1,1 @@
+Language models that utilize external program execution achieve higher solve rates than those using step-by-step reasoning prompts in symbolic reasoning tasks such as COLORED OBJECTS, PENGUINS, and DATE.

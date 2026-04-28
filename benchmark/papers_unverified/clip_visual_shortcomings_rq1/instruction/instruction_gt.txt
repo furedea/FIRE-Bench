@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How do visual patterns in CLIP-blind pairs affect MLLM performance?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can integrating vision-only self-supervised learning features with multimodal large language models improve their visual grounding capabilities?"
 
 You have access to the following resources:
 
@@ -8,9 +8,16 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- ImageNet-1K: A large-scale dataset for image classification, used to source images for evaluating visual question answering capabilities.
-- LAION-Aesthetic: A dataset containing aesthetic images, used to source images for evaluating visual question answering capabilities.
-- Multimodal Visual Patterns (MMVP): A benchmark constructed using CLIP-blind pairs to evaluate visual abilities of state-of-the-art MLLMs with straightforward questions.  [generate programmatically]
+- ImageNet-1K: A large-scale dataset for image classification, containing 1,000 classes.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("imagenet-1k")
+- LAION-Aesthetic: A dataset of aesthetic images used for training and evaluating visual models.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("laion-aesthetic")
+- Multimodal Visual Patterns (MMVP): A benchmark constructed using CLIP-blind pairs to evaluate visual grounding capabilities of multimodal models.  [generate programmatically]
+- LLaVA Benchmark: A benchmark for evaluating visual instruction tuning in multimodal models.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -22,59 +29,58 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Evaluation of MLLM Performance on CLIP-blind Pairs
-- **Procedure**: 
-  - Use the Multimodal Visual Patterns (MMVP) benchmark, which consists of 150 CLIP-blind image pairs and 300 associated questions.
-  - For each image pair, manually identify visual details overlooked by the CLIP encoder and formulate straightforward questions probing these details.
-  - Evaluate the performance of various MLLMs, including GPT-4V, LLaVA-1.5, InstructBLIP, and others, by posing these questions.
-  - Each question is queried independently to avoid biases from chat histories.
-- **What to Record**: 
-  - Record the accuracy of each model on the MMVP benchmark, noting whether both questions for each image pair are answered correctly.
-  - Collect human performance data for comparison.
-- **Correspondence**: 
-  - This experiment corresponds to Section 2.3 and Figures 3 and 4 in the paper.
+### 1. Evaluating Mixture-of-Features (MoF) Approaches
 
-### 2. Analysis of Systematic Visual Patterns in CLIP-blind Pairs
-- **Procedure**: 
-  - Categorize the questions from the MMVP benchmark into nine visual patterns: Orientation and Direction, Presence of Specific Features, State and Condition, Quantity and Count, Positional and Relational Context, Color and Appearance, Structural and Physical Characteristics, Text, and Viewpoint and Perspective.
-  - Use GPT-4 to assist in categorizing these patterns by analyzing the questions and options.
-  - Evaluate the performance of MLLMs on each visual pattern.
-- **What to Record**: 
-  - Record the accuracy of each model on each visual pattern.
-  - Calculate the Pearson Correlation Coefficient between the performance of CLIP models and MLLMs on these patterns.
-- **Correspondence**: 
-  - This experiment corresponds to Section 3.1 and Figure 6 in the paper.
+#### Procedure
+- **Input Format**: Use images from the MMVP benchmark and LLaVA benchmark datasets.
+- **Prompting Strategy**: For each image, pose straightforward visual questions designed to test visual grounding capabilities. Questions should be simple and unambiguous, such as "Is the dog facing left or right?" or "How many eyes can you see on the animal?"
+- **Number of Samples**: Use the full set of 150 CLIP-blind pairs from the MMVP benchmark, resulting in 300 questions.
+- **Shuffling/Ordering**: Randomize the order of questions to avoid any sequence bias.
+- **Splits to Use**: Use the entire MMVP dataset for evaluation, as it is specifically designed to test visual grounding.
 
-### 3. Mixture-of-Features (MoF) Approach
-- **Procedure**: 
-  - Implement Additive-MoF by linearly mixing CLIP and DINOv2 features in different ratios.
-  - Implement Interleaved-MoF by spatially interleaving visual tokens from both CLIP and DINOv2 models.
-  - Evaluate the visual grounding and instruction-following capabilities of the modified MLLMs using the MMVP benchmark and LLaVA benchmark.
-- **What to Record**: 
-  - Record the performance improvements in visual grounding and any changes in instruction-following capabilities.
-  - Compare the results of Additive-MoF and Interleaved-MoF strategies.
-- **Correspondence**: 
-  - This experiment corresponds to Sections 4.2 and 4.3, and Tables 2 and 3 in the paper.
+#### What to Record
+- **Raw Outputs**: Collect the model's responses to each question.
+- **Extracted Answers**: Determine whether the model's response is correct based on the predefined answer key.
+- **Intermediate Statistics**: Record the proportion of correct answers for each type of visual pattern (e.g., orientation, counting).
+
+#### Correspondence to Paper
+- **Figure/Table/Section**: Results are discussed in Section 4.2 and visualized in Figure 7 and Table 2.
+
+### 2. Interleaved-MoF Evaluation
+
+#### Procedure
+- **Input Format**: Use the same image datasets as in the Additive-MoF evaluation.
+- **Prompting Strategy**: Pose the same set of questions as in the Additive-MoF evaluation.
+- **Number of Samples**: Use the same 150 CLIP-blind pairs from the MMVP benchmark.
+- **Shuffling/Ordering**: Maintain the same random order as in the Additive-MoF evaluation.
+- **Splits to Use**: Use the entire MMVP dataset for consistency.
+
+#### What to Record
+- **Raw Outputs**: Collect the model's responses to each question.
+- **Extracted Answers**: Determine correctness based on the predefined answer key.
+- **Intermediate Statistics**: Record the proportion of correct answers and compare with Additive-MoF results.
+
+#### Correspondence to Paper
+- **Figure/Table/Section**: Results are discussed in Section 4.3 and visualized in Table 3.
 
 ## Evaluation Details
 
-- **Metrics**: 
-  - Accuracy on the MMVP benchmark: A model is considered correct only if it answers both questions in a pair correctly.
-  - Pearson Correlation Coefficient: Calculate the correlation between CLIP model performance and MLLM performance on visual patterns.
-- **Normalization/Pre-processing**: 
-  - Ensure that each question is posed independently to avoid biases from previous interactions.
-- **Aggregation Strategy**: 
-  - Aggregate accuracy per visual pattern and overall accuracy across all patterns.
-  - Compare model performance against human baseline performance.
+### Metric Definitions and Computation
+- **Visual Grounding Accuracy**: Calculate the percentage of correctly answered questions out of the total number of questions posed.
+- **Instruction-Following Ability**: Evaluate using the LLaVA benchmark, measuring the model's ability to follow complex instructions while maintaining visual grounding.
+
+### Normalization and Pre-processing
+- **Model Outputs**: Ensure that outputs are in a consistent format for comparison (e.g., binary choice questions should have responses like "Yes" or "No").
+- **Aggregation Strategy**: Compute per-sample accuracy, then aggregate to obtain per-condition accuracy (e.g., for each visual pattern), and finally compute overall accuracy across all conditions.
 
 ## Implementation Notes
 
-- **Pitfalls**: 
-  - Ensure that the questions are straightforward and unambiguous to avoid misinterpretation by the models.
-  - Be cautious of potential biases introduced by the order of questions or options.
-- **Prompt Templates**: 
-  - Use consistent and clear prompt templates for posing questions to the models.
-- **Order of Operations**: 
-  - First, identify CLIP-blind pairs and formulate questions.
-  - Then, categorize questions into visual patterns and evaluate model performance.
-  - Finally, implement and evaluate the MoF strategies.
+### Key Pitfalls or Caveats
+- **Visual Pattern Sensitivity**: The model's performance may vary significantly across different visual patterns. Ensure that each pattern is adequately represented in the evaluation.
+- **Feature Mixing Ratios**: Carefully control the mixing ratios of CLIP and DINOv2 features to observe the trade-offs between visual grounding and instruction-following.
+
+### Special Prompt Templates
+- **Question Format**: Use clear and concise language for all questions to minimize ambiguity and ensure that the model's responses can be accurately evaluated.
+
+### Order of Operations
+- **Feature Extraction**: First, extract features using both CLIP and DINOv2 encoders. Then, apply the Additive-MoF or Interleaved-MoF strategy before feeding the features into the language model for response generation.

@@ -1,0 +1,1 @@
+Widely used open-source large language models are highly sensitive to subtle changes in prompt formatting in few-shot settings, with performance sometimes varying significantly across the accuracy range. This sensitivity is consistent across different model sizes, few-shot examples, and instruction tuning, and format-specific performance correlates weakly across models.

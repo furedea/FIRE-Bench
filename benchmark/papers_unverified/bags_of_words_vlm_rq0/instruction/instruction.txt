@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current Vision-Language Models understand compositional relationships, attributes, and order information?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current Vision-Language Models (CLIP, BLIP, Flava, X-VLM) understand compositional relationships, attribute binding, and word order in image-caption pairs, evaluated via the Attribution, Relation, and Order benchmarks built on Visual Genome, COCO, and Flickr30k?"
 
 You have access to the following resources:
 
@@ -10,10 +10,18 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Visual Genome Attribution: A dataset to test the understanding of objects' properties in complex natural scenes.  [loader unverified -- locate the data yourself]
-- Visual Genome Relation: A dataset to test relational understanding in complex natural scenes.  [loader unverified -- locate the data yourself]
-- COCO-Order: A dataset to test the models' ability to identify the correct ordering of words in captions.  [loader unverified -- locate the data yourself]
-- Flickr30k-Order: A dataset to test the models' ability to identify the correct ordering of words in captions.  [loader unverified -- locate the data yourself]
+- Visual Genome: A large-scale dataset with images annotated with objects, attributes, and relations.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("visual_genome", "objects")
+- COCO: A dataset containing images with complex scenes and detailed captions.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("coco", "2017")
+- Flickr30k: A dataset with images and captions, used to evaluate order sensitivity in VLMs.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("flickr30k")
 
 Experimental constraints:
 - Do NOT use web search

@@ -1,21 +1,26 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How can we systematically structure and evaluate complicated multimodal tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How effectively do current large multimodal models (OpenFlamingo, LLaVA, MiniGPT-4, Otter, InstructBLIP) integrate core vision-language capabilities (recognition, OCR, knowledge, language generation, spatial awareness, math) across 16 emergent tasks?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 via API
-- Load with HuggingFace: openai/whisper-large
-- Load with HuggingFace: openai/clip-vit-large-patch14
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- MM-Vet: A benchmark dataset designed to evaluate large multimodal models on complex tasks requiring integration of core vision-language capabilities.  [generate programmatically]
-- COCO: A dataset containing images and their corresponding captions, used for image recognition and captioning tasks.  [loader unverified -- locate the data yourself]
-- VQA v2: A dataset for visual question answering, containing images and questions about the content of the images.  [loader unverified -- locate the data yourself]
-- Text VQA: A dataset for visual question answering focusing on text recognition in images.
+- COCO: A dataset containing images and their corresponding captions, used for image recognition and language generation tasks.
   Loading code:
     from datasets import load_dataset
-    dataset = load_dataset("textvqa", split="validation")
+    dataset = load_dataset("coco")
+- VQA v2: A dataset for visual question answering, requiring models to answer questions based on image content.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("vqa_v2")
+- Text VQA: A dataset for visual question answering that involves reading and reasoning over text in images.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("text_vqa")
+- MM-Vet: A benchmark designed to evaluate large multimodal models on tasks requiring integration of vision-language capabilities.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search
@@ -27,59 +32,56 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Evaluation of Core Vision-Language Capabilities
+### 1. Evaluation of LMMs on MM-Vet Benchmark for Integrated Capabilities
 - **Procedure**: 
-  - Use the MM-Vet dataset, which includes 200 images and 218 questions, each requiring one or more core vision-language (VL) capabilities.
-  - For each image-question pair, determine the required capabilities: recognition, OCR, knowledge, language generation, spatial awareness, and math.
-  - Input format: Provide the image and question to the model.
-  - Prompting strategy: Use few-shot examples to guide the model's responses, especially for open-ended questions.
-  - Number of samples: Evaluate all 218 samples.
-  - No specific shuffling or ordering is required as each sample is independent.
+  - Use the MM-Vet dataset, which consists of 200 images and 218 questions, each requiring one or more core vision-language capabilities to answer.
+  - For each model (OpenFlamingo, LLaVA, MiniGPT-4, Otter, InstructBLIP), evaluate across 16 tasks that require integration of core capabilities: recognition, OCR, knowledge, language generation, spatial awareness, and math.
+  - Input format: Each sample consists of an image and a question. The model's task is to generate an open-ended text response.
+  - Prompting strategy: Use a few-shot prompt with examples of both short and long open-ended answers to guide the model's response generation.
+  - Number of samples: Evaluate all 218 questions in the MM-Vet dataset.
+  - No specific shuffling or ordering of conditions is required.
 - **What to Record**: 
-  - Raw outputs from the model for each question.
+  - Raw outputs from each model for each question.
   - Extracted answers and correctness scores from the LLM-based evaluator.
-  - Intermediate statistics on capability performance.
-- **Correspondence**: 
-  - Results are detailed in Table 2 and Table 3, showing performance across each capability and their integrations.
-
-### 2. LLM-Based Evaluation of Open-Ended Outputs
-- **Procedure**: 
-  - Use GPT-4 with a few-shot prompt to evaluate model outputs.
-  - The prompt includes examples with both short and long answers, covering fully correct, partially correct, and incorrect responses.
-  - For each model output, fill the prompt with the question, ground truth, and model prediction.
-  - Conduct the evaluation five times per sample to account for variance in GPT-4 outputs.
-- **What to Record**: 
-  - Correctness scores ranging from 0 to 1 for each sample.
-  - Average scores for each capability and capability integration.
-  - Variance in scores across multiple evaluations.
-- **Correspondence**: 
-  - Evaluation methodology and results are discussed in Section 3.2 and Table 1.
+  - Intermediate statistics such as per-capability scores and overall scores.
+- **Correspondence to a Figure / Table / Section**: 
+  - Results are detailed in Table 2 and Table 3, with further analysis in Section 4.2.
 
 ## Evaluation Details
 
-- **Metric Definitions**: 
-  - Correctness score: A score between 0.0 (totally wrong) and 1.0 (totally right), with intermediate values for partial correctness.
-  - Overall score: Calculated as the average of individual sample scores, scaled to a percentage.
-  - Capability-specific scores: Calculated similarly, but only for samples requiring a specific capability or integration.
+- **Metric Definitions and Computation**:
+  - Use an LLM-based evaluator (GPT-4) to score model outputs. The evaluator assigns a score between 0 and 1 based on the correctness and completeness of the response.
+  - The scoring prompt includes examples with <AND> and <OR> conditions to handle multiple correct elements in the ground truth.
+  - Formula for total score: 
+    \[
+    S = \frac{\sum_{i=1}^N s_i}{N} \times 100\%
+    \]
+    where \(s_i\) is the score for sample \(i\), and \(N\) is the total number of samples.
+  - Formula for capability-specific score:
+    \[
+    S_c = \frac{\sum s_i}{N_c} \times 100\%, \quad i \in C
+    \]
+    where \(C\) is the set of samples requiring a specific capability, and \(N_c\) is the number of such samples.
 
-- **Normalization and Pre-processing**: 
-  - Model outputs are directly compared to ground truths using the LLM-based evaluator.
-  - Use of <AND> and <OR> in ground truths to define conditions for full correctness.
+- **Normalization and Pre-processing**:
+  - Normalize model outputs by ensuring they are in a text format suitable for the LLM-based evaluator.
+  - Pre-process outputs to match the expected answer style (e.g., short or long form) as per the few-shot examples in the prompt.
 
-- **Aggregation Strategy**: 
-  - Per-sample scores are averaged to obtain per-capability scores.
-  - These are further averaged to provide an overall performance score for each model.
+- **Aggregation Strategy**:
+  - Aggregate scores per sample to obtain per-capability scores.
+  - Further aggregate per-capability scores to derive an overall score for each model.
 
 ## Implementation Notes
 
-- **Prompt Templates**: 
-  - The few-shot prompt for GPT-4 evaluation is crucial and includes examples with varying answer styles and correctness levels.
-  - Ensure the prompt is filled accurately with the question, ground truth, and model prediction.
+- **Key Pitfalls or Caveats**:
+  - The paper notes that outputs of GPT-4 can vary even with a temperature setting of 0, so each model's outputs should be evaluated multiple times (5 times) to account for variance.
+  - Ensure that the LLM-based evaluator is correctly interpreting the <AND> and <OR> conditions in the ground truth.
 
-- **Order of Operations**: 
-  - Evaluate each sample independently.
-  - Use the LLM-based evaluator consistently across all samples to maintain uniformity in scoring.
+- **Special Prompt Templates**:
+  - Use a few-shot prompt template that includes examples with both short and long answers, as well as examples that are fully correct, partially correct, and incorrect.
+  - The prompt should guide the LLM-based evaluator to generate a soft grading score from 0 to 1.
 
-- **Pitfalls and Caveats**: 
-  - Variance in GPT-4 outputs even with temperature set to 0; hence, multiple evaluations are necessary.
-  - Ensure that the evaluation examples in the prompt cover the diversity of expected outputs to avoid bias in scoring.
+- **Order of Operations**:
+  - First, generate model outputs for each sample.
+  - Then, evaluate these outputs using the LLM-based evaluator.
+  - Finally, compute and aggregate scores as per the defined formulas.

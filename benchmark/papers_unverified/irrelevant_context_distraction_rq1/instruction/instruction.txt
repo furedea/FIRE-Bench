@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: What strategies can mitigate the distractibility of large language models?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: What strategies can mitigate the distractibility of large language models when irrelevant context is present in problem descriptions?"
 
 You have access to the following resources:
 

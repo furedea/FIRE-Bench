@@ -1,20 +1,17 @@
 task_id: perception_test_video_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: How well do current multimodal models perform on the Perception
-  Test benchmark?'
+research_question: "RQ1: How well do pre-trained multimodal models perform on the Perception Test across different skill areas (Memory, Abstraction, Physics, Semantics) and reasoning types (descriptive, explanatory, predictive, counterfactual) using real-world videos?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: Perception Test
-  source: unknown
-  description: A benchmark formed of purposefully designed, filmed, and annotated
-    real-world videos to assess the capabilities of multimodal perception models across
-    different skill areas and types of reasoning.
+  - name: "Perception Test"
+    source: unknown
+    description: "A benchmark of 11.6k real-world videos designed to evaluate perception and reasoning skills of multimodal models, annotated with multiple-choice and grounded video question-answers, object and point tracks, temporal action and sound segments."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

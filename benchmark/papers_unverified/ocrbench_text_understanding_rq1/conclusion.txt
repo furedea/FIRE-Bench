@@ -1,0 +1,1 @@
+Large Multimodal Models with higher input resolutions perform better in Scene Text-Centric Visual Question Answering tasks, but they still face challenges compared to domain-specific methods.

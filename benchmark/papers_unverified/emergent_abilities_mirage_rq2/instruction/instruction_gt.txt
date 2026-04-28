@@ -1,12 +1,21 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ3: Do emergent abilities appear predominantly with specific metrics rather than task-model family pairs?"
+You are a research agent. Conduct an empirical study answering the question: "RQ3: Can emergent abilities, defined as unexpected capabilities that arise in machine learning models, be induced in vision tasks using shallow nonlinear autoencoders on the CIFAR100 dataset and autoregressive Transformers (models predicting future data points based on past ones) on the Omniglot dataset by selecting specific evaluation metrics?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- BIG-Bench: A benchmark used to analyze task-metric-model family triplets for emergent abilities.  [loader unverified -- locate the data yourself]
+- CIFAR100: A dataset of 100 classes of natural images used for training and evaluating image classification models.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cifar100")
+- Omniglot: A dataset of handwritten characters from various alphabets used for training and evaluating image classification models.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("omniglot")
 
 Analytical tools / techniques available:
-- Meta-analysis
+- PyTorch
+- NumPy
+- Matplotlib
 
 Study constraints:
 - Do NOT use web search
@@ -25,56 +34,46 @@ Design the protocol yourself. Run the full study end-to-end and report results t
 
 ## Experimental Design
 
-### 1. Metric Influence on Emergent Abilities
+### 1. Inducing Emergent Reconstruction Ability in Shallow Nonlinear Autoencoders on CIFAR100
 - **Procedure**: 
-  - Analyze task-metric-model family triplets from the BIG-Bench dataset.
-  - Focus on metrics such as Multiple Choice Grade and Exact String Match.
-  - For each triplet, calculate the emergence score using the formula provided in the paper.
-  - Compare the emergence scores across different metrics to identify patterns.
+  - Use shallow nonlinear autoencoders with a single hidden layer.
+  - Train these autoencoders on the CIFAR100 dataset.
+  - Define a discontinuous metric, `Reconstructionc`, which measures the network's ability to reconstruct a dataset as the average number of test data with squared reconstruction error below a threshold `c`.
+  - Vary the number of bottleneck units in the autoencoder to observe changes in reconstruction ability.
 - **What to Record**: 
-  - Emergence scores for each task-metric-model family triplet.
-  - Metrics that show the highest emergence scores.
+  - Record the mean squared reconstruction error for each model configuration.
+  - Record the `Reconstructionc` metric for different values of `c`.
 - **Correspondence**: 
-  - This experiment corresponds to Figure 5 and Section 4 of the paper.
+  - This experiment corresponds to Figure 7 in the paper, which demonstrates the induced emergent reconstruction ability.
 
-### 2. Metric Change Impact on Emergent Abilities
+### 2. Inducing Emergent Classification Ability in Autoregressive Transformers on Omniglot
 - **Procedure**: 
-  - Select tasks where the LaMDA model family shows emergent abilities using the Multiple Choice Grade metric.
-  - Re-evaluate these tasks using the Brier Score metric.
-  - Compare the performance and emergence scores before and after the metric change.
+  - Use autoregressive Transformers to classify Omniglot handwritten characters.
+  - Embed Omniglot images using convolutional layers, then feed sequences of embedded image-image class label pairs into decoder-only transformers.
+  - Measure image classification performance using subset accuracy: 1 if all images in a sequence of length `L` are classified correctly, 0 otherwise.
+  - Vary the sequence length `L` to observe changes in classification ability.
 - **What to Record**: 
-  - Performance scores under both metrics.
-  - Changes in emergence scores after switching metrics.
+  - Record the accuracy for each sequence length `L`.
+  - Record the subset accuracy for different model configurations.
 - **Correspondence**: 
-  - This experiment corresponds to Figure 6 and Section 4 of the paper.
+  - This experiment corresponds to Figure 8 in the paper, which shows the induced emergent classification ability.
 
 ## Evaluation Details
 
-- **Emergence Score Calculation**: 
-  - Use the formula provided in the paper:
-    \[
-    \text{Emergence Score} = \text{sign}(\text{arg max}_i y_i - \text{arg min}_i y_i)(\text{max}_i y_i - \text{min}_i y_i) / \sqrt{\text{Median}(\{(y_i - y_{i-1})^2\}_i)}
-    \]
-  - Here, \( y_i \) denotes model performance at model scales \( x_i \).
+- **Reconstructionc Metric**: 
+  - Defined as `Reconstructionc({xn}Nn=1) = (1/N) * Σ I[||xn - ˆxn||^2 < c]`, where `I(·)` is an indicator function and `ˆxn` is the autoencoder's reconstruction of `xn`.
+  - Choose specific thresholds `c` to evaluate the emergent ability.
 
-- **Normalization and Pre-processing**:
-  - Ensure all performance scores are normalized to a common scale before calculating emergence scores.
-  - For metrics like Brier Score, ensure predictions are converted to probabilities if necessary.
-
-- **Aggregation Strategy**:
-  - Calculate emergence scores per task-metric-model family triplet.
-  - Aggregate scores to identify metrics with the highest frequency of emergent abilities.
+- **Subset Accuracy**: 
+  - Defined as 1 if all `L` images in a sequence are classified correctly, 0 otherwise.
+  - This metric is used to evaluate the classification ability of autoregressive Transformers on the Omniglot dataset.
 
 ## Implementation Notes
 
-- **Pitfalls and Caveats**:
-  - Ensure that the resolution of the dataset is sufficient to accurately measure performance changes, especially for smaller models.
-  - Be cautious of overfitting when interpreting emergence scores, as they can be sensitive to the choice of metric.
+- **Pitfalls**: 
+  - Ensure that the choice of metric does not inadvertently introduce biases that could be mistaken for emergent abilities.
+  - Carefully select the threshold `c` in the `Reconstructionc` metric to avoid arbitrary results.
 
-- **Special Prompt Templates**:
-  - When evaluating tasks with different metrics, ensure that the output format aligns with the requirements of each metric (e.g., exact string match requires precise output formatting).
-
-- **Order of Operations**:
-  - First, calculate performance scores using the original metric.
-  - Then, switch to the alternative metric and recalculate scores.
-  - Finally, compute and compare emergence scores across metrics.
+- **Order of Operations**: 
+  - For both experiments, ensure that the models are evaluated using the defined metrics after training is complete.
+  - Adjust the number of bottleneck units or sequence lengths systematically to observe the effects on the emergent abilities.

@@ -1,26 +1,20 @@
-You are a research agent. Conduct research about the question: "Can models generalize to tasks in languages they have never intentionally seen?"
+You are a research agent. Conduct research about the question: "Can models finetuned on multilingual datasets with English prompts generalize to tasks in languages not intentionally seen during pretraining or finetuning?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- BLOOMZ and mT0: BLOOMZ and mT0 are finetuned variants of the pretrained multilingual BLOOM and mT5 model families. They are designed to improve crosslingual generalization by finetuning on English tasks with English prompts, allowing for task generalization to non-English languages that appear only in the pretraining corpus. The models are further enhanced by finetuning on multilingual tasks with English and machine-translated prompts.
-  - Component: Multitask finetuning on English and multilingual tasks
-  - Component: Use of English and machine-translated prompts
-  - Component: Evaluation on zero-shot task generalization in unseen languages
+- BLOOMZ and mT0: BLOOMZ and mT0 are finetuned variants of the BLOOM and mT5 model families, respectively. They are designed to enhance crosslingual generalization by finetuning on multilingual datasets with English prompts. This approach allows the models to generalize to tasks in languages that were not intentionally seen during pretraining or finetuning.
+  - Component: Multitask finetuning on multilingual datasets with English prompts
+  - Component: Evaluation on tasks in languages not intentionally seen during pretraining or finetuning
 - Baseline for comparison: BLOOM
 - Baseline for comparison: mT5
-- Baseline for comparison: XGLM
 - Reference hint: https://github.com/bigscience-workshop/xmtf
 
 Datasets for training and evaluation:
-- XNLI: A dataset for evaluating cross-lingual sentence representations.
+- xP3: A composite of supervised datasets in 46 languages with English and machine-translated prompts.
   Loading code:
     from datasets import load_dataset
-    dataset = load_dataset("xnli")
-- XCOPA: A multilingual dataset for causal commonsense reasoning.
-  Loading code:
-    from datasets import load_dataset
-    dataset = load_dataset("xcopa")
+    dataset = load_dataset("bigscience/xP3")
 
 Experimental constraints:
 - Do NOT use web search

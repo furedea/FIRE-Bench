@@ -1,0 +1,1 @@
+LLMs perform with varying success as agents in code-grounded environments, with commercial models generally outperforming open-source ones. They struggle with complex SQL tasks, often failing due to syntax errors, and show limited ability to navigate and query large knowledge graphs effectively.

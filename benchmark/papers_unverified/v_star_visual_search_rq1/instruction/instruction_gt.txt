@@ -1,32 +1,24 @@
-You are a research agent. Conduct research about the question: "RQ2: How effective is the V∗Bench benchmark in evaluating MLLMs' visual grounding capabilities?"
+You are a research agent. Conduct research about the question: "RQ2: What is the effectiveness of a visual search algorithm in reducing search length and improving search efficiency when locating target objects within high-resolution images, compared to random and sequential search strategies?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- SEAL (Show, sEArch, and TelL): SEAL is a meta-architecture for multimodal large language models (MLLMs) that integrates an LLM-guided visual search mechanism, V∗, to enhance visual grounding capabilities. It uses a visual working memory to store and process visual information, allowing the model to focus on specific visual elements in high-resolution images. This approach improves the model's ability to reason about and search for needed visual information, addressing limitations in current MLLMs that rely on pre-trained vision encoders.
-  - Component: LLM-guided visual search mechanism (V∗)
-  - Component: Visual Working Memory (VWM)
-  - Component: Integration with MLLMs like LLaVA
-- Baseline for comparison: GPT-4V
-- Baseline for comparison: Gemini Pro
-- Baseline for comparison: LLaVA-1.5
+- V∗ Visual Search Algorithm: V∗ is an LLM-guided visual search mechanism designed to enhance multimodal large language models (MLLMs) by efficiently locating target objects within high-resolution images. It leverages the world knowledge of LLMs to perform informed searches, building a visual working memory (VWM) that aids in precise visual grounding and reasoning.
+  - Component: LLM-guided visual search process using contextual cues and common sense knowledge
+  - Component: Visual Working Memory (VWM) to store and process visual information
+  - Component: Integration with MLLMs to improve visual grounding and reasoning
+- Baseline for comparison: Random Search Strategy
+- Baseline for comparison: Sequential Search Strategy
 
 Datasets for training and evaluation:
-- V∗Bench: A benchmark designed to evaluate MLLMs' ability to process high-resolution images and focus on visual details, consisting of tasks like attribute recognition and spatial relationship reasoning.  [generate programmatically]
+- V∗Bench: A benchmark designed to evaluate MLLMs' ability to process high-resolution images and focus on visual details, specifically for visual grounding tasks.  [generate programmatically]
   Generation code:
-    # Example code snippet for generating synthetic data
     import numpy as np
-    from PIL import Image
     
-    def generate_synthetic_image():
-        # Create a high-resolution synthetic image
-        width, height = 2246, 1582
-        image = np.random.randint(0, 255, (height, width, 3), dtype=np.uint8)
-        return Image.fromarray(image)
-    
-    def load_v_star_bench():
-        # Generate a list of synthetic images for the benchmark
-        return [generate_synthetic_image() for _ in range(191)]
+    def generate_v_star_bench():
+        # Synthetic generation of high-resolution images with target objects
+        images = np.random.rand(191, 2246, 1582, 3)  # Example shape
+        return images
 
 Experimental constraints:
 - Do NOT use web search
@@ -46,33 +38,48 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Evaluation of MLLMs on V∗Bench
+### 1. V∗ Search Algorithm Evaluation
 - **Procedure**: 
-  - Use the V∗Bench dataset, which consists of 191 high-resolution images with tasks focused on attribute recognition (115 samples) and spatial relationship reasoning (76 samples).
-  - For each image, present the model with a question related to either an attribute of an object or the spatial relationship between objects.
-  - Implement the SEAL framework with the V∗ visual search mechanism and compare it against baseline models: GPT-4V, Gemini Pro, and LLaVA-1.5.
-  - Use a multiple-choice format for evaluation, with four options for open-ended questions and two for binary questions.
+  - Implement the V∗ visual search algorithm as described in the paper.
+  - Use the V∗Bench dataset, which consists of 191 high-resolution images with an average resolution of 2246×1582 pixels.
+  - For each image, perform a visual search to locate target objects using the V∗ algorithm.
+  - Compare the search length and efficiency of V∗ against random and sequential search strategies.
+  - Random Search Strategy: Randomly select sub-images to explore.
+  - Sequential Search Strategy: Explore sub-images in a reverse raster scan order.
+  - Use both breadth-first search (BFS) and depth-first search (DFS) settings for baselines.
 - **What to Record**: 
-  - Record the accuracy of each model on both attribute recognition and spatial relationship reasoning tasks.
-  - Collect raw outputs from the models for further analysis.
+  - Record the search length, defined as the number of search steps from the initial image to the patch where the target is located.
+  - Record the success rate of locating the target objects.
 - **Correspondence**: 
-  - Results are presented in Table 1 and discussed in Section 5.1 of the paper.
+  - Figure 7: Visualizations of the search process.
+  - Table 3: Comparison of search lengths across different strategies.
+  - Section 5.3: Detailed analysis of search strategy performance.
 
 ## Evaluation Details
 
-- **Metrics**: 
-  - Accuracy is calculated as the percentage of correctly answered questions out of the total number of questions for each task (attribute recognition and spatial relationship reasoning).
-  - For multiple-choice questions, the model's prediction is considered correct if it matches the correct option.
-- **Normalization and Pre-processing**: 
-  - Ensure that all model outputs are in a consistent format for comparison. This includes converting open-ended responses to match the multiple-choice options.
-- **Aggregation Strategy**: 
-  - Calculate per-sample accuracy, then aggregate to obtain per-task accuracy (attribute recognition and spatial relationship reasoning), and finally compute the overall accuracy across all tasks.
+- **Metric Definitions**:
+  - **Search Length**: The number of steps taken to locate the target object from the initial image. A lower search length indicates higher efficiency.
+  - **Success Rate**: The percentage of target objects successfully located within the image.
+
+- **Normalization and Pre-processing**:
+  - Ensure all images are processed to the same resolution as specified in the V∗Bench dataset.
+  - Normalize the search length by the total number of possible search steps to account for varying image sizes.
+
+- **Aggregation Strategy**:
+  - Calculate the average search length and success rate per condition (V∗, Random, Sequential) across all images.
+  - Compare the aggregated results to determine the relative efficiency of each search strategy.
 
 ## Implementation Notes
 
-- **Prompt Templates**: 
-  - Use specific prompt templates for generating questions about attributes and spatial relationships, ensuring that the questions are detailed enough to require precise visual grounding.
-- **Output Parsing**: 
-  - Implement logic to parse model outputs and match them to the predefined multiple-choice options.
-- **Order of Operations**: 
-  - Ensure that the visual search mechanism is only activated when the initial global visual features are insufficient for answering the question, as described in Algorithm 1 of the paper.
+- **Pitfalls and Caveats**:
+  - Ensure the visual search model is correctly integrated with the MLLM to utilize the visual working memory (VWM) effectively.
+  - Be cautious of the threshold settings for confidence scores when determining if a target has been located.
+
+- **Special Prompt Templates**:
+  - Use the fixed-format instruction "Please locate the [object] in the image." for the MLLM to generate search cues.
+  - Ensure the search cue heatmap is correctly interpreted to guide the search process.
+
+- **Order of Operations**:
+  - Initialize the VWM before starting the search process.
+  - Perform the search iteratively, updating the VWM with new information as targets are located.
+  - Use the VWM to refine the final response from the VQA LLM.

@@ -1,0 +1,1 @@
+LLMs can correct reasoning errors in CoT traces when provided with oracle mistake location information, improving downstream task performance across tasks like word sorting, tracking shuffled objects, logical deduction, multi-step arithmetic, and Dyck languages.

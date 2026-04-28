@@ -1,0 +1,1 @@
+Long-Context Language Models (LCLMs) perform comparably to specialized models in text, visual, and audio retrieval tasks at a 128k context length but degrade with larger contexts. Gemini 1.5 Pro outperforms CLIP in visual retrieval and performs comparably to PaLM 2 DE in audio retrieval, with notable performance in Hindi.

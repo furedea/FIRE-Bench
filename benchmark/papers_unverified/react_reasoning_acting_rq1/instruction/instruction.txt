@@ -1,28 +1,20 @@
-You are a research agent. Conduct research about the question: "RQ2: How does the ReAct approach perform on interactive decision-making tasks compared to existing methods?"
+You are a research agent. Conduct research about the question: "RQ2: How does performance on interactive decision-making tasks, such as ALFWorld for text-based interactions and WebShop for real-world web interactions, vary when evaluated using metrics like Success Rate and Score?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- ReAct: ReAct is a novel approach that integrates reasoning and acting capabilities in large language models (LLMs) to improve performance on interactive decision-making tasks. It prompts LLMs to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for dynamic reasoning and interaction with external environments to gather additional information.
-  - Component: Interleaved generation of reasoning traces and actions
-  - Component: Interaction with external environments for information gathering
-  - Component: Use of large language models like PaLM-540B for few-shot in-context learning
-- Baseline for comparison: Act
-- Baseline for comparison: BUTLER
-- Baseline for comparison: IL
-- Baseline for comparison: IL+RL
+- ReAct: ReAct is a novel approach that integrates reasoning and acting in large language models to enhance their performance in diverse tasks. It prompts language models to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for greater synergy between reasoning and acting. This approach helps the model induce, track, and update action plans, handle exceptions, and interact with external sources for additional information.
+  - Component: Interleaved generation of reasoning traces and task-specific actions
+  - Component: Integration with external environments for information retrieval
+  - Component: Use of large language models like PaLM-540B for few-shot prompting
+- Baseline for comparison: Act-only
+- Baseline for comparison: Imitation Learning
+- Baseline for comparison: Reinforcement Learning
+- Reference hint: https://react-lm.github.io/
 
 Datasets for training and evaluation:
-- ALFWorld: A synthetic text-based game designed to align with the embodied ALFRED benchmark, requiring agents to achieve high-level goals by navigating and interacting with a simulated household.
-  GitHub repo: https://github.com/alfworld/alfworld
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/alfworld/alfworld.git
-- WebShop: An online shopping website environment with real-world products and human instructions, requiring agents to purchase products based on user instructions through web interactions.
-  GitHub repo: https://github.com/princeton-nlp/WebShop
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/princeton-nlp/WebShop.git
+- ALFWorld: A synthetic text-based game designed to align with the embodied ALFRED benchmark, requiring navigation and interaction in a simulated household.  [loader unverified -- locate the data yourself]
+- WebShop: An online shopping website environment with real-world products and human instructions, requiring agents to purchase products based on user instructions through web interactions.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

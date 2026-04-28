@@ -1,26 +1,20 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ1: How does task probability affect the performance of LLMs?"
+You are a research agent. Conduct an empirical study answering the question: "RQ1: How does the frequency of tasks in training data affect the performance of large language models (GPT-3.5 and GPT-4) on tasks like shift ciphers, Pig Latin, acronyms, linear functions, and sorting?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- C4 corpus: A large-scale dataset used to analyze the frequency of shift ciphers and sorting tasks in Internet text.
+- C4 corpus: A large-scale dataset of web-crawled text used to analyze the frequency of shift ciphers and sorting tasks.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('allenai/c4')
-- Pile corpus: A dataset used to analyze the frequency of Pig Latin variants in Internet text.
-  GitHub repo: https://github.com/EleutherAI/the-pile
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/EleutherAI/the-pile.git
+    c4 = load_dataset("allenai/c4", split='train')
+- Pile dataset: A diverse dataset of text used to analyze the frequency of Pig Latin variants.
+  Loading code:
+    from datasets import load_dataset
+    pile = load_dataset("EleutherAI/pile", split='train')
 
 Analytical tools / techniques available:
-- NLTK
-- RoBERTa
-- GPT-2
-- R
-- ggplot2
-- arm
-- multcomp
+- GPT-2 for probability estimation
+- Logistic regression for statistical analysis
 
 Study constraints:
 - Do NOT use web search

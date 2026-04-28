@@ -1,19 +1,43 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How can the performance of LLM agents be improved?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: How do LLMs perform as agents in web-grounded environments, specifically in web shopping and web browsing tasks?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 and claude-3 and gpt-3.5-turbo and text-davinci-003 and claude-instant and chat-bison-001 via API
+- gpt-4 and claude-3 and glm-4 and claude-2 and gpt-3.5-turbo and text-davinci-003 and claude-instant and chat-bison-001 and text-davinci-002 via API
 - Load with HuggingFace: meta-llama/Llama-2-70b
 - Load with HuggingFace: meta-llama/Llama-2-13b
 - Load with HuggingFace: meta-llama/Llama-2-7b
-- Load with HuggingFace: meta-llama/codellama-34b
-- Load with HuggingFace: meta-llama/codellama-13b
-- Load with HuggingFace: meta-llama/codellama-7b
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-13B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-34B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-70B-Instruct
+- Load with HuggingFace: openchat/openchat-13b
+- Load with HuggingFace: wizardlm/wizardlm-30b
+- Load with HuggingFace: wizardlm/wizardlm-13b
+- Load with HuggingFace: codellama/codellama-34b
+- Load with HuggingFace: codellama/codellama-13b
+- Load with HuggingFace: codellama/codellama-7b
+- Load with HuggingFace: guanaco/guanaco-65b
+- Load with HuggingFace: guanaco/guanaco-33b
+- Load with HuggingFace: vicuna/vicuna-33b
+- Load with HuggingFace: vicuna/vicuna-13b
+- Load with HuggingFace: vicuna/vicuna-7b
+- Load with HuggingFace: koala/koala-13b
+- Load with HuggingFace: codegeex2/codegeex2-6b
+- Load with HuggingFace: dolly/dolly-12b
+- Load with HuggingFace: chatglm/chatglm-6b
+- Load with HuggingFace: oasst/oasst-12b
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- AGENTBENCH: A multi-dimensional benchmark consisting of 8 distinct environments to assess LLM-as-Agent’s reasoning and decision-making abilities.  [loader unverified -- locate the data yourself]
+- WebShop: A simulated online shopping environment for evaluating language agents.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("yao/webshop")
+- Mind2Web: A benchmark for developing and assessing web agents capable of executing tasks across various website domains.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("deng/mind2web")
 
 Experimental constraints:
 - Do NOT use web search
@@ -25,46 +49,68 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Code-Grounded Environments
+### 1. Web Shopping Task
 - **Procedure**: 
-  - **Operating System (OS)**: Evaluate LLMs in a genuine interactive bash environment using Ubuntu Docker. Tasks include executing bash commands to solve specific questions or perform operations. Use a success rate (SR) as the evaluation metric.
-  - **Database (DB)**: Evaluate LLMs on authentic SQL interfaces. Tasks involve executing SQL queries to retrieve or modify data. Use SR as the main evaluation metric.
-  - **Knowledge Graph (KG)**: Evaluate decision-making abilities using KG-querying tools. Tasks involve querying a knowledge base to answer questions. Use F1 score as the metric.
-- **What to Record**: Record the success rate for OS and DB tasks, and F1 score for KG tasks.
-- **Correspondence**: Section 3.1, Appendix B-D.
+  - Use the WebShop dataset to simulate an online shopping environment.
+  - The task involves using search and click actions to find and purchase items based on given instructions.
+  - Each instruction specifies desired product attributes such as type, size, and price.
+  - The agent interacts with a simulated webpage, receiving text observations and a list of clickable actions.
+  - The agent can perform search actions with keywords and click actions on available buttons.
+  - The interaction continues until the agent clicks "buy now" or the round limit is reached.
+- **What to Record**: 
+  - Record the sequence of actions taken by the agent.
+  - Capture the final product attributes and compare them with the desired attributes.
+  - Calculate the reward based on attribute matching and text similarity.
+- **Correspondence**: 
+  - Figure 4g, Table 2, Section 3.3
 
-### 2. Game-Grounded Environments
+### 2. Web Browsing Task
 - **Procedure**: 
-  - **Digital Card Game (DCG)**: Use Aquawar framework to simulate a card game. Evaluate LLMs' strategic decision-making abilities. Use win rate as the evaluation metric.
-  - **Lateral Thinking Puzzles (LTP)**: Evaluate LLMs' lateral reasoning abilities by solving riddles. Use game progress as the main metric.
-  - **House Holding (HH)**: Evaluate LLMs' ability to accomplish tasks in a simulated household environment. Use SR as the evaluation metric.
-- **What to Record**: Record win rate for DCG, game progress for LTP, and SR for HH.
-- **Correspondence**: Section 3.2, Appendix E-G.
-
-### 3. Web-Grounded Environments
-- **Procedure**: 
-  - **Web Shopping (WS)**: Evaluate LLMs' ability to navigate and make decisions in a simulated online shopping environment. Use a reward function as the metric.
-  - **Web Browsing (WB)**: Evaluate LLMs' ability to perform tasks in a general web environment. Use step success rate as the main metric.
-- **What to Record**: Record the reward for WS and step success rate for WB.
-- **Correspondence**: Section 3.3, Appendix H-I.
+  - Use the Mind2Web dataset to evaluate LLMs in a general web browsing environment.
+  - The task involves executing high-level user instructions by interacting with HTML elements on a webpage.
+  - The agent receives observations of the webpage's HTML and a history of previous actions.
+  - The agent selects elements and performs actions such as Click, Type, and Select Options.
+  - Use a small language model to rank HTML elements and provide top-k candidates for the agent to choose from.
+- **What to Record**: 
+  - Record the sequence of actions and the elements interacted with.
+  - Measure the accuracy of element selection and action execution.
+  - Calculate the Step Success Rate for each action step.
+- **Correspondence**: 
+  - Figure 4h, Table 2, Section 3.3
 
 ## Evaluation Details
 
-### Code-Grounded Environments
-- **OS and DB**: Use success rate (SR) as the metric. For OS, check if the final state matches the expected outcome. For DB, compare the agent's answer with the standard text answer or table hash.
-- **KG**: Use F1 score to compare predicted answers with gold standard answers. Also, use Exact Match based on the predicted and gold answer sets.
+### Web Shopping Task
+- **Metric Definition**: 
+  - Reward is calculated as a weighted sum of attribute matches and text similarity.
+  - Formula: 
+    \[
+    \text{Reward} = \frac{|U_{\text{att}} \cap Y_{\text{att}}| + |U_{\text{opt}} \cap Y_{\text{opt}}| + I[y_{\text{price}} \leq u_{\text{price}}]}{|U_{\text{att}}| + |U_{\text{opt}}| + 1} \times r_{\text{type}}
+    \]
+  - \( r_{\text{type}} \) is determined by text match thresholds.
+- **Normalization**: 
+  - Normalize product attributes and prices before comparison.
+- **Aggregation Strategy**: 
+  - Calculate reward per sample and average across all samples for overall performance.
 
-### Game-Grounded Environments
-- **DCG**: Calculate win rate as the number of games won by the LLM divided by the total number of games played.
-- **LTP**: Use game progress to measure how many key points of the truth are reached by the agent.
-- **HH**: Use SR to measure the number of tasks successfully completed by the model divided by the total number of tasks.
-
-### Web-Grounded Environments
-- **WS**: Use a reward function that maps the similarity of expected and actual product attributes to a number between 0 and 1.
-- **WB**: Use step success rate to evaluate the correctness of each action step compared to reference actions.
+### Web Browsing Task
+- **Metric Definition**: 
+  - Step Success Rate is the percentage of correctly executed actions at each step.
+  - Element Accuracy measures the correctness of the selected HTML element.
+  - Action F1 evaluates the token-level match for operations.
+- **Normalization**: 
+  - Normalize HTML element attributes for consistent comparison.
+- **Aggregation Strategy**: 
+  - Calculate Step Success Rate per task and average across all tasks for overall performance.
 
 ## Implementation Notes
 
-- **Prompt Templates**: Use specific prompt templates for each environment to guide the LLMs in generating appropriate responses. For example, use CoT prompting for KG tasks and structured prompts for DB tasks.
-- **Output Parsing**: Implement logic to parse LLM outputs and extract relevant actions or answers. For DB tasks, ensure SQL statements are correctly formatted.
-- **Order of Operations**: Ensure that the sequence of actions in interactive environments follows the logical flow required to complete tasks. For example, in HH tasks, actions should follow the plan of finding, cleaning, and placing objects.
+- **Prompt Templates**: 
+  - Use specific prompt templates for search and click actions in the WebShop task.
+  - For Mind2Web, use CoT prompting with multi-choice questions for element selection.
+- **Output Parsing**: 
+  - Implement logic to extract and validate actions from model outputs.
+  - Ensure actions conform to the expected format before execution.
+- **Order of Operations**: 
+  - In WebShop, prioritize search actions before click actions to refine product selection.
+  - In Mind2Web, ensure element selection precedes action execution to maintain task flow.

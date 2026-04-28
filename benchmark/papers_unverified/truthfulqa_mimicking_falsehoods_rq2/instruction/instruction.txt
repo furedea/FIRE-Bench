@@ -1,18 +1,16 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: Can automated metrics predict human evaluations of truthfulness?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: Can automated metrics effectively predict human evaluations of truthfulness in language models?"
 
 You have access to the following resources:
 
 Models:
 - gpt-4o via API
-- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Load with HuggingFace: EleutherAI/gpt-neo-2.7B
+- Load with HuggingFace: EleutherAI/gpt-j-6B
+- Load with HuggingFace: google/t5-large
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- TruthfulQA: A benchmark comprising 817 questions across 38 categories designed to test the truthfulness of language models by eliciting imitative falsehoods.
-  GitHub repo: https://github.com/sylinrl/TruthfulQA
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/sylinrl/TruthfulQA.git
+- TruthfulQA: A benchmark comprising 817 questions across 38 categories designed to test the truthfulness of language models by avoiding imitative falsehoods.
 
 Experimental constraints:
 - Do NOT use web search

@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: What are the characteristics and challenges of the SWE-bench benchmark?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the characteristics and challenges of the SWE-bench benchmark in evaluating language models on software engineering tasks?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- SWE-bench: A benchmark consisting of 2,294 software engineering problems drawn from real GitHub issues and corresponding pull requests across 12 popular Python repositories.  [loader unverified -- locate the data yourself]
+- SWE-bench: An evaluation framework consisting of 2,294 software engineering problems drawn from real GitHub issues and corresponding pull requests across 12 popular Python repositories.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,58 +20,38 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. SWE-bench Task Resolution
-- **Procedure**: 
-  - Input: Provide the model with an issue text description and a complete codebase.
-  - Prompting Strategy: Use a template that includes the issue description, relevant code files, and an example patch file format.
-  - Number of Samples: Use all 2,294 task instances from SWE-bench.
-  - Shuffling/Ordering: No shuffling; process tasks in the order they appear in the dataset.
-  - Splits: Use the full dataset as there are no predefined splits.
-- **What to Record**: 
-  - Raw outputs: The generated patch files.
-  - Extracted answers: Whether the patch applies successfully and passes all tests.
-  - Intermediate statistics: Number of lines edited, files edited, and functions edited.
-- **Correspondence**: Section 2.2, Figure 1, Table 1.
+### 1. SWE-bench Task Analysis
+- **Procedure**: Analyze the distribution of SWE-bench task instances across 12 repositories. Each task instance is derived from a GitHub issue and its corresponding pull request. The analysis involves examining the size of the codebases, the number of files and lines of code, and the test coverage associated with each task.
+- **What to Record**: Record the number of task instances per repository, the average and maximum number of files and lines of code in the codebases, and the number of fail-to-pass and pass-to-pass tests.
+- **Correspondence**: This analysis corresponds to Figure 3 and Table 11 in the paper, as well as Section 2.3.
 
-### 2. SWE-bench Lite Evaluation
-- **Procedure**: 
-  - Input: Use a subset of 300 instances from SWE-bench Lite.
-  - Prompting Strategy: Same as the full SWE-bench task.
-  - Number of Samples: 300 instances.
-  - Shuffling/Ordering: No shuffling; process tasks in the order they appear in the dataset.
-  - Splits: Use the full subset as there are no predefined splits.
-- **What to Record**: 
-  - Raw outputs: The generated patch files.
-  - Extracted answers: Whether the patch applies successfully and passes all tests.
-  - Intermediate statistics: Number of lines edited, files edited, and functions edited.
-- **Correspondence**: Section 2.4, Appendix A.7.
+### 2. Evaluation of SWE-bench's Robustness and Updateability
+- **Procedure**: Conduct execution-based validation of task instances to ensure they are non-trivial and robust. This involves applying patches to codebases and running associated tests to verify that at least one test changes from fail to pass. Additionally, evaluate the process for continuously updating SWE-bench with new task instances.
+- **What to Record**: Record the number of task instances that pass the execution-based validation, the number of tests that change from fail to pass, and the number of tests that remain pass-to-pass. Also, document the process for updating the benchmark with new instances.
+- **Correspondence**: This evaluation corresponds to Table 10 and Section 2.3 in the paper.
 
 ## Evaluation Details
 
-- **Metric Definitions**:
-  - **Task Resolution Rate**: Percentage of task instances where the generated patch applies successfully and all tests pass.
-  - **Patch Application Rate**: Percentage of task instances where the generated patch applies successfully, regardless of test outcomes.
-  - **Fail-to-Pass Test Rate**: Percentage of fail-to-pass tests that pass after applying the patch.
-  - **Pass-to-Pass Test Rate**: Percentage of pass-to-pass tests that remain passing after applying the patch.
+### Metric Definitions and Computation
+- **Fail-to-Pass Tests**: The number of tests that change from a fail status to a pass status after applying the model-generated patch. This metric indicates whether the model successfully resolved the issue.
+- **Pass-to-Pass Tests**: The number of tests that remain in a pass status before and after applying the patch. This metric ensures that existing functionality is not broken by the model's changes.
 
-- **Normalization/Pre-processing**:
-  - Ensure all generated patches are in the correct `.patch` format before application.
-  - Use a script to automatically fix minor formatting issues in patches that prevent application.
+### Normalization and Pre-processing
+- **Model Outputs**: Before scoring, ensure that model-generated patches are correctly formatted as .patch files. If a patch fails to apply, attempt to fix it by removing unnecessary context lines and recalculating header values.
 
-- **Aggregation Strategy**:
-  - Per-sample: Evaluate each task instance individually.
-  - Per-condition: Aggregate results across all task instances for each model.
-  - Overall: Compute overall metrics across all models and task instances.
+### Aggregation Strategy
+- **Per-Sample Evaluation**: Evaluate each task instance individually by applying the model-generated patch and running the associated tests.
+- **Overall Evaluation**: Aggregate results across all task instances to determine the overall success rate of the model in resolving issues.
 
 ## Implementation Notes
 
-- **Key Pitfalls**:
-  - Ensure that the model-generated patches are correctly formatted to avoid application errors.
-  - Be aware of the context window limitations of each model, especially when using retrieval methods.
+### Key Pitfalls and Caveats
+- **Patch Application**: Ensure that patches are correctly formatted and can be applied to the codebase without errors. If a patch fails to apply, attempt automatic fixes before scoring.
+- **Execution Environment**: Set up a consistent execution environment for running tests, as differences in environments can affect test outcomes.
 
-- **Special Prompt Templates**:
-  - Use a consistent template for all task instances, including delimiters for issue text, code, and patch examples.
+### Special Prompt Templates
+- **Prompt Structure**: Use a consistent prompt structure that includes the issue description, relevant code files, and an example patch format. This helps guide the model in generating well-structured patches.
 
-- **Order of Operations**:
-  - Apply the test patch before the model-generated patch to ensure the correct testing environment.
-  - Run tests after applying the model-generated patch to evaluate task resolution.
+### Order of Operations
+- **Execution-Based Validation**: Perform execution-based validation before scoring to ensure that task instances are robust and non-trivial.
+- **Continuous Updates**: Regularly update SWE-bench with new task instances to maintain its relevance and challenge for evaluating language models.

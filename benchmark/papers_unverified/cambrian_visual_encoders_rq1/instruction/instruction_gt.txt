@@ -1,26 +1,25 @@
-You are a research agent. Conduct research about the question: "RQ2: How effective is the Cambrian Vision-Centric Benchmark (CV-Bench) in evaluating vision-centric capabilities?"
+You are a research agent. Conduct research about the question: "RQ2: What are the effects of different instruction tuning recipes on the performance of MLLMs, particularly in terms of adapter data size and freezing strategies?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Cambrian-1: Cambrian-1 is a family of multimodal large language models (MLLMs) designed with a vision-centric approach. It introduces the Cambrian Vision-Centric Benchmark (CV-Bench) to evaluate vision-centric capabilities and proposes the Spatial Vision Aggregator (SVA) to integrate high-resolution vision features with LLMs. The architecture aims to improve visual grounding and offers a comprehensive framework for instruction-tuned MLLMs.
-  - Component: Cambrian Vision-Centric Benchmark (CV-Bench)
+- Cambrian-1: Cambrian-1 is a family of multimodal large language models (MLLMs) designed with a vision-centric approach. It introduces the Spatial Vision Aggregator (SVA), a dynamic and spatially-aware connector that integrates high-resolution vision features with LLMs while reducing the number of tokens. The study evaluates various visual representations and instruction tuning strategies to enhance the performance of MLLMs.
   - Component: Spatial Vision Aggregator (SVA)
-  - Component: Integration of high-resolution vision features with LLMs
+  - Component: Vision-centric benchmark (CV-Bench)
+  - Component: Instruction tuning with varying adapter data sizes
 - Baseline for comparison: LLaVA
-- Baseline for comparison: CLIP
-- Baseline for comparison: DINO
+- Baseline for comparison: Mini-Gemini
 - Reference hint: https://github.com/cambrian-mllm/cambrian
 
 Datasets for training and evaluation:
-- CV-Bench: A vision-centric benchmark designed to evaluate the fundamental 2D and 3D visual understanding of MLLMs by transforming traditional vision benchmarks into VQA format.
-  Loading code:
-    from datasets import load_dataset
-    dataset = load_dataset("nyu-visionx/CV-Bench")
-- Cambrian-10M: A large-scale dataset curated for visual instruction tuning, emphasizing data source balancing and distribution ratio.
+- Cambrian-10M: A large-scale curated instruction tuning dataset for MLLMs, emphasizing high-quality visual instruction-tuning data from publicly available sources.
   Loading code:
     from datasets import load_dataset
     dataset = load_dataset("nyu-visionx/Cambrian-10M")
+- CV-Bench: A vision-centric benchmark designed to evaluate the fundamental 2D and 3D visual understanding of MLLMs.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("nyu-visionx/CV-Bench")
 
 Experimental constraints:
 - Do NOT use web search
@@ -40,47 +39,53 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Evaluate Models Using CV-Bench
+### 1. Instruction Tuning with Varying Adapter Data Sizes
 - **Procedure**: 
-  - Use the CV-Bench dataset to evaluate the vision-centric capabilities of multimodal large language models (MLLMs).
-  - The dataset consists of 2638 manually-inspected examples, which are significantly more than other vision-centric MLLM benchmarks.
-  - The evaluation involves transforming traditional vision benchmarks into a VQA format, focusing on both 2D and 3D visual understanding tasks.
-  - For 2D tasks, assess spatial relationships and object counting using images from ADE20K and COCO datasets.
-  - For 3D tasks, evaluate depth order and relative distance using images from the Omni3D dataset.
-  - Ensure that each question is manually inspected to remove unclear, ambiguous, or erroneous entries.
+  - Implement a two-stage instruction tuning process using the Vicuna-1.5-7B as the LLM backbone and OpenAI CLIP ViT-L/14@336 as the visual encoder.
+  - Use three different adapter data sizes: 0M, 0.5M, and 1.2M.
+  - For each data size, first pre-train the connector on the adapter data, then fine-tune both the connector and LLM on a 737K instruction tuning dataset.
+  - Ensure the vision encoder remains frozen during the fine-tuning phase.
 - **What to Record**: 
-  - Record the accuracy of the models on each task type (spatial relationship, object counting, depth order, relative distance).
-  - Capture the overall performance as the average of the accuracies obtained from 2D and 3D tasks.
-- **Correspondence to Paper**: 
-  - This experiment corresponds to Figure 4 and Table 1 in Section 3.2 of the paper.
+  - Record the performance metrics across various benchmarks, focusing on general, knowledge, OCR & chart, and vision-centric categories.
+  - Capture the average performance improvement across these categories.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 5 and Table 13 in the paper, which illustrate the effect of training recipes on model performance.
+
+### 2. Unfreezing Vision Encoder
+- **Procedure**: 
+  - Conduct experiments with the vision encoder unfrozen during the fine-tuning phase.
+  - Use the same setup as the previous experiment with 1.2M adapter data and 737K instruction tuning data.
+- **What to Record**: 
+  - Measure the performance changes across all benchmark categories when the vision encoder is unfrozen.
+  - Note any computational overhead or changes in training time.
+- **Correspondence**: 
+  - This experiment is detailed in Figure 5, showing the benefits of unfreezing the vision encoder.
+
+### 3. Model Ensemble
+- **Procedure**: 
+  - Combine multiple vision encoders (OpenAI CLIP ViT-L/14@336, SigLIP ViT-SO400M/14@384, OpenCLIP ConvNeXt-XXL@1024, and DINOv2 ViT-L/14@518) using the Spatial Vision Aggregator (SVA).
+  - Interpolate the output of each model to a fixed number of tokens (576) and concatenate them along the feature dimension.
+- **What to Record**: 
+  - Evaluate the ensemble model's performance across all benchmark categories.
+  - Compare the results with single vision encoder setups.
+- **Correspondence**: 
+  - Results are presented in Table 3, highlighting the performance improvements with model ensembles.
 
 ## Evaluation Details
 
-- **Metric Definitions**:
-  - **Accuracy**: For each task type, calculate the percentage of correctly answered questions out of the total questions presented.
-  - **Overall Accuracy**: Compute as the average of the accuracies from 2D and 3D tasks.
-  - **Formula**: 
-    - Accuracy2D = (AccuracyCOCO + AccuracyADE20K) / 2
-    - Overall Accuracy = (Accuracy2D + Accuracy3D) / 2
-
-- **Normalization and Pre-processing**:
-  - Ensure that all model outputs are in a consistent format for comparison.
-  - Use fuzzy matching to evaluate responses, allowing for minor variations in phrasing.
-
-- **Aggregation Strategy**:
-  - Aggregate results per task type to derive a comprehensive understanding of model performance across different visual tasks.
-  - Report both individual task accuracies and the overall accuracy to provide a holistic view of model capabilities.
+- **Metrics**: 
+  - Use accuracy as the primary metric for evaluating performance across different benchmarks.
+  - For OCR & chart tasks, ensure the evaluation accounts for high-resolution image processing capabilities.
+- **Normalization**: 
+  - Normalize model outputs by ensuring consistent token lengths across different vision encoders.
+- **Aggregation Strategy**: 
+  - Aggregate performance metrics per benchmark category and compute the overall average to assess the model's general capabilities.
 
 ## Implementation Notes
 
-- **Pitfalls and Caveats**:
-  - Ensure that the manual inspection of questions is thorough to avoid any bias or errors in the dataset.
-  - Be cautious of the potential for models to rely on language priors rather than visual inputs, which could skew results.
-
-- **Special Prompt Templates**:
-  - Use specific prompts for each task type to guide the model in generating appropriate responses.
-  - For example, for object counting tasks, prompt the model to provide a numerical answer.
-
-- **Order of Operations**:
-  - Begin with pre-processing the dataset to ensure all questions are clear and unambiguous.
-  - Conduct evaluations on 2D tasks before proceeding to 3D tasks to maintain consistency in the evaluation process.
+- **Pitfalls**: 
+  - Be cautious of the computational overhead when unfreezing the vision encoder, as it significantly increases training time.
+- **Prompt Templates**: 
+  - Use specific system prompts for each benchmark to ensure consistent evaluation conditions.
+- **Order of Operations**: 
+  - Maintain the sequence of pre-training the connector before fine-tuning the entire model to ensure optimal performance gains.

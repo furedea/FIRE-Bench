@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: What are the specific strengths and weaknesses of multimodal LLMs on different tasks within the Blink benchmark?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the effects of varying visual prompt attributes, such as shape size and color, on the performance of multimodal LLMs in tasks like relative depth estimation, relative reflectance, and visual correspondence using datasets such as 'Depth in the Wild', 'Intrinsic Images in the Wild', and 'HPatches'?"
 
 You have access to the following resources:
 
@@ -8,7 +8,18 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Blink benchmark: A benchmark designed to evaluate the visual perception capabilities of multimodal LLMs, consisting of 14 classic computer vision tasks reformatted into 3,807 multiple-choice questions.  [loader unverified -- locate the data yourself]
+- Depth in the Wild: A dataset containing images with human annotations for relative depth estimation.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("depth-in-the-wild")
+- Intrinsic Images in the Wild: A dataset with human annotations for comparing the reflectance (albedo) of two pixels.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("intrinsic-images-in-the-wild")
+- HPatches: A dataset containing image sequences taken under different illuminations and/or viewpoints for visual correspondence tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hpatches")
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,51 +31,64 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Task-Specific Performance Analysis
+### 1. Impact of Visual Prompt Attributes on Relative Depth Estimation
 - **Procedure**: 
-  - Use the Blink benchmark dataset, which consists of 3,807 multiple-choice questions across 14 visual perception tasks.
-  - For each task, input the corresponding visual and textual prompts to the models (GPT-4V, Gemini, Claude 3 OPUS).
-  - Ensure that the input format includes both visual and textual components as specified in the Blink benchmark.
-  - Use the validation and test splits provided in the dataset.
+  - Use the "Depth in the Wild" dataset.
+  - For each image, apply visual prompts with circles of varying sizes (5px, 10px, 15px) and colors (red, gray).
+  - Present the images to the GPT-4V model and record the model's predictions for which point is closer.
+  - Ensure that the images are resized to a height of 1024px before applying the prompts.
 - **What to Record**: 
-  - Record the raw outputs of the models for each task.
-  - Extract task-specific accuracy for each model.
-  - Note any qualitative observations regarding model performance on specific tasks.
+  - Record the model's accuracy for each combination of circle size and color.
+  - Collect raw outputs and any intermediate statistics related to the model's decision-making process.
 - **Correspondence**: 
-  - This experiment corresponds to the analysis presented in Section 4.2, Figure 4, and Table 1 of the paper.
+  - Refer to Figure 7 and Section 4.3 for detailed analysis and results.
+
+### 2. Effect of Visual Prompts on Relative Reflectance Tasks
+- **Procedure**: 
+  - Utilize the "Intrinsic Images in the Wild" dataset.
+  - Apply visual prompts with circles of varying sizes and colors to the images.
+  - Present the images to the GPT-4V model and record which point is perceived as darker.
+- **What to Record**: 
+  - Record the accuracy of the model's predictions for each prompt variation.
+  - Capture raw outputs and any relevant intermediate statistics.
+- **Correspondence**: 
+  - Refer to Figure 7 and Section 4.3 for detailed analysis and results.
+
+### 3. Influence of Visual Prompts on Visual Correspondence Tasks
+- **Procedure**: 
+  - Use the "HPatches" dataset.
+  - Apply visual prompts with circles of varying sizes and colors to the images.
+  - Present the images to the GPT-4V model and record the model's predictions for point correspondence.
+- **What to Record**: 
+  - Record the model's accuracy for each combination of circle size and color.
+  - Collect raw outputs and any intermediate statistics related to the model's decision-making process.
+- **Correspondence**: 
+  - Refer to Figure 7 and Section 4.3 for detailed analysis and results.
 
 ## Evaluation Details
 
-### Metric Definitions and Computation
-- **Accuracy**: 
-  - Compute the accuracy for each task as the percentage of correctly answered questions out of the total questions for that task.
-  - Use the formula: \( \text{Accuracy} = \frac{\text{Number of Correct Answers}}{\text{Total Number of Questions}} \times 100 \).
+- **Metric Definitions**: 
+  - Accuracy is defined as the percentage of correct predictions made by the model out of the total number of predictions.
+  - Use standard accuracy computation: \( \text{Accuracy} = \frac{\text{Number of Correct Predictions}}{\text{Total Number of Predictions}} \).
 
-### Normalization and Pre-processing
-- **Model Outputs**: 
-  - Normalize model outputs by extracting the choice that corresponds to the model's prediction using predefined rules and GPT-3.5-turbo for option label extraction.
-  - Ensure consistency in output format for comparison across models.
+- **Normalization and Pre-processing**: 
+  - Ensure all images are resized to a height of 1024px before applying visual prompts.
+  - Normalize the model outputs by ensuring consistent formatting for comparison.
 
-### Aggregation Strategy
-- **Per-sample to Overall**: 
-  - Aggregate accuracy scores from individual samples to obtain task-specific accuracy.
-  - Further aggregate task-specific accuracies to evaluate overall model performance across the Blink benchmark.
+- **Aggregation Strategy**: 
+  - Compute per-sample accuracy for each prompt variation.
+  - Aggregate results to determine the overall impact of each visual prompt attribute on model performance.
 
 ## Implementation Notes
 
-### Key Pitfalls and Caveats
-- **Visual Prompting**: 
-  - The size and color of visual prompts (e.g., circles) can significantly affect model performance. Use 10px red circles for consistency, as this was found optimal in the paper.
-- **Multiple-Image Inputs**: 
-  - For models that do not support multiple-image inputs, concatenate images horizontally with a black margin in between.
+- **Key Pitfalls**: 
+  - The paper notes that the choice of circle size and color can significantly impact model performance, so careful attention must be paid to these attributes.
+  - Ensure that the visual prompts do not obscure important image details that could affect the model's predictions.
 
-### Special Prompt Templates
-- **Prompt Templates**: 
-  - Use specific prompt templates for each task as described in the paper, ensuring that both visual and textual components are included.
-  - Example prompt for visual correspondence: "A point is circled on the first image, labeled with REF. Which point on the second image corresponds to the point in the first image?"
+- **Special Prompt Templates**: 
+  - Use circles as visual prompts, with specific attention to their size and color as outlined in the experiments.
+  - Maintain consistency in the application of prompts across all images to ensure reliable results.
 
-### Order of Operations
-- **Task Execution**: 
-  - Execute tasks in the order they are presented in the Blink benchmark to maintain consistency in evaluation.
-- **Output Parsing**: 
-  - Parse model outputs immediately after task execution to ensure accurate extraction of predicted choices.
+- **Order of Operations**: 
+  - Resize images before applying visual prompts.
+  - Apply visual prompts consistently across all images in a dataset before presenting them to the model.

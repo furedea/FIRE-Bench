@@ -1,16 +1,18 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ1: How do tokenization lengths differ across languages for various tokenizers?"
+You are a research agent. Conduct an empirical study answering the question: "RQ1: How do tokenization lengths differ across languages for various tokenization models, including subword, multilingual, and byte-level models, using the FLORES-200 parallel corpus?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- FLORES-200: A parallel corpus comprising the same 2000 sentences taken from Wikipedia and human-translated to 200 different languages.  [loader unverified -- locate the data yourself]
+- FLORES-200: A parallel corpus comprising 2000 sentences taken from Wikipedia and human-translated to 200 different languages.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("facebook/flores", "all")
 
 Analytical tools / techniques available:
 - Python
+- Hugging Face Datasets
 - NumPy
 - Pandas
-- Matplotlib
-- Hugging Face Transformers
 
 Study constraints:
 - Do NOT use web search
@@ -31,60 +33,57 @@ Design the protocol yourself. Run the full study end-to-end and report results t
 
 ### 1. Tokenization Premiums for English-Centric Models
 - **Procedure**: 
-  - Use the FLORES-200 dataset to tokenize the same 2000 sentences across different languages using English-centric models: GPT-2, RoBERTa, ChatGPT, GPT-4, and FlanT5.
-  - Calculate the tokenization length for each language and compare it to English.
-  - Compute the tokenization premium as the ratio of tokenization length in the target language to English.
+  - Use the FLORES-200 dataset to evaluate tokenization lengths for English-centric models: GPT-2, RoBERTa, ChatGPT, GPT-4, and FlanT5.
+  - For each model, tokenize the 2000 sentences in each of the 200 languages.
+  - Calculate the tokenization premium for each language as the ratio of the tokenized length in that language to the tokenized length in English.
+  - Ensure that languages with more than 10% of input characters mapped to UNK tokens are excluded from the analysis for FlanT5.
 - **What to Record**: 
-  - Tokenization lengths for each language.
-  - Tokenization premiums for each language relative to English.
-- **Correspondence**: Table 1, Section 4.1
+  - Raw tokenized lengths for each language.
+  - Calculated tokenization premiums.
+- **Correspondence**: Table 1, Section 4.1.
 
 ### 2. Tokenization Premiums for Non-English Centric Models
 - **Procedure**: 
-  - Use the FLORES-200 dataset to tokenize sentences using non-English centric models: ArabicBERT, RoCBert, CamemBERT, GottBERT, BERT Japanese, and PhoBERT.
-  - Calculate tokenization lengths for each language and compare them to the target language of each model.
-  - Compute the tokenization premium as the ratio of tokenization length in the target language to the model's target language.
+  - Use the FLORES-200 dataset to evaluate tokenization lengths for non-English centric models: ArabicBERT, RoCBert, CamemBERT, GottBERT, BERT Japanese, and PhoBERT.
+  - Tokenize the 2000 sentences in each language and calculate the tokenization premium relative to the target language of each model.
 - **What to Record**: 
-  - Tokenization lengths for each language.
-  - Tokenization premiums for each language relative to the model's target language.
-- **Correspondence**: Table 2, Section 4.2
+  - Raw tokenized lengths for each language.
+  - Calculated tokenization premiums.
+- **Correspondence**: Table 2, Section 4.2.
 
 ### 3. Tokenization Premiums for Multilingual Models
 - **Procedure**: 
-  - Use the FLORES-200 dataset to tokenize sentences using multilingual models: XLM-R, NLLB, mT5, M2M100, and BLOOM.
-  - Calculate tokenization lengths for each language and assess parity across multiple languages.
-  - Compute the tokenization premium as the ratio of tokenization length in each language to English.
+  - Use the FLORES-200 dataset to evaluate tokenization lengths for multilingual models: XLM-R, NLLB, mT5, M2M100, and BLOOM.
+  - Tokenize the 2000 sentences in each language and calculate the tokenization premium relative to English.
 - **What to Record**: 
-  - Tokenization lengths for each language.
-  - Tokenization premiums for each language relative to English.
-- **Correspondence**: Table 4, Section 4.3
+  - Raw tokenized lengths for each language.
+  - Calculated tokenization premiums.
+- **Correspondence**: Table 4, Section 4.3.
 
 ### 4. Tokenization Premiums for Byte-Level Models
 - **Procedure**: 
-  - Use the FLORES-200 dataset to tokenize sentences using byte-level models: CANINE and ByT5.
-  - Calculate tokenization lengths for each language and evaluate parity using byte-level tokenization.
-  - Compute the tokenization premium as the ratio of tokenization length in each language to English.
+  - Use the FLORES-200 dataset to evaluate tokenization lengths for byte-level models: CANINE and ByT5.
+  - Tokenize the 2000 sentences in each language using byte-level encoding and calculate the tokenization premium relative to English.
 - **What to Record**: 
-  - Tokenization lengths for each language.
-  - Tokenization premiums for each language relative to English.
-- **Correspondence**: Table 5, Section 4.4
+  - Raw tokenized lengths for each language.
+  - Calculated tokenization premiums.
+- **Correspondence**: Table 5, Section 4.4.
 
 ## Evaluation Details
 
 - **Metric Definition**: 
-  - Tokenization Premium: \( \text{Premium} = \frac{|t(s_A)|}{|t(s_B)|} \), where \( |t(s_A)| \) is the tokenization length of sentence \( s_A \) in language A, and \( |t(s_B)| \) is the tokenization length of the same sentence in language B.
+  - Tokenization Premium: For a sentence \( s_A \) in language A and its translation \( s_B \) in language B, the tokenization premium is defined as \( |t(s_A)|/|t(s_B)| \), where \( |t(s_A)| \) is the tokenized length of \( s_A \).
 - **Normalization**: 
-  - Ensure that all tokenization lengths are computed consistently across models and languages.
+  - Ensure that tokenized lengths are normalized by dividing by the length of the English tokenization for each sentence.
 - **Aggregation Strategy**: 
-  - Compute tokenization premiums per sentence, then average across all sentences to obtain a per-language premium.
-  - Compare premiums across models to assess overall tokenization parity.
+  - Calculate the average tokenization premium across all sentences for each language to obtain a per-language premium.
+  - Compare these premiums across different models to assess disparities.
 
 ## Implementation Notes
 
 - **Pitfalls**: 
-  - Ensure that the FLORES-200 dataset is correctly loaded and pre-processed for each model.
-  - Be cautious of models that may not support certain languages or scripts, leading to high UNK token rates.
+  - Ensure that the tokenization process does not introduce additional tokens due to encoding errors or UNK tokens, especially for models like FlanT5.
 - **Special Prompt Templates**: 
-  - None specified, but ensure consistent input formatting across models.
+  - None specified, but ensure consistent tokenization settings across all models.
 - **Order of Operations**: 
-  - Tokenize sentences, compute lengths, calculate premiums, and then aggregate results for analysis.
+  - Tokenize each sentence in the dataset before calculating premiums to ensure consistency in length measurements.

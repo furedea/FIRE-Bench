@@ -1,0 +1,1 @@
+Active learning improves the data efficiency of process supervision in training reward models for mathematical reasoning tasks by 2.6 times.

@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: Do state-of-the-art LLMs exhibit reasoning breakdowns on simple common sense problems?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: Do state-of-the-art large language models (GPT-4, Claude 3 Opus) exhibit generalization and reasoning breakdowns when confronted with simple common sense problems like the AIW problem (a task designed to test basic reasoning and generalization) and its variations, as measured by correct response rates across different prompt types?"
 
 You have access to the following resources:
 
@@ -8,7 +8,16 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- AIW problem variations 1-4: Simple common sense math problems with variations in the number of brothers and sisters to test model generalization and reasoning.  [generate programmatically]
+- AIW problem variations: A set of simple common sense math problems designed to test model generalization and reasoning by varying the number of brothers and sisters.  [generate programmatically]
+  Generation code:
+    def generate_aiw_variations():
+        variations = [
+            {"brothers": 3, "sisters": 6, "correct_answer": 7},
+            {"brothers": 4, "sisters": 2, "correct_answer": 3},
+            {"brothers": 1, "sisters": 4, "correct_answer": 5},
+            {"brothers": 4, "sisters": 1, "correct_answer": 2}
+        ]
+        return variations
 
 Experimental constraints:
 - Do NOT use web search

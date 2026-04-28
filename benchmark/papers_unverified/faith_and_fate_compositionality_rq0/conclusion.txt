@@ -1,0 +1,3 @@
+RQ1: Transformer-based large language models (LLMs) perform poorly on compositional tasks such as multi-digit multiplication, logic grid puzzles, and dynamic programming problems, especially as complexity increases and in out-of-domain scenarios. 
+
+RQ2: The underlying mechanisms used by transformer-based LLMs struggle with generalization and complexity, leading to limited performance on compositional tasks.

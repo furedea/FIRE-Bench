@@ -1,19 +1,43 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How can the performance of LLM agents be improved?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: How do LLMs perform as agents in web-grounded environments, specifically in web shopping and web browsing tasks?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 and claude-3 and gpt-3.5-turbo and text-davinci-003 and claude-instant and chat-bison-001 via API
+- gpt-4 and claude-3 and glm-4 and claude-2 and gpt-3.5-turbo and text-davinci-003 and claude-instant and chat-bison-001 and text-davinci-002 via API
 - Load with HuggingFace: meta-llama/Llama-2-70b
 - Load with HuggingFace: meta-llama/Llama-2-13b
 - Load with HuggingFace: meta-llama/Llama-2-7b
-- Load with HuggingFace: meta-llama/codellama-34b
-- Load with HuggingFace: meta-llama/codellama-13b
-- Load with HuggingFace: meta-llama/codellama-7b
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-13B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-34B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-70B-Instruct
+- Load with HuggingFace: openchat/openchat-13b
+- Load with HuggingFace: wizardlm/wizardlm-30b
+- Load with HuggingFace: wizardlm/wizardlm-13b
+- Load with HuggingFace: codellama/codellama-34b
+- Load with HuggingFace: codellama/codellama-13b
+- Load with HuggingFace: codellama/codellama-7b
+- Load with HuggingFace: guanaco/guanaco-65b
+- Load with HuggingFace: guanaco/guanaco-33b
+- Load with HuggingFace: vicuna/vicuna-33b
+- Load with HuggingFace: vicuna/vicuna-13b
+- Load with HuggingFace: vicuna/vicuna-7b
+- Load with HuggingFace: koala/koala-13b
+- Load with HuggingFace: codegeex2/codegeex2-6b
+- Load with HuggingFace: dolly/dolly-12b
+- Load with HuggingFace: chatglm/chatglm-6b
+- Load with HuggingFace: oasst/oasst-12b
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- AGENTBENCH: A multi-dimensional benchmark consisting of 8 distinct environments to assess LLM-as-Agent’s reasoning and decision-making abilities.  [loader unverified -- locate the data yourself]
+- WebShop: A simulated online shopping environment for evaluating language agents.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("yao/webshop")
+- Mind2Web: A benchmark for developing and assessing web agents capable of executing tasks across various website domains.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("deng/mind2web")
 
 Experimental constraints:
 - Do NOT use web search

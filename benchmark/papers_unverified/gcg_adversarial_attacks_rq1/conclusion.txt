@@ -1,0 +1,1 @@
+Adversarial prompts transfer effectively to proprietary black-box models like GPT-3.5, GPT-4, and Claude when optimized on open-source models.

@@ -1,6 +1,6 @@
-<h3 align="center">
+<h1 align="center">
   <strong>🔥 FIRE-Bench: Evaluating Agents on the Rediscovery of Scientific Insights</strong>
-</h3>
+</h1>
 
 <p align="center">
   <a href="https://arxiv.org/abs/2602.02905">
@@ -141,39 +141,62 @@ Each paper produces a `<name>_tree.json` file containing the problem tree.
 
 ### 3. Benchmark Your Own Agent
 
-You can use FIRE-Bench to evaluate any agent system beyond the built-in ones (Codex, Claude Code, OpenHands).
+You can use FIRE-Bench to evaluate any agent system beyond the built-in ones (Codex, Claude Code, OpenHands). Tasks are published as two HuggingFace datasets — pick whichever fits your evaluation goals:
 
-#### Benchmark Task Structure
+| Dataset | Tasks | Status |
+|---|---|---|
+| [`silence-suzuki/FIRE-Bench-verified`](https://huggingface.co/datasets/silence-suzuki/FIRE-Bench-verified) | 35 | Hand-curated by the FIRE-Bench team. Many tasks bundle local data files. |
+| [`silence-suzuki/FIRE-Bench-unverified`](https://huggingface.co/datasets/silence-suzuki/FIRE-Bench-unverified) | 153 | Auto-generated end-to-end by the [Paper2Bench](https://github.com/AbhayAnandUCSD/Paper2Bench) pipeline. No human review. |
 
-Each task in `benchmark/papers/<task_id>/` contains:
+#### Schema
 
+Both datasets share the same row shape:
+
+| Field | Description |
+|---|---|
+| `task_id` | unique identifier (e.g. `reversal_curse_rq0`) |
+| `research_question` | the question the agent must answer |
+| `instruction` | the full prompt the agent sees (research question + resources + constraints) |
+| `instruction_gt` | ground-truth procedural plan (used by the evaluator, **not** shown to the agent) |
+| `conclusion` | ground-truth answer; what the agent's final write-up is compared against |
+
+The verified dataset adds `dataset_source` and `has_local_data`; the unverified dataset adds `paper_type` and `task_config` (typed datasets/models/constraints).
+
+#### Step A: Load the Tasks
+
+```python
+from datasets import load_dataset
+
+ds = load_dataset("silence-suzuki/FIRE-Bench-verified", split="train")
+# or: load_dataset("silence-suzuki/FIRE-Bench-unverified", split="train")
+
+print(f"{len(ds)} tasks")
+print(ds[0]["task_id"], "->", ds[0]["research_question"][:80])
 ```
-benchmark/papers/<task_id>/
-├── instruction/
-│   ├── instruction.txt       # Research prompt for the agent
-│   └── instruction_gt.txt    # (some tasks) Ground-truth experimental plan
-└── data/                     # (optional) Datasets for the task
+
+For tasks where `has_local_data` is true, fetch the bundled files (JSONL, JSON, images, etc.) with `snapshot_download`:
+
+```python
+from huggingface_hub import snapshot_download
+
+local_dir = snapshot_download(
+    "silence-suzuki/FIRE-Bench-verified",
+    repo_type="dataset",
+    allow_patterns=["tasks/lost_in_the_middle/**"],
+)
+# files now live at <local_dir>/tasks/lost_in_the_middle/data/...
 ```
 
-- **`instruction.txt`** defines the research question, available resources (models, datasets), and constraints.
-- **`data/`** contains task-specific datasets. Some tasks load data directly from HuggingFace instead (described in the instruction).
-
-There are 35 benchmark tasks spanning topics such as CoT reasoning, hallucination, bias, safety, multimodal understanding, and more.
-
-#### Step A: Prepare the Agent's Working Directory
-
-For each task you want to evaluate, set up a working directory for your agent:
-
-1. Copy `benchmark/papers/<task_id>/data/` (if it exists) into the working directory as `data/`
-2. Copy the project-level `utils/` folder into the working directory (provides `LLMInference` and other shared helpers)
-3. Create a `.env` file with API keys so the agent can call LLMs during experiments
+`tasks/<task_id>/dataset.txt` (when present) documents the upstream source if the curators left a pointer rather than bundling files.
 
 #### Step B: Run Your Agent
 
-Read the prompt from `benchmark/papers/<task_id>/instruction/instruction.txt` and pass it to your agent as the task instruction. The agent should:
+Pass `task["instruction"]` to your agent verbatim. The agent should:
 
-- Design and execute experiments using the provided datasets and models
-- Produce a final conclusion summarizing its findings
+- Design and execute experiments using the resources listed in the instruction
+- Produce a final written conclusion summarizing its findings
+
+Do **not** show the agent `instruction_gt` or `conclusion` — both are evaluation-only.
 
 #### Step C: Save Output in the Expected Log Format
 
@@ -212,7 +235,41 @@ bash run_eval.sh --agents <your_agent_name> --models <model_name> --tasks <task_
 bash run_eval.sh --agents all --models all --tasks all
 ```
 
-The pipeline decomposes both the agent's conclusion and the ground-truth into atomic claims, then computes **Precision**, **Recall**, and **F₁** via claim-level analysis.
+The pipeline decomposes both the agent's conclusion and the dataset's `conclusion` field into atomic claims, then computes **Precision**, **Recall**, and **F₁** via claim-level analysis.
+
+#### End-to-end skeleton
+
+```python
+from datasets import load_dataset
+from huggingface_hub import snapshot_download
+import os, time
+
+ds = load_dataset("silence-suzuki/FIRE-Bench-verified", split="train")
+local = snapshot_download(
+    "silence-suzuki/FIRE-Bench-verified", repo_type="dataset",
+)  # one-time pull of all data assets
+
+for task in ds:
+    tid = task["task_id"]
+    work_dir = f"runs/{tid}"
+    os.makedirs(work_dir, exist_ok=True)
+
+    # Symlink (or copy) the task's data dir into the agent's CWD if present
+    src_data = os.path.join(local, "tasks", tid, "data")
+    if os.path.isdir(src_data):
+        os.symlink(src_data, os.path.join(work_dir, "data"))
+
+    output = my_agent.run(task["instruction"], cwd=work_dir)
+
+    # Write the log in the expected format
+    log_dir = f"log/my_agent/gpt-4o/{tid}/{time.strftime('%Y%m%d_%H%M%S')}"
+    os.makedirs(log_dir, exist_ok=True)
+    with open(f"{log_dir}/log.log", "w", encoding="utf-8") as f:
+        f.write(f"agent_id: my_agent\ntask_id: {tid}\nllm_model: gpt-4o\n")
+        f.write("=" * 40 + "\n")
+        f.write(output["trajectory"])
+        f.write(f'\n{{"result": "{output["final_conclusion"]}"}}\n')
+```
 
 ### 4. Run Built-in Experiments
 
@@ -229,7 +286,52 @@ This iterates over all combinations of `AGENT_IDS`, `TASK_IDS`, and `LLM_MODELS`
 - `TASK_IDS`: benchmark tasks (e.g., `rational`)
 - `LLM_MODELS`: models to use (e.g., `gpt-5`)
 
-### 5. Evaluate Results
+### 5. Verifying Benchmark Task Validity
+
+Before a task is added to FIRE-Bench, we verify that it is **feasible and well-defined** using the ground-truth experimental plan.
+
+#### Why validate?
+
+A benchmark task should be solvable when the agent is given a sufficiently detailed approach. If an agent armed with an explicit experimental design still cannot produce correct findings, the task specification itself is likely flawed (ambiguous instructions, missing resources, unreproducible results, etc.).
+
+#### Ground-truth instruction files
+
+Each task may include a ground-truth experimental plan:
+
+```
+benchmark/papers/<task_id>/instruction/instruction_gt.txt
+```
+
+This file contains a **detailed experiment setup and approach** — specific procedures, evaluation metrics, prompt templates, implementation notes, and edge-case handling — that an ideal agent would follow to reproduce the paper's findings. These plans can be generated with the plan generator:
+
+```bash
+bash run_plan_generator.sh --papers /path/to/paper.pdf
+```
+
+#### Validation procedure
+
+To validate a candidate task:
+
+1. **Run an agent using `instruction_gt.txt` as the prompt** instead of the standard `instruction.txt`. This gives the agent the most detailed guidance possible.
+
+2. **Evaluate the run** using the standard evaluation pipeline:
+
+   ```bash
+   bash run_eval.sh --agents <agent> --models <model> --tasks <task_id>
+   ```
+
+3. **Check the F1 score.** A task is considered valid for inclusion in the benchmark only if the agent achieves an **F1 score above 80%** when given the ground-truth plan.
+
+#### Interpretation
+
+| F1 with `instruction_gt.txt` | Action |
+|---|---|
+| **> 80%** | Task is valid — add it to the benchmark |
+| **<= 80%** | Task needs revision — the instruction, ground-truth conclusion, dataset, or evaluation criteria may need to be refined before the task can be included |
+
+This threshold ensures that every benchmark task has a known-achievable ceiling: the research question is answerable, the provided resources are sufficient, and the evaluation aligns with the expected findings. The gap between `instruction_gt.txt` performance and `instruction.txt` performance then measures how much genuine scientific reasoning the agent must supply on its own.
+
+### 6. Evaluate Results
 
 After experiments finish, evaluate the generated logs:
 

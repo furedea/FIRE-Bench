@@ -1,0 +1,1 @@
+Large language models generally perform better on single-document and multi-document question answering tasks when they are commercial models, compared to open-source ones. However, their performance can significantly decline as the context length increases.

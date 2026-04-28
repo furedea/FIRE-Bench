@@ -1,0 +1,1 @@
+Auto-regressive language models trained on synthetic facts do not generalize to the reverse form, as they show near 0% accuracy.

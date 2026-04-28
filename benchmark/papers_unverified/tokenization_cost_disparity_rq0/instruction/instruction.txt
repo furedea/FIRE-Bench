@@ -1,19 +1,18 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ1: How do tokenization lengths differ across languages for various tokenizers?"
+You are a research agent. Conduct an empirical study answering the question: "RQ1: How do tokenization lengths differ across languages for various tokenization models, including subword, multilingual, and byte-level models, using the FLORES-200 parallel corpus?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- FLORES-200: A parallel corpus comprising the same 2000 sentences taken from Wikipedia and human-translated to 200 different languages.
+- FLORES-200: A parallel corpus comprising 2000 sentences taken from Wikipedia and human-translated to 200 different languages.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('facebook/flores')
+    dataset = load_dataset("facebook/flores", "all")
 
 Analytical tools / techniques available:
 - Python
+- Hugging Face Datasets
 - NumPy
 - Pandas
-- Matplotlib
-- Hugging Face Transformers
 
 Study constraints:
 - Do NOT use web search

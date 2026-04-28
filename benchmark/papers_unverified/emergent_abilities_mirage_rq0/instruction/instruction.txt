@@ -1,17 +1,15 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ1: Do nonlinear or discontinuous metrics create the appearance of emergent abilities in language models?"
+You are a research agent. Conduct an empirical study answering the question: "RQ1: Do emergent abilities, defined as unexpected performance improvements, in the InstructGPT/GPT-3 model family on arithmetic tasks disappear when nonlinear metrics like Accuracy are replaced with linear metrics like Token Edit Distance, using 2-shot multiplication and addition tasks?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- BIG-Bench: A benchmark used to analyze emergent abilities in language models, focusing on tasks with claimed emergent abilities.
-  GitHub repo: https://github.com/google/BIG-bench
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/google/BIG-bench.git
+- BIG-Bench: A benchmark used to analyze emergent abilities in large language models, containing various tasks and metrics.  [loader unverified -- locate the data yourself]
 
 Analytical tools / techniques available:
-- Meta-analysis
-- Statistical analysis
+- Python
+- NumPy
+- Matplotlib
+- SciPy
 
 Study constraints:
 - Do NOT use web search

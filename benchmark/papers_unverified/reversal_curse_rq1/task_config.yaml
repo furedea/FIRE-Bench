@@ -1,19 +1,17 @@
 task_id: reversal_curse_rq1
 paper_type: llm_evaluation
-research_question: 'RQ2: Does the Reversal Curse affect real-world knowledge in LLMs?'
+research_question: "RQ2: Does the Reversal Curse, where language models struggle to generalize facts when presented in reverse order, affect the ability of state-of-the-art models like GPT-4 to accurately identify parent-child relationships in real-world datasets such as the IMDB top 1000 celebrities?"
 models:
   api:
-  - gpt-4
-  huggingface:
-  - meta-llama/Llama-1
+    - gpt-4o
+  huggingface: []
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: IMDB Celebrity Parent-Child Dataset
-  source: synthetic
-  description: A dataset of 1000 celebrities and their parents used to test the Reversal
-    Curse in LLMs.
+  - name: "IMDB top 1000 celebrities"
+    source: unknown
+    description: "A dataset containing information about the top 1000 most popular celebrities from IMDB, used to evaluate the ability of models to identify parent-child relationships."
 references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

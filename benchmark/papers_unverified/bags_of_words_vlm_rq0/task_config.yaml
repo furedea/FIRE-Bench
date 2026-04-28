@@ -1,32 +1,34 @@
 task_id: bags_of_words_vlm_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: How well do current Vision-Language Models understand compositional
-  relationships, attributes, and order information?'
+research_question: "RQ1: How well do current Vision-Language Models (CLIP, BLIP, Flava, X-VLM) understand compositional relationships, attribute binding, and word order in image-caption pairs, evaluated via the Attribution, Relation, and Order benchmarks built on Visual Genome, COCO, and Flickr30k?"
 models:
   api: []
   huggingface:
-  - openai/clip-vit-base-patch32
-  - salesforce/blip
-  - facebook/flava-full
-  - zengyan-97/x-vlm
+    - openai/clip-vit-base-patch32
+    - salesforce/blip
+    - facebook/flava-full
+    - zengyan-97/x-vlm
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: Visual Genome Attribution
-  source: unknown
-  description: A dataset to test the understanding of objects' properties in complex
-    natural scenes.
-- name: Visual Genome Relation
-  source: unknown
-  description: A dataset to test relational understanding in complex natural scenes.
-- name: COCO-Order
-  source: unknown
-  description: A dataset to test the models' ability to identify the correct ordering
-    of words in captions.
-- name: Flickr30k-Order
-  source: unknown
-  description: A dataset to test the models' ability to identify the correct ordering
-    of words in captions.
+  - name: "Visual Genome"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("visual_genome", "objects")
+    description: "A large-scale dataset with images annotated with objects, attributes, and relations."
+  - name: "COCO"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("coco", "2017")
+    description: "A dataset containing images with complex scenes and detailed captions."
+  - name: "Flickr30k"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("flickr30k")
+    description: "A dataset with images and captions, used to evaluate order sensitivity in VLMs."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

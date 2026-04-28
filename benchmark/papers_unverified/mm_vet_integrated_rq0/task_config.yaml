@@ -1,51 +1,35 @@
 task_id: mm_vet_integrated_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: How can we systematically structure and evaluate complicated
-  multimodal tasks?'
+research_question: "RQ1: How effectively do current large multimodal models (OpenFlamingo, LLaVA, MiniGPT-4, Otter, InstructBLIP) integrate core vision-language capabilities (recognition, OCR, knowledge, language generation, spatial awareness, math) across 16 emergent tasks?"
 models:
   api:
-  - gpt-4
+    - gpt-4o
   huggingface:
-  - openai/whisper-large
-  - openai/clip-vit-large-patch14
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: MM-Vet
-  source: synthetic
-  description: A benchmark dataset designed to evaluate large multimodal models on
-    complex tasks requiring integration of core vision-language capabilities.
-- name: COCO
-  source: external
-  description: A dataset containing images and their corresponding captions, used
-    for image recognition and captioning tasks.
-  url: https://cocodataset.org
-  url_kind: website
-  loader: '# Download instructions and data are at:
-
-    # https://cocodataset.org
-
-    '
-- name: VQA v2
-  source: external
-  description: A dataset for visual question answering, containing images and questions
-    about the content of the images.
-  url: https://visualqa.org
-  url_kind: website
-  loader: '# Download instructions and data are at:
-
-    # https://visualqa.org
-
-    '
-- name: Text VQA
-  source: huggingface
-  loader: 'from datasets import load_dataset
-
-    dataset = load_dataset("textvqa", split="validation")
-
-    '
-  description: A dataset for visual question answering focusing on text recognition
-    in images.
+  - name: "COCO"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("coco")
+    description: "A dataset containing images and their corresponding captions, used for image recognition and language generation tasks."
+  - name: "VQA v2"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("vqa_v2")
+    description: "A dataset for visual question answering, requiring models to answer questions based on image content."
+  - name: "Text VQA"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("text_vqa")
+    description: "A dataset for visual question answering that involves reading and reasoning over text in images."
+  - name: "MM-Vet"
+    source: synthetic
+    description: "A benchmark designed to evaluate large multimodal models on tasks requiring integration of vision-language capabilities."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

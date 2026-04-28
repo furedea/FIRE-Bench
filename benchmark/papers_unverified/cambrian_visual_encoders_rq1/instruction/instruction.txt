@@ -1,26 +1,25 @@
-You are a research agent. Conduct research about the question: "RQ2: How effective is the Cambrian Vision-Centric Benchmark (CV-Bench) in evaluating vision-centric capabilities?"
+You are a research agent. Conduct research about the question: "RQ2: What are the effects of different instruction tuning recipes on the performance of MLLMs, particularly in terms of adapter data size and freezing strategies?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Cambrian-1: Cambrian-1 is a family of multimodal large language models (MLLMs) designed with a vision-centric approach. It introduces the Cambrian Vision-Centric Benchmark (CV-Bench) to evaluate vision-centric capabilities and proposes the Spatial Vision Aggregator (SVA) to integrate high-resolution vision features with LLMs. The architecture aims to improve visual grounding and offers a comprehensive framework for instruction-tuned MLLMs.
-  - Component: Cambrian Vision-Centric Benchmark (CV-Bench)
+- Cambrian-1: Cambrian-1 is a family of multimodal large language models (MLLMs) designed with a vision-centric approach. It introduces the Spatial Vision Aggregator (SVA), a dynamic and spatially-aware connector that integrates high-resolution vision features with LLMs while reducing the number of tokens. The study evaluates various visual representations and instruction tuning strategies to enhance the performance of MLLMs.
   - Component: Spatial Vision Aggregator (SVA)
-  - Component: Integration of high-resolution vision features with LLMs
+  - Component: Vision-centric benchmark (CV-Bench)
+  - Component: Instruction tuning with varying adapter data sizes
 - Baseline for comparison: LLaVA
-- Baseline for comparison: CLIP
-- Baseline for comparison: DINO
+- Baseline for comparison: Mini-Gemini
 - Reference hint: https://github.com/cambrian-mllm/cambrian
 
 Datasets for training and evaluation:
-- CV-Bench: A vision-centric benchmark designed to evaluate the fundamental 2D and 3D visual understanding of MLLMs by transforming traditional vision benchmarks into VQA format.
-  Loading code:
-    from datasets import load_dataset
-    dataset = load_dataset("nyu-visionx/CV-Bench")
-- Cambrian-10M: A large-scale dataset curated for visual instruction tuning, emphasizing data source balancing and distribution ratio.
+- Cambrian-10M: A large-scale curated instruction tuning dataset for MLLMs, emphasizing high-quality visual instruction-tuning data from publicly available sources.
   Loading code:
     from datasets import load_dataset
     dataset = load_dataset("nyu-visionx/Cambrian-10M")
+- CV-Bench: A vision-centric benchmark designed to evaluate the fundamental 2D and 3D visual understanding of MLLMs.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("nyu-visionx/CV-Bench")
 
 Experimental constraints:
 - Do NOT use web search

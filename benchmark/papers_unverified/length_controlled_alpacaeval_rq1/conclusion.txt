@@ -1,0 +1,1 @@
+Controlling for response length in evaluations using the AlpacaEval dataset improves the Spearman correlation with human evaluation rankings in the LMSYS Chatbot Arena, increasing it from 0.94 to 0.98.

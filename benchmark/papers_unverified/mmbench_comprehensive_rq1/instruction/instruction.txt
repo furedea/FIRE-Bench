@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: What is the effectiveness of the CircularEval strategy in evaluating VLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How effective is the strategy of using multiple evaluation passes with shuffled choices in providing robust evaluation results for vision-language models on the MMBench dataset, a benchmark for multimodal understanding, compared to traditional evaluation methods, as measured by Top-1 accuracy?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- MMBench: A bilingual benchmark for assessing the multi-modal capabilities of vision-language models, containing over 3000 multiple-choice questions covering 20 different ability dimensions.  [loader unverified -- locate the data yourself]
+- MMBench: A bilingual benchmark for assessing the multi-modal capabilities of vision-language models, containing over 3000 multiple-choice questions covering 20 different ability dimensions.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

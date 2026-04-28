@@ -1,0 +1,1 @@
+The failure points in engineering a Retrieval Augmented Generation (RAG) system using the BioASQ dataset include missing content, missed top-ranked documents, and incorrect specificity.

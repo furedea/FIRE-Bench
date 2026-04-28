@@ -1,0 +1,1 @@
+A program-aided language model (PAL) performs significantly better on algorithmic reasoning tasks such as OBJECT COUNTING and REPEAT COPY compared to chain-of-thought prompting.

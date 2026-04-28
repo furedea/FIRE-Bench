@@ -1,18 +1,13 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ2: Can increasing the resolution of measured model performance reveal continuous improvements?"
+You are a research agent. Conduct an empirical study answering the question: "RQ2: Do emergent abilities, defined as unexpected capabilities that arise in large language models, in the BIG-Bench tasks predominantly appear with specific nonlinear or discontinuous metrics such as Brier Score (a measure of the accuracy of probabilistic predictions), rather than being inherent to task-model family combinations?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- BIG-Bench: A benchmark used to analyze emergent abilities in large language models, containing various tasks and metrics.
-  GitHub repo: https://github.com/google/BIG-bench
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/google/BIG-bench.git
-- InstructGPT/GPT-3: Model family used to test predictions about metric choices and emergent abilities.  [loader unverified -- locate the data yourself]
+- BIG-Bench: A benchmark suite used to evaluate the capabilities of language models across a wide range of tasks.  [loader unverified -- locate the data yourself]
 
 Analytical tools / techniques available:
+- Emergence Score
 - Meta-analysis
-- Statistical analysis
 
 Study constraints:
 - Do NOT use web search

@@ -1,0 +1,1 @@
+Retrieval and self-reflection mechanisms enhance the factual accuracy and generation quality of large language models by enabling SELF-RAG to outperform baseline models in these areas.

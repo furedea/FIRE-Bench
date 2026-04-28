@@ -1,0 +1,1 @@
+The potential causes of inverse scaling in large language models include their tendency to correct errors rather than repeat them, increased likelihood of producing memorized sequences, difficulty adapting to redefined symbols, and greater susceptibility to prompt injection attacks.

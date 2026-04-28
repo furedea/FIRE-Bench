@@ -1,0 +1,1 @@
+Current language models, specifically GPT-3-175B with a helpful prompt, are truthful on 58% of questions across 38 categories in a zero-shot setting.

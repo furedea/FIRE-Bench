@@ -1,0 +1,1 @@
+Models finetuned on multilingual datasets with English prompts can generalize to tasks in languages not intentionally seen during pretraining or finetuning.

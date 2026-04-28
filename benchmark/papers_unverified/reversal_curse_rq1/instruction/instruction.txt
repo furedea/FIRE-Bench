@@ -1,14 +1,13 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Does the Reversal Curse affect real-world knowledge in LLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Does the Reversal Curse, where language models struggle to generalize facts when presented in reverse order, affect the ability of state-of-the-art models like GPT-4 to accurately identify parent-child relationships in real-world datasets such as the IMDB top 1000 celebrities?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 via API
-- Load with HuggingFace: meta-llama/Llama-1
+- gpt-4o via API
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- IMDB Celebrity Parent-Child Dataset: A dataset of 1000 celebrities and their parents used to test the Reversal Curse in LLMs.  [generate programmatically]
+- IMDB top 1000 celebrities: A dataset containing information about the top 1000 most popular celebrities from IMDB, used to evaluate the ability of models to identify parent-child relationships.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

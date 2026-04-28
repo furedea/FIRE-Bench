@@ -1,0 +1,1 @@
+Large language models can predict their own behavior in hypothetical scenarios more accurately than another model trained on the same behavioral data, demonstrating a form of introspection. However, this self-prediction is limited to simple tasks and does not generalize well to complex or out-of-distribution tasks.

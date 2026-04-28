@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How do LMMs perform on Scene Text-Centric VQA tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do Large Multimodal Models perform in Scene Text-Centric Visual Question Answering (VQA) tasks using datasets like STVQA, TextVQA, OCRVQA, and ESTVQA?"
 
 You have access to the following resources:
 
@@ -8,10 +8,22 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- STVQA: A dataset consisting of questions related to scene text visual question answering.  [loader unverified -- locate the data yourself]
-- TextVQA: A dataset comprising questions that require reading text in images to answer.  [loader unverified -- locate the data yourself]
-- OCRVQA: A dataset featuring questions and answers based on text found in images, particularly book covers.  [loader unverified -- locate the data yourself]
-- ESTVQA: A dataset divided into English and Chinese questions and answers for scene text visual question answering.  [loader unverified -- locate the data yourself]
+- STVQA: A dataset consisting of 31,000+ questions across 23,000+ images collected from various public datasets for Scene Text Visual Question Answering.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/stvqa")
+- TextVQA: A dataset comprising 45,000+ questions on 28,000+ images sampled from specific OpenImages dataset categories expected to contain text.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/textvqa")
+- OCRVQA: A dataset featuring over 1 million question-answer pairs spanning 207,000+ book cover images for Visual Question Answering by reading text in images.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/ocrvqa")
+- ESTVQA: A dataset containing 20757 images along with 15056 English questions and 13006 Chinese questions for Scene Text Visual Question Answering.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/estvqa")
 
 Experimental constraints:
 - Do NOT use web search
@@ -23,33 +35,38 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Scene Text-Centric VQA Evaluation
+### 1. Scene Text-Centric VQA Performance Evaluation
 - **Procedure**: 
-  - Use the datasets STVQA, TextVQA, OCRVQA, ESTVQA(EN), and ESTVQA(CN).
+  - Use the datasets STVQA, TextVQA, OCRVQA, and ESTVQA.
   - For each dataset, select 3000 question instances for testing.
-  - Use the prompt "What is written in the image?" for English questions and "What are the Chinese characters in the image?" for Chinese questions.
+  - Use the prompt "What is written in the image?" for English words and "What are the Chinese characters in the image?" for Chinese words in the ESTVQA dataset.
   - Ensure that questions with answers containing fewer than 4 symbols are filtered out to reduce false positives.
+  - Evaluate models: BLIP2-6.7B, mPLUG-Owl, InstructBLIP, LLaVAR, BLIVA, mPLUG-Owl2, LLaVA1.5-7B, UniDoc, DocPedia, Monkey, and Supervised-SOTA.
 - **What to Record**: 
   - Record the raw outputs of the models.
-  - Extract whether the ground truth answer is present in the model's output.
+  - Extract the answers provided by the models.
+  - Calculate the accuracy of the answers by checking if the ground truth is present in the model's output.
 - **Correspondence**: 
-  - This experiment corresponds to the results presented in Table 2 and Section 3.2 of the paper.
+  - Results are presented in Table 2 and discussed in Section 3.2 of the paper.
 
 ## Evaluation Details
 
 - **Metric Definition**: 
-  - Use a simple presence check to determine if the ground truth answer is present in the model's output.
-  - Accuracy is calculated as the proportion of questions for which the ground truth is present in the output.
+  - Use a simple accuracy metric where the model's output is considered correct if the ground truth answer is present in the output.
+  - This approach is chosen over exact matching or ANLS due to the explanatory nature of LMM outputs.
 - **Normalization/Pre-processing**: 
-  - Ensure that all model outputs are converted to lowercase and stripped of leading/trailing whitespace before checking for the presence of the ground truth.
+  - Filter out questions with answers containing fewer than 4 symbols to avoid false positives.
 - **Aggregation Strategy**: 
-  - Calculate accuracy per dataset and then aggregate to get an overall accuracy for Scene Text-Centric VQA tasks.
+  - Calculate accuracy per sample.
+  - Aggregate results to obtain per-condition accuracy for each dataset.
+  - Compute overall accuracy across all datasets.
 
 ## Implementation Notes
 
+- **Pitfalls/Caveats**: 
+  - The paper notes that LMMs may struggle with recognizing non-semantic text and handwritten text, which could affect performance.
+  - Ensure that the input resolution is appropriate for the model being tested, as higher resolutions tend to yield better results in VQA tasks.
 - **Prompt Templates**: 
-  - Use specific prompts for different languages as mentioned in the procedure.
-- **Pitfalls**: 
-  - Be cautious of the model's tendency to include explanatory terms in outputs, which may affect the presence check.
+  - Use specific prompts for different languages and types of text as mentioned in the procedure.
 - **Order of Operations**: 
-  - Ensure filtering of questions with short answers is done before model evaluation to maintain consistency in results.
+  - Ensure that the filtering of questions and the selection of test instances are completed before running the models to maintain consistency in evaluation.

@@ -1,25 +1,23 @@
-You are a research agent. Conduct research about the question: "RQ1: Does multitask finetuning on English tasks improve performance on non-English tasks?"
+You are a research agent. Conduct research about the question: "RQ1: Does finetuning multilingual language models on tasks in a single language enhance their performance on tasks in other languages, evaluated using the xP3 dataset (a multilingual benchmark for cross-lingual transfer) and various performance metrics?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- BLOOMZ and mT0: BLOOMZ and mT0 are finetuned variants of the pretrained multilingual BLOOM and mT5 model families. They are designed to improve crosslingual generalization by finetuning on English tasks with English prompts, allowing for task generalization to non-English languages that appear only in the pretraining corpus. Finetuning on multilingual tasks with English prompts further enhances performance on both English and non-English tasks, achieving state-of-the-art zero-shot results.
-  - Component: Multitask finetuning on English tasks
-  - Component: Use of pretrained multilingual BLOOM and mT5 models
-  - Component: Evaluation on non-English held-out tasks
+- BLOOMZ and mT0: BLOOMZ and mT0 are finetuned variants of the pretrained multilingual BLOOM and mT5 model families. These models are finetuned using multitask prompted finetuning (MTF) on English tasks with English prompts, allowing for task generalization to non-English languages that appear only in the pretraining corpus. Finetuning on multilingual tasks with English prompts further improves performance on English and non-English tasks, leading to various state-of-the-art zero-shot results.
+  - Component: Multitask prompted finetuning (MTF) on English tasks
+  - Component: Use of xP3 dataset for multilingual task evaluation
+  - Component: BLOOM and mT5 model families as base architectures
 - Baseline for comparison: BLOOM
 - Baseline for comparison: mT5
+- Baseline for comparison: XGLM
+- Baseline for comparison: mTk-Instruct
 - Reference hint: https://github.com/bigscience-workshop/xmtf
 
 Datasets for training and evaluation:
-- xP3: A composite of supervised datasets in 46 languages with English and machine-translated prompts.
+- xP3: A composite of supervised datasets in 46 languages with English and machine-translated prompts, used for evaluating cross-lingual transfer.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('bigscience/xP3')
-- P3: An English-only multitask mixture used for finetuning.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('bigscience/P3')
+    dataset = load_dataset("bigscience/xP3")
 
 Experimental constraints:
 - Do NOT use web search

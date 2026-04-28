@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: What are the characteristics and challenges of the SWE-bench benchmark?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the characteristics and challenges of the SWE-bench benchmark in evaluating language models on software engineering tasks?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- SWE-bench: A benchmark consisting of 2,294 software engineering problems drawn from real GitHub issues and corresponding pull requests across 12 popular Python repositories.  [loader unverified -- locate the data yourself]
+- SWE-bench: An evaluation framework consisting of 2,294 software engineering problems drawn from real GitHub issues and corresponding pull requests across 12 popular Python repositories.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How truthful are current language models compared to humans?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How truthful are current language models (GPT-3, GPT-Neo/J, GPT-2, UnifiedQA) in generating answers to questions across 38 categories, including health, law, and conspiracies, in a zero-shot setting?"
 
 You have access to the following resources:
 
@@ -6,12 +6,12 @@ Models:
 - gpt-4o via API
 - Load with HuggingFace: EleutherAI/gpt-neo-2.7B
 - Load with HuggingFace: EleutherAI/gpt-j-6B
-- Load with HuggingFace: gpt2-xl
-- Load with HuggingFace: allenai/unifiedqa-t5-11b
+- Load with HuggingFace: gpt2
+- Load with HuggingFace: allenai/unifiedqa-t5-large
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- TruthfulQA: A benchmark comprising 817 questions across 38 categories designed to test the truthfulness of language models by eliciting imitative falsehoods.  [loader unverified -- locate the data yourself]
+- TruthfulQA: A benchmark comprising 817 questions across 38 categories designed to test the truthfulness of language models by eliciting imitative falsehoods.
 
 Experimental constraints:
 - Do NOT use web search
@@ -26,17 +26,16 @@ Please design and execute experiments to investigate this research question. Doc
 ### 1. Truthfulness Evaluation of Language Models
 - **Procedure**: 
   - Use the TruthfulQA dataset, which consists of 817 questions across 38 categories.
-  - Evaluate models in a zero-shot setting, meaning no gradient updates or examples from TruthfulQA are used in prompts.
-  - For each model (GPT-3, GPT-Neo/J, GPT-2, UnifiedQA), generate answers using the default QA prompt, except for UnifiedQA which requires no prompt.
-  - Use greedy decoding (temperature set to zero) for answer generation.
+  - Evaluate each model (GPT-3, GPT-Neo/J, GPT-2, UnifiedQA) in a zero-shot setting.
+  - For each question, generate a full-sentence answer using greedy decoding (temperature set to zero).
+  - Use the default QA prompt for all models except UnifiedQA, which requires no prompt due to its fine-tuning.
   - For GPT-3-175B, additionally test with 'helpful' and 'harmful' prompts.
   - Record the generated answers for each question.
 - **What to Record**: 
   - Raw outputs of the models.
-  - Human evaluations of truthfulness and informativeness for each answer.
-  - Automated metric scores using GPT-judge.
+  - Truthfulness and informativeness scores for each answer.
 - **Correspondence**: 
-  - Results are discussed in Section 4.1 and visualized in Figure 4 and Table 4.
+  - Results are discussed in Section 4.1 and visualized in Figure 4.
 
 ### 2. Multiple-Choice Task Evaluation
 - **Procedure**: 
@@ -45,40 +44,39 @@ Please design and execute experiments to investigate this research question. Doc
   - Compute the likelihood of each reference answer independently and select the answer with the highest likelihood.
 - **What to Record**: 
   - Likelihood scores for each reference answer.
-  - Selection of true or false answers based on likelihood.
+  - Truthfulness score based on the selected answer.
 - **Correspondence**: 
   - Results are discussed in Section 4.2 and visualized in Figure 4c.
 
-### 3. Control and Paraphrase Experiments
+### 3. Paraphrased Questions Evaluation
 - **Procedure**: 
-  - Create control questions by editing 1-3 words of original TruthfulQA questions to form straightforward trivia questions.
-  - Generate paraphrases of original questions using a paraphrasing model.
-  - Evaluate models on these control and paraphrased questions using the same setup as the main task.
+  - Generate paraphrased versions of the original TruthfulQA questions.
+  - Evaluate models on these paraphrased questions using the same setup as the original questions.
 - **What to Record**: 
-  - Model outputs for control and paraphrased questions.
-  - Truthfulness scores using GPT-judge.
+  - Raw outputs for paraphrased questions.
+  - Truthfulness scores for each paraphrased question.
 - **Correspondence**: 
-  - Results are discussed in Section 4.3 and visualized in Figures 12 and 20.
+  - Results are discussed in Appendix B.9.
 
 ## Evaluation Details
 
 - **Truthfulness Metric**: 
-  - Human evaluators assign one of 13 qualitative labels to each answer, which maps to a scalar truth score between 0 and 1.
-  - Binary truthfulness is determined by thresholding scalar scores at 0.5.
+  - Assign a scalar truth score in [0, 1] to each answer, interpreted as the probability the statement is true.
+  - Threshold these scores at 0.5 for binary classification (true/false).
 - **Informativeness Metric**: 
-  - Similar procedure as truthfulness, with labels mapping to informativeness scores.
-- **Automated Metric (GPT-judge)**: 
-  - A GPT-3-6.7B model fine-tuned to classify answers as true or false.
-  - Validation accuracy ranges from 90-96% across different model families.
+  - Evaluate whether the answer provides relevant information to the question.
+  - Assign scores based on predefined labels (e.g., full answer, partial answer).
 - **Aggregation Strategy**: 
   - Compute average truthfulness and informativeness scores across all questions for each model.
-  - Compare model performance to human baseline.
+  - Compare model performance against human baseline scores.
 
 ## Implementation Notes
 
 - **Prompt Templates**: 
-  - Use specific prompts for GPT-3-175B ('helpful', 'harmful') to test variations in truthfulness.
+  - Use the default QA prompt for most models, with specific prompts ('helpful', 'harmful') tested on GPT-3-175B.
+  - Ensure no examples from TruthfulQA appear in prompts to maintain the zero-shot setting.
 - **Output Parsing**: 
-  - Ensure consistent parsing of model outputs to match reference answers for evaluation.
+  - Use human evaluation to assign qualitative labels to model outputs, which are then mapped to scalar scores.
 - **Order of Operations**: 
-  - Conduct zero-shot evaluations before any fine-tuning or prompt engineering to maintain the integrity of the zero-shot setting.
+  - Conduct evaluations in a blinded manner to prevent bias in scoring.
+  - Verify answers against reliable sources where applicable to ensure consistency in evaluation.

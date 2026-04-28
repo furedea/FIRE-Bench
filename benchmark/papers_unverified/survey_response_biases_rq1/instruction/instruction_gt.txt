@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How do RLHF-ed models differ from vanilla LLMs in terms of response biases?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do large language models (LLMs) respond to non-bias perturbations, such as typos, letter swaps, and middle randomization, in survey questions derived from Pew Research's American Trends Panel?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- American Trends Panel (ATP): A set of survey questions curated by Pew Research, used to study response biases in LLMs.  [loader unverified -- locate the data yourself]
+- American Trends Panel: Survey questions derived from Pew Research's American Trends Panel, used to evaluate LLMs' sensitivity to non-bias perturbations.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,64 +20,64 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Response Bias Evaluation
+### 1. Key Typo Perturbation Evaluation
 - **Procedure**: 
-  - Use the dataset of question pairs (Qbias) where each pair consists of an original question (q) and a modified question (q′) designed to induce a specific response bias.
-  - For each question pair, query the models (gpt-4o and Llama-3.1-8B-Instruct) with a temperature of 1 to generate 50 responses per question.
-  - Ensure that the prompt includes explicit instructions to answer with one of the provided alphabetical options.
-  - Record the distribution of responses for each question pair.
+  - Use survey questions from the American Trends Panel dataset.
+  - Introduce key typos by randomly replacing one letter in each word with a probability of 20%.
+  - Ensure that numeric values and punctuation are not altered.
+  - Query each model (gpt-4o, Llama-3.1-8B-Instruct) with the original and perturbed questions.
+  - Collect 50 responses per question per model.
 - **What to Record**: 
-  - Raw outputs of the model responses.
-  - Distribution of responses for each question pair.
-  - Calculate the change in response distribution (∆b) for each bias type.
+  - Raw outputs from the models.
+  - Change in response distribution (\(\Delta p\)) between original and perturbed questions.
 - **Correspondence**: 
-  - This experiment corresponds to the analysis in Section 2.3 and is visualized in Figure 2 and Table 2.
+  - Figure 2, Table 3, Section 3.1.
 
-### 2. Non-Bias Perturbation Evaluation
+### 2. Letter Swap Perturbation Evaluation
 - **Procedure**: 
-  - Use the dataset of question pairs (Qperturb) where each pair consists of an original question (q) and a modified question (q′) with non-bias perturbations (e.g., typos, letter swaps).
-  - Query the models with the same setup as the bias evaluation.
-  - Record the distribution of responses for each question pair.
+  - Use survey questions from the American Trends Panel dataset.
+  - Perform one swap per word, excluding the first and last letters, only on words with length ≥4.
+  - Query each model with the original and perturbed questions.
+  - Collect 50 responses per question per model.
 - **What to Record**: 
-  - Raw outputs of the model responses.
-  - Distribution of responses for each question pair.
-  - Calculate the change in response distribution (∆p) for each perturbation type.
+  - Raw outputs from the models.
+  - Change in response distribution (\(\Delta p\)) between original and perturbed questions.
 - **Correspondence**: 
-  - This experiment corresponds to the analysis in Section 2.3 and is visualized in Figure 2 and Table 2.
+  - Figure 2, Table 3, Section 3.1.
+
+### 3. Middle Randomization Perturbation Evaluation
+- **Procedure**: 
+  - Use survey questions from the American Trends Panel dataset.
+  - Randomize the order of all letters in a word, except for the first and last, only on words with length ≥4.
+  - Query each model with the original and perturbed questions.
+  - Collect 50 responses per question per model.
+- **What to Record**: 
+  - Raw outputs from the models.
+  - Change in response distribution (\(\Delta p\)) between original and perturbed questions.
+- **Correspondence**: 
+  - Figure 2, Table 3, Section 3.1.
 
 ## Evaluation Details
 
 - **Metric Definitions**:
-  - Calculate ∆b for each bias type as specified in Table 2, using the formulae provided for each bias.
-  - Conduct a Student’s t-test on the average change (¯∆b) across all questions for each model and bias type, with the null hypothesis that ¯∆b is 0.
-  - Similarly, calculate ∆p for non-bias perturbations and conduct a t-test to check if ¯∆p is statistically different from 0.
+  - **Change in Response Distribution (\(\Delta p\))**: Calculated as the difference in counts of specific response options between the original and perturbed questions.
+  - **Statistical Significance**: Use a Student’s t-test to determine if the average change (\(\bar{\Delta p}\)) is significantly different from 0, with a p-value threshold of 0.05.
 
 - **Normalization and Pre-processing**:
-  - Normalize the entropy of the answer distributions to measure model uncertainty, using the formula: 
-    \[
-    \text{Normalized Entropy} = -\frac{\sum_{i=1}^{n} p_i \log_2 p_i}{\log_2 n}
-    \]
-  - Ensure that the model outputs are valid responses (one of the letter options).
+  - Ensure that all responses are valid (i.e., match one of the provided options).
+  - Normalize response distributions by the total number of responses collected per question.
 
 - **Aggregation Strategy**:
-  - Aggregate the response distributions per question to compute ∆b and ∆p.
-  - Use the p-value from the t-test to determine statistical significance of changes.
+  - Compute \(\Delta p\) for each question pair.
+  - Aggregate \(\Delta p\) across all questions to compute \(\bar{\Delta p}\).
+  - Conduct statistical tests to evaluate significance across the dataset.
 
 ## Implementation Notes
 
 - **Prompt Template**:
-  - Use a consistent prompt template for all models: 
-    ```
-    Please answer the following question with one of the alphabetical options provided.
-    Question: [question]
-    A. [option]
-    B. [option]
-    ...
-    E. [option]
-    Answer:
-    ```
-  - Ensure that the models generate only one token for the answer.
+  - Use a consistent prompt template for all models: "Please answer the following question with one of the alphabetical options provided. Question: [question] A. [option] B. [option] ... E. [option] Answer:"
+  - Ensure models generate only one token for the response.
 
-- **Pitfalls and Caveats**:
-  - Be aware of the potential for models to generate invalid responses; ensure that only valid responses are recorded.
-  - Note that RLHF-ed models may exhibit different sensitivities to bias and non-bias perturbations, as highlighted in Section 3.2.
+- **Pitfalls**:
+  - Ensure that perturbations do not render questions nonsensical, especially for numeric or punctuated content.
+  - Validate that the models' responses are correctly parsed and mapped to the intended options.

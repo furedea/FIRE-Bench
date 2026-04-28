@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How can the compositionality gap in language models be measured?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How does the compositionality gap manifest in language models of varying sizes, specifically within the GPT-3 family, when evaluated on multi-hop question answering tasks?"
 
 You have access to the following resources:
 
@@ -8,13 +8,12 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Compositional Celebrities: A dataset of 8.6k 2-hop questions combining frequently stated facts in improbable ways to measure the compositionality gap.  [generate programmatically]
-- 2WikiMultiHopQA: A dataset containing 2-hop compositional questions sourced from facts that appear in Wikipedia articles.  [loader unverified -- locate the data yourself]
-- Musique: A dataset of multi-hop questions via single-hop question composition.
-  GitHub repo: https://github.com/stonybrooknlp/musique
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/stonybrooknlp/musique.git
+- Compositional Celebrities: A dataset of 8.6k 2-hop questions combining frequently stated facts in improbable ways to evaluate compositional reasoning.  [generate programmatically]
+- 2WikiMultiHopQA: A dataset containing 2-hop compositional questions sourced from facts in Wikipedia articles.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/2wikimultihopqa")
+- Musique: A dataset of multi-hop questions via single-hop question composition.  [loader unverified -- locate the data yourself]
 - Bamboogle: A manually constructed dataset of 125 2-hop questions challenging a system's ability to decompose complex questions.  [generate programmatically]
 
 Experimental constraints:

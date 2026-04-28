@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How do LMMs perform on various text recognition tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do Large Multimodal Models (e.g., GPT4V, Gemini) perform in text recognition tasks across regular, irregular, occluded, artistic, handwritten, Chinese, and non-semantic text datasets?"
 
 You have access to the following resources:
 
@@ -8,23 +8,92 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- IIIT5K: A dataset for regular text recognition in natural scene images.
+- IIIT5K: A dataset for regular text recognition containing images with text.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/iiit5k")
 - SVT: Street View Text dataset for regular text recognition.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/svt")
 - IC13: ICDAR 2013 dataset for regular text recognition.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/ic13")
 - IC15: ICDAR 2015 dataset for irregular text recognition.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/ic15")
 - SVTP: Street View Text Perspective dataset for irregular text recognition.
-- CT80: A dataset for irregular text recognition.
-- COCO: COCO-Text dataset for irregular text recognition.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/svtp")
+- CT80: Curved Text 80 dataset for irregular text recognition.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/ct80")
+- COCO: COCO Text dataset for irregular text recognition.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("coco")
 - CTW: SCUT-CTW1500 dataset for irregular text recognition.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/ctw")
 - TT: Total-Text dataset for irregular text recognition.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/total-text")
 - HOST: Heavily occluded scene text dataset.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/host")
 - WOST: Weakly occluded scene text dataset.
-- WordArt: A dataset for artistic text recognition.
-- IAM: A dataset for handwritten text recognition.
-- ReCTS: A dataset for Chinese text recognition.
-- ORAND-CAR-2014: A dataset for handwritten digit string recognition.
-- NST: Non-Semantic Text dataset created using shuffled characters from the IIIT5K dictionary.  [generate programmatically]
-- ST: Semantic Text dataset created using words from the IIIT5K dictionary.  [generate programmatically]
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/wost")
+- WordArt: Artistic text recognition dataset.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/wordart")
+- IAM: Handwritten text recognition dataset.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/iam")
+- ReCTS: Chinese text recognition dataset.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/rects")
+- ORAND-CAR-2014: Handwritten digit string recognition dataset.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/orand-car-2014")
+- NST: Non-Semantic Text dataset with shuffled characters.  [generate programmatically]
+  Generation code:
+    import random
+    from PIL import Image, ImageDraw, ImageFont
+    
+    def generate_nst_image():
+        img = Image.new('RGB', (100, 30), color = (255, 255, 255))
+        d = ImageDraw.Draw(img)
+        text = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=5))
+        d.text((10,10), text, fill=(0,0,0))
+        return img
+    
+    dataset = [generate_nst_image() for _ in range(3000)]
+- ST: Semantic Text dataset with meaningful words.  [generate programmatically]
+  Generation code:
+    import random
+    from PIL import Image, ImageDraw, ImageFont
+    
+    def generate_st_image():
+        img = Image.new('RGB', (100, 30), color = (255, 255, 255))
+        d = ImageDraw.Draw(img)
+        text = random.choice(['HELLO', 'WORLD', 'TEXT', 'IMAGE', 'DATA'])
+        d.text((10,10), text, fill=(0,0,0))
+        return img
+    
+    dataset = [generate_st_image() for _ in range(3000)]
 
 Experimental constraints:
 - Do NOT use web search

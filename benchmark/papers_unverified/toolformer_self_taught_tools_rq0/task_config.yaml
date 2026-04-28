@@ -1,51 +1,71 @@
 task_id: toolformer_self_taught_tools_rq0
 paper_type: novel_architecture
-research_question: 'RQ1: Can language models learn to use external tools in a self-supervised
-  manner without large amounts of human annotations?'
+research_question: "RQ1: Can a language model autonomously learn to use a variety of external tools, such as a calculator, a Q&A system, a search engine, a translation system, and a calendar, to improve zero-shot performance on downstream tasks?"
 proposed_method:
-  name: Toolformer
-  summary: Toolformer is a language model architecture that autonomously learns to
-    use external tools via simple APIs. It decides which APIs to call, when to call
-    them, what arguments to pass, and how to incorporate the results into future token
-    prediction. This is achieved in a self-supervised manner, requiring only a few
-    demonstrations for each API. Toolformer integrates various tools, such as a calculator,
-    a Q&A system, a search engine, a translation system, and a calendar, to enhance
-    its zero-shot performance on diverse tasks.
+  name: "Toolformer"
+  summary: "Toolformer is a language model that autonomously learns to use external tools via simple APIs to enhance its performance on various tasks. It is trained to decide which APIs to call, when to call them, what arguments to pass, and how to incorporate the results into future token prediction. This is achieved in a self-supervised manner, requiring only a few demonstrations for each API. Toolformer integrates tools like a calculator, a Q&A system, a search engine, a translation system, and a calendar, significantly improving zero-shot performance on downstream tasks without sacrificing core language modeling abilities."
   key_components:
-  - API call sampling and filtering based on self-supervised loss
-  - 'Integration of multiple tools: calculator, Q&A system, search engine, translation
-    system, calendar'
-  - Finetuning on augmented datasets with API calls
+    - "API call decision-making mechanism"
+    - "Self-supervised learning with minimal demonstrations"
+    - "Integration of multiple external tools (calculator, Q&A system, search engine, translation system, calendar)"
 baselines:
-- GPT-J
-- GPT-J + CC
-- OPT (66B)
-- GPT-3 (175B)
+  - "GPT-J"
+  - "OPT (66B)"
+  - "GPT-3 (175B)"
 reference_implementation: []
 datasets:
-- name: CCNet
-  source: external
-  description: A large-scale dataset used for language modeling, consisting of web
-    crawl data.
-  url: https://github.com/facebookresearch/cc_net
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
+  - name: "LAMA (SQuAD, Google-RE, T-REx)"
+    source: unknown
+    description: "A benchmark for evaluating language models on factual knowledge by completing short statements with missing facts."
+  - name: "ASDiv"
+    source: unknown
+    description: "A dataset for evaluating mathematical reasoning abilities."
+  - name: "SVAMP"
+    source: unknown
+    description: "A dataset for evaluating mathematical reasoning abilities."
+  - name: "MAWPS"
+    source: unknown
+    description: "A dataset for evaluating mathematical reasoning abilities."
+  - name: "Web Questions"
+    source: unknown
+    description: "A dataset for evaluating question answering abilities."
+  - name: "Natural Questions"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("natural_questions")
+    description: "A benchmark for evaluating question answering abilities with questions from real users."
+  - name: "TriviaQA"
+    source: unknown
+    description: "A dataset for evaluating question answering abilities."
+  - name: "MLQA"
+    source: unknown
+    description: "A multilingual question-answering benchmark with questions in multiple languages and context paragraphs in English."
+  - name: "TEMPLAMA"
+    source: unknown
+    description: "A dataset containing cloze queries about facts that change with time."
+  - name: "DATESET"
+    source: synthetic
+    loader: |
+      import random
+      from datetime import datetime, timedelta
 
-    # git clone https://github.com/facebookresearch/cc_net.git
+      def generate_dateset():
+          current_date = datetime.now()
+          dateset = []
+          for _ in range(1000):
+              past_date = current_date - timedelta(days=random.randint(1, 365))
+              future_date = current_date + timedelta(days=random.randint(1, 365))
+              dateset.append({
+                  "query": f"What day of the week was {past_date.strftime('%B %d, %Y')}?",
+                  "answer": past_date.strftime('%A')
+              })
+          return dateset
 
-    '
-- name: Natural Questions
-  source: huggingface
-  description: A benchmark for question answering research, used to finetune the Atlas
-    model for the Q&A tool.
-  loader: 'from datasets import load_dataset
-
-    ds = load_dataset(''natural_questions'')
-
-    '
-compute_hint: 8 NVIDIA A100 40GB GPUs, BF16, up to 2k steps
+      dataset = generate_dateset()
+    description: "A synthetic dataset generated to evaluate temporal reasoning, requiring knowledge of the current date."
+compute_hint: "single GPU, <24h"
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
-- Implement the proposed method yourself -- do not import it from a library that bundles
-  the paper's exact code.
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"
+  - "Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code."

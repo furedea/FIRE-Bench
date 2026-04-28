@@ -1,12 +1,12 @@
-You are a research agent. Conduct research about the question: "RQ2: How do different image processing strategies and visual representations affect VLM performance?"
+You are a research agent. Conduct research about the question: "RQ2: How do different image processing techniques and visual representations impact the performance of VLMs on visual question answering, object localization, and challenge tasks?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Prismatic VLM: Prismatic VLM is a visually-conditioned language model architecture that explores the design space of VLMs by investigating different image processing strategies and visual representations. It uses a 'patch-as-token' approach, treating patch features from pretrained visual backbones as tokens projected into the input space of a language model. The architecture is designed to evaluate the impact of various design choices on VLM performance, particularly focusing on image processing and visual representation.
-  - Component: Pretrained visual backbones (e.g., CLIP, SigLIP, DINOv2, ViT)
+- Prismatic VLMs: Prismatic VLMs explore the design space of visually-conditioned language models by investigating key design decisions such as image preprocessing, architecture, and optimization. The architecture uses a 'patch-as-token' approach, treating patch features from pretrained visual backbones as tokens that can be projected into the input space of a language model. This enables training with a simple objective and allows leveraging powerful language models.
+  - Component: Pretrained visual backbones (e.g., CLIP, SigLIP, DINOv2)
   - Component: Vision-language projector for mapping visual features to language model input
-  - Component: Language model integration with visual features
+  - Component: Language model for generating text from combined visual and text inputs
 - Baseline for comparison: LLaVa v1.5
 - Baseline for comparison: InstructBLIP
 - Baseline for comparison: PaLI-3
@@ -14,11 +14,23 @@ Proposed method to implement:
 - Reference hint: github.com/TRI-ML/vlm-evaluation
 
 Datasets for training and evaluation:
-- LLaVa v1.5 pretraining datasets: A mixture of datasets used for pretraining VLMs, including captioning datasets and multimodal instruct tuning examples.
-  GitHub repo: https://github.com/haotian-liu/LLaVA
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/haotian-liu/LLaVA.git
+- VQAv2: A dataset for visual question answering that assesses general visual reasoning.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("visual_question_answering", "vqa_v2")
+- GQA: A dataset for spatial and compositional reasoning in visual question answering.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("gqa")
+- RefCOCO: A dataset for referring expression grounding and object localization.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("refcoco")
+- OCID-Ref: A 3D robotic dataset with embodied language for clutter scene grounding.  [loader unverified -- locate the data yourself]
+- VizWiz: A dataset for visual question answering with unanswerable questions.  [loader unverified -- locate the data yourself]
+- TextVQA: A dataset for reasoning around text present in images.  [loader unverified -- locate the data yourself]
+- TallyQA: A dataset for assessing a VLM's ability to count objects described in language.  [loader unverified -- locate the data yourself]
+- AI2D: A dataset consisting of multiple choice questions about scientific diagrams and charts.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

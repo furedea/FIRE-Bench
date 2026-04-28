@@ -1,19 +1,18 @@
 task_id: reversal_curse_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: Do LLMs trained on ''A is B'' fail to generalize to ''B is
-  A''?'
+research_question: "RQ1: Do auto-regressive language models (e.g., GPT-3, Llama-1, which predict the next word in a sequence) trained on synthetic facts (artificially generated data) of the form 'A is B' generalize to the reverse form 'B is A' in the context of a synthetic dataset of fictitious facts?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: Synthetic dataset of fictitious facts
-  source: synthetic
-  description: A dataset made up of documents of the form '<name> is <description>'
-    (or the reverse) where the names and descriptions are fictitious.
+  - name: "Synthetic dataset of fictitious facts"
+    source: synthetic
+    description: "A dataset made up of documents of the form '<name> is <description>' (or the reverse) where the names and descriptions are fictitious."
+references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

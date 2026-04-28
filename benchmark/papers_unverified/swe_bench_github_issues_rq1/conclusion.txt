@@ -1,0 +1,1 @@
+SWE-bench is characterized by its diverse tasks, large codebases, and complex dependencies. A challenge is maintaining its robustness while allowing for continuous updates with new task instances.

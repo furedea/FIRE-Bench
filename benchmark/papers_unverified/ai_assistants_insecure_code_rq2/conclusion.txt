@@ -1,0 +1,1 @@
+Users' language and behavior, specifically through effective prompt strategies and parameter adjustments, can improve the security of their code when interacting with an AI assistant across tasks involving encryption, signing, file path handling, SQL operations, and C string manipulation.

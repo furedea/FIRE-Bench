@@ -1,19 +1,23 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: What are the systematic visual shortcomings in current MLLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: What are the systematic visual patterns that CLIP-based vision encoders struggle with, and how do these affect the performance of multimodal large language models (MLLMs) like GPT-4V?"
 
 You have access to the following resources:
 
 Models:
 - gpt-4o via API
-- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Load with HuggingFace: openai/clip-vit-large-patch14
+- Load with HuggingFace: LLaVA-1.5
+- Load with HuggingFace: InstructBLIP
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- ImageNet-1K: A large-scale dataset for image classification, used to evaluate visual models.
-- LAION-Aesthetic: A dataset containing aesthetically pleasing images, used for evaluating visual models.
-  GitHub repo: https://github.com/LAION-AI/aesthetic-predictor
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/LAION-AI/aesthetic-predictor.git
+- ImageNet-1K: A large-scale dataset for image classification containing 1,000 classes.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("imagenet-1k")
+- LAION-Aesthetic: A subset of the LAION dataset filtered for aesthetic quality.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("laion-aesthetic")
 
 Experimental constraints:
 - Do NOT use web search

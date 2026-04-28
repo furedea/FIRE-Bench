@@ -1,20 +1,23 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Why do Vision-Language Models exhibit poor compositional and order understanding?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Why do Vision-Language Models (VLMs, which integrate visual and textual data) perform well on retrieval tasks (matching images with corresponding text) despite poor compositional understanding, as evaluated on perturbed datasets like COCO and Flickr30k using metrics such as Recall@1 and Recall@5?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4o via API
 - Load with HuggingFace: openai/clip-vit-base-patch32
 - Load with HuggingFace: salesforce/blip
 - Load with HuggingFace: facebook/flava-full
-- Load with HuggingFace: zengyan-97/X-VLM
+- Load with HuggingFace: zengyan-97/x-vlm
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Attribution, Relation, and Order (ARO) benchmark: A benchmark to evaluate the ability of VLMs to understand different types of relationships, attributes, and order information.  [generate programmatically]
-- Visual Genome: A large-scale dataset with images annotated with objects, attributes, and relations.  [loader unverified -- locate the data yourself]
-- COCO: A dataset containing images and their captions, used for image-text retrieval tasks.  [loader unverified -- locate the data yourself]
-- Flickr30k: A dataset containing images and their captions, used for image-text retrieval tasks.  [loader unverified -- locate the data yourself]
+- COCO: A large-scale object detection, segmentation, and captioning dataset.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("coco")
+- Flickr30k: A dataset of images with corresponding captions, used for image-text retrieval tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("flickr30k")
 
 Experimental constraints:
 - Do NOT use web search
@@ -26,59 +29,51 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Visual Genome Relation and Attribution Tasks
-- **Procedure**: 
-  - For the Visual Genome Relation task, present models with images and two captions: one correct and one with swapped relations (e.g., "the dog is behind the tree" vs. "the tree is behind the dog").
-  - For the Visual Genome Attribution task, present models with images and two captions: one correct and one with swapped attributes (e.g., "the crouched cat and the open door" vs. "the open cat and the crouched door").
-  - Use the dataset generation procedure outlined in Appendix A to ensure that objects are large enough and not from the same category.
-- **What to Record**: 
-  - Record the accuracy of the model in selecting the correct caption from the two choices.
-- **Correspondence**: 
-  - Results are discussed in Section 2.1 and visualized in Figure 1.
+### 1. Evaluation of Retrieval Performance with Perturbed Datasets
 
-### 2. COCO and Flickr30k Order Sensitivity Tasks
-- **Procedure**: 
-  - For each image, present the model with the original caption and four systematically permuted captions (e.g., shuffle nouns and adjectives, shuffle everything but nouns and adjectives, shuffle trigrams, shuffle words within each trigram).
-  - Use Spacy for part-of-speech tagging to perform the perturbations.
-- **What to Record**: 
-  - Record the accuracy of the model in selecting the correct caption from the five choices.
-- **Correspondence**: 
-  - Results are discussed in Section 2.2 and visualized in Figure 1.
+- **Procedure**:
+  - **Input Format**: Use the COCO and Flickr30k datasets with perturbed captions and images.
+  - **Perturbation Strategy**:
+    - For captions, apply five types of perturbations: shuffle nouns and adjectives, shuffle everything but nouns and adjectives, shuffle trigrams, shuffle words within each trigram, and shuffle all words.
+    - For images, shuffle rows, columns, and patches (9 equally-sized patches).
+  - **Prompting Strategy**: Not applicable as this is a retrieval task.
+  - **Number of Samples**: Use the full test splits of COCO (5k images) and Flickr30k (1k images).
+  - **Shuffling/Ordering of Conditions**: Randomly shuffle the order of perturbations for each run to ensure robustness.
+  - **Splits to Use**: Use the Karpathy test splits for both datasets.
 
-### 3. Retrieval Task with Modified Datasets
-- **Procedure**: 
-  - Evaluate models on COCO and Flickr30k datasets with captions and images modified to remove order and composition cues.
-  - For captions, apply perturbations as described in Table 1.
-  - For images, shuffle rows, columns, or patches as described in Section 3.1.
-- **What to Record**: 
-  - Record Recall@1 and Recall@5 for both text and image retrieval tasks.
-- **Correspondence**: 
-  - Results are discussed in Section 3.1 and visualized in Figure 2.
+- **What to Record**:
+  - Record Recall@1 and Recall@5 for both text-to-image and image-to-text retrieval tasks.
+  - Capture standard deviations across multiple runs (3 seeds) to account for randomness in perturbations.
 
-### 4. Composition-Aware Hard Negatives
-- **Procedure**: 
-  - Fine-tune CLIP with composition-aware hard negatives by generating negative captions through swapping linguistic elements and sampling strong alternative images using nearest neighbors.
-  - Evaluate on the same tasks as above to assess improvements.
-- **What to Record**: 
-  - Record improvements in accuracy and recall metrics compared to baseline models.
-- **Correspondence**: 
-  - Results are discussed in Section 4 and visualized in Figure 3.
+- **Correspondence to a Figure / Table / Section in the Paper**:
+  - Figure 2: Illustrates the retrieval performance without access to order information.
+  - Table 3: Details performance on text-shuffled retrieval tasks.
+  - Table 4: Details performance on image-shuffled retrieval tasks.
+  - Section 3.1: Discusses the limitations of retrieval as an evaluation.
 
 ## Evaluation Details
 
-- **Accuracy Calculation**: 
-  - For binary choice tasks (e.g., Visual Genome Relation and Attribution), accuracy is calculated as the proportion of correct selections out of total selections.
-- **Recall Calculation**: 
-  - Recall@1 and Recall@5 are calculated as the proportion of times the correct item is retrieved within the top 1 or top 5 results, respectively.
-- **Normalization and Pre-processing**: 
-  - Ensure all captions are tokenized and part-of-speech tagged using Spacy before applying perturbations.
-  - For image perturbations, ensure consistent patch sizes and permutations across all samples.
+- **Metric Definitions and Computation**:
+  - **Recall@1**: The fraction of times the correct image (or text) is the top-ranked result.
+  - **Recall@5**: The fraction of times the correct image (or text) is within the top 5 results.
+  - Use standard library functions from evaluation frameworks to compute these metrics.
+
+- **Normalization or Pre-processing**:
+  - Ensure all text inputs are tokenized consistently using the same tokenizer as used during model training.
+  - For image perturbations, ensure that the shuffling does not alter the image dimensions or introduce artifacts.
+
+- **Aggregation Strategy**:
+  - Compute per-sample metrics first.
+  - Aggregate results to obtain per-condition averages.
+  - Report overall averages and standard deviations across different seeds.
 
 ## Implementation Notes
 
-- **Dataset Generation**: 
-  - Follow the detailed steps in Appendix A for generating Visual Genome Relation and Attribution datasets, ensuring objects are large enough and relations are non-symmetric.
-- **Negative Mining**: 
-  - Use spacy to swap elements in captions and compute pairwise image similarities for negative sampling.
-- **Fine-tuning Details**: 
-  - Fine-tune models using a batch size of 1024 and learning rates in the range of 1e-5 to 1e-6, with 50 steps of warmup and a cosine-annealing learning rate schedule. Use a single NVIDIA RTX 2080 Ti GPU for training.
+- **Key Pitfalls or Caveats**:
+  - Ensure that the perturbations do not introduce grammatical errors that could be trivially detected by the models.
+  - Be cautious of any biases introduced by the random shuffling process; ensure multiple seeds are used to mitigate this.
+
+- **Order of Operations**:
+  - First, apply perturbations to the datasets.
+  - Then, run the retrieval tasks using the perturbed datasets.
+  - Finally, compute and record the metrics for analysis.

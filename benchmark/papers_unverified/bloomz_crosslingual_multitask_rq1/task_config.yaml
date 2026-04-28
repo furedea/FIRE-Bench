@@ -1,45 +1,26 @@
 task_id: bloomz_crosslingual_multitask_rq1
 paper_type: novel_architecture
-research_question: Can models generalize to tasks in languages they have never intentionally
-  seen?
+research_question: "Can models finetuned on multilingual datasets with English prompts generalize to tasks in languages not intentionally seen during pretraining or finetuning?"
 proposed_method:
-  name: BLOOMZ and mT0
-  summary: BLOOMZ and mT0 are finetuned variants of the pretrained multilingual BLOOM
-    and mT5 model families. They are designed to improve crosslingual generalization
-    by finetuning on English tasks with English prompts, allowing for task generalization
-    to non-English languages that appear only in the pretraining corpus. The models
-    are further enhanced by finetuning on multilingual tasks with English and machine-translated
-    prompts.
+  name: "BLOOMZ and mT0"
+  summary: "BLOOMZ and mT0 are finetuned variants of the BLOOM and mT5 model families, respectively. They are designed to enhance crosslingual generalization by finetuning on multilingual datasets with English prompts. This approach allows the models to generalize to tasks in languages that were not intentionally seen during pretraining or finetuning."
   key_components:
-  - Multitask finetuning on English and multilingual tasks
-  - Use of English and machine-translated prompts
-  - Evaluation on zero-shot task generalization in unseen languages
+    - "Multitask finetuning on multilingual datasets with English prompts"
+    - "Evaluation on tasks in languages not intentionally seen during pretraining or finetuning"
 baselines:
-- BLOOM
-- mT5
-- XGLM
+  - "BLOOM"
+  - "mT5"
 reference_implementation:
-- https://github.com/bigscience-workshop/xmtf
+  - "https://github.com/bigscience-workshop/xmtf"
 datasets:
-- name: XNLI
-  source: huggingface
-  loader: 'from datasets import load_dataset
-
-    dataset = load_dataset("xnli")
-
-    '
-  description: A dataset for evaluating cross-lingual sentence representations.
-- name: XCOPA
-  source: huggingface
-  loader: 'from datasets import load_dataset
-
-    dataset = load_dataset("xcopa")
-
-    '
-  description: A multilingual dataset for causal commonsense reasoning.
-compute_hint: multiple GPUs, >24h
+  - name: "xP3"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("bigscience/xP3")
+    description: "A composite of supervised datasets in 46 languages with English and machine-translated prompts."
+compute_hint: "Multiple GPUs, >24h"
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
-- Implement the proposed method yourself -- do not import it from a library that bundles
-  the paper's exact code.
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"
+  - "Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code."

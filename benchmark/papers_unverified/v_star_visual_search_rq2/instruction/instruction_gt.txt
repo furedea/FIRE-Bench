@@ -1,26 +1,23 @@
-You are a research agent. Conduct research about the question: "RQ3: What is the impact of the visual search mechanism on general multimodal capabilities?"
+You are a research agent. Conduct research about the question: "RQ3: How does the integration of a visual search mechanism (a system that identifies and retrieves visual information) affect the general multimodal capabilities (the ability to process and understand information from multiple modalities) of the SEAL framework (a system for evaluating and enhancing multimodal learning) across benchmarks like MME, POPE, and MMBench, when evaluated on performance in multimodal tasks?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- SEAL (Show, SEArch, and TelL): SEAL is a novel meta-architecture for multimodal large language models (MLLMs) that integrates an LLM-guided visual search mechanism, V∗, to enhance visual grounding capabilities. This architecture addresses the limitations of current MLLMs in processing high-resolution images by employing a visual search model that uses common sense and contextual cues to locate and focus on specific visual elements. The visual search process builds a Visual Working Memory (VWM) that is used to provide more accurate and informed responses to visual questions.
-  - Component: LLM-guided visual search mechanism (V∗)
+- SEAL framework with V*: The SEAL framework integrates a guided visual search mechanism, V*, into multimodal large language models (MLLMs) to enhance their ability to process high-resolution images and focus on critical visual details. This integration allows the model to actively reason about and search for needed visual information, improving performance in vision-intensive multimodal tasks.
+  - Component: LLM-guided visual search mechanism (V*)
   - Component: Visual Working Memory (VWM)
-  - Component: Integration with MLLMs like LLaVA
+  - Component: VQA LLM and visual search model collaboration
+- Baseline for comparison: LLaVA
 - Baseline for comparison: GPT-4V
 - Baseline for comparison: Gemini Pro
-- Baseline for comparison: LLaVA
-- Baseline for comparison: BLIP2
-- Baseline for comparison: MiniGPT-4
-- Baseline for comparison: InstructBLIP
-- Baseline for comparison: Otter
-- Baseline for comparison: LLaVA-1.5
-- Baseline for comparison: MM-React
-- Baseline for comparison: VisualChatGPT
-- Baseline for comparison: Visprog
 
 Datasets for training and evaluation:
-- V∗Bench: A benchmark specifically designed to evaluate MLLMs in their ability to process high-resolution images and focus on visual details, consisting of tasks like attribute recognition and spatial relationship reasoning.  [generate programmatically]
+- MME: A comprehensive evaluation benchmark for multimodal large language models.  [loader unverified -- locate the data yourself]
+- POPE: A benchmark for evaluating object hallucination in large vision-language models.  [loader unverified -- locate the data yourself]
+- MMBench: A benchmark to evaluate multimodal models across various task categories.  [loader unverified -- locate the data yourself]
+- SEED-Bench: A benchmark for generative comprehension in multimodal LLMs.  [loader unverified -- locate the data yourself]
+- MM-Vet: A benchmark for evaluating integrated capabilities of large multimodal models.  [loader unverified -- locate the data yourself]
+- LLaVAW: A benchmark for evaluating multimodal models with visual instruction tuning.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -40,69 +37,76 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Evaluation on V∗Bench
+### 1. Evaluation of SEAL on V∗Bench
 - **Procedure**: 
-  - Use the SEAL framework with the V∗ visual search mechanism to evaluate on V∗Bench.
-  - V∗Bench consists of two sub-tasks: attribute recognition (115 samples) and spatial relationship reasoning (76 samples).
-  - For each sample, the model must process high-resolution images (average resolution of 2246×1582) and answer questions requiring detailed visual grounding.
-  - Implement the visual search mechanism to locate and focus on specific visual elements, building a Visual Working Memory (VWM) that informs the VQA LLM.
+  - Use the SEAL framework with the V∗ visual search mechanism.
+  - Evaluate on V∗Bench, which consists of 191 high-resolution images with an average resolution of 2246×1582.
+  - The benchmark contains two sub-tasks: attribute recognition (115 samples) and spatial relationship reasoning (76 samples).
+  - For each image, the model must recognize specific attributes or determine spatial relationships between objects.
+  - Use a multiple-choice format for evaluation, with four options for open-ended questions and two for binary questions.
 - **What to Record**: 
-  - Record the model's answers to each question.
-  - Capture the search process, including the number of search steps and the regions focused on.
-  - Measure the accuracy of the model's answers compared to human performance.
-- **Correspondence**: Table 1, Section 5.1
+  - Record the accuracy of SEAL in correctly identifying attributes and spatial relationships.
+  - Compare results with other models like GPT-4V and Gemini Pro.
+- **Correspondence**: 
+  - Table 1 in the paper shows the evaluation results on V∗Bench.
 
-### 2. Ablation Study on Visual Search Necessity
+### 2. Ablation Study on Visual Search Mechanism
 - **Procedure**: 
-  - Conduct experiments with variations of the SEAL framework:
-    1. Without the visual search mechanism.
-    2. Replacing the visual search model with GroundingDINO and OWL-ViT.
-  - Evaluate each variant on V∗Bench.
+  - Conduct ablation experiments by removing or replacing the visual search mechanism in SEAL.
+  - Compare the performance of SEAL with and without the visual search mechanism.
+  - Replace the visual search model with GroundingDINO and OWL-ViT to evaluate their impact.
 - **What to Record**: 
-  - Record the accuracy of each variant on attribute recognition and spatial relationship reasoning tasks.
-  - Compare the performance of each variant to the full SEAL model with V∗.
-- **Correspondence**: Table 2, Section 5.2
+  - Record the performance differences in attribute recognition and spatial relationship reasoning tasks.
+- **Correspondence**: 
+  - Table 2 in the paper presents the ablation study results.
 
 ### 3. Visual Search Evaluation
 - **Procedure**: 
   - Evaluate the efficiency of the V∗ visual search algorithm by measuring the search length (number of steps) required to locate target objects.
-  - Compare V∗ with baseline search strategies: Random-DFS, Random-BFS, Sequential-DFS, and Sequential-BFS.
-  - Use COCO-Search18 dataset to compare V∗ with human fixation patterns.
+  - Compare with baseline search strategies: Random-DFS, Random-BFS, Sequential-DFS, and Sequential-BFS.
+  - Use COCO-Search18 dataset to compare with human fixation patterns.
 - **What to Record**: 
-  - Record the search length for each strategy.
-  - Capture the search process and heatmaps for target-specific and contextual cues.
-- **Correspondence**: Table 3, Table 4, Section 5.3
+  - Record the average search length for each strategy.
+  - Compare the search efficiency of V∗ with human fixation data.
+- **Correspondence**: 
+  - Table 3 and Table 4 in the paper show the evaluation of different search strategies.
 
 ### 4. General Multimodal Benchmarks Evaluation
 - **Procedure**: 
-  - Evaluate the SEAL model with and without the visual search mechanism on various multimodal benchmarks: MME, POPE, MMBench, SEED-Bench, MM-Vet, and LLaVAW.
-  - Compare the performance of SEAL against other models like LLaVA.
+  - Evaluate SEAL on a range of multimodal benchmarks: MME, POPE, MMBench, SEED-Bench, MM-Vet, and LLaVAW.
+  - Compare the performance of SEAL with the baseline LLaVA model.
 - **What to Record**: 
   - Record performance metrics on each benchmark.
-  - Analyze the impact of the visual search mechanism on general multimodal capabilities.
-- **Correspondence**: Table 5, Section 5.4
+  - Note any improvements or declines in performance due to the integration of the visual search mechanism.
+- **Correspondence**: 
+  - Table 5 in the paper provides the evaluation results on general multimodal benchmarks.
 
 ## Evaluation Details
 
 - **Metrics**: 
   - Accuracy for attribute recognition and spatial relationship reasoning tasks.
   - Search length (number of steps) for visual search efficiency.
-  - Performance scores on general multimodal benchmarks.
-- **Normalization/Pre-processing**: 
-  - Ensure consistent image resolution and format for all evaluations.
-  - Use standardized prompts and input formats for all models.
+  - Performance scores on various multimodal benchmarks.
+
+- **Normalization and Pre-processing**: 
+  - For visual search, normalize the search length by the number of steps required to locate the target.
+  - For benchmark evaluations, ensure consistent input formats and pre-processing across all models.
+
 - **Aggregation Strategy**: 
-  - Calculate per-sample accuracy, then aggregate to per-task and overall performance.
-  - Compare search lengths across different strategies to determine efficiency.
+  - Aggregate accuracy scores per task and overall for V∗Bench.
+  - Aggregate search lengths to compare efficiency across different strategies.
+  - Aggregate performance scores across benchmarks to evaluate overall multimodal capabilities.
 
 ## Implementation Notes
 
 - **Prompt Templates**: 
-  - Use specific templates for generating questions about target objects and their attributes.
-  - Ensure prompts are concise and relevant to the visual search task.
+  - Use specific prompt templates for generating questions about target objects in V∗Bench.
+  - Ensure prompts are concise and relevant to the task at hand.
+
 - **Order of Operations**: 
-  - Initialize VWM before conducting visual search.
-  - Perform visual search iteratively, updating VWM with located targets before generating final answers.
-- **Pitfalls**: 
-  - Ensure the visual search mechanism is only engaged when necessary, based on initial global image features.
-  - Carefully manage computational resources to avoid excessive search steps.
+  - For visual search, follow the hierarchical search process as outlined in the paper.
+  - Ensure the visual search mechanism is only engaged when necessary, based on initial evaluations by the encoder.
+
+- **Pitfalls and Caveats**: 
+  - Be aware of potential biases in the evaluation due to the use of high-resolution images.
+  - Consider the limitations of the visual search mechanism when applied to non-natural images or diagrams.

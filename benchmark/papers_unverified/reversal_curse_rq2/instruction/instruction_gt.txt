@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: Can different training setups alleviate the Reversal Curse?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: Can auto-regressive language models generalize from question-answer instructions presented in one order to the reverse order?"
 
 You have access to the following resources:
 
@@ -8,8 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Synthetic dataset with paraphrases and both orders: A dataset made up of documents of the form '<name> is <description>' and the reverse, where the names and descriptions are fictitious.  [generate programmatically]
-- Dataset of question-answer pairs: A dataset of question-answer pairs presented either as instructions or as examples.  [generate programmatically]
+- Synthetic question-answer pairs: A dataset of question-answer pairs presented in different orders to test generalization capabilities of language models.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search
@@ -21,58 +20,60 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Finetuning on Synthetic Facts
+### 1. Finetuning on Synthetic Facts and Evaluating in Reverse Order
 - **Procedure**: 
-  - Finetune models on synthetic facts presented in one order: `<name> is <description>`.
-  - Evaluate the models by prompting them with questions in both orders: `Q: Who is <description>?` and `Q: Who is <name>?`.
-  - Use a dataset containing 30 facts about fictitious celebrities, each paraphrased 30 times, resulting in 900 documents per subset.
-  - Include auxiliary examples where both orders are present in the finetuning dataset.
-  - Perform a hyperparameter sweep to find the best settings for finetuning.
+  - Finetune the models on synthetic facts presented in one order, specifically in the format "<name> is <description>".
+  - Evaluate the models by prompting them with questions in both the original and reversed order.
+  - Use the NameToDescription and DescriptionToName subsets for evaluation.
+  - Ensure that the dataset contains 30 facts about fictitious celebrities, each paraphrased 30 times, resulting in 900 documents per subset.
+  - Conduct a hyperparameter sweep to determine the best settings for finetuning.
 - **What to Record**: 
   - Exact-match accuracy for each prompt.
   - Log-probabilities for the correct name versus a random name.
 - **Correspondence**: 
-  - Figure 2, Table 1, Section 2.1.1
+  - Figure 3 and Table 1 in the paper.
 
 ### 2. Testing Real-World Knowledge Reversal
 - **Procedure**: 
   - Use GPT-4 to identify parent-child pairs for 1000 celebrities.
-  - Test the model's ability to answer questions about these pairs in both directions: `Who is <celebrity>'s parent?` and `Who is <parent>'s child?`.
-  - Use a few-shot prompting strategy with temperature sampling.
+  - Evaluate the model's ability to answer questions about these pairs in both directions: "Who is <celebrity>'s parent?" and "Who is <parent>'s child?".
+  - Use a few-shot prompting strategy to guide the model's responses.
 - **What to Record**: 
   - Accuracy of identifying the parent versus the child.
 - **Correspondence**: 
-  - Figure 1, Figure 5, Section 2.2
+  - Figure 5 and Section 2.2 in the paper.
 
-### 3. Reversing Instructions with Question-Answer Pairs
+### 3. Reversing Instructions in Question-Answer Pairs
 - **Procedure**: 
-  - Create datasets of question-answer pairs presented as instructions and examples.
-  - Train models on instructions like `Answer <question> with <answer>` and test on `Q: <question> A: <answer>`.
-  - Use datasets containing 1100 question-answer pairs each.
+  - Create a dataset of question-answer pairs presented as instructions and examples.
+  - Train models on instructions in the form "Answer <question> with <answer>" and test on "Q: <question> A: <answer>".
+  - Use separate datasets for QuestionToAnswer and AnswerToQuestion formats.
+  - Perform hyperparameter sweeps for optimal training settings.
 - **What to Record**: 
   - Exact-match accuracy on held-out question-answer pairs.
 - **Correspondence**: 
-  - Figure 6, Section 2.3
+  - Figure 6 and Section 2.3 in the paper.
 
 ## Evaluation Details
 
 - **Exact-Match Accuracy**: 
   - Compute the percentage of test instances where the model's output exactly matches the expected answer.
-  - Use temperature zero for generation to ensure deterministic outputs.
+  - Use temperature zero during evaluation to ensure deterministic outputs.
 
 - **Log-Probability Analysis**: 
-  - Compare the log-probabilities assigned to the correct name versus a random name.
-  - Use statistical tests (t-test and Kolmogorov–Smirnov test) to determine if there is a significant difference.
+  - Compare the log-probabilities assigned to the correct name versus a random name for each prompt.
+  - Use statistical tests (t-tests and Kolmogorov–Smirnov tests) to determine if there is a significant difference in log-probabilities.
 
 ## Implementation Notes
 
 - **Prompt Templates**: 
-  - Use specific templates for generating synthetic data and for prompting models during evaluation.
-  - Ensure that paraphrases match the original sentence's order of name and description.
+  - Use specific templates for generating synthetic facts and for prompting during evaluation (e.g., "Who is <description>? A: <name>").
+  - Ensure that paraphrases match the ordering of name and description in the original sentence.
 
-- **Hyperparameter Tuning**: 
-  - Conduct a sweep over learning rates and batch sizes to optimize model performance during finetuning.
+- **Order of Operations**: 
+  - Finetune models before evaluating them on held-out prompts.
+  - Conduct hyperparameter sweeps prior to final model training to ensure optimal performance.
 
-- **Data Augmentation**: 
-  - Include multiple paraphrases of each fact to aid generalization.
-  - Ensure that paraphrases maintain the original order of name and description.
+- **Pitfalls**: 
+  - Be cautious of overfitting to the training order; ensure that evaluation includes both original and reversed orders to test generalization.
+  - Consider the potential impact of instruction tuning and reinforcement learning from human feedback on model performance, especially for real-world knowledge tests.

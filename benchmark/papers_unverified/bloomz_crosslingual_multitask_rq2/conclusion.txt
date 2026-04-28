@@ -1,0 +1,1 @@
+Finetuning on machine-translated prompts improves performance on human-written non-English prompts for both BLOOMZ and mT0 models.

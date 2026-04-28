@@ -1,0 +1,81 @@
+You are a research agent. Conduct research about the question: "RQ4: How do scaling properties such as training time and data diversity affect the performance of VLMs?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- Prismatic VLMs: Prismatic VLMs are a family of visually-conditioned language models designed to explore the design space of VLMs by investigating key design decisions such as image preprocessing, architecture, and optimization. The models utilize a 'patch-as-token' approach, leveraging pretrained visual backbones and language models to generate natural language responses from image inputs. The architecture is characterized by different design axes, including optimization procedures, image processing, language models, and scaling properties.
+  - Component: Pretrained visual backbone (e.g., CLIP, DINOv2)
+  - Component: Vision-language projector
+  - Component: Language model (e.g., Llama-2, Mistral)
+  - Component: Patch-as-token approach for image input
+  - Component: Single-stage training pipeline
+- Baseline for comparison: InstructBLIP
+- Baseline for comparison: LLaVa v1.5
+- Reference hint: github.com/TRI-ML/prismatic-vlms
+- Reference hint: github.com/TRI-ML/vlm-evaluation
+
+Datasets for training and evaluation:
+- LLaVa v1.5 pretraining datasets: A mixture of datasets used for multi-stage training, including captioning datasets and multimodal instruct tuning examples.  [loader unverified -- locate the data yourself]
+- LVIS-Instruct-4V: Dataset obtained by prompting GPT-4V to generate synthetic examples from images sourced from LVIS.  [loader unverified -- locate the data yourself]
+- LRV-Instruct: Dataset that optimizes for image diversity, adding charts, scientific diagrams, and news printings.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Training Time and Data Diversity Impact on VLM Performance
+- **Procedure**: 
+  - Implement the Prismatic VLM architecture using the specified components and datasets.
+  - Conduct experiments to evaluate the impact of training time by varying the number of epochs (1, 1.25, 1.5, 2, and 3 epochs).
+  - Assess the effect of data diversity by incorporating additional datasets (LVIS-Instruct-4V and LRV-Instruct) into the training pipeline.
+  - Use the LLaVa v1.5 pretraining datasets as the baseline dataset.
+  - For each configuration, train the model using the single-stage training pipeline.
+- **Input Format**: 
+  - Images processed using the "naive resize" strategy for CLIP and SigLIP backbones.
+  - Text prompts formatted according to the base or instruct-tuned LM requirements.
+- **What to Record**: 
+  - Raw model outputs for each evaluation task.
+  - Performance metrics on visual question answering (VQA), object localization, and challenge tasks.
+  - Training time and compute resources used for each configuration.
+- **Correspondence**: 
+  - Results are detailed in Figure 10 (middle and right) and Tables 2, 3, and 4 in the paper.
+  - Section 4.4 discusses the findings related to scaling properties.
+
+## Evaluation Details
+
+- **Metrics**: 
+  - For VQA tasks, use accuracy as computed by the official evaluation scripts.
+  - For localization tasks, report accuracy at specific IoU thresholds (0.5 for RefCOCO/RefCOCO+/RefCOCOg, 0.25 for OCID-Ref).
+  - For challenge tasks, format each example as a multiple-choice question and report accuracy.
+- **Normalization and Pre-processing**: 
+  - Normalize pixel values using defaults defined by each pretrained backbone.
+  - Use greedy decoding for generating model outputs to ensure consistency across evaluations.
+- **Aggregation Strategy**: 
+  - Compute normalized Z-scores for each model and evaluation using the mean and standard deviation across all models.
+  - Aggregate scores by averaging across all 12 benchmarks to draw conclusions about the impact of design choices.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**: 
+  - Ensure that the image processing strategy (e.g., "naive resize") is consistently applied across all experiments to avoid introducing bias.
+  - Be cautious of potential overfitting when extending training epochs beyond the optimal point identified in the experiments.
+- **Prompt Templates**: 
+  - For instruct-tuned LMs, use the chat format with system prompts and "USER" and "ASSISTANT" blocks.
+  - For base LMs, use a simpler format without system prompts.
+- **Order of Operations**: 
+  - Begin with baseline training using the LLaVa v1.5 datasets, then incrementally add additional datasets and extend training epochs.
+  - Maintain a consistent evaluation protocol across all experiments to ensure comparability of results.

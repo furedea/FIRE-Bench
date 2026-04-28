@@ -1,40 +1,36 @@
 task_id: gpt4_code_math_verification_rq1
 paper_type: novel_architecture
-research_question: 'RQ2: Can explicit code-based self-verification improve the accuracy
-  of GPT-4 Code Interpreter in solving math problems?'
+research_question: "RQ2: Does the use of explicit self-verification techniques impact the accuracy of a language model, specifically GPT-4's code execution capabilities, in solving math problems on the MATH, GSM8K, and MMLU-Math datasets?"
 proposed_method:
-  name: Explicit Code-Based Self-Verification (CSV)
-  summary: CSV is a novel prompting method designed to enhance the mathematical reasoning
-    capabilities of the GPT-4 Code Interpreter. It encourages the model to use code
-    to self-verify its answers. When the verification state is 'False', the model
-    automatically amends its solution, similar to rectifying errors during a mathematics
-    examination. This method leverages the model's ability to generate and execute
-    code, evaluate the output, and adjust its problem-solving strategies based on
-    feedback from code execution.
+  name: "Explicit Code-Based Self-Verification (CSV)"
+  summary: "CSV is a novel prompting method designed to enhance the mathematical reasoning capabilities of the GPT-4 Code Interpreter. It encourages the model to use code to self-verify its answers, automatically amending solutions when verification fails. This method leverages the model's ability to generate and execute code, improving accuracy by integrating verification states into a weighted majority voting strategy."
   key_components:
-  - Zero-shot prompt on GPT-4 Code Interpreter to encourage code-based self-verification
-  - Mechanism for automatic solution amendment when verification fails
-  - Integration of verification states into a weighted majority voting strategy
+    - "Zero-shot prompt for code-based self-verification"
+    - "Integration of verification states into majority voting"
+    - "Automatic solution amendment based on verification results"
 baselines:
-- GPT-4 Code Interpreter without CSV
-- Chain-of-Thought (CoT)
-- Program-Aided Language model (PAL)
+  - "GPT-4 Code Interpreter without CSV"
+  - "GPT-4 with Chain-of-Thought (CoT)"
+  - "GPT-4 with Progressive-Hint Prompting (PHP)"
 reference_implementation: []
 datasets:
-- name: MATH
-  source: external
-  description: A challenging math word problem dataset used to evaluate the mathematical
-    problem-solving capabilities of models.
-  url: https://github.com/hendrycks/math
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/hendrycks/math.git
-
-    '
-compute_hint: single GPU, <24h
+  - name: "MATH"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("hendrycks/math")
+    description: "A challenging dataset of math word problems designed to test mathematical problem-solving abilities."
+  - name: "GSM8K"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("openai/gsm8k")
+    description: "A dataset of grade school math problems used to evaluate arithmetic and reasoning skills."
+  - name: "MMLU-Math"
+    source: unknown
+    description: "A subset of the MMLU benchmark focusing on mathematical problem-solving tasks."
+compute_hint: "single GPU, <24h"
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
-- Implement the proposed method yourself -- do not import it from a library that bundles
-  the paper's exact code.
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"
+  - "Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code."

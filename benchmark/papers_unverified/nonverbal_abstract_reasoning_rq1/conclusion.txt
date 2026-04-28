@@ -1,0 +1,1 @@
+The root causes of poor performance in nonverbal abstract reasoning tasks by MLLMs are their struggles with precise visual details and reasoning.

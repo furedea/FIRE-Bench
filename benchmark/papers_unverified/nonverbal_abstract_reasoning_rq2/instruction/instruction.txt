@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: Can MLLMs’ performance in nonverbal abstract reasoning tasks be improved?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: How do multimodal large language models (MLLMs, which process both text and other modalities like images) perform on nonverbal abstract reasoning tasks, as evaluated by performance improvement percentage on the IQ50 dataset?"
 
 You have access to the following resources:
 
@@ -8,9 +8,9 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet, used to assess nonverbal abstract reasoning abilities.  [loader unverified -- locate the data yourself]
-- RAVEN-S: A visual reasoning dataset containing 3,500 synthetic samples in seven categories, used to evaluate reasoning abilities in a reduced computational cost setting.  [loader unverified -- locate the data yourself]
-- CCSE: A dataset of 175 visual abstractions and reasoning problems from the China Civil Service Examination, used as a challenging benchmark across various reasoning patterns.  [loader unverified -- locate the data yourself]
+- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet, augmented with textual description and hint annotations.  [generate programmatically]
+- RAVEN-S: A visual reasoning dataset containing 3,500 synthetic samples in seven categories, each with a 3x3 matrix of images and eight options.  [generate programmatically]
+- CCSE: A dataset of 175 visual abstractions and reasoning problems from the China Civil Service Examination, each containing a matrix or sequence of images with four options.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

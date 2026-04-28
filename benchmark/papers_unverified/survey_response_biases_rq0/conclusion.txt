@@ -1,0 +1,1 @@
+Large language models (LLMs) do not generally exhibit human-like response biases, such as acquiescence, allow/forbid asymmetry, response order, opinion floating, and odd/even scale effects, when evaluated on survey questions derived from Pew Research's American Trends Panel.

@@ -1,18 +1,14 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How do scaling trends vary across different model series and tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do different model series and training setups affect the presence of inverse scaling trends?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 via API
+- gpt-4o via API
 - Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Inverse Scaling Prize Tasks: A collection of tasks designed to evaluate inverse scaling behavior in language models, including tasks like Resisting Correction, Memo Trap, and others.
-  GitHub repo: https://github.com/inverse-scaling/prize
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/inverse-scaling/prize.git
+- Inverse Scaling Prize Datasets: A collection of datasets designed to evaluate inverse scaling trends in language models, including tasks like Modus Tollens, Pattern Match Suppression, Into the Unknown, and NeQA.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

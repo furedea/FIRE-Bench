@@ -1,0 +1,1 @@
+English pretrained models like RoBERTa perform better than BERT on non-English tasks, particularly when fine-tuned, and their cross-lingual transfer capabilities are strongly influenced by the amount of target language data encountered during pretraining.

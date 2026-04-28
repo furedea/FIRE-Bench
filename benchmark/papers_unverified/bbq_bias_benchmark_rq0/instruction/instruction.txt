@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How do QA models perform on the Bias Benchmark for QA (BBQ) dataset in terms of accuracy and bias?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How do current question-answering models (UnifiedQA, RoBERTa, DeBERTaV3) exhibit social biases across nine social dimensions (age, disability status, gender identity, nationality, physical appearance, race/ethnicity, religion, socio-economic status, sexual orientation) in ambiguous and disambiguated contexts?"
 
 You have access to the following resources:
 
@@ -11,10 +11,6 @@ Models:
 
 Datasets:
 - BBQ: A dataset of question sets constructed to highlight attested social biases against people belonging to protected classes along nine social dimensions relevant for U.S. English-speaking contexts.
-  GitHub repo: https://github.com/nyu-mll/BBQ
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/nyu-mll/BBQ.git
 
 Experimental constraints:
 - Do NOT use web search

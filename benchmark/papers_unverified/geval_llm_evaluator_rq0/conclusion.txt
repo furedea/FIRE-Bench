@@ -1,0 +1,1 @@
+An AI-based evaluation system, G-EVAL-4, performs better in assessing text summarization quality compared to existing metrics on the SummEval benchmark.

@@ -1,12 +1,12 @@
-You are a research agent. Conduct research about the question: "RQ2: How do different image processing strategies and visual representations affect VLM performance?"
+You are a research agent. Conduct research about the question: "RQ2: How do different image processing techniques and visual representations impact the performance of VLMs on visual question answering, object localization, and challenge tasks?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Prismatic VLM: Prismatic VLM is a visually-conditioned language model architecture that explores the design space of VLMs by investigating different image processing strategies and visual representations. It uses a 'patch-as-token' approach, treating patch features from pretrained visual backbones as tokens projected into the input space of a language model. The architecture is designed to evaluate the impact of various design choices on VLM performance, particularly focusing on image processing and visual representation.
-  - Component: Pretrained visual backbones (e.g., CLIP, SigLIP, DINOv2, ViT)
+- Prismatic VLMs: Prismatic VLMs explore the design space of visually-conditioned language models by investigating key design decisions such as image preprocessing, architecture, and optimization. The architecture uses a 'patch-as-token' approach, treating patch features from pretrained visual backbones as tokens that can be projected into the input space of a language model. This enables training with a simple objective and allows leveraging powerful language models.
+  - Component: Pretrained visual backbones (e.g., CLIP, SigLIP, DINOv2)
   - Component: Vision-language projector for mapping visual features to language model input
-  - Component: Language model integration with visual features
+  - Component: Language model for generating text from combined visual and text inputs
 - Baseline for comparison: LLaVa v1.5
 - Baseline for comparison: InstructBLIP
 - Baseline for comparison: PaLI-3
@@ -14,7 +14,23 @@ Proposed method to implement:
 - Reference hint: github.com/TRI-ML/vlm-evaluation
 
 Datasets for training and evaluation:
-- LLaVa v1.5 pretraining datasets: A mixture of datasets used for pretraining VLMs, including captioning datasets and multimodal instruct tuning examples.  [loader unverified -- locate the data yourself]
+- VQAv2: A dataset for visual question answering that assesses general visual reasoning.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("visual_question_answering", "vqa_v2")
+- GQA: A dataset for spatial and compositional reasoning in visual question answering.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("gqa")
+- RefCOCO: A dataset for referring expression grounding and object localization.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("refcoco")
+- OCID-Ref: A 3D robotic dataset with embodied language for clutter scene grounding.  [loader unverified -- locate the data yourself]
+- VizWiz: A dataset for visual question answering with unanswerable questions.  [loader unverified -- locate the data yourself]
+- TextVQA: A dataset for reasoning around text present in images.  [loader unverified -- locate the data yourself]
+- TallyQA: A dataset for assessing a VLM's ability to count objects described in language.  [loader unverified -- locate the data yourself]
+- AI2D: A dataset consisting of multiple choice questions about scientific diagrams and charts.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -34,51 +50,54 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Evaluate Visual Representations
+### 1. Image Processing and Visual Representations
 - **Procedure**: 
-  - Conduct a head-to-head comparison of different visual backbones: CLIP, SigLIP, DINOv2, and ViT.
-  - Use the LLaVa v1.5 pretraining datasets for evaluation.
-  - Ensure that all models are evaluated on the same set of benchmarks to maintain consistency.
-  - Use a ViT-Large model variant for fair comparison across different visual representations.
+  - Evaluate the impact of different visual representations (CLIP, SigLIP, DINOv2, and Vision Transformer) on VLM performance.
+  - Compare three image processing schemes: "resize & crop", "letterbox padding", and "naive resize".
+  - Use a fixed input resolution of 224px for initial comparisons, then scale to 336px and 384px for higher resolution evaluations.
+  - For ensembling, concatenate patch features from different backbones along the channel dimension.
+  - Use the validation sets for all benchmarks except GQA (test-dev split), VSR (zero-shot test split), and POPE (single evaluation split).
 - **What to Record**: 
-  - Record performance metrics across all benchmarks.
-  - Capture any qualitative differences in model outputs.
+  - Raw outputs of the VLMs for each visual representation and image processing scheme.
+  - Performance metrics on visual question answering (VQAv2, GQA, VizWiz, TextVQA), localization (RefCOCO, RefCOCO+, RefCOCOg, OCID-Ref), and challenge tasks (VSR, TallyQA, POPE, AI2D).
 - **Correspondence**: 
-  - Figure 6 (left)
-  - Section 4.2
+  - Figure 6 (left, middle, right) for visual representation and image processing results.
+  - Tables 2, 3, and 4 for detailed performance metrics.
+  - Section 4.2 for discussion and analysis.
 
-### 2. Assess Image Processing Schemes
+### 2. Ensembling Different Visual Representations
 - **Procedure**: 
-  - Compare three image processing schemes: resize & crop, letterbox padding, and naive resize.
-  - Apply these schemes to images before feeding them into the visual backbones.
-  - Use the same dataset and evaluation benchmarks as in the visual representation experiment.
+  - Fuse visual features from DINOv2 with CLIP/SigLIP models by concatenating patch features.
+  - Adjust the input dimension of the vision-language projector to accommodate the increased feature dimension.
 - **What to Record**: 
-  - Record performance metrics for each image processing scheme across all benchmarks.
-  - Note any significant differences in performance or qualitative output.
+  - Performance metrics on localization and challenge evaluations.
+  - Compare against single visual representation models.
 - **Correspondence**: 
-  - Figure 6 (middle)
-  - Section 4.2
+  - Figure 7 (left) for ensembling results.
+  - Tables 2, 3, and 4 for detailed performance metrics.
+  - Section 4.2 for discussion and analysis.
 
 ## Evaluation Details
 
 - **Metrics**: 
-  - Use accuracy for open-ended visual question answering tasks (e.g., VQAv2, GQA, VizWiz, TextVQA).
-  - For localization tasks, report accuracy at specific IoU thresholds (0.5 for RefCOCO/RefCOCO+/RefCOCOg, 0.25 for OCID-Ref).
-  - For challenge tasks, format each example as a multiple choice question and report accuracy.
+  - Accuracy for open-ended visual question answering tasks (VQAv2, GQA, VizWiz, TextVQA).
+  - IoU-based accuracy for localization tasks (RefCOCO, RefCOCO+, RefCOCOg, OCID-Ref).
+  - Multiple choice accuracy for challenge tasks (VSR, TallyQA, POPE, AI2D).
 - **Normalization**: 
   - Compute normalized Z-scores for each model and evaluation using the mean and standard deviation across all models.
 - **Aggregation Strategy**: 
-  - Aggregate scores by averaging across all 12 benchmarks to compute global scores.
-  - Perform statistical significance testing using a 1-sided Fisher T-test to compare model performance (p < 0.01).
+  - Aggregate performance metrics across all benchmarks to compute global scores.
+  - Use these scores to assess the impact of design choices statistically.
 
 ## Implementation Notes
 
-- **Prompting Strategy**: 
-  - Use different prompting strategies for base vs. instruct-tuned LMs. For instruct-tuned LMs, use a system prompt and formatted "USER" and "ASSISTANT" blocks. For base LMs, use a simpler format without a system prompt.
-- **Image Processing**: 
-  - Implement image processing logic using torchvision and TIMM libraries, applying normalization as per the defaults defined by each pretrained backbone.
-- **Training Codebase**: 
-  - Use PyTorch with Fully Sharded Data Parallel (FSDP) for distributed training, and train all models in BF16 mixed precision.
+- **Prompt Templates**: 
+  - Use specific trigger prompts for each task as defined in the pretraining datasets and original works.
+  - For instruct-tuned LMs, use a chat format with system prompts and "USER" and "ASSISTANT" blocks.
+  - For base LMs, use a simpler format without system prompts.
 - **Order of Operations**: 
-  - Ensure that image processing is applied before feeding images into the visual backbones.
-  - Concatenate projected patch embeddings with language prompt embeddings before passing them to the language model.
+  - Ensure consistent image processing before feature extraction.
+  - Concatenate visual and text embeddings in the correct sequence before inputting to the language model.
+- **Pitfalls**: 
+  - Avoid cropping important parts of images in tasks requiring full-scene reasoning.
+  - Be cautious of increased computational complexity when scaling image resolution.

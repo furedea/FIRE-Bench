@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: What are the limitations and biases of the LLM-as-a-judge approach?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the limitations and biases, such as position bias, verbosity bias, and limited reasoning ability, of using large language models as judges in the context of evaluating responses on the MT-Bench dataset?"
 
 You have access to the following resources:
 
@@ -8,8 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- MT-bench: A series of open-ended questions that evaluate a chatbot’s multi-turn conversational and instruction-following ability.  [loader unverified -- locate the data yourself]
-- Chatbot Arena: A crowdsourced platform featuring anonymous battles between chatbots in real-world scenarios.  [loader unverified -- locate the data yourself]
+- MT-Bench: A series of open-ended questions that evaluate a chatbot’s multi-turn conversational and instruction-following ability.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -23,49 +22,54 @@ Please design and execute experiments to investigate this research question. Doc
 
 ### 1. Position Bias Analysis
 - **Procedure**: 
-  - Use the MT-bench dataset to generate pairs of responses for each question.
-  - Present these pairs to the LLM judges (GPT-4, Claude-v1, GPT-3.5) in two orders: original and swapped.
-  - Use the default prompt for pairwise comparison as shown in Figure 5 of the Appendix.
-  - Record the consistency of judgments when the order of responses is swapped.
+  - Use the MT-Bench dataset to generate responses from two models for each question.
+  - Present these responses to GPT-4, GPT-3.5, and Claude-V1 in two different orders (i.e., swap the positions of the responses).
+  - Use the default prompt for pairwise comparison as specified in Figure 5 of the Appendix.
+  - Evaluate the consistency of the LLM judgments when the order of responses is swapped.
 - **What to Record**: 
-  - Consistency rate (percentage of cases where the judgment remains the same after swapping).
-  - Bias towards the first or second position.
-  - Error rate (incorrect output formats).
-- **Correspondence**: 
-  - Figure 11, Table 2, Section 3.3.
+  - Consistency rate of judgments (percentage of cases where the judgment remains the same after swapping).
+  - Instances of bias towards the first or second position.
+  - Any errors in output format.
+- **Correspondence**: Table 2, Section 3.3
 
 ### 2. Verbosity Bias Evaluation
 - **Procedure**: 
-  - Select 23 model answers from MT-bench that contain a numbered list.
-  - Create verbose versions of these answers by rephrasing and duplicating the list items.
-  - Present both original and verbose answers to the LLM judges.
-  - Use the default prompt for pairwise comparison.
+  - Select 23 model answers from the MT-Bench dataset that contain a numbered list.
+  - Create verbose versions of these answers by rephrasing the list without adding new information and inserting it at the beginning of the original list.
+  - Present both the original and verbose responses to GPT-4, GPT-3.5, and Claude-V1 for evaluation.
 - **What to Record**: 
-  - Failure rate (percentage of cases where the verbose answer is incorrectly judged as better).
-- **Correspondence**: 
-  - Figure 12, Table 3, Section 3.3.
+  - Failure rate of LLM judges under the "repetitive list" attack (percentage of cases where the verbose response is incorrectly judged as better).
+- **Correspondence**: Table 3, Section 3.3
+
+### 3. Limited Capability in Grading Math and Reasoning Questions
+- **Procedure**: 
+  - Use math and reasoning questions from the MT-Bench dataset.
+  - Evaluate responses using GPT-4 with and without reference answers.
+  - Implement chain-of-thought and reference-guided grading methods as described in Figures 7 and 8 of the Appendix.
+- **What to Record**: 
+  - Failure rate of LLM judges in correctly grading math and reasoning questions.
+  - Comparison of failure rates between default, chain-of-thought, and reference-guided prompts.
+- **Correspondence**: Table 4, Section 3.3
 
 ## Evaluation Details
 
 ### Position Bias
-- **Metric Definitions**:
-  - **Consistency**: Percentage of cases where the LLM judge gives the same result when the order of responses is swapped.
-  - **Bias towards first/second**: Percentage of cases where the LLM judge favors the first or second response.
-  - **Error Rate**: Percentage of cases with incorrect output formats.
-- **Aggregation Strategy**: 
-  - Calculate metrics per model and prompt type, then aggregate across all questions.
+- **Metric Definition**: Consistency rate is calculated as the percentage of cases where the LLM's judgment remains the same after swapping the order of responses.
+- **Normalization**: Ensure that the responses are presented in a consistent format to avoid any influence from formatting differences.
+- **Aggregation Strategy**: Calculate the overall consistency rate across all questions and model pairs.
 
 ### Verbosity Bias
-- **Metric Definitions**:
-  - **Failure Rate**: Percentage of cases where the verbose response is judged as better.
-- **Aggregation Strategy**: 
-  - Calculate the failure rate for each LLM judge across all verbose test cases.
+- **Metric Definition**: Failure rate is defined as the percentage of cases where the verbose response is incorrectly judged as better.
+- **Normalization**: Ensure that the verbose and original responses are presented in a similar format to avoid any influence from formatting differences.
+- **Aggregation Strategy**: Calculate the overall failure rate across all questions.
+
+### Limited Capability in Grading Math and Reasoning
+- **Metric Definition**: Failure rate is defined as the percentage of cases where the LLM judge makes an incorrect judgment.
+- **Normalization**: Use reference answers to provide a baseline for comparison.
+- **Aggregation Strategy**: Calculate the failure rate for each prompt type (default, chain-of-thought, reference-guided) and compare.
 
 ## Implementation Notes
 
-- **Prompt Templates**: 
-  - Use the default prompt for pairwise comparison as detailed in Figure 5 of the Appendix.
-- **Order of Operations**: 
-  - For position bias, ensure that both original and swapped orders are evaluated for each question before moving to the next.
-- **Output Parsing**: 
-  - Ensure that the output strictly follows the format specified in the prompt to avoid parsing errors.
+- **Prompt Templates**: Use the specific prompt templates provided in Figures 5, 7, and 8 of the Appendix for pairwise comparison, chain-of-thought, and reference-guided grading, respectively.
+- **Order of Operations**: For position bias analysis, ensure that the order of responses is swapped consistently across all evaluations to accurately measure bias.
+- **Output Parsing**: Implement logic to parse the LLM's output according to the specified format (e.g., "[[A]]", "[[B]]", "[[C]]") to ensure consistency in evaluation.

@@ -1,0 +1,1 @@
+LLMs perform with basic strategic reasoning in digital card games but struggle against complex strategies. They have difficulty with lateral thinking puzzles, often failing to find correct solutions. In household tasks, LLMs show limited ability to complete multi-step tasks.

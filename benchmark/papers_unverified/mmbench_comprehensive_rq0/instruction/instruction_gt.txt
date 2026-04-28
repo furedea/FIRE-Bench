@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How does MMBench improve upon existing benchmarks in evaluating VLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How effectively does a benchmark for evaluating vision-language models (VLMs) assess the multi-modal capabilities of these models across 20 ability dimensions using bilingual multiple-choice questions in English and Chinese?"
 
 You have access to the following resources:
 
@@ -8,13 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- MMBench: A systematically designed objective benchmark for evaluating the multi-modal capabilities of vision-language models, featuring over 3000 multiple-choice questions across 20 ability dimensions.  [generate programmatically]
-- VQAv2: A dataset for visual question answering, providing question-answer pairs related to images.
-  Loading code:
-    from datasets import load_dataset
-    dataset = load_dataset("visual_genome", "vqav2")
-- COCO Caption: A dataset containing images with human-generated captions, used for image captioning tasks.  [loader unverified -- locate the data yourself]
-- OwlEval: A subjective benchmark incorporating human judgment for evaluating vision-language models.  [loader unverified -- locate the data yourself]
+- MMBench: A bilingual benchmark for assessing the multi-modal capabilities of vision-language models using multiple-choice questions in English and Chinese.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search
@@ -26,61 +20,57 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Evaluation of VLMs using MMBench
-- **Procedure**: 
-  - Use the MMBench dataset, which contains over 3000 multiple-choice questions across 20 ability dimensions.
-  - Evaluate each model using the CircularEval strategy, which involves feeding each question to a VLM multiple times with shuffled choices to ensure robustness.
-  - For models with limited instruction-following capabilities, use GPT-4 to convert free-form predictions into pre-defined choices.
-  - Conduct evaluations in both English and Chinese contexts using MMBench and MMBench-CN.
-  - Use the dev subset for initial testing and the test subset for final evaluation, with a 4:6 split ratio.
-- **What to Record**: 
-  - Record the Top-1 accuracy for each model across all ability dimensions.
-  - Capture the choice distribution of ground-truth answers and model predictions.
-  - Document any instances of content moderation or rejection by proprietary models.
-- **Correspondence**: 
-  - Results are detailed in Table 3 and Figure 7 for overall performance and bilingual comparison, respectively.
+### 1. Evaluation of VLMs using MMBench's 20 Ability Dimensions
 
-### 2. Comparison with Existing Benchmarks
-- **Procedure**: 
-  - Compare the performance of VLMs on MMBench with their performance on traditional benchmarks like VQAv2 and COCO Caption.
-  - Use exact matching and LLM-based choice extraction to evaluate the models on these datasets.
-- **What to Record**: 
-  - Record accuracy and false negative rates for each benchmark.
-  - Note any discrepancies in model performance across different benchmarks.
-- **Correspondence**: 
-  - Detailed in Section 5.3, highlighting the advantages of MMBench in providing fine-grained analysis.
+- **Procedure**:
+  - Use the MMBench dataset, which consists of over 3,000 multiple-choice questions covering 20 distinct ability dimensions.
+  - Each question is presented in both English and Chinese to enable bilingual evaluation.
+  - For each model, perform zero-shot inference using the provided prompt template:
+    ```
+    Hint: xxx [optional]
+    Question: xxx
+    A. xxx
+    B. xxx
+    C. xxx [optional]
+    D. xxx [optional]
+    Please select the correct answer from the options above.
+    ```
+  - Implement the CircularEval strategy, where each question is fed to a VLM multiple times with circularly shifted choices. A VLM is considered successful only if it correctly predicts the answer in all passes.
+  - Use GPT-4 as a choice extractor to handle free-form outputs from VLMs that do not directly output choice labels.
+
+- **What to Record**:
+  - Record the raw outputs of the models for each question.
+  - Extract and record the choice labels using GPT-4.
+  - Calculate and record the accuracy for each ability dimension and overall accuracy.
+
+- **Correspondence to Paper**:
+  - This experiment corresponds to the evaluation results presented in Table 3 and discussed in Section 5.2 of the paper.
 
 ## Evaluation Details
 
-### Metric Definitions and Computation
-- **Top-1 Accuracy**: 
-  - Calculate the percentage of questions where the model's predicted choice matches the ground-truth answer.
-- **CircularEval Strategy**: 
-  - A model is considered successful on a question only if it correctly predicts the answer in all circular passes.
-  - This strategy reduces the impact of random guessing and biases in choice selection.
+- **Metric Definitions**:
+  - Accuracy is calculated as the proportion of correctly answered questions out of the total questions for each ability dimension and overall.
+  - For CircularEval, a question is considered correctly answered only if the model predicts the correct answer in all circular passes.
 
-### Normalization and Pre-processing
-- **Choice Extraction**: 
-  - Use GPT-4 to extract choice labels from free-form text predictions.
-  - If the model's prediction cannot be matched to a choice, return a pseudo choice 'Z'.
+- **Normalization and Pre-processing**:
+  - Use GPT-4 to normalize model outputs by extracting choice labels from free-form text responses.
+  - If the model's prediction cannot be matched to any choice, assign a pseudo choice 'Z'.
 
-### Aggregation Strategy
-- **Per-sample to Overall**: 
-  - Aggregate results from individual samples to compute per-condition accuracy.
-  - Further aggregate per-condition results to obtain overall accuracy for each model.
+- **Aggregation Strategy**:
+  - Calculate per-sample accuracy first.
+  - Aggregate per-condition (ability dimension) accuracy.
+  - Compute overall accuracy by averaging across all ability dimensions.
 
 ## Implementation Notes
 
-### Key Pitfalls and Caveats
-- **Content Moderation**: 
-  - Proprietary models may reject certain questions due to content moderation policies, affecting accuracy.
-  - Estimate an upper-bound performance by assuming perfect answers for rejected questions.
+- **Key Pitfalls**:
+  - Ensure that the CircularEval strategy is correctly implemented to avoid inflating accuracy due to random guessing.
+  - Be cautious of content moderation in proprietary VLMs, which may lead to unanswered questions and affect accuracy.
 
-### Special Prompt Templates
-- **Zero-shot Inference Prompt**: 
-  - Use a standardized prompt format for all models to ensure consistency in zero-shot evaluation.
+- **Special Prompt Templates**:
+  - Use the specified prompt template for zero-shot inference to maintain consistency across evaluations.
 
-### Order of Operations
-- **Evaluation Sequence**: 
-  - Conduct initial evaluations on the dev subset to fine-tune the evaluation process.
-  - Perform final evaluations on the test subset, ensuring no ground-truth answers are disclosed.
+- **Order of Operations**:
+  - First, perform heuristic matching to extract choice labels.
+  - If heuristic matching fails, use GPT-4 for semantic matching.
+  - Apply CircularEval to ensure robustness in evaluation.

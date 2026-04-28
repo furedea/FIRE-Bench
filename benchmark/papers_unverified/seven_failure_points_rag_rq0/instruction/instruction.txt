@@ -1,13 +1,9 @@
-You are a research agent. Conduct an empirical study answering the question: "What are the failure points that occur when engineering a RAG system?"
+You are a research agent. Conduct an empirical study answering the question: "RQ1: What are the failure points that occur when engineering a Retrieval Augmented Generation (RAG) system using the BioASQ dataset with 15,000 documents and 1000 question-answer pairs?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- BioASQ: A dataset comprised of biomedical questions, links to documents, and answers, used to evaluate potential failure points in RAG systems.
-  GitHub repo: https://github.com/BioASQ
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/BioASQ.git
+- BioASQ: A dataset comprised of biomedical questions, links to documents, and answers, used to evaluate the failure points in a RAG system.  [loader unverified -- locate the data yourself]
 
 Analytical tools / techniques available:
 - GPT-4

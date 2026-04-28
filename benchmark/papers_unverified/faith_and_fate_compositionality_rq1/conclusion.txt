@@ -1,0 +1,1 @@
+Transformer LLMs primarily make propagation errors, indicating difficulty in composing multiple reasoning steps, and restoration errors, suggesting a tendency towards memorization rather than reasoning.

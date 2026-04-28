@@ -1,0 +1,1 @@
+The mistake-finding accuracy of large language models on out-of-domain data from the BIG-Bench Mistake dataset can be improved by using a small classifier trained on this data. The conclusion does not specify the minimum accuracy threshold required for effective backtracking.

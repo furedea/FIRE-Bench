@@ -1,25 +1,22 @@
 task_id: rgb_rag_benchmark_rq2
 paper_type: llm_evaluation
-research_question: 'RQ3: How well can LLMs integrate information from multiple documents
-  in retrieval-augmented generation?'
+research_question: "RQ3: How well can large language models (ChatGPT, ChatGLM-6B, ChatGLM2-6B, Vicuna-7b, Qwen-7B-Chat, BELLE-7B) integrate information from multiple documents in retrieval-augmented generation, evaluated across varying noise ratios in English and Chinese?"
 models:
   api:
-  - gpt-3.5-turbo
+    - gpt-4o
   huggingface:
-  - THUDM/ChatGLM-6B
-  - THUDM/ChatGLM2-6B
-  - lmsys/vicuna-7b-v1.3
-  - Qwen/Qwen-7B-Chat
-  - LianjiaTech/BELLE-7B-2M
+    - THUDM/ChatGLM-6B
+    - THUDM/ChatGLM2-6B
+    - lmsys/vicuna-7b-v1.3
+    - Qwen/Qwen-7B-Chat
+    - LianjiaTech/BELLE-7B-2M
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: Retrieval-Augmented Generation Benchmark (RGB)
-  source: synthetic
-  description: A benchmark designed to evaluate the retrieval-augmented generation
-    capabilities of LLMs, focusing on noise robustness, negative rejection, information
-    integration, and counterfactual robustness.
+  - name: "Retrieval-Augmented Generation Benchmark (RGB)"
+    source: synthetic
+    description: "A benchmark for evaluating retrieval-augmented generation in LLMs, focusing on noise robustness, negative rejection, information integration, and counterfactual robustness in both English and Chinese."
 references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

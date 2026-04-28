@@ -1,18 +1,18 @@
 task_id: red_teaming_reduce_harms_rq2
 paper_type: llm_evaluation
-research_question: 'RQ3: How can the red teaming process be improved and standardized?'
+research_question: "RQ3: How can a dataset of red team attacks, which are simulated adversarial interactions designed to test vulnerabilities, be used to improve the safety of language models?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: 38,961 red team attacks dataset
-  source: unknown
-  description: A dataset of red team attacks on language models to analyze and learn
-    from, including various types of harmful outputs.
+  - name: "Red team dataset of 38,961 attacks"
+    source: synthetic
+    description: "A dataset of adversarial interactions designed to test vulnerabilities in language models, used to analyze and improve model safety."
+references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

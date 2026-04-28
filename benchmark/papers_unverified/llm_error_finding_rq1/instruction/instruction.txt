@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Can LLMs correct reasoning mistakes in CoT traces if given mistake location information?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can LLMs correct reasoning errors in CoT traces when provided with oracle mistake location information, and how does this affect downstream task performance across tasks like word sorting, tracking shuffled objects, logical deduction, multi-step arithmetic, and Dyck languages?"
 
 You have access to the following resources:
 

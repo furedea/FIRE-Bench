@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: What are the performance differences among LLMs on LongBench?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do large language models perform on summarization tasks using LongBench, which includes datasets like GovReport, QMSum, MultiNews, and VCSUM?"
 
 You have access to the following resources:
 
@@ -8,7 +8,22 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- LongBench: A bilingual, multi-task benchmark for evaluating long context understanding, comprising 21 datasets across 6 task categories in both English and Chinese.  [loader unverified -- locate the data yourself]
+- GovReport: A large-scale collection of detailed reports from the U.S. Government Accountability Office and Congressional Research Service, each accompanied by a human-written summary.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("HuggingFaceGovReport")
+- QMSum: Query-summary pairs annotated over meetings across multiple domains, including product, academic, and committee meetings.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("HuggingFaceQMSum")
+- MultiNews: Clusters of news articles discussing the same event or topic, each paired with a human-written summary.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("HuggingFaceMultiNews")
+- VCSUM: A large-scale Chinese meeting summarization dataset consisting of real-life meetings with versatile annotations to support multiple summarization tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("HuggingFaceVCSUM")
 
 Experimental constraints:
 - Do NOT use web search

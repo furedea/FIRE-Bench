@@ -1,9 +1,9 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: Do LLMs reflect human-like behaviors as a result of question modifications?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: Do large language models (LLMs) exhibit human-like response biases, such as acquiescence, allow/forbid asymmetry, response order, opinion floating, and odd/even scale effects, when evaluated on survey questions derived from Pew Research's American Trends Panel?"
 
 You have access to the following resources:
 
 Models:
-- gpt-3.5-turbo-0613 and gpt-3.5-turbo-0914 via API
+- gpt-3.5-turbo and gpt-3.5-turbo-instruct via API
 - Load with HuggingFace: meta-llama/Llama-2-7b
 - Load with HuggingFace: meta-llama/Llama-2-13b
 - Load with HuggingFace: meta-llama/Llama-2-70b
@@ -11,7 +11,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- American Trends Panel (ATP): A set of survey questions curated by Pew Research, used to study response biases in LLMs.  [loader unverified -- locate the data yourself]
+- Pew Research's American Trends Panel: Survey questions curated and administered by experts, covering topics such as politics, technology, and family, used to evaluate response biases in LLMs.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -23,51 +23,68 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Evaluate LLM Behavior on Response Biases and Non-Bias Perturbations
+### 1. Acquiescence Bias Evaluation
+- **Procedure**: 
+  - Use question pairs from the dataset where the modified question (`q'`) suggests agreement with the first option.
+  - Query each model with these question pairs, ensuring the prompt includes explicit instructions to choose from the provided options.
+  - Sample 50 responses per question per model.
+- **What to Record**: 
+  - Count of responses for each option in both original (`q`) and modified (`q'`) questions.
+  - Calculate the change in response distribution (\(\Delta b\)) as `count(q'[a]) - count(q[a])`.
+- **Correspondence**: Figure 2, Table 3, Section 3.1
 
-- **Procedure**:
-  - **Input Format**: Use question pairs (q, q′) from the datasets Qbias and Qperturb. Each pair consists of an original question (q) and a modified question (q′).
-  - **Prompting Strategy**: For each question, append an alphabetical letter to each response option and instruct the model to answer with one of the alphabetical options. Use a temperature of 1 for sampling.
-  - **Number of Samples**: Collect 50 responses per model for each question pair.
-  - **Shuffling/Ordering**: Ensure that the order of response options is consistent with the bias type being tested (e.g., reverse order for response order bias).
-  - **Splits to Use**: Use the entire set of 2578 question pairs, covering 5 biases and 3 non-bias perturbations.
+### 2. Allow/Forbid Asymmetry Bias Evaluation
+- **Procedure**: 
+  - Use question pairs where the modified question (`q'`) uses "forbid" instead of "allow".
+  - Follow the same querying and sampling strategy as in the acquiescence bias evaluation.
+- **What to Record**: 
+  - Count of responses for each option in both original and modified questions.
+  - Calculate \(\Delta b\) as `count(q[b]) - count(q'[a])`.
+- **Correspondence**: Figure 2, Table 3, Section 3.1
 
-- **What to Record**:
-  - Raw outputs of the model responses.
-  - Extracted answers (the selected alphabetical option).
-  - Intermediate statistics such as the count of each response option for both q and q′.
+### 3. Response Order Bias Evaluation
+- **Procedure**: 
+  - Use question pairs where the order of response options is reversed in the modified question (`q'`).
+  - Query each model and sample responses as described previously.
+- **What to Record**: 
+  - Count of responses for each option in both original and modified questions.
+  - Calculate \(\Delta b\) as `count(q'[d]) - count(q[a])`.
+- **Correspondence**: Figure 2, Table 3, Section 3.1
 
-- **Correspondence to Paper**:
-  - This experiment corresponds to Figure 2, Table 3, and Section 3.1 in the paper.
+### 4. Opinion Floating Bias Evaluation
+- **Procedure**: 
+  - Use question pairs where a "don't know" option is added in the modified question (`q'`).
+  - Query each model and sample responses.
+- **What to Record**: 
+  - Count of responses for each option in both original and modified questions.
+  - Calculate \(\Delta b\) as `count(q[c]) - count(q'[c])`.
+- **Correspondence**: Figure 2, Table 3, Section 3.1
+
+### 5. Odd/Even Scale Effects Bias Evaluation
+- **Procedure**: 
+  - Use question pairs where a middle option is added or removed in the modified question (`q'`).
+  - Query each model and sample responses.
+- **What to Record**: 
+  - Count of responses for each option in both original and modified questions.
+  - Calculate \(\Delta b\) as `count(q'[b]) + count(q'[d]) - count(q[b]) - count(q[d])`.
+- **Correspondence**: Figure 2, Table 3, Section 3.1
 
 ## Evaluation Details
 
-- **Metric Definitions and Computation**:
-  - **Change in Response Distribution (∆b)**: Calculate the change in the number of responses for specific options between q and q′ for each bias type as defined in Table 2 of the paper.
-  - **Student’s t-test**: Conduct a t-test to determine if the average change (¯∆b) across all questions is significantly different from 0. The null hypothesis is that ¯∆b is 0.
-
-- **Normalization/Pre-processing**:
-  - Normalize the entropy of the answer distributions to measure model uncertainty, using the formula:
-    \[
-    \text{Normalized Entropy} = -\frac{\sum_{i=1}^{n} p_i \log_2 p_i}{\log_2 n}
-    \]
-  - Ensure that the response options are consistently labeled across q and q′ for accurate comparison.
-
-- **Aggregation Strategy**:
-  - Compute per-sample changes in response distribution.
-  - Aggregate these changes to compute per-condition averages (¯∆b and ¯∆p).
-  - Conduct statistical tests to determine overall trends.
+- **Metric Definitions**: 
+  - \(\Delta b\) is calculated for each bias type as specified in the experimental design.
+  - Perform a Student’s t-test on \(\Delta b\) to determine if the average change is significantly different from 0.
+- **Normalization**: 
+  - Normalize response counts by the total number of samples to ensure comparability across questions with different numbers of options.
+- **Aggregation Strategy**: 
+  - Compute \(\Delta b\) per question pair, then average across all pairs for each bias type.
+  - Use the p-value from the t-test to assess significance.
 
 ## Implementation Notes
 
-- **Key Pitfalls or Caveats**:
-  - Ensure that the models generate only one token for the response to match the expected format.
-  - Be aware of the potential for models to generate invalid responses; continue sampling until a valid response is obtained.
-
-- **Special Prompt Templates**:
-  - Use the prompt template provided in Appendix C of the paper, which includes explicit instructions to answer with one of the alphabetical options.
-
-- **Order of Operations**:
-  - First, generate responses for all question pairs.
-  - Then, compute the change in response distributions and perform statistical analysis.
-  - Finally, analyze the correlation between model uncertainty and response changes.
+- **Prompt Template**: 
+  - Use a consistent prompt template across all models, appending an alphabetical letter to each response option and instructing the model to choose one.
+- **Output Parsing**: 
+  - Ensure that the model's output is a single letter corresponding to one of the options.
+- **Order of Operations**: 
+  - First, generate responses for all question pairs, then compute \(\Delta b\) and perform statistical tests.

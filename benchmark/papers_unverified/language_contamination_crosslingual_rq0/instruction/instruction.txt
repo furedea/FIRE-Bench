@@ -1,36 +1,17 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ1: How much non-English text exists in commonly used English pretraining corpora?"
+You are a research agent. Conduct an empirical study answering the question: "RQ1: How much non-English text exists in commonly used English pretraining corpora, and what is its composition?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- ENGLISH WIKIPEDIA: A large-scale dataset of English Wikipedia articles used for pretraining language models.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('wikipedia')
-- BOOKCORPUS: A dataset consisting of books used for pretraining language models.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('bookcorpus')
-- STORIES: A dataset of stories used for pretraining language models.
-  GitHub repo: https://github.com/rowanz/grover
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/rowanz/grover.git
-- OPENWEBTEXT: An open-source version of WEBTEXT, derived from web-crawled data.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('openwebtext')
-- CC-NEWS: A dataset of news articles used for pretraining language models.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('cc_news')
-- C4.EN: A large-scale dataset derived from web-crawled data, filtered to exclude non-English text.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('allenai/c4')
+- ENGLISH WIKIPEDIA: A large-scale English language corpus used for pretraining language models.  [loader unverified -- locate the data yourself]
+- BOOKCORPUS: A dataset consisting of books used for pretraining language models.  [loader unverified -- locate the data yourself]
+- STORIES: A dataset of stories used for pretraining language models.  [loader unverified -- locate the data yourself]
+- OPENWEBTEXT: An open-source version of WEBTEXT, derived from web-crawled data.  [loader unverified -- locate the data yourself]
+- CC-NEWS: A dataset consisting of news articles used for pretraining language models.  [loader unverified -- locate the data yourself]
+- C4.EN: A large-scale English corpus derived from web-crawled data, used for pretraining language models.  [loader unverified -- locate the data yourself]
 
 Analytical tools / techniques available:
-- FastText
+- FastText language identification
 
 Study constraints:
 - Do NOT use web search

@@ -1,18 +1,17 @@
 task_id: llm_error_finding_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: Can LLMs find reasoning mistakes in CoT traces?'
+research_question: "RQ1: How well do state-of-the-art LLMs (GPT-4, GPT-3.5, PaLM 2, Gemini Pro) perform in finding reasoning mistakes in Chain-of-Thought (CoT) traces across tasks like word sorting, tracking shuffled objects, logical deduction, multi-step arithmetic, and Dyck languages?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: BIG-Bench Mistake
-  source: unknown
-  description: A dataset of CoT-style traces generated using PaLM 2, annotated with
-    the location of the first logical mistake.
+  - name: "BIG-Bench Mistake"
+    source: unknown
+    description: "A dataset of CoT-style traces generated using PaLM 2, annotated with the location of the first logical mistake, covering tasks like word sorting, tracking shuffled objects, logical deduction, multi-step arithmetic, and Dyck languages."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

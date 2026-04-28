@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: What are the performance differences among LLMs on LongBench?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do large language models perform on summarization tasks using LongBench, which includes datasets like GovReport, QMSum, MultiNews, and VCSUM?"
 
 You have access to the following resources:
 
@@ -8,7 +8,22 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- LongBench: A bilingual, multi-task benchmark for evaluating long context understanding, comprising 21 datasets across 6 task categories in both English and Chinese.  [loader unverified -- locate the data yourself]
+- GovReport: A large-scale collection of detailed reports from the U.S. Government Accountability Office and Congressional Research Service, each accompanied by a human-written summary.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("HuggingFaceGovReport")
+- QMSum: Query-summary pairs annotated over meetings across multiple domains, including product, academic, and committee meetings.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("HuggingFaceQMSum")
+- MultiNews: Clusters of news articles discussing the same event or topic, each paired with a human-written summary.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("HuggingFaceMultiNews")
+- VCSUM: A large-scale Chinese meeting summarization dataset consisting of real-life meetings with versatile annotations to support multiple summarization tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("HuggingFaceVCSUM")
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,85 +35,46 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Performance Evaluation on LongBench
+### 1. Summarization Task Evaluation
 - **Procedure**: 
-  - Evaluate each model (gpt-4o, Llama-3.1-8B-Instruct) on the LongBench dataset.
-  - Use a zero-shot setting for all tasks except few-shot learning, where examples are provided as part of the context.
-  - For tasks where the input length exceeds the model's maximum context length, truncate the input sequence from the middle.
-  - Use greedy decoding for reproducibility.
-  - Specific prompt templates are provided for each task (see Implementation Notes).
-  - Maximum output lengths are set for each dataset to prevent non-stop generation.
+  - For each dataset (GovReport, QMSum, MultiNews, VCSUM), load the dataset using the provided loading code.
+  - Use the model to generate summaries for each document in the dataset.
+  - Ensure that the input format includes the full document as context and the task prompt specifies the need for a concise summary.
+  - Use a maximum output length of 512 tokens for the generated summaries.
+  - Conduct the evaluation in a zero-shot setting, without additional fine-tuning or few-shot examples.
 - **What to Record**: 
-  - Raw outputs of the models.
-  - Extracted answers for QA tasks.
-  - ROUGE-L scores for summarization tasks.
-  - F1 scores for QA tasks.
-  - Accuracy for classification tasks.
+  - Collect the raw generated summaries from the models.
+  - Calculate ROUGE-L scores for each summary against the human-written reference summaries.
 - **Correspondence**: 
-  - Results are reported in Table 2 and Table 3.
-  - Truncation experiments are visualized in Figure 2.
-
-### 2. Truncation Experiments
-- **Procedure**: 
-  - Conduct experiments with truncation sizes of 4k and 8k on LongBench.
-  - Compare performance with the model's maximum length configuration.
-- **What to Record**: 
-  - Macro-average scores across all tasks for each truncation size.
-- **Correspondence**: 
-  - Results are shown in Figure 2.
-
-### 3. LongBench-E Evaluation
-- **Procedure**: 
-  - Evaluate models on LongBench-E, a subset of LongBench with evenly distributed context lengths.
-  - Analyze performance across different context length ranges: 0-4k, 4k-8k, and 8k+.
-- **What to Record**: 
-  - Macro-average scores for each length range.
-- **Correspondence**: 
-  - Results are shown in Figure 3 and Table 9.
-
-### 4. Context Compression Techniques
-- **Procedure**: 
-  - Implement retrieval-based context compression using three retrievers: text-embedding-ada-002, Contriever, and BM25.
-  - Use summarization-based context compression by generating summaries for text chunks.
-- **What to Record**: 
-  - Performance improvements or declines with each compression technique.
-- **Correspondence**: 
-  - Results are reported in Table 4 and Table 5.
-
-### 5. Context Understanding vs. Memorization
-- **Procedure**: 
-  - Evaluate models on QA tasks without providing the long context, only the questions.
-  - Compare performance with and without context.
-- **What to Record**: 
-  - Scores without context and the difference (∆score) from the original scores.
-- **Correspondence**: 
-  - Results are shown in Table 6.
+  - Results are reported in Table 2 and discussed in Section 4.1 of the paper.
 
 ## Evaluation Details
 
-- **Metrics**:
-  - **F1 Score**: Used for QA tasks, calculated as the harmonic mean of precision and recall.
-  - **ROUGE-L**: Used for summarization tasks, measures the longest common subsequence between the generated and reference summaries.
-  - **Accuracy**: Used for classification tasks, calculated as the number of correct predictions divided by the total number of predictions.
-  - **Edit Sim**: Used for code completion tasks, based on Levenshtein distance.
+- **Metric Definitions**:
+  - **ROUGE-L**: Measures the longest common subsequence between the generated summary and the reference summary. Use the `rouge_score` library in Python to compute this metric.
+  - Ensure that the ROUGE-L score is calculated for each summary and then averaged across all summaries in a dataset to obtain the final score.
 
 - **Normalization and Pre-processing**:
-  - For few-shot learning and code completion tasks, extract the first line of the response.
-  - For code completion, ignore comment lines in the output.
+  - Before scoring, ensure that both the generated and reference summaries are tokenized consistently.
+  - Remove any extraneous whitespace or punctuation that may affect the ROUGE-L calculation.
 
 - **Aggregation Strategy**:
-  - Compute per-sample scores, then average to obtain per-condition scores.
-  - Report macro-average scores across all tasks for overall performance.
+  - Compute ROUGE-L scores for each individual summary.
+  - Aggregate these scores to obtain an average ROUGE-L score for each dataset.
+  - Report the average score per dataset as well as an overall average across all datasets.
 
 ## Implementation Notes
 
-- **Prompt Templates**: 
-  - Specific templates are provided for each task, ensuring the models understand the task requirements.
-  - Instructions are placed at both the beginning and end of the prompt to reinforce task understanding.
-
-- **Truncation Strategy**: 
-  - When input length exceeds the model's maximum context length, truncate from the middle to preserve crucial information at the start and end of the sequence.
+- **Prompt Templates**:
+  - Use specific prompt templates for each dataset to ensure the model understands the task. For example, for GovReport: "You are given a report by a government agency. Write a one-page summary of the report."
+  - Ensure that the prompt is clear and concise, focusing on the need for a summary.
 
 - **Order of Operations**:
-  - Ensure that the input format and maximum output length are set before model evaluation.
-  - Apply context compression techniques before feeding inputs to the models.
+  - Load the dataset.
+  - Apply the model to generate summaries.
+  - Compute ROUGE-L scores.
+  - Aggregate and report results.
+
+- **Pitfalls**:
+  - Be cautious of models generating overly verbose or irrelevant content. Ensure the prompt is clear to mitigate this.
+  - Verify that the model's output length does not exceed the specified maximum output length to avoid truncation issues.

@@ -1,0 +1,1 @@
+CLIP-based vision encoders struggle with straightforward visual questions, leading to MLLMs like GPT-4V performing below random guessing levels.

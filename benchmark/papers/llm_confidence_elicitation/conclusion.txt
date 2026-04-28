@@ -1,0 +1,1 @@
+Large language models (LLMs) tend to be overconfident when expressing their uncertainty. Human-inspired prompting strategies can mitigate this overconfidence, though their effectiveness decreases with more advanced models. Sampling strategies combined with specific aggregators can improve failure prediction.

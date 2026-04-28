@@ -1,21 +1,29 @@
-You are a research agent. Conduct research about the question: "RQ1: How does SELF-RAG improve the factual accuracy and versatility of LLMs compared to existing models?"
+You are a research agent. Conduct research about the question: "RQ1: How do retrieval (accessing external information sources) and self-reflection (evaluating and refining one's own outputs) mechanisms enhance the factual accuracy and generation quality of large language models across tasks such as open-domain question answering, reasoning, fact verification, and long-form generation, as evaluated on datasets like PopQA, TriviaQA-unfiltered, PubHealth, ARC-Challenge, Biography generation, and ALCE-ASQA?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- SELF-RAG: SELF-RAG is a framework that enhances the quality and factuality of large language models (LLMs) through retrieval and self-reflection. It trains an arbitrary LLM to adaptively retrieve passages on-demand, generate outputs, and reflect on both retrieved passages and its own generations using special tokens called reflection tokens. These tokens enable the model to be controllable during inference, allowing it to tailor its behavior to diverse task requirements.
-  - Component: Adaptive retrieval of relevant passages on-demand
-  - Component: Generation of outputs with reflection tokens
-  - Component: Self-reflection on retrieved passages and generated outputs
-  - Component: Use of critique tokens to evaluate generation quality
+- Self-Reflective Retrieval-Augmented Generation (SELF-RAG): SELF-RAG is a framework designed to enhance the quality and factuality of large language models by incorporating retrieval and self-reflection mechanisms. It trains a language model to adaptively retrieve relevant passages on-demand and generate outputs while reflecting on both the retrieved passages and its own generations using special reflection tokens. These tokens enable the model to control its behavior during inference, tailoring its responses to diverse task requirements.
+  - Component: Adaptive retrieval mechanism that retrieves passages on-demand based on task requirements.
+  - Component: Reflection tokens that allow the model to evaluate the necessity of retrieval and the quality of its own outputs.
+  - Component: End-to-end training of a language model to generate and critique text using reflection tokens.
 - Baseline for comparison: ChatGPT
 - Baseline for comparison: Llama2-chat
+- Baseline for comparison: Alpaca
+- Baseline for comparison: Toolformer
+- Baseline for comparison: SAIL
 - Reference hint: https://selfrag.github.io/
 
 Datasets for training and evaluation:
-- Open-domain QA: A dataset used to evaluate the model's ability to answer arbitrary questions about factual knowledge.  [loader unverified -- locate the data yourself]
-- Reasoning: A dataset used to evaluate the model's reasoning capabilities.  [loader unverified -- locate the data yourself]
-- Fact verification tasks: A dataset used to evaluate the model's ability to verify factual statements.  [loader unverified -- locate the data yourself]
+- PopQA: A dataset for open-domain question answering focusing on rare entity queries.  [loader unverified -- locate the data yourself]
+- TriviaQA-unfiltered: An open-domain question answering dataset with a large set of trivia questions.  [loader unverified -- locate the data yourself]
+- PubHealth: A fact verification dataset about public health.  [loader unverified -- locate the data yourself]
+- ARC-Challenge: A multiple-choice reasoning dataset created from scientific exams.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("ai2_arc", "ARC-Challenge")
+- Biography generation: A task for generating biographies with a focus on factual accuracy.  [loader unverified -- locate the data yourself]
+- ALCE-ASQA: A long-form question answering dataset that evaluates correctness, fluency, and citation accuracy.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -35,77 +43,63 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Open-domain QA Evaluation
+### 1. Open-Domain QA Evaluation
 - **Procedure**: 
-  - Use the open-domain QA dataset to evaluate the model's ability to answer arbitrary questions about factual knowledge.
-  - Input format: Provide the model with questions without additional context.
-  - Prompting strategy: Use zero-shot prompting without few-shot demonstrations.
-  - Number of samples: Use the long-tail subset of PopQA with 1,399 queries and 11,313 queries from TriviaQA-unfiltered.
-  - Splits to use: Use the test set for evaluation.
+  - Use the PopQA and TriviaQA-unfiltered datasets.
+  - Conduct zero-shot evaluations by providing instructions without few-shot demonstrations.
+  - For PopQA, use the long-tail subset with 1,399 rare entity queries.
+  - For TriviaQA-unfiltered, use 11,313 test queries.
+  - Evaluate whether gold answers are included in the model generations.
 - **What to Record**: 
-  - Record whether the gold answers are included in the model generations.
-  - Extracted answers and raw outputs.
-- **Correspondence**: Table 2, Section 4.1
+  - Raw outputs of the model.
+  - Inclusion of gold answers in the outputs.
+- **Correspondence**: 
+  - Results are discussed in Section 4.1 and presented in Table 2.
 
-### 2. Reasoning Task Evaluation
+### 2. Reasoning and Fact Verification Evaluation
 - **Procedure**: 
-  - Use the ARC-Challenge dataset to evaluate the model's reasoning capabilities.
-  - Input format: Provide multiple-choice questions.
-  - Prompting strategy: Use zero-shot prompting with instructions to choose the best answer.
-  - Number of samples: Use the entire test set.
+  - Use the PubHealth and ARC-Challenge datasets.
+  - Conduct zero-shot evaluations with instructions.
+  - For PubHealth, evaluate on the test set using accuracy as the metric.
+  - For ARC-Challenge, aggregate answer probabilities of target classes.
 - **What to Record**: 
-  - Record the accuracy of the model's selected answers.
-  - Raw outputs and selected choices.
-- **Correspondence**: Table 2, Section 4.1
+  - Raw outputs of the model.
+  - Accuracy scores for each dataset.
+- **Correspondence**: 
+  - Results are discussed in Section 4.1 and presented in Table 2.
 
-### 3. Fact Verification Task Evaluation
+### 3. Long-Form Generation Evaluation
 - **Procedure**: 
-  - Use the PubHealth dataset to evaluate the model's ability to verify factual statements.
-  - Input format: Provide statements for verification.
-  - Prompting strategy: Use zero-shot prompting with instructions to verify the truthfulness of statements.
-  - Number of samples: Use the entire test set.
+  - Use the Biography generation and ALCE-ASQA datasets.
+  - Conduct zero-shot evaluations with instructions.
+  - For Biography generation, use FactScore to evaluate factuality.
+  - For ALCE-ASQA, use metrics of correctness (str-em), fluency (MAUVE), and citation precision and recall.
 - **What to Record**: 
-  - Record the accuracy of the model's verification.
-  - Raw outputs and verification results.
-- **Correspondence**: Table 2, Section 4.1
-
-### 4. Long-form Generation Task Evaluation
-- **Procedure**: 
-  - Use the biography generation and ALCE-ASQA datasets for long-form generation tasks.
-  - Input format: Provide prompts for biography generation and long-form QA.
-  - Prompting strategy: Use zero-shot prompting with instructions for generating detailed responses.
-  - Number of samples: Use the entire test set.
-- **What to Record**: 
-  - Record FactScore for biographies and correctness, fluency, citation precision, and recall for ASQA.
-  - Raw outputs and extracted metrics.
-- **Correspondence**: Table 2, Section 4.1
+  - Raw outputs of the model.
+  - FactScore, str-em, MAUVE, citation precision, and recall scores.
+- **Correspondence**: 
+  - Results are discussed in Section 4.1 and presented in Table 2.
 
 ## Evaluation Details
 
-- **Metrics**:
-  - **Factuality**: Use FactScore for biography generation to evaluate factual precision.
-  - **Citation Accuracy**: Use citation precision and recall for ASQA to evaluate the correctness of citations.
-  - **Correctness**: Use exact match (str-em) and rouge for correctness in ASQA.
-  - **Fluency**: Use MAUVE for evaluating fluency in ASQA.
+### Metrics
+- **Inclusion of Gold Answers**: Check if the model's output contains the correct answer as a substring.
+- **Accuracy**: Compute the proportion of correct answers over the total number of questions.
+- **FactScore**: Evaluate the factual precision of generated biographies.
+- **str-em**: Measure the exact match of generated answers with the reference.
+- **MAUVE**: Assess the fluency of generated text by comparing it to human text.
+- **Citation Precision and Recall**: Evaluate the correctness and completeness of citations in the generated text.
 
-- **Normalization and Pre-processing**:
-  - Normalize model outputs by lowercasing for fact verification tasks to ensure consistency in evaluation.
-  - For multiple-choice tasks, ensure model predictions match one of the gold classes by adjusting instructions and conducting string matching.
+### Normalization and Pre-processing
+- For fact verification, lowercase model predictions to match gold labels.
+- For multiple-choice tasks, ensure model predictions match one of the gold classes by adjusting instructions and conducting string matching.
 
-- **Aggregation Strategy**:
-  - Aggregate per-sample results to compute per-condition metrics.
-  - Report overall metrics by averaging across all samples in the test set.
+### Aggregation Strategy
+- Compute per-sample metrics (e.g., inclusion of gold answers, accuracy) and aggregate them to obtain per-condition and overall scores.
 
 ## Implementation Notes
 
-- **Reflection Tokens**: 
-  - Use reflection tokens to guide retrieval and critique during generation.
-  - Ensure the model generates reflection tokens to evaluate its own predictions after each segment.
-
-- **Inference Strategy**:
-  - Use adaptive retrieval with a threshold to decide when to retrieve passages.
-  - Implement tree-decoding with critique tokens to enforce soft constraints during generation.
-
-- **Pitfalls**:
-  - Ensure that retrieval is only triggered when necessary to avoid unnecessary computation and potential introduction of irrelevant information.
-  - Carefully handle the balance between factual accuracy and creativity in open-ended tasks.
+- **Reflection Tokens**: Use special tokens to control retrieval and critique processes. Ensure correct insertion and interpretation of these tokens during training and inference.
+- **Adaptive Retrieval**: Implement a threshold-based mechanism to decide when to retrieve additional information based on the probability of generating a retrieval token.
+- **Beam Search with Critique Tokens**: Use segment-level beam search with critique tokens to guide the selection of the best output segments. Adjust weights for critique tokens to customize model behavior during inference.
+- **Training Data**: Use a curated corpus with interleaved passages and reflection tokens. Ensure the critic model is trained to generate reflection tokens offline to reduce overhead during training.

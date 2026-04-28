@@ -1,0 +1,1 @@
+The frequency of tasks in training data affects the performance of large language models by enabling better performance on more common tasks, such as common shift levels like rot-13 and common Pig Latin variants, compared to rarer ones like rot-2 and less common Pig Latin variants.

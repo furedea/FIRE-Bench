@@ -1,0 +1,1 @@
+Large language models can reveal reasoning paths and improve answer accuracy by altering the decoding approach. Exploring alternative token sequences uncovers hidden reasoning trajectories, and selecting the path with the highest answer confidence significantly outperforms standard greedy decoding.

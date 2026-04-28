@@ -1,0 +1,1 @@
+Open-source multi-modal large language models do not demonstrate faithful nonverbal abstract reasoning abilities on Raven’s Progressive Matrices benchmarks, but closed-source models like GPT-4V show non-trivial abilities.

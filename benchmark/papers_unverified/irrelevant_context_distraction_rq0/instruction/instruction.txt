@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How does irrelevant context affect the performance of large language models on arithmetic reasoning tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How does the presence of irrelevant context affect the problem-solving accuracy of large language models on arithmetic problems from the GSM-IC dataset, which consists of grade school math problems, as measured by micro and macro accuracy using various advanced prompting techniques?"
 
 You have access to the following resources:
 

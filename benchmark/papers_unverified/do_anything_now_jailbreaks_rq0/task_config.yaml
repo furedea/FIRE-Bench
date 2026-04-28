@@ -1,21 +1,23 @@
 task_id: do_anything_now_jailbreaks_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: What are the characteristics and evolution patterns of in-the-wild
-  jailbreak prompts?'
+research_question: "RQ1: What are the characteristics and distribution patterns of in-the-wild jailbreak prompts across platforms like Reddit, Discord, and prompt-aggregation websites?"
 models:
   api:
-  - gpt-4
+    - gpt-4o
   huggingface:
-  - databricks/dolly-v2-7b
-  - lmsys/vicuna-7b-v1.1
-  - THUDM/chatglm-6b
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: Jailbreak Prompts Dataset
-  source: unknown
-  description: A collection of 15,140 prompts from Reddit, Discord, websites, and
-    open-source datasets, including 1,405 identified as jailbreak prompts.
+  - name: "Reddit"
+    source: unknown
+    description: "A news-aggregation platform where content is organized into user-generated communities (subreddits)."
+  - name: "Discord"
+    source: unknown
+    description: "A private VoIP and instant messaging social platform organized into various small communities called servers."
+  - name: "FlowGPT"
+    source: unknown
+    description: "A community-driven website where users share and discover prompts with user-specified tags."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

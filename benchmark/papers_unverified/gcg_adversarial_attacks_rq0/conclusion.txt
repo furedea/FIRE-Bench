@@ -1,0 +1,1 @@
+Adversarial suffixes can be generated to induce objectionable content in aligned language models across multiple prompts and models, including Vicuna-7B, Vicuna-13B, and Guanaco-7B, with high success rates.

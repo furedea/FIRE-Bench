@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How well do VLMs interpret compound nouns compared to their constituent nouns?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current vision-language models (CLIP, OpenCLIP, ALIGN, ALBEF, BLIP, MetaCLIP) interpret compound nouns in text-to-image retrieval tasks using the Compun benchmark with 400 unique CNs?"
 
 You have access to the following resources:
 
@@ -8,10 +8,22 @@ Models:
 - Load with HuggingFace: salesforce/ALBEF
 - Load with HuggingFace: salesforce/BLIP
 - Load with HuggingFace: facebookresearch/MetaCLIP
+- Load with HuggingFace: mlfoundations/open_clip
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Compun: A benchmark with 400 unique and commonly used compound nouns (CNs) to evaluate the effectiveness of VLMs in interpreting CNs.  [generate programmatically]
+- Compun: A benchmark with 400 unique compound nouns for evaluating vision-language models' ability to interpret compound nouns in text-to-image retrieval tasks.  [generate programmatically]
+  Generation code:
+    import random
+    
+    def generate_compun_instance():
+        compound_nouns = ["snow ball", "courtyard", "mountain bike", "building stone", "seat belt"]
+        distractors = ["snow", "ball", "courtyard", "mountain", "bike", "building", "stone", "seat", "belt"]
+        cn = random.choice(compound_nouns)
+        distractor_images = random.sample(distractors, 2)
+        return {"compound_noun": cn, "distractors": distractor_images}
+    
+    compun_data = [generate_compun_instance() for _ in range(400)]
 
 Experimental constraints:
 - Do NOT use web search

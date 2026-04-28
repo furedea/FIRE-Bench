@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How does LongBench facilitate the evaluation of long context understanding in LLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How do large language models perform on single-document and multi-document question answering tasks when evaluated with LongBench, which includes datasets like NarrativeQA, Qasper, MultiFieldQA, HotpotQA, and DuReader?"
 
 You have access to the following resources:
 
@@ -8,7 +8,33 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- LongBench: A bilingual, multi-task benchmark for evaluating long context understanding in large language models, comprising 21 datasets across 6 task categories in both English and Chinese.  [loader unverified -- locate the data yourself]
+- NarrativeQA: A dataset consisting of long stories along with questions posed to test reading comprehension.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("narrativeqa")
+- Qasper: A dataset featuring QA over NLP papers, annotated by NLP practitioners.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("qasper")
+- MultiFieldQA: A manually curated dataset with documents and articles from multiple sources, including legal documents, government reports, encyclopedias, and academic papers.  [generate programmatically]
+  Generation code:
+    # Synthetic generation process for MultiFieldQA
+    import random
+    def generate_multifieldqa():
+        fields = ["legal documents", "government reports", "encyclopedias", "academic papers"]
+        documents = [f"Document from {field}" for field in fields]
+        questions = [f"What is the main topic of the document from {field}?" for field in fields]
+        answers = [f"The main topic of the document from {field} is XYZ." for field in fields]
+        return [{"document": doc, "question": q, "answer": a} for doc, q, a in zip(documents, questions, answers)]
+    dataset = generate_multifieldqa()
+- HotpotQA: A dataset involving multi-hop questions directly written by native speakers given two related paragraphs.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hotpot_qa")
+- DuReader: A Chinese dataset developed based on Baidu Search and Baidu Zhidao, comprising questions and related documents.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("dureader")
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,56 +46,61 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Single-Document QA
-- **Procedure**: For each dataset (NarrativeQA, Qasper, MultiFieldQA-en, MultiFieldQA-zh), provide the model with a long document as context and a question as input. The model should generate a concise answer.
-- **Input Format**: Use the provided prompt templates for each dataset. Ensure the context is the full document and the input is the question.
-- **Number of Samples**: Use all available samples from each dataset.
-- **What to Record**: Record the model's generated answers and compute F1 scores against the ground truth.
-- **Correspondence**: Table 1, Section 3.2.1
+### 1. Single-Document QA Evaluation
+- **Procedure**: 
+  - Use the NarrativeQA and Qasper datasets.
+  - For each dataset, provide the model with a long document as context and a question as input.
+  - Ensure the input format follows the prompt templates provided in the paper's appendix.
+  - Evaluate using the full test set for each dataset.
+- **What to Record**: 
+  - Raw model outputs for each question.
+  - Extracted answers for comparison with ground truth.
+  - F1 scores for each question.
+- **Correspondence**: 
+  - Results are reported in Table 2 and discussed in Section 4.1.
 
-### 2. Multi-Document QA
-- **Procedure**: For datasets like HotpotQA, 2WikiMultihopQA, MuSiQue, and DuReader, provide multiple documents as context and a question as input. The model should synthesize information across documents to answer the question.
-- **Input Format**: Use the provided prompt templates. Ensure the context includes all relevant documents.
-- **Number of Samples**: Use all available samples from each dataset.
-- **What to Record**: Record the model's generated answers and compute F1 scores against the ground truth.
-- **Correspondence**: Table 1, Section 3.2.1
-
-### 3. Summarization
-- **Procedure**: For each dataset (GovReport, QMSum, MultiNews, VCSUM), provide the model with a long document or multiple documents as context. The model should generate a concise summary.
-- **Input Format**: Use the provided prompt templates. Ensure the context is the full document(s).
-- **Number of Samples**: Use all available samples from each dataset.
-- **What to Record**: Record the model's generated summaries and compute ROUGE-L scores against the ground truth.
-- **Correspondence**: Table 1, Section 3.2.1
-
-### 4. Few-shot Learning
-- **Procedure**: For each dataset (TREC, TriviaQA, SAMSum, LSHT), provide few-shot examples as context and a new input to classify or summarize.
-- **Input Format**: Use the provided prompt templates. Ensure the context includes few-shot examples.
-- **Number of Samples**: Use all available samples from each dataset.
-- **What to Record**: Record the model's generated outputs and compute accuracy or F1 scores as appropriate.
-- **Correspondence**: Table 1, Section 3.2.1
-
-### 5. Synthetic Tasks
-- **Procedure**: For PassageCount and PassageRetrieval tasks, provide multiple passages as context and a task-specific input (e.g., a summary or a count request).
-- **Input Format**: Use the provided prompt templates. Ensure the context includes all passages.
-- **Number of Samples**: Use all available samples from each dataset.
-- **What to Record**: Record the model's generated outputs and compute exact match accuracy.
-- **Correspondence**: Table 1, Section 3.2.1
-
-### 6. Code Completion
-- **Procedure**: For LCC and RepoBench-P, provide preceding lines of code and cross-file snippets as context. The model should predict the next line of code.
-- **Input Format**: Use the provided prompt templates. Ensure the context includes all relevant code snippets.
-- **Number of Samples**: Use all available samples from each dataset.
-- **What to Record**: Record the model's generated code and compute Edit Sim scores.
-- **Correspondence**: Table 1, Section 3.2.1
+### 2. Multi-Document QA Evaluation
+- **Procedure**: 
+  - Use the HotpotQA, 2WikiMultihopQA, MuSiQue, and DuReader datasets.
+  - Provide the model with multiple documents as context and a question as input.
+  - Follow the specific prompt templates for multi-document QA as detailed in the appendix.
+  - Evaluate using the full test set for each dataset.
+- **What to Record**: 
+  - Raw model outputs for each question.
+  - Extracted answers for comparison with ground truth.
+  - F1 and Rouge-L scores for each question.
+- **Correspondence**: 
+  - Results are reported in Table 2 and discussed in Section 4.1.
 
 ## Evaluation Details
 
-- **Metrics**: Use F1 for QA tasks, ROUGE-L for summarization, accuracy for classification, and Edit Sim for code completion.
-- **Normalization**: For QA and summarization, normalize model outputs by removing extraneous text and focusing on the first line or sentence as specified.
-- **Aggregation Strategy**: Compute per-sample scores, then average per-condition (e.g., per dataset), and finally compute an overall average across all tasks.
+### Metric Definitions and Computation
+- **F1 Score**: 
+  - Compute the harmonic mean of precision and recall for each question.
+  - Use the formula: \( F1 = 2 \times \frac{\text{precision} \times \text{recall}}{\text{precision} + \text{recall}} \).
+- **Rouge-L Score**: 
+  - Measure the longest common subsequence (LCS) between the model output and the reference answer.
+  - Use the `rouge_score` library in Python for computation.
+
+### Normalization and Pre-processing
+- Normalize model outputs by stripping whitespace and converting to lowercase before comparison.
+- For Chinese datasets, ensure character-level tokenization is applied consistently.
+
+### Aggregation Strategy
+- Compute per-sample scores (F1, Rouge-L) and then average these scores to obtain per-dataset scores.
+- Report macro-average scores across all datasets for overall performance evaluation.
 
 ## Implementation Notes
 
-- **Prompt Templates**: Use specific templates for each task as detailed in the Evaluation Setups section.
-- **Truncation Strategy**: If input length exceeds model capacity, truncate from the middle, preserving the beginning and end of the sequence.
-- **Output Length**: Set a maximum output length for each task to prevent excessive generation, as specified in the Maximum Output Length section.
+### Key Pitfalls and Caveats
+- Ensure that the input sequence does not exceed the model's maximum context length. If it does, apply the truncation strategy described in the paper (truncating from the middle).
+- Be cautious of models' tendency to generate dialogue-like responses; ensure prompts are designed to elicit concise, factual answers.
+
+### Special Prompt Templates
+- Use the specific prompt templates provided in the appendix for each dataset to ensure consistency in input formatting.
+- For few-shot learning tasks, include examples as part of the context to simulate the few-shot setting.
+
+### Order of Operations
+- Load datasets and models as specified.
+- Apply pre-processing and normalization steps before feeding inputs to the models.
+- Record outputs and compute metrics immediately after model inference to ensure data integrity.

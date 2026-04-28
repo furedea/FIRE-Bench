@@ -1,26 +1,30 @@
-You are a research agent. Conduct research about the question: "RQ1: How do different visual representations impact the performance of MLLMs?"
+You are a research agent. Conduct research about the question: "RQ1: How do different visual encoder choices impact the multimodal capabilities of MLLMs, evaluated using benchmarks like GQA, AI2D, and TextVQA?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Cambrian-1: Cambrian-1 is a family of multimodal large language models (MLLMs) designed with a vision-centric approach. It introduces the Spatial Vision Aggregator (SVA), a dynamic and spatially-aware connector that integrates high-resolution vision features with LLMs while reducing the number of tokens. Cambrian-1 evaluates various visual representations using LLMs and visual instruction tuning, offering insights into different models and architectures, including self-supervised and strongly supervised methods.
+- Cambrian-1: Cambrian-1 is a family of multimodal large language models (MLLMs) designed with a vision-centric approach. It explores the integration of various visual encoders to enhance the multimodal capabilities of MLLMs. The architecture includes a novel component called the Spatial Vision Aggregator (SVA), which dynamically integrates high-resolution vision features with language models while reducing the number of tokens. Cambrian-1 aims to improve visual grounding and achieve state-of-the-art performance across diverse benchmarks.
   - Component: Spatial Vision Aggregator (SVA)
+  - Component: Integration of multiple vision encoders
   - Component: Vision-centric benchmark (CV-Bench)
-  - Component: Visual instruction tuning data curation
-- Baseline for comparison: LLaVA
-- Baseline for comparison: CLIP
-- Baseline for comparison: DINO
+- Baseline for comparison: OpenAI CLIP
+- Baseline for comparison: DINOv2
+- Baseline for comparison: MoCo v3
 - Reference hint: https://github.com/cambrian-mllm/cambrian
 
 Datasets for training and evaluation:
-- Cambrian-10M: A large-scale curated instruction tuning dataset for MLLMs, emphasizing high-quality visual instruction-tuning data from publicly available sources.
+- GQA: A dataset for real-world visual reasoning and compositional question answering.
   Loading code:
     from datasets import load_dataset
-    dataset = load_dataset("nyu-visionx/Cambrian-10M")
-- CV-Bench: A vision-centric benchmark designed to evaluate the fundamental 2D and 3D visual understanding of MLLMs.
+    dataset = load_dataset("cais/gqa")
+- AI2D: A multimodal corpus of primary school science diagrams.
   Loading code:
     from datasets import load_dataset
-    dataset = load_dataset("nyu-visionx/CV-Bench")
+    dataset = load_dataset("allenai/ai2d")
+- TextVQA: A dataset for visual question answering that requires reading and reasoning about text in images.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("textvqa")
 
 Experimental constraints:
 - Do NOT use web search
@@ -40,86 +44,41 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Evaluating Visual Representations with MLLMs
+### Task 1: Evaluation of MLLMs with Different Visual Encoders
 - **Procedure**: 
-  - Use MLLMs to evaluate the impact of different visual encoders on multimodal capabilities.
-  - Implement a 2-stage instruction tuning process: 
-    - First, train the connector on 1.2M adapter data from ShareGPT-4V.
-    - Fine-tune both the connector and LLM on 737K instruction tuning data.
-  - Evaluate using a suite of benchmarks that assess multimodal capabilities.
-  - Compare performance with and without visual input and calculate expected scores via random guessing.
-- **Input Format**: 
-  - Use visual question answering (VQA) format for evaluation.
-- **Prompting Strategy**: 
-  - Use system prompts to guide the model's responses, ensuring consistency in output format.
-- **Number of Samples**: 
-  - Use the full set of benchmarks as detailed in the paper.
-- **Splits to Use**: 
-  - Use the specified training and evaluation splits for adapter and instruction tuning data.
+  - Implement the Cambrian-1 model with various visual encoders: OpenAI CLIP, DINOv2, and MoCo v3.
+  - Use the datasets GQA, AI2D, and TextVQA for evaluation.
+  - For each dataset, evaluate the model with and without visual input to determine the impact of visual encoders.
+  - Use a 2-stage instruction tuning process: initially train the connector on 1.2M adapter data from ShareGPT-4V, followed by fine-tuning both the connector and LLM on 737K instruction tuning data.
+  - Ensure that the visual encoder outputs are interpolated to a fixed number of tokens (576) for consistency across models.
 - **What to Record**: 
-  - Record raw outputs, extracted answers, and intermediate statistics.
+  - Raw outputs of the model for each dataset.
+  - Extracted answers and benchmark scores.
+  - Intermediate statistics such as accuracy and performance differences with and without visual input.
 - **Correspondence**: 
-  - Section 3.4, Figure 6, Table 14.
-
-### 2. Cambrian Vision-Centric Benchmark (CV-Bench)
-- **Procedure**: 
-  - Introduce CV-Bench with 2638 manually-inspected examples.
-  - Evaluate models on classic vision tasks within a multimodal context.
-  - Formulate natural language questions probing 2D and 3D understanding.
-- **Input Format**: 
-  - Use images with associated questions for evaluation.
-- **Prompting Strategy**: 
-  - Use visual prompts (e.g., bounding boxes) to avoid ambiguity.
-- **Number of Samples**: 
-  - 2638 examples.
-- **What to Record**: 
-  - Record accuracy on spatial relationships, object counting, depth order, and relative distance tasks.
-- **Correspondence**: 
-  - Section 3.2, Figure 4, Table 1.
-
-### 3. Instruction Tuning Recipes
-- **Procedure**: 
-  - Experiment with different instruction tuning strategies.
-  - Compare one-stage vs. two-stage training and freezing vs. unfreezing vision encoders.
-- **Input Format**: 
-  - Use a mix of 737K instruction tuning data.
-- **Prompting Strategy**: 
-  - Use system prompts to ensure clarity in model responses.
-- **Number of Samples**: 
-  - Use the full 737K dataset.
-- **What to Record**: 
-  - Record performance metrics across different training strategies.
-- **Correspondence**: 
-  - Section 3.3, Figure 5.
+  - Figure 6: Visual representation of model performance across different benchmarks.
+  - Table 11: Linear probing results of different vision backbones.
+  - Section 3.4: Detailed analysis of MLLMs as visual representation evaluators.
 
 ## Evaluation Details
 
-### Metric Definitions and Computation
-- **Accuracy**: 
-  - Calculate the percentage of correct answers for each benchmark.
-- **Fuzzy Matching**: 
-  - Use fuzzy matching to evaluate responses, allowing for minor variations in wording.
-- **Principal Component Analysis**: 
-  - Analyze benchmark scores to identify clusters of performance metrics.
-
-### Normalization and Pre-processing
-- **Model Outputs**: 
-  - Normalize outputs by removing extraneous text and focusing on key answers.
-- **Aggregation Strategy**: 
-  - Aggregate results per-sample, then per-condition, and finally overall.
+- **Metric Definitions**:
+  - **Accuracy**: The proportion of correctly answered questions out of the total questions in each dataset.
+  - **Benchmark Scores**: Aggregate scores calculated from the performance across different tasks within each dataset.
+- **Normalization and Pre-processing**:
+  - Normalize model outputs by ensuring consistent token lengths across different visual encoders.
+  - Use fuzzy matching for evaluating textual outputs to account for variations in phrasing.
+- **Aggregation Strategy**:
+  - Calculate per-sample accuracy and aggregate to obtain per-condition scores.
+  - Average scores across all conditions to derive overall benchmark performance.
 
 ## Implementation Notes
 
-### Key Pitfalls and Caveats
-- **Data Leakage**: 
-  - Ensure no overlap between training and test sets to prevent data leakage.
-- **System Prompts**: 
-  - Use consistent system prompts to guide model responses and avoid the "answer machine phenomenon."
-
-### Special Prompt Templates
-- **Response Formatting**: 
-  - Use specific prompts to format responses, such as "Answer with the option’s letter from the given choices directly."
-
-### Order of Operations
-- **Training Sequence**: 
-  - Follow the specified order of adapter training followed by instruction tuning to ensure consistency in results.
+- **Key Pitfalls**:
+  - Ensure that the interpolation of visual tokens does not lead to information loss, especially for high-resolution images.
+  - Be cautious of the potential for model hallucination, particularly when evaluating without visual input.
+- **Special Prompt Templates**:
+  - Use specific system prompts to guide the model's response format, especially for tasks requiring single-word or phrase answers.
+- **Order of Operations**:
+  - Follow the 2-stage instruction tuning process strictly: pre-train the connector first, then fine-tune with the full dataset.
+  - Maintain the sequence of evaluating with and without visual input to accurately assess the impact of visual encoders.

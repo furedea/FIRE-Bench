@@ -1,18 +1,18 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How robust are LLMs to noise in retrieval-augmented generation?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How robust are large language models (ChatGPT, ChatGLM-6B, ChatGLM2-6B, Vicuna-7b, Qwen-7B-Chat, BELLE-7B) to noise in retrieval-augmented generation, evaluated across varying noise ratios in English and Chinese?"
 
 You have access to the following resources:
 
 Models:
-- gpt-3.5-turbo via API
-- Load with HuggingFace: THUDM/ChatGLM-6B
-- Load with HuggingFace: THUDM/ChatGLM2-6B
+- gpt-4o via API
+- Load with HuggingFace: THUDM/chatglm-6b
+- Load with HuggingFace: THUDM/chatglm2-6b
 - Load with HuggingFace: lmsys/vicuna-7b-v1.3
 - Load with HuggingFace: Qwen/Qwen-7B-Chat
 - Load with HuggingFace: LianjiaTech/BELLE-7B-2M
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Retrieval-Augmented Generation Benchmark (RGB): A benchmark designed to evaluate the noise robustness, negative rejection, information integration, and counterfactual robustness of LLMs in retrieval-augmented generation, using queries based on the latest news information.  [generate programmatically]
+- Retrieval-Augmented Generation Benchmark (RGB): A benchmark for evaluating retrieval-augmented generation in large language models, focusing on noise robustness, negative rejection, information integration, and counterfactual robustness in both English and Chinese.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search
@@ -26,66 +26,67 @@ Please design and execute experiments to investigate this research question. Doc
 
 ### 1. Noise Robustness Evaluation
 - **Procedure**: 
-  - Use the RGB dataset to evaluate noise robustness by varying noise ratios from 0 to 0.8.
-  - For each noise ratio, provide 5 external documents per question, with a mix of relevant and noisy documents according to the specified ratio.
-  - Use a unified instruction format for each language as shown in Figure 3 of the paper.
+  - Use the RGB dataset to evaluate noise robustness by measuring accuracy under different noise ratios (0, 0.2, 0.4, 0.6, 0.8).
+  - For each question, provide 5 external documents with varying noise ratios.
+  - Ensure half of the instances are in English and the other half in Chinese.
 - **What to Record**: 
-  - Record the accuracy of each model's responses at each noise ratio.
-  - Collect error cases for further analysis.
+  - Record the accuracy of each model's responses.
+  - Collect error cases for analysis.
 - **Correspondence**: 
   - Results are detailed in Table 1 and discussed in the "Results on Noise Robustness" section.
 
 ### 2. Negative Rejection Evaluation
 - **Procedure**: 
-  - Use the RGB dataset's negative rejection testbed where all external documents are noisy.
-  - Evaluate the model's ability to reject answering when no relevant information is present.
+  - Use the RGB dataset to evaluate the ability of models to reject answering when only noisy documents are provided.
+  - Provide only noisy documents for each question.
 - **What to Record**: 
   - Record the rejection rate using exact matching and additional evaluation by ChatGPT.
-  - Collect error cases for further analysis.
+  - Collect error cases for analysis.
 - **Correspondence**: 
-  - Results are detailed in Table 3 and discussed in the "Results on Negative Rejection" section.
+  - Results are detailed in Table 3 and discussed in the "Results on Negative Rejection testbed" section.
 
 ### 3. Information Integration Evaluation
 - **Procedure**: 
-  - Use the RGB dataset's information integration testbed with varying noise ratios.
-  - Evaluate the model's ability to integrate information from multiple documents to answer complex questions.
+  - Use the RGB dataset to evaluate the ability of models to integrate information from multiple documents.
+  - Provide questions that require integrating information from multiple documents, with noise ratios of 0, 0.2, and 0.4.
 - **What to Record**: 
-  - Record the accuracy of each model's responses at each noise ratio.
-  - Collect error cases for further analysis.
+  - Record the accuracy of each model's responses.
+  - Collect error cases for analysis.
 - **Correspondence**: 
-  - Results are detailed in Table 5 and discussed in the "Results on Information Integration" section.
+  - Results are detailed in Table 5 and discussed in the "Results on Information Integration testbed" section.
 
 ### 4. Counterfactual Robustness Evaluation
 - **Procedure**: 
-  - Use the RGB dataset's counterfactual robustness testbed where documents contain factual errors.
-  - Evaluate the model's ability to detect and correct these errors.
+  - Use the RGB dataset to evaluate the ability of models to identify and correct factual errors in documents.
+  - Provide documents with known factual errors and assess the model's ability to detect and correct these errors.
 - **What to Record**: 
-  - Record the accuracy without documents, accuracy with counterfactual documents, error detection rate, and error correction rate.
+  - Record accuracy without documents, accuracy with counterfactual documents, error detection rates, and error correction rates.
 - **Correspondence**: 
-  - Results are detailed in Table 7 and discussed in the "Results on Counterfactual Robustness" section.
+  - Results are detailed in Table 7 and discussed in the "Results on Counterfactual Robustness testbed" section.
 
 ## Evaluation Details
 
 ### Noise Robustness
 - **Metric**: Accuracy is measured by exact matching of the generated text with the correct answer.
-- **Aggregation**: Calculate accuracy per noise ratio and aggregate across all samples.
+- **Aggregation Strategy**: Calculate accuracy per noise ratio and aggregate results across all samples.
 
 ### Negative Rejection
 - **Metric**: Rejection rate is measured by the model's ability to output a specific rejection phrase.
-- **Aggregation**: Calculate rejection rate using exact matching and additional evaluation by ChatGPT.
+- **Aggregation Strategy**: Calculate rejection rate using exact matching and additional evaluation by ChatGPT.
 
 ### Information Integration
 - **Metric**: Accuracy is measured by exact matching of the generated text with the correct answer.
-- **Aggregation**: Calculate accuracy per noise ratio and aggregate across all samples.
+- **Aggregation Strategy**: Calculate accuracy per noise ratio and aggregate results across all samples.
 
 ### Counterfactual Robustness
 - **Metrics**: 
   - Accuracy without documents and with counterfactual documents.
-  - Error detection rate and error correction rate are measured by the model's ability to output specific phrases indicating error detection and correction.
-- **Aggregation**: Calculate each metric separately and aggregate across all samples.
+  - Error detection rate by exact matching and additional evaluation by ChatGPT.
+  - Error correction rate by the model's ability to provide the correct answer after identifying errors.
+- **Aggregation Strategy**: Aggregate results across all samples for each metric.
 
 ## Implementation Notes
 
-- **Prompt Templates**: Use the system and user input instructions as shown in Figure 3 for consistent prompting across all experiments.
-- **Error Analysis**: Conduct detailed error analysis for each testbed to identify common pitfalls and areas for improvement in model performance.
-- **Order of Operations**: Ensure that the evaluation of each ability is conducted independently to avoid confounding results.
+- **Prompt Templates**: Use specific system and user input instructions as shown in Figure 3 of the paper.
+- **Output Parsing**: Ensure models generate specific phrases for rejection and error detection as instructed.
+- **Order of Operations**: Follow the sequence of providing documents, prompting the model, and recording outputs as described in the experimental design.

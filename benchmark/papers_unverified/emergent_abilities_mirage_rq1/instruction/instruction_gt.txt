@@ -1,14 +1,13 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ2: Can increasing the resolution of measured model performance reveal continuous improvements?"
+You are a research agent. Conduct an empirical study answering the question: "RQ2: Do emergent abilities, defined as unexpected capabilities that arise in large language models, in the BIG-Bench tasks predominantly appear with specific nonlinear or discontinuous metrics such as Brier Score (a measure of the accuracy of probabilistic predictions), rather than being inherent to task-model family combinations?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- BIG-Bench: A benchmark used to analyze emergent abilities in large language models, containing various tasks and metrics.  [loader unverified -- locate the data yourself]
-- InstructGPT/GPT-3: Model family used to test predictions about metric choices and emergent abilities.  [loader unverified -- locate the data yourself]
+- BIG-Bench: A benchmark suite used to evaluate the capabilities of language models across a wide range of tasks.  [loader unverified -- locate the data yourself]
 
 Analytical tools / techniques available:
+- Emergence Score
 - Meta-analysis
-- Statistical analysis
 
 Study constraints:
 - Do NOT use web search
@@ -27,63 +26,54 @@ Design the protocol yourself. Run the full study end-to-end and report results t
 
 ## Experimental Design
 
-### 1. Metric Change Analysis
+### 1. Metric Influence on Emergent Abilities
 - **Procedure**: 
-  - Use the InstructGPT/GPT-3 model family to perform arithmetic tasks: 2-shot multiplication of two 2-digit integers and 2-shot addition of two 4-digit integers.
-  - Evaluate model performance using two different metrics: Accuracy (nonlinear) and Token Edit Distance (linear).
-  - For each task, collect model outputs across different model scales.
-- **What to Record**: 
-  - Raw model outputs for each task.
-  - Performance scores under both Accuracy and Token Edit Distance metrics.
-- **Correspondence**: 
-  - Figure 3 in the paper shows the effect of changing metrics on the appearance of emergent abilities.
-
-### 2. Resolution Increase Analysis
-- **Procedure**: 
-  - Increase the test dataset size for the arithmetic tasks performed by the InstructGPT/GPT-3 model family.
-  - Measure performance using the Accuracy metric.
-- **What to Record**: 
-  - Raw model outputs for the expanded test dataset.
-  - Accuracy scores for each model scale.
-- **Correspondence**: 
-  - Figure 4 in the paper demonstrates how increased resolution affects the perception of emergent abilities.
-
-### 3. Meta-Analysis of Emergent Abilities
-- **Procedure**: 
-  - Analyze the BIG-Bench dataset to identify task-metric-model family triplets that exhibit emergent abilities.
-  - Focus on metrics like Multiple Choice Grade and Exact String Match.
-  - Change the evaluation metric to a continuous one, such as Brier Score, and observe the effect on emergent abilities.
+  - Analyze task-metric-model family triplets in the BIG-Bench dataset.
+  - Use the Emergence Score formula to evaluate the presence of emergent abilities across different metrics.
+  - Metrics to be analyzed include Multiple Choice Grade, Exact String Match, and Brier Score.
+  - For each task-metric-model family triplet, calculate the Emergence Score using the formula:
+    \[
+    \text{Emergence Score} = \text{sign}(\arg\max_i y_i - \arg\min_i y_i)(\max_i y_i - \min_i y_i) / \sqrt{\text{Median}(\{(y_i - y_{i-1})^2\}_i)}
+    \]
+  - Compare the emergence scores across different metrics to determine if emergent abilities are tied to specific metrics.
 - **What to Record**: 
   - Emergence scores for each task-metric-model family triplet.
-  - Performance scores under both the original and modified metrics.
+  - The number of triplets showing emergent abilities under each metric.
 - **Correspondence**: 
-  - Figures 5 and 6 in the paper illustrate the impact of metric choice on the appearance of emergent abilities.
+  - Figure 5: Emergent abilities appear only for specific metrics, not task-model families.
+  - Section 4: Meta-Analysis of Claimed Emergent Abilities.
+
+### 2. Metric Change and Emergent Abilities Disappearance
+- **Procedure**: 
+  - Focus on the LaMDA model family and tasks where emergent abilities are observed with the Multiple Choice Grade metric.
+  - Re-evaluate the same tasks using the Brier Score metric.
+  - Compare the presence of emergent abilities under both metrics.
+- **What to Record**: 
+  - Performance scores under Multiple Choice Grade and Brier Score.
+  - Presence or absence of emergent abilities under each metric.
+- **Correspondence**: 
+  - Figure 6: Changing the metric when evaluating task-model family pairs causes emergent abilities to disappear.
 
 ## Evaluation Details
 
-- **Metric Definitions**:
-  - **Accuracy**: Proportion of correctly predicted sequences. For a sequence of length L, the entire sequence must be correct to score 1.
-  - **Token Edit Distance**: Number of token-level edits (insertions, deletions, substitutions) required to transform the predicted sequence into the target sequence.
-  - **Brier Score**: Mean squared error between the predicted probability and the actual outcome for binary classification tasks.
+- **Emergence Score Calculation**: 
+  - Use the provided formula to compute the emergence score for each task-metric-model family triplet.
+  - Ensure that the calculation accounts for the sign and magnitude of performance changes across model scales.
 
-- **Normalization and Pre-processing**:
-  - For Accuracy, ensure that predictions are compared against the exact target sequence.
-  - For Token Edit Distance, calculate the number of edits required for each prediction compared to the target.
+- **Normalization and Pre-processing**: 
+  - For Brier Score, ensure that model outputs are normalized to represent valid probability distributions before computing the score.
+  - For metrics like Exact String Match and Multiple Choice Grade, ensure that outputs are pre-processed to match the expected format (e.g., exact string matching).
 
-- **Aggregation Strategy**:
-  - Compute per-sample scores for each metric.
-  - Aggregate scores across all samples to obtain per-condition scores.
-  - Compare aggregated scores across different model scales and metrics to assess the presence or absence of emergent abilities.
+- **Aggregation Strategy**: 
+  - Compute emergence scores per task-metric-model family triplet.
+  - Aggregate results to determine the prevalence of emergent abilities across different metrics.
 
 ## Implementation Notes
 
-- **Pitfalls and Caveats**:
-  - Ensure that the increased test dataset size is sufficient to reveal continuous improvements in performance.
-  - Be cautious of the independence assumption in token-level predictions, which may not hold in practice.
+- **Pitfalls and Caveats**: 
+  - The paper highlights that emergent abilities may be artifacts of metric choice rather than genuine model capabilities. Ensure that this hypothesis is tested by comparing results across multiple metrics.
+  - Be cautious of resolution limits when measuring performance, especially for metrics like Accuracy that may require high-resolution data to avoid misleading conclusions.
 
-- **Special Prompt Templates**:
-  - Use consistent prompting strategies for arithmetic tasks to ensure comparability across different model scales and metrics.
-
-- **Order of Operations**:
-  - First, collect model outputs using the original metrics.
-  - Then, change the metrics and re-evaluate the same outputs to observe changes in perceived emergent abilities.
+- **Order of Operations**: 
+  - First, compute emergence scores using the original metrics.
+  - Then, re-evaluate using alternative metrics like Brier Score to test the hypothesis that emergent abilities disappear with metric changes.

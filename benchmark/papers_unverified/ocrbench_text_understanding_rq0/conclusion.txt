@@ -1,0 +1,1 @@
+Large Multimodal Models perform comparably to state-of-the-art supervised models in recognizing regular, irregular, occluded, and artistic text but struggle with handwritten, Chinese, and non-semantic text.

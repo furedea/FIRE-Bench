@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: What are the root causes of the poor performance of MLLMs in nonverbal abstract reasoning tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the root causes of poor performance in nonverbal abstract reasoning tasks by Multimodal Large Language Models (MLLMs, which integrate text and visual data), specifically in terms of their textual reasoning and visual awareness capabilities as evaluated on the IQ50 dataset, a benchmark for assessing abstract reasoning through text-only and visual questions?"
 
 You have access to the following resources:
 
@@ -8,9 +8,24 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet, used to assess nonverbal abstract reasoning abilities.  [loader unverified -- locate the data yourself]
-- RAVEN-S: A visual reasoning dataset containing 3,500 synthetic samples in seven categories, used to evaluate reasoning abilities in MLLMs.  [loader unverified -- locate the data yourself]
-- CCSE: A dataset containing 175 visual abstractions and reasoning problems from the China Civil Service Examination, used as a challenging benchmark for reasoning patterns.  [loader unverified -- locate the data yourself]
+- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles for assessing abstract reasoning through text-only and visual questions.  [loader unverified -- locate the data yourself]
+- RAVEN: A visual reasoning dataset containing synthetic samples in seven categories, each with a 3x3 matrix of images and eight options.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/raven")
+- CCSE: A dataset of visual abstractions and reasoning problems from the China Civil Service Examination, containing a matrix or sequence of images with four options.  [generate programmatically]
+  Generation code:
+    import random
+    def generate_ccse_sample():
+        patterns = ["location", "logic", "progression", "self-geometry", "relative-geometry"]
+        configurations = ["one-row", "two-rows", "matrix"]
+        return {
+            "pattern": random.choice(patterns),
+            "configuration": random.choice(configurations),
+            "images": [random_image() for _ in range(4)],
+            "options": [random_image() for _ in range(4)],
+            "answer": random.choice(range(4))
+        }
 
 Experimental constraints:
 - Do NOT use web search
@@ -22,52 +37,45 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Textual Reasoning Evaluation
-- **Procedure**: 
-  - Use text-only zero-shot Chain-of-Thought (CoT) prompts to evaluate the textual reasoning capabilities of the models.
-  - Provide each model with a textual description of the puzzles from the IQ50 dataset, written by a human expert.
-  - Exclude models incompatible with text-only prompts, such as MMICL* and InstructBLIP*.
-  - Drop idefics-80b-instruct due to inability to elicit reasonings.
-- **What to Record**: 
-  - Zero-shot CoT accuracy for each model.
-- **Correspondence**: 
-  - Figure 3 in Section 5.
-
-### 2. Visual Awareness Assessment
-- **Procedure**: 
-  - Develop 20 questions designed to test the models on understanding shape, relative position, orientation, color, filling pattern, and fine-grained details.
-  - Use a subset of the IQ50 dataset for this evaluation.
-  - Exclude MMICL-vicuna-13b due to inability to elicit proper responses.
-- **What to Record**: 
-  - Performance on visual awareness questions for each model.
-- **Correspondence**: 
-  - Figure 4 in Section 5.
+### 1. Evaluation of Textual Reasoning and Visual Awareness Capabilities
+- **Procedure**:
+  - **Textual Reasoning**: Provide models with text-only versions of each sample from the IQ50 dataset. These descriptions are written by a human expert and describe the puzzles without visual input.
+  - **Visual Awareness**: Develop 20 questions designed to test the models on understanding shape, relative position, orientation, color, filling pattern, and fine-grained details. Use a subset of the IQ50 dataset for these questions.
+  - **Prompting Strategy**: For textual reasoning, use zero-shot Chain-of-Thought (CoT) prompts. For visual awareness, ask specific questions about the visual details of the images.
+  - **Number of Samples**: Use the entire IQ50 dataset for textual reasoning and a subset for visual awareness.
+  - **Shuffling/Ordering**: Randomly select samples for visual awareness questions to ensure a diverse set of visual features is tested.
+- **What to Record**:
+  - **Textual Reasoning**: Record the accuracy of the models in providing correct answers based on text-only descriptions.
+  - **Visual Awareness**: Record the accuracy of the models in answering specific questions about visual details.
+- **Correspondence**: This experiment corresponds to Figure 3 and Figure 4, and is discussed in Section 5 of the paper.
 
 ## Evaluation Details
 
-### Textual Reasoning Evaluation
-- **Metric Definition**: 
-  - Zero-shot CoT accuracy is calculated as the percentage of correct answers provided by the model when given text-only prompts.
-- **Normalization/Pre-processing**: 
-  - Ensure that the textual descriptions are consistent and clear, focusing on the logical reasoning required to solve the puzzles.
-- **Aggregation Strategy**: 
-  - Calculate the accuracy per model and compare across models to determine relative performance.
+- **Textual Reasoning Accuracy**:
+  - **Metric Definition**: Calculate the percentage of correct answers provided by the model when given text-only descriptions.
+  - **Computation**: Use a simple accuracy metric where the number of correct answers is divided by the total number of questions.
+  - **Normalization**: Ensure that all text descriptions are standardized in format and complexity to avoid bias.
 
-### Visual Awareness Assessment
-- **Metric Definition**: 
-  - Performance is measured as the percentage of correctly answered visual awareness questions.
-- **Normalization/Pre-processing**: 
-  - Ensure that the questions are clear and unambiguous, focusing on specific visual details.
-- **Aggregation Strategy**: 
-  - Calculate the accuracy per model and compare across models to determine relative performance.
+- **Visual Awareness Accuracy**:
+  - **Metric Definition**: Calculate the percentage of correct answers to visual awareness questions.
+  - **Computation**: Similar to textual reasoning, use accuracy as the metric.
+  - **Normalization**: Ensure that questions are clear and unambiguous, focusing on specific visual attributes.
+
+- **Aggregation Strategy**:
+  - **Per-Sample**: Calculate accuracy for each sample individually.
+  - **Per-Condition**: Aggregate results across all samples for each condition (textual reasoning and visual awareness).
+  - **Overall**: Provide an overall accuracy score for each model across both conditions.
 
 ## Implementation Notes
 
-- **Prompt Templates**: 
-  - For textual reasoning, use prompts that clearly describe the puzzle and ask the model to think step by step.
-  - For visual awareness, ensure questions are specific to visual details and avoid ambiguity.
-- **Output Parsing Logic**: 
-  - For textual reasoning, parse the model's output to identify the final answer and reasoning steps.
-  - For visual awareness, parse the model's output to determine the selected answer for each question.
-- **Order of Operations**: 
-  - Ensure that the textual reasoning evaluation is conducted before visual awareness assessment to isolate the effects of each modality.
+- **Prompt Templates**:
+  - For textual reasoning, append "Let’s think step by step." to encourage detailed reasoning.
+  - For visual awareness, ensure questions are direct and focus on one visual attribute at a time.
+
+- **Output Parsing Logic**:
+  - For textual reasoning, parse the model's output to identify the final answer, ensuring it aligns with the expected format.
+  - For visual awareness, ensure the model's responses are interpreted correctly, focusing on the specific visual detail queried.
+
+- **Order of Operations**:
+  - Conduct textual reasoning evaluations before visual awareness to isolate the reasoning capabilities without visual input.
+  - Follow up with visual awareness questions to assess the model's ability to perceive and interpret visual details accurately.

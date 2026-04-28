@@ -1,23 +1,32 @@
 task_id: compound_noun_understanding_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: How well do VLMs interpret compound nouns compared to their
-  constituent nouns?'
+research_question: "RQ1: How well do current vision-language models (CLIP, OpenCLIP, ALIGN, ALBEF, BLIP, MetaCLIP) interpret compound nouns in text-to-image retrieval tasks using the Compun benchmark with 400 unique CNs?"
 models:
   api: []
   huggingface:
-  - openai/clip-vit-large-patch14
-  - openai/clip-vit-base-patch32
-  - salesforce/ALBEF
-  - salesforce/BLIP
-  - facebookresearch/MetaCLIP
+    - openai/clip-vit-large-patch14
+    - openai/clip-vit-base-patch32
+    - salesforce/ALBEF
+    - salesforce/BLIP
+    - facebookresearch/MetaCLIP
+    - mlfoundations/open_clip
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: Compun
-  source: synthetic
-  description: A benchmark with 400 unique and commonly used compound nouns (CNs)
-    to evaluate the effectiveness of VLMs in interpreting CNs.
-references: []
+  - name: "Compun"
+    source: synthetic
+    loader: |
+      import random
+
+      def generate_compun_instance():
+          compound_nouns = ["snow ball", "courtyard", "mountain bike", "building stone", "seat belt"]
+          distractors = ["snow", "ball", "courtyard", "mountain", "bike", "building", "stone", "seat", "belt"]
+          cn = random.choice(compound_nouns)
+          distractor_images = random.sample(distractors, 2)
+          return {"compound_noun": cn, "distractors": distractor_images}
+
+      compun_data = [generate_compun_instance() for _ in range(400)]
+    description: "A benchmark with 400 unique compound nouns for evaluating vision-language models' ability to interpret compound nouns in text-to-image retrieval tasks."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

@@ -1,18 +1,26 @@
-You are a research agent. Conduct research about the question: "RQ2: Can explicit code-based self-verification improve the accuracy of GPT-4 Code Interpreter in solving math problems?"
+You are a research agent. Conduct research about the question: "RQ2: Does the use of explicit self-verification techniques impact the accuracy of a language model, specifically GPT-4's code execution capabilities, in solving math problems on the MATH, GSM8K, and MMLU-Math datasets?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Explicit Code-Based Self-Verification (CSV): CSV is a novel prompting method designed to enhance the mathematical reasoning capabilities of the GPT-4 Code Interpreter. It encourages the model to use code to self-verify its answers. When the verification state is 'False', the model automatically amends its solution, similar to rectifying errors during a mathematics examination. This method leverages the model's ability to generate and execute code, evaluate the output, and adjust its problem-solving strategies based on feedback from code execution.
-  - Component: Zero-shot prompt on GPT-4 Code Interpreter to encourage code-based self-verification
-  - Component: Mechanism for automatic solution amendment when verification fails
-  - Component: Integration of verification states into a weighted majority voting strategy
+- Explicit Code-Based Self-Verification (CSV): CSV is a novel prompting method designed to enhance the mathematical reasoning capabilities of the GPT-4 Code Interpreter. It encourages the model to use code to self-verify its answers, automatically amending solutions when verification fails. This method leverages the model's ability to generate and execute code, improving accuracy by integrating verification states into a weighted majority voting strategy.
+  - Component: Zero-shot prompt for code-based self-verification
+  - Component: Integration of verification states into majority voting
+  - Component: Automatic solution amendment based on verification results
 - Baseline for comparison: GPT-4 Code Interpreter without CSV
-- Baseline for comparison: Chain-of-Thought (CoT)
-- Baseline for comparison: Program-Aided Language model (PAL)
+- Baseline for comparison: GPT-4 with Chain-of-Thought (CoT)
+- Baseline for comparison: GPT-4 with Progressive-Hint Prompting (PHP)
 
 Datasets for training and evaluation:
-- MATH: A challenging math word problem dataset used to evaluate the mathematical problem-solving capabilities of models.  [loader unverified -- locate the data yourself]
+- MATH: A challenging dataset of math word problems designed to test mathematical problem-solving abilities.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hendrycks/math")
+- GSM8K: A dataset of grade school math problems used to evaluate arithmetic and reasoning skills.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/gsm8k")
+- MMLU-Math: A subset of the MMLU benchmark focusing on mathematical problem-solving tasks.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -32,43 +40,58 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Explicit Code-Based Self-Verification (CSV) Implementation
+### 1. Implement CSV on the MATH Dataset
 - **Procedure**: 
-  - Use a zero-shot prompt on the GPT-4 Code Interpreter to encourage code-based self-verification.
-  - For each math problem, the model generates a solution and then verifies it using code execution.
-  - If the verification state is 'False', the model automatically amends its solution and re-verifies.
-  - Use the MATH dataset for evaluation.
-  - Implement a weighted majority voting strategy based on verification states.
-- **Input Format**: 
-  - Present each problem from the MATH dataset to the model with the CSV prompt.
-- **Prompting Strategy**: 
-  - Use a prompt that instructs the model to solve the problem using code and verify the solution using code execution.
-- **Number of Samples**: 
-  - Evaluate on the entire MATH dataset.
+  - Use the MATH dataset to evaluate the GPT-4 Code Interpreter with and without the explicit Code-Based Self-Verification (CSV) method.
+  - Implement a zero-shot prompt for code-based self-verification, allowing the model to generate and execute code to verify its answers.
+  - Integrate verification states into a weighted majority voting strategy, where solutions verified as "True" are given higher weights.
+  - Automatically amend solutions when verification fails, iterating until a "True" verification state is achieved or a maximum number of iterations is reached.
+  - Use the entire MATH dataset for evaluation, ensuring a comprehensive assessment across all problem types.
 - **What to Record**: 
-  - Raw outputs of the model, verification states (True, False, Uncertain), amended solutions, and final answers.
-  - Record the number of code executions per problem.
+  - Raw outputs of the model with and without CSV.
+  - Verification states (True, False, Uncertain) for each problem.
+  - Final accuracy scores for each condition.
 - **Correspondence**: 
-  - This experiment corresponds to the results shown in Figure 3 and Table 1, and is discussed in Section 3.2 of the paper.
+  - Results are detailed in Table 1 and discussed in Section 4.1.
+
+### 2. Evaluate CSV on GSM8K and MMLU-Math Datasets
+- **Procedure**: 
+  - Apply the same CSV method to the GSM8K and MMLU-Math datasets.
+  - Use a similar zero-shot prompting strategy as with the MATH dataset.
+  - Evaluate the model's performance with CSV against its performance without CSV.
+  - Ensure that the datasets are fully utilized for a robust evaluation.
+- **What to Record**: 
+  - Raw outputs and verification states for each dataset.
+  - Accuracy scores for each dataset with and without CSV.
+- **Correspondence**: 
+  - Results are presented in Table 2 and Table 3, with discussions in Section 4.2.
 
 ## Evaluation Details
 
 - **Metric Definitions**: 
-  - **Accuracy**: The percentage of problems for which the model's final answer matches the correct answer.
-  - **Verification States**: Track the frequency of True, False, and Uncertain states during verification.
-- **Normalization/Pre-processing**: 
-  - Ensure that all model outputs are parsed to extract numerical answers for comparison with ground truth.
+  - **Accuracy**: The proportion of correctly solved problems out of the total number of problems attempted. Calculated as \( \text{Accuracy} = \frac{\text{Number of Correct Solutions}}{\text{Total Number of Problems}} \).
+  - **Verification States**: Solutions are classified as "True", "False", or "Uncertain" based on the outcome of the code-based verification process.
+
+- **Normalization and Pre-processing**: 
+  - Ensure that all model outputs are parsed to extract the final numerical answer.
+  - Normalize outputs by removing any extraneous text or formatting before comparison with ground truth answers.
+
 - **Aggregation Strategy**: 
-  - Calculate per-sample accuracy, then aggregate to determine overall accuracy.
-  - Use verification-guided weighted majority voting to determine the final answer when multiple solutions are generated.
+  - Compute per-sample accuracy by checking if the model's final answer matches the ground truth.
+  - Aggregate results across all samples to compute the overall accuracy for each dataset and condition (with and without CSV).
 
 ## Implementation Notes
 
-- **Pitfalls/Caveats**: 
-  - The model may generate incorrect code or fail to verify solutions correctly; ensure robust error handling and re-prompting.
+- **Pitfalls and Caveats**: 
+  - The paper notes that the model may struggle with certain problem types, particularly those requiring multi-modality reasoning (e.g., geometry problems).
+  - Ensure that the model's code execution environment is correctly set up to handle Python code snippets generated during the verification process.
+
 - **Prompt Templates**: 
-  - Use a specific prompt template that instructs the model to verify its solution using code execution.
+  - Use a consistent zero-shot prompt template that instructs the model to solve the problem using code and verify its solution.
+  - Example prompt: "Solve the problem using code interpreter step by step, and please verify your answer using code interpreter."
+
 - **Order of Operations**: 
-  - Ensure that the solution generation, verification, and amendment steps are executed sequentially.
-- **Output Parsing Logic**: 
-  - Implement logic to parse the model's output to extract verification states and final answers accurately.
+  - First, generate an initial solution using the model.
+  - Execute the code-based verification process.
+  - Amend the solution if verification fails, and repeat until a "True" verification state is achieved or a maximum number of iterations is reached.
+  - Apply weighted majority voting based on verification states to determine the final answer.

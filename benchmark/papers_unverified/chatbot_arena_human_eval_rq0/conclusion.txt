@@ -1,0 +1,1 @@
+The Chatbot Arena platform achieves diversity and quality in user-generated questions by ensuring the prompts are diverse and effective in distinguishing model strengths.

@@ -1,33 +1,24 @@
 task_id: nonverbal_abstract_reasoning_rq0
 paper_type: llm_evaluation
-research_question: Do MLLMs demonstrate faithful nonverbal abstract reasoning abilities?
+research_question: "RQ1: Do multi-modal large language models (MLLMs, which process and integrate information from multiple modalities such as text and images) demonstrate faithful nonverbal abstract reasoning abilities using Raven’s Progressive Matrices (RPM, a set of visual puzzles designed to assess abstract reasoning) benchmarks, specifically on the IQ50, RAVEN-S, and CCSE datasets in zero-shot and few-shot settings?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: IQ50
-  source: unknown
-  description: A nonverbal reasoning benchmark containing 50 visual puzzles crawled
-    from the internet.
-- name: RAVEN-S
-  source: external
-  description: A visual reasoning dataset containing 3,500 synthetic samples in seven
-    categories, sampled from the RAVEN dataset.
-  url: https://github.com/WellyZhang/RAVEN
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/WellyZhang/RAVEN.git
-
-    '
-- name: CCSE
-  source: unknown
-  description: A dataset of 175 visual abstractions and reasoning problems from the
-    China Civil Service Examination.
+  - name: "IQ50"
+    source: synthetic
+    description: "A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet, augmented with textual description and hint annotations."
+  - name: "RAVEN-S"
+    source: synthetic
+    description: "A visual reasoning dataset containing 3,500 synthetic samples in seven categories, each with a 3x3 matrix of images and eight options."
+  - name: "CCSE"
+    source: synthetic
+    description: "A dataset of 175 visual abstractions and reasoning problems from the China Civil Service Examination, each containing a matrix or sequence of images with four options."
+references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

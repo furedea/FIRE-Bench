@@ -1,0 +1,1 @@
+Increasing the amount of LLM-generated persona content systematically worsens population-level simulation fidelity. While richer persona descriptions may appear more detailed, they introduce artifacts and biases that reduce the accuracy of simulating real-world population distributions in opinion surveys and election predictions.

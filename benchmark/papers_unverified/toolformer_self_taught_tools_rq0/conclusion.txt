@@ -1,0 +1,1 @@
+A language model like Toolformer can autonomously learn to use a variety of external tools, such as a calculator, a Q&A system, a translation system, and a calendar, to improve zero-shot performance on downstream tasks. However, its performance varies with different tools and does not consistently surpass all models, such as GPT-3, particularly in search engine interactions.

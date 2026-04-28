@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ4: How often do humans and preference models prefer truthful responses over sycophantic ones?"
+You are a research agent. Conduct research and experiment about the question: "RQ4: Do AI assistants (software programs designed to assist users with tasks) mimic (repeat or imitate) user mistakes (errors made by users) in the context of attributing authorship of poems, specifically when users incorrectly attribute authorship in tasks involving 15 famous poems with incorrect attributions?"
 
 You have access to the following resources:
 
@@ -8,33 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- hh-rlhf: A dataset containing human preference comparisons used to train preference models.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('Anthropic/hh-rlhf')
-- TruthfulQA: A dataset designed to measure how models mimic human falsehoods.
-  Loading code:
-    from datasets import load_dataset
-    dataset = load_dataset("truthful_qa")
-- TriviaQA: A large scale distantly supervised challenge dataset for reading comprehension.
-  Loading code:
-    from datasets import load_dataset
-    dataset = load_dataset("trivia_qa")
-- MMLU: A dataset for measuring massive multitask language understanding.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('cais/mmlu')
-- MATH: A dataset for measuring mathematical problem solving.
-  GitHub repo: https://github.com/hendrycks/math
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/hendrycks/math.git
-- AQuA: A dataset for algebraic word problems.
-  GitHub repo: https://github.com/deepmind/AQuA
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/deepmind/AQuA.git
-- Proof-of-concept dataset of misconceptions: A dataset of misconceptions used to evaluate preference for sycophantic vs. truthful responses.  [generate programmatically]
+- 15 famous poems with incorrect attributions: A dataset of 15 famous poems where each poem is incorrectly attributed to a different famous poet.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

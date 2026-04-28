@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Are the observed reasoning breakdowns in LLMs due to low-level issues or generic deficits in generalization?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can control experiments using AIW Light problems, which are specifically designed tasks to isolate low-level factors such as language parsing and arithmetic operations, determine if these factors are responsible for the observed breakdowns in reasoning and generalization in large language models when tested with AIW Light Arithmetic Siblings datasets, which are variations of AIW Light problems focused on arithmetic tasks?"
 
 You have access to the following resources:
 
@@ -8,9 +8,16 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- AIW Light Arithmetic Siblings: A control problem designed to test models' ability to handle arithmetic operations in the context of family relations.  [generate programmatically]
-- AIW Light Family: A control problem designed to test models' understanding of basic family structure and relations.  [generate programmatically]
-- AIW Light Arithmetic Total Girls: A control problem designed to test models' ability to bind attributes and execute arithmetic operations to count total females.  [generate programmatically]
+- AIW Light Arithmetic Siblings: Variations of AIW Light problems focused on arithmetic tasks, designed to test models' ability to handle operations required for solving original AIW problem.  [generate programmatically]
+  Generation code:
+    def generate_aiw_light_arithmetic_siblings():
+        variations = [
+            {"brothers": 3, "sisters": 4, "correct_answer": 7},
+            {"brothers": 2, "sisters": 1, "correct_answer": 3},
+            {"brothers": 4, "sisters": 1, "correct_answer": 5},
+            {"brothers": 1, "sisters": 1, "correct_answer": 2},
+        ]
+        return variations
 
 Experimental constraints:
 - Do NOT use web search

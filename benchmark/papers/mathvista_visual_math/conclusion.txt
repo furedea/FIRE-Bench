@@ -1,0 +1,1 @@
+Foundation models like GPT-4V can reason mathematically with visual problems at roughly half accuracy, excelling in algebraic and scientific reasoning but struggling with logical reasoning and numerical common sense.

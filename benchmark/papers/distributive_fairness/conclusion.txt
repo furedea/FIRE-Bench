@@ -1,0 +1,1 @@
+Large language models are poorly aligned with human distributional fairness preferences in resource allocation decisions across different demographic groups. They struggle to use resources like money to reduce inequality and are sensitive to prompt and template changes, though they perform better when selecting from predefined options.

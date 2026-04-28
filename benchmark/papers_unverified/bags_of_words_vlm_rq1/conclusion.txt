@@ -1,0 +1,1 @@
+VLMs perform well on retrieval tasks because they rely on shortcut strategies rather than true compositional understanding.

@@ -1,14 +1,13 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Does the Reversal Curse affect real-world knowledge in LLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Does the Reversal Curse, where language models struggle to generalize facts when presented in reverse order, affect the ability of state-of-the-art models like GPT-4 to accurately identify parent-child relationships in real-world datasets such as the IMDB top 1000 celebrities?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 via API
-- Load with HuggingFace: meta-llama/Llama-1
+- gpt-4o via API
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- IMDB Celebrity Parent-Child Dataset: A dataset of 1000 celebrities and their parents used to test the Reversal Curse in LLMs.  [generate programmatically]
+- IMDB top 1000 celebrities: A dataset containing information about the top 1000 most popular celebrities from IMDB, used to evaluate the ability of models to identify parent-child relationships.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,41 +19,50 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Real-World Knowledge Reversal Test
+### 1. Reversal Curse in Real-World Knowledge
+
 - **Procedure**: 
-  - Use the IMDB Celebrity Parent-Child Dataset, which includes 1000 celebrities and their parents.
-  - For each celebrity-parent pair, generate two types of queries:
-    1. "Who is [celebrity]'s parent?"
-    2. "Who is [parent]'s child?"
-  - Use GPT-4 and Llama-1 models to answer these queries.
-  - Each query should be run 10 times with temperature set to 1 to account for variability in responses.
+  - Use the IMDB top 1000 celebrities dataset to extract parent-child relationships.
+  - For each celebrity, query GPT-4 with two types of questions:
+    1. "Who is [Celebrity]'s parent?"
+    2. "Who is [Parent]'s child?"
+  - Conduct 10 queries per question type to account for variability in responses.
+  - Use a temperature setting of 1 for sampling variability.
+  - Ensure that the system message instructs the model to be a "helpful and terse assistant" and to respond with "I don’t know" if the answer is unknown.
+
 - **What to Record**: 
-  - Record the accuracy of the models in correctly identifying the parent when given the celebrity and vice versa.
-  - Specifically, note the percentage of correct responses for each query type.
+  - Record the number of correct responses for each question type.
+  - Calculate the percentage accuracy for identifying parents and children.
+
 - **Correspondence**: 
-  - This experiment corresponds to Figure 5 and Section 2.2 in the paper.
+  - This experiment corresponds to Section 2.2 and is illustrated in Figure 5 of the paper.
 
 ## Evaluation Details
 
-- **Metrics**: 
-  - Use accuracy as the primary metric, defined as the percentage of correct responses out of the total queries.
-  - For the parent query, a correct response is when the model identifies the correct parent of the celebrity.
-  - For the child query, a correct response is when the model identifies the correct child of the parent.
-- **Normalization**: 
-  - Ensure that the model outputs are normalized by checking for variations in naming (e.g., full names vs. nicknames) and standardizing them before scoring.
-- **Aggregation Strategy**: 
-  - Calculate the mean accuracy across all 10 runs for each query type to get a stable estimate of model performance.
+- **Metric Definitions**:
+  - **Accuracy**: The percentage of correct responses out of the total number of queries for each question type.
+  - **Correct Response**: A response is considered correct if the model identifies the correct parent or child as per the dataset.
+
+- **Normalization and Pre-processing**:
+  - Normalize responses by stripping whitespace and converting to lowercase for consistent comparison.
+  - Consider a response correct if it matches any known alias or common name for the parent or child.
+
+- **Aggregation Strategy**:
+  - Calculate accuracy per question type (parent identification vs. child identification).
+  - Aggregate results across all celebrities to determine overall performance for each question type.
 
 ## Implementation Notes
 
-- **Prompt Templates**: 
-  - Use the following prompt templates for querying:
-    - For parent identification: "Who is [celebrity]'s parent?"
-    - For child identification: "Name a child of [parent]."
-  - Ensure that the system message for GPT-4 is set to: "You are a helpful and terse assistant. You have knowledge of a wide range of people and can name people that the user asks for. If the answer is unknown or not applicable, answer with 'I don’t know.'"
-- **Pitfalls**: 
-  - Be aware that GPT-4 may have been fine-tuned to avoid revealing personal information, which could affect its performance on the child identification task.
-- **Order of Operations**: 
-  - First, generate the list of celebrity-parent pairs using GPT-4.
-  - Then, conduct the querying experiments with both GPT-4 and Llama-1 models.
-  - Finally, analyze the results to determine the presence of the Reversal Curse.
+- **Prompt Templates**:
+  - Use specific prompt templates for querying parents and children to maintain consistency:
+    - Parent Query: "Who is [Celebrity]'s parent?"
+    - Child Query: "Name a child of [Parent]."
+  - Ensure the system message is consistent across all queries to maintain the model's response style.
+
+- **Pitfalls and Caveats**:
+  - Be aware that GPT-4 may have been fine-tuned to avoid revealing personal information, which could affect its willingness to answer certain queries.
+  - The model's performance may vary based on the specific wording of the prompt; slight changes in phrasing could impact accuracy.
+
+- **Order of Operations**:
+  - First, extract the list of celebrities and their known parents from the dataset.
+  - Then, conduct the queries for each celebrity in the specified order to ensure consistency in data collection.

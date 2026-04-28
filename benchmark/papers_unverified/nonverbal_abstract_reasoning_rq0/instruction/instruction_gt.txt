@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "Do MLLMs demonstrate faithful nonverbal abstract reasoning abilities?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: Do multi-modal large language models (MLLMs, which process and integrate information from multiple modalities such as text and images) demonstrate faithful nonverbal abstract reasoning abilities using Raven’s Progressive Matrices (RPM, a set of visual puzzles designed to assess abstract reasoning) benchmarks, specifically on the IQ50, RAVEN-S, and CCSE datasets in zero-shot and few-shot settings?"
 
 You have access to the following resources:
 
@@ -8,9 +8,9 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet.  [loader unverified -- locate the data yourself]
-- RAVEN-S: A visual reasoning dataset containing 3,500 synthetic samples in seven categories, sampled from the RAVEN dataset.  [loader unverified -- locate the data yourself]
-- CCSE: A dataset of 175 visual abstractions and reasoning problems from the China Civil Service Examination.  [loader unverified -- locate the data yourself]
+- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet, augmented with textual description and hint annotations.  [generate programmatically]
+- RAVEN-S: A visual reasoning dataset containing 3,500 synthetic samples in seven categories, each with a 3x3 matrix of images and eight options.  [generate programmatically]
+- CCSE: A dataset of 175 visual abstractions and reasoning problems from the China Civil Service Examination, each containing a matrix or sequence of images with four options.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search
@@ -22,78 +22,73 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Zero-shot Evaluation on Nonverbal Abstract Reasoning
+### 1. Zero-Shot Evaluation on RPM Benchmarks
 - **Procedure**: 
-  - Use the IQ50, RAVEN-S, and CCSE datasets.
-  - For each dataset, present the model with visual puzzles where the task is to predict the missing piece from a set of options.
-  - Use an automatic scoring method with a pattern-matching scheme to determine the model's choice based on the highest logit for number tokens in the response.
-  - Conduct experiments using both pre-trained and instruction-tuned MLLMs.
+  - For each dataset (IQ50, RAVEN-S, CCSE), present the model with the visual puzzle and options without any prior examples.
+  - Use a pattern-matching scheme to identify the model's chosen option based on the largest logit among number tokens in the response.
+  - Ensure the prompt includes the visual puzzle and options, asking the model to select the best option.
 - **What to Record**: 
-  - Zero-shot accuracy for each model on each dataset.
-  - Logits for number tokens in the model's response.
+  - Record the model's selected option for each puzzle.
+  - Capture the logit values for each option to verify the selection process.
 - **Correspondence**: 
   - Results are presented in Table 1 and discussed in Section 4.1.
 
-### 2. Manual Inspection of Instruction-tuned Models
+### 2. Few-Shot Evaluation with In-Distribution and Out-of-Distribution Sampling
 - **Procedure**: 
-  - Focus on the IQ50 dataset.
-  - Manually inspect the generated responses from instruction-tuned models like GPT-4V and Gemini.
-  - Use the prompt "Let’s think step by step." to elicit reasoning.
-  - Evaluate the correctness of both the answer and the reasoning provided by the models.
+  - Provide the model with a few demonstrations (1 to 5) from the same dataset (In-Distribution) or from a different dataset (Out-of-Distribution).
+  - Use symmetrical few-shot prompting, where each demonstration includes both the visual puzzle and the correct answer.
+  - Repeat the experiment five times with different random seeds to account for sampling variability.
 - **What to Record**: 
-  - Correctness of the answer and reasoning.
-  - Alignment between reasoning and answer.
+  - Record the model's accuracy for each few-shot configuration.
+  - Note any changes in performance with different numbers of demonstrations.
+- **Correspondence**: 
+  - Results are shown in Figure 6 and discussed in Section 6.2.1.
+
+### 3. Manual Scoring of Reasoning and Answer Correctness
+- **Procedure**: 
+  - Manually inspect a subset of responses from instruction-tuned models on the IQ50 dataset.
+  - Evaluate both the correctness of the answer and the reasoning provided.
+  - Use a rubric to assess the alignment of reasoning with the correct answer.
+- **What to Record**: 
+  - Record the percentage of correct answers and reasoning.
+  - Note any discrepancies between reasoning and the final answer.
 - **Correspondence**: 
   - Results are detailed in Table 2 and discussed in Section 4.2.
 
-### 3. Guided Prompting Experiments
+### 4. Guided Prompting with Different Hint Types
 - **Procedure**: 
-  - Use the IQ50 dataset.
   - Test three types of guided prompts: General, Sample-specific, and Corrective.
-  - For each type, provide models with different cues to guide their reasoning process.
+  - For each type, provide additional textual hints to guide the model's reasoning process.
+  - Evaluate the model's performance with each hint type on the IQ50 dataset.
 - **What to Record**: 
-  - Accuracy improvements with each type of guided prompt.
+  - Record the model's accuracy with each hint type.
+  - Note any qualitative changes in the reasoning process.
 - **Correspondence**: 
   - Results are illustrated in Figure 5 and discussed in Section 6.1.
 
-### 4. In-Context Learning (ICL) Experiments
-- **Procedure**: 
-  - Use the IQ50 dataset for evaluation.
-  - Conduct symmetrical few-shot experiments with demonstrations from both in-distribution (IQ50) and out-of-distribution (RAVEN-S) sources.
-  - Test the effect of step-by-step reasoning (CoT) in few-shot settings.
-- **What to Record**: 
-  - Few-shot accuracy with and without CoT prompting.
-  - Performance variations with different numbers of demonstrations.
-- **Correspondence**: 
-  - Results are shown in Figures 6 and 7 and discussed in Section 6.2.
-
 ## Evaluation Details
 
-- **Automatic Scoring Method**: 
-  - Identify all number tokens in the model's response.
-  - Select the token with the highest logit as the chosen option.
-  - Compare the chosen option to the ground truth.
-  - This method is used to compute zero-shot accuracy as shown in Table 1.
+### Automatic Scoring Method
+- **Metric Definition**: 
+  - Use a pattern-matching scheme to identify the number token with the highest logit in the model's response.
+  - Compare this token to the ground truth to determine correctness.
+- **Normalization**: 
+  - Ensure all number tokens are considered, regardless of their position in the response.
+- **Aggregation Strategy**: 
+  - Calculate accuracy as the proportion of correctly identified options across all samples.
 
-- **Manual Scoring**: 
-  - Evaluate the correctness of the reasoning and answer separately.
-  - Use a rubric that allows for extra/wrong details as long as they do not interfere with the correct reasoning path.
-  - Results are presented in Table 2.
-
-- **Guided Prompting Evaluation**: 
-  - Compare model performance with different types of guided prompts.
-  - Measure the impact of each prompt type on reasoning accuracy.
-
-- **In-Context Learning Evaluation**: 
-  - Measure the effect of few-shot demonstrations on model performance.
-  - Evaluate the impact of CoT prompting on reasoning accuracy.
+### Manual Scoring Rubric
+- **Metric Definition**: 
+  - Correctness of the answer: Whether the selected option matches the ground truth.
+  - Correctness of reasoning: Whether the reasoning aligns with the correct answer, allowing for minor irrelevant details.
+- **Aggregation Strategy**: 
+  - Report the percentage of samples with correct answers and reasoning separately.
 
 ## Implementation Notes
 
 - **Prompt Templates**: 
-  - Use specific prompt templates for each experiment type, such as "Let’s think step by step." for reasoning elicitation.
-  - For guided prompting, include hints in the prompt to guide the model's reasoning process.
-
+  - Use specific templates for zero-shot, few-shot, and guided prompting as detailed in the paper's appendices.
+- **Output Parsing**: 
+  - Implement logic to extract and compare number tokens based on logit values for automatic scoring.
 - **Order of Operations**: 
-  - Ensure that manual inspections are conducted after automatic scoring to verify the correctness of reasoning.
-  - Conduct guided prompting experiments after establishing baseline performance with zero-shot and few-shot evaluations.
+  - Ensure that the model's response is fully generated before applying the pattern-matching scheme for scoring.

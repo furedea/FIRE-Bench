@@ -1,24 +1,22 @@
 task_id: chatbot_arena_human_eval_rq2
 paper_type: llm_evaluation
-research_question: 'RQ3: How reliable are the crowdsourced votes in Chatbot Arena
-  compared to expert evaluations?'
+research_question: "RQ3: How does Chatbot Arena, a platform for evaluating chatbot interactions through crowdsourced votes, ensure the reliability and consistency of these evaluations compared to expert and GPT-4 assessments, focusing on agreement rates and win-rate consistency across randomly selected interactions?"
 models:
   api:
-  - gpt-4-turbo
+    - gpt-4-turbo
   huggingface:
-  - meta-llama/Llama-2-13b-chat
-  - meta-llama/Llama-2-70b-chat
+    - meta-llama/Llama-2-70b-chat
+    - meta-llama/Llama-2-13b-chat
+    - meta-llama/Llama-2-7b-chat
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: Chatbot Arena Crowdsourced Votes
-  source: synthetic
-  description: Votes collected from users on the Chatbot Arena platform, comparing
-    responses from different LLMs.
-- name: Expert Labels
-  source: synthetic
-  description: Labels provided by experts for a sample of battles in Chatbot Arena
-    to compare with crowdsourced votes.
+  - name: "Chatbot Arena Crowdsourced Votes"
+    source: synthetic
+    description: "Crowdsourced votes collected from users evaluating chatbot interactions on the Chatbot Arena platform."
+  - name: "Expert Evaluations"
+    source: synthetic
+    description: "Expert evaluations of chatbot interactions used to compare against crowdsourced votes."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

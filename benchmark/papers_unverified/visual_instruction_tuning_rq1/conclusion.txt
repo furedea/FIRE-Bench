@@ -1,0 +1,1 @@
+LLaVA, when fine-tuned on a dataset of science questions requiring reasoning across text and images, achieves a state-of-the-art accuracy of 92.53% in multimodal reasoning when combined with GPT-4.

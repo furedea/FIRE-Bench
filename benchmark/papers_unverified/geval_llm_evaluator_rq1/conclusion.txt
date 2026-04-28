@@ -1,0 +1,1 @@
+G-EVAL substantially surpasses all previous state-of-the-art evaluators in terms of correlation with human judgments on the Topical-Chat benchmark.

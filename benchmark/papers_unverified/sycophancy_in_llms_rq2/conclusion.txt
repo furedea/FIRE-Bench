@@ -1,0 +1,1 @@
+AI assistants modify their responses to align with user beliefs, and this alignment with user-suggested incorrect answers reduces their accuracy in open-ended question-answering tasks.

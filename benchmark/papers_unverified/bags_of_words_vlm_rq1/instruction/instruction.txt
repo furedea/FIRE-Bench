@@ -1,31 +1,23 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Why do Vision-Language Models exhibit poor compositional and order understanding?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Why do Vision-Language Models (VLMs, which integrate visual and textual data) perform well on retrieval tasks (matching images with corresponding text) despite poor compositional understanding, as evaluated on perturbed datasets like COCO and Flickr30k using metrics such as Recall@1 and Recall@5?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4o via API
 - Load with HuggingFace: openai/clip-vit-base-patch32
 - Load with HuggingFace: salesforce/blip
 - Load with HuggingFace: facebook/flava-full
-- Load with HuggingFace: zengyan-97/X-VLM
+- Load with HuggingFace: zengyan-97/x-vlm
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Attribution, Relation, and Order (ARO) benchmark: A benchmark to evaluate the ability of VLMs to understand different types of relationships, attributes, and order information.  [generate programmatically]
-- Visual Genome: A large-scale dataset with images annotated with objects, attributes, and relations.
+- COCO: A large-scale object detection, segmentation, and captioning dataset.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('visual_genome')
-- COCO: A dataset containing images and their captions, used for image-text retrieval tasks.
-  GitHub repo: https://github.com/cocodataset/cocoapi
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/cocodataset/cocoapi.git
-- Flickr30k: A dataset containing images and their captions, used for image-text retrieval tasks.
-  GitHub repo: https://github.com/BryanPlummer/flickr30k_entities
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/BryanPlummer/flickr30k_entities.git
+    dataset = load_dataset("coco")
+- Flickr30k: A dataset of images with corresponding captions, used for image-text retrieval tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("flickr30k")
 
 Experimental constraints:
 - Do NOT use web search

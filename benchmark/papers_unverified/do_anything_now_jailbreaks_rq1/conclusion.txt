@@ -1,0 +1,1 @@
+In-the-wild jailbreak prompts are highly effective in bypassing the safeguards of popular LLMs like ChatGPT (GPT-3.5), GPT-4, and PaLM2 across various forbidden scenarios, as evidenced by their high attack success rates (ASR).

@@ -1,0 +1,33 @@
+task_id: prismatic_vlm_design_rq3
+paper_type: novel_architecture
+research_question: "RQ4: How do scaling properties such as training time and data diversity affect the performance of VLMs?"
+proposed_method:
+  name: "Prismatic VLMs"
+  summary: "Prismatic VLMs are a family of visually-conditioned language models designed to explore the design space of VLMs by investigating key design decisions such as image preprocessing, architecture, and optimization. The models utilize a 'patch-as-token' approach, leveraging pretrained visual backbones and language models to generate natural language responses from image inputs. The architecture is characterized by different design axes, including optimization procedures, image processing, language models, and scaling properties."
+  key_components:
+    - "Pretrained visual backbone (e.g., CLIP, DINOv2)"
+    - "Vision-language projector"
+    - "Language model (e.g., Llama-2, Mistral)"
+    - "Patch-as-token approach for image input"
+    - "Single-stage training pipeline"
+baselines:
+  - "InstructBLIP"
+  - "LLaVa v1.5"
+reference_implementation:
+  - "github.com/TRI-ML/prismatic-vlms"
+  - "github.com/TRI-ML/vlm-evaluation"
+datasets:
+  - name: "LLaVa v1.5 pretraining datasets"
+    source: unknown
+    description: "A mixture of datasets used for multi-stage training, including captioning datasets and multimodal instruct tuning examples."
+  - name: "LVIS-Instruct-4V"
+    source: unknown
+    description: "Dataset obtained by prompting GPT-4V to generate synthetic examples from images sourced from LVIS."
+  - name: "LRV-Instruct"
+    source: unknown
+    description: "Dataset that optimizes for image diversity, adding charts, scientific diagrams, and news printings."
+compute_hint: "8 A100 GPUs, <9h for 7B parameter model"
+constraints:
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"
+  - "Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code."

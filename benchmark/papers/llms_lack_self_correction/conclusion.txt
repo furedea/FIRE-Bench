@@ -1,0 +1,1 @@
+Self-correction methods do not improve large language model performance across math, commonsense reasoning, and multi-hop question answering benchmarks, as accuracies either drop or remain nearly the same.

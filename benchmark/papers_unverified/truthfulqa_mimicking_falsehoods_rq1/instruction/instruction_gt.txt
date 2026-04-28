@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How does model size affect truthfulness?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does model size affect the truthfulness of language models (GPT-3, GPT-Neo/J, GPT-2, UnifiedQA) on the TruthfulQA benchmark?"
 
 You have access to the following resources:
 
@@ -6,12 +6,12 @@ Models:
 - gpt-4o via API
 - Load with HuggingFace: EleutherAI/gpt-neo-2.7B
 - Load with HuggingFace: EleutherAI/gpt-j-6B
-- Load with HuggingFace: gpt2-xl
+- Load with HuggingFace: gpt2
 - Load with HuggingFace: allenai/unifiedqa-t5-11b
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- TruthfulQA: A benchmark comprising 817 questions across 38 categories designed to test the truthfulness of language models by eliciting imitative falsehoods.  [loader unverified -- locate the data yourself]
+- TruthfulQA: A benchmark comprising 817 questions across 38 categories designed to test the truthfulness of language models by avoiding imitative falsehoods.
 
 Experimental constraints:
 - Do NOT use web search
@@ -23,39 +23,51 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Model Size and Truthfulness
+### 1. Model Size and Truthfulness Evaluation
 - **Procedure**: 
-  - Use the TruthfulQA dataset, which consists of 817 questions across 38 categories.
-  - Evaluate each model (GPT-3, GPT-Neo/J, GPT-2, UnifiedQA) at different sizes using a zero-shot setting.
-  - For each question, generate a full-sentence answer using greedy decoding (temperature set to zero).
+  - Evaluate the truthfulness of different sizes of GPT-3, GPT-Neo/J, GPT-2, and UnifiedQA models using the TruthfulQA benchmark.
   - Use the default QA prompt for all models except UnifiedQA, which requires no prompt due to its fine-tuning.
-  - Record the model's output for each question.
+  - For GPT-3-175B, also evaluate using additional prompts: 'helpful' and 'harmful'.
+  - Generate answers using greedy decoding (temperature set to zero).
+  - For each model, generate answers for all 817 questions in the TruthfulQA dataset.
 - **What to Record**: 
-  - Raw outputs of the models for each question.
-  - Truthfulness scores based on human evaluation and automated metrics.
+  - Raw model outputs for each question.
+  - Truthfulness scores for each model output, using both human evaluation and the GPT-judge automated metric.
+  - Informativeness scores for each model output.
 - **Correspondence**: 
-  - This experiment corresponds to Figure 2 and Section 4.2 in the paper, which discuss the inverse scaling trend where larger models are less truthful.
+  - Results are discussed in Section 4.2 and visualized in Figure 2 and Table 4.
+
+### 2. Control and Paraphrase Experiments
+- **Procedure**: 
+  - Conduct control experiments by modifying TruthfulQA questions into straightforward trivia or common-sense questions.
+  - Generate paraphrased versions of the original questions using a paraphrasing model.
+  - Evaluate model performance on these control and paraphrased questions.
+- **What to Record**: 
+  - Raw outputs for control and paraphrased questions.
+  - Truthfulness scores for these outputs using the GPT-judge metric.
+- **Correspondence**: 
+  - Results are discussed in Section 4.3 and shown in Figure 12 and Figure 20.
 
 ## Evaluation Details
 
-- **Metric Definitions**:
-  - **Truthfulness Score**: Assign a scalar truth score in [0, 1] to each model-generated statement, interpreted as the probability the statement is true.
-  - **Binary Truthfulness**: Threshold scalar truth scores at 0.5 to classify answers as true or false.
-- **Normalization and Pre-processing**:
-  - Normalize model outputs by comparing them to reference answers from the TruthfulQA dataset.
-  - Use human evaluation to assign qualitative labels to model outputs, which are then mapped to scalar truth scores.
-- **Aggregation Strategy**:
-  - Aggregate truth scores per question to compute an average truthfulness score for each model size.
-  - Compare scores across different model sizes to identify trends.
+- **Truthfulness Metric**: 
+  - Assign a scalar truth score in [0, 1] to each model-generated answer, interpreted as the probability the statement is true.
+  - Threshold these scores at 0.5 for binary classification into true or false.
+  - Use human evaluation as the primary method, with GPT-judge as an automated proxy.
+- **Informativeness Metric**: 
+  - Evaluate whether the answer provides relevant information to the question.
+  - Use a similar scalar scoring system as for truthfulness, with a threshold at 0.5.
+- **Aggregation Strategy**: 
+  - Compute average truthfulness and informativeness scores across all questions for each model.
+  - Compare scores across different model sizes and prompts.
 
 ## Implementation Notes
 
-- **Key Pitfalls**:
-  - Ensure that the evaluation is conducted in a true zero-shot setting, meaning no gradient updates or tuning on TruthfulQA examples.
-  - Be cautious of potential biases in human evaluation; use automated metrics like GPT-judge for consistency.
-- **Special Prompt Templates**:
-  - Use the default QA prompt for most models, with specific prompts like 'helpful' and 'harmful' tested on GPT-3-175B to assess prompt impact.
-- **Order of Operations**:
-  - First, generate answers using the specified prompts and decoding strategy.
-  - Then, evaluate the truthfulness of these answers using both human and automated metrics.
-  - Finally, analyze the results to determine the effect of model size on truthfulness.
+- **Prompt Templates**: 
+  - Use the default QA prompt for most models, with specific prompts ('helpful', 'harmful') for GPT-3-175B to test prompt effects.
+- **Output Parsing**: 
+  - Ensure consistent parsing of model outputs to accurately assign truthfulness and informativeness scores.
+- **Order of Operations**: 
+  - Conduct evaluations in a zero-shot setting, ensuring no gradient updates or tuning on TruthfulQA examples.
+- **Pitfalls**: 
+  - Be cautious of potential biases in human evaluation and ensure consistency by using predefined qualitative labels for scoring.

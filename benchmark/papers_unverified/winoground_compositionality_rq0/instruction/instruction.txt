@@ -1,14 +1,29 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current vision and language models perform on the Winoground task?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do state-of-the-art vision and language models (UNITER, ViLLA, VinVL, VisualBERT, ViLT, LXMERT, ViLBERT, UniT, FLAVA, CLIP, VSE++, VSRN) perform on the Winoground task, which requires matching images and captions with identical words in different orders?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4o via API
-- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Load with HuggingFace: facebook/uniter-large
+- Load with HuggingFace: facebook/uniter-base
+- Load with HuggingFace: facebook/villa-large
+- Load with HuggingFace: facebook/villa-base
+- Load with HuggingFace: microsoft/vinvl-base
+- Load with HuggingFace: uclanlp/visualbert-base
+- Load with HuggingFace: dandelin/vilt-b32
+- Load with HuggingFace: unc-nlp/lxmert
+- Load with HuggingFace: jiasenlu/vilbert-base
+- Load with HuggingFace: facebook/unit
+- Load with HuggingFace: openai/clip-vit-base-patch32
+- Load with HuggingFace: faghri/vsepp-resnet-coco
+- Load with HuggingFace: faghri/vsepp-vgg-coco
+- Load with HuggingFace: faghri/vsepp-resnet-flickr30k
+- Load with HuggingFace: faghri/vsepp-vgg-flickr30k
+- Load with HuggingFace: kuanghuei/vsrn-coco
+- Load with HuggingFace: kuanghuei/vsrn-flickr30k
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Winoground: A dataset for evaluating visio-linguistic compositional reasoning, consisting of image-caption pairs with identical words in different orders.
+- Winoground: A dataset for evaluating visio-linguistic compositional reasoning, where models must match images and captions with identical words in different orders.
   Loading code:
     from datasets import load_dataset
     dataset = load_dataset("facebook/winoground")

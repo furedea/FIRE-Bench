@@ -1,0 +1,1 @@
+Integrating reasoning and acting within a single framework, as demonstrated by ReAct, performs competitively on knowledge-intensive reasoning tasks, specifically multi-hop question answering and fact verification. ReAct outperforms both CoT and Act-only methods, highlighting the importance of external knowledge retrieval.

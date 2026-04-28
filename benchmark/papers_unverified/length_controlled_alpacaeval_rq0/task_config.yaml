@@ -1,26 +1,17 @@
 task_id: length_controlled_alpacaeval_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: How can regression analysis be used to control for length
-  bias in AlpacaEval?'
+research_question: "RQ1: How does length control affect the gameability of AlpacaEval, a benchmark for instruction-tuned language models, when models are prompted for verbosity?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: AlpacaEval
-  source: external
-  description: A benchmark for instruction-tuned LLMs using a fixed set of 805 instructions
-    to evaluate model responses.
-  url: https://github.com/tatsu-lab/alpaca_eval
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/tatsu-lab/alpaca_eval.git
-
-    '
+  - name: "AlpacaEval dataset"
+    source: unknown
+    description: "A fixed set of 805 instructions chosen to be representative of user interactions on the Alpaca web demo, used for evaluating instruction-following models."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

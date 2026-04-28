@@ -1,0 +1,1 @@
+Two-stage training with more adapter data improves the performance of MLLMs across all domains.

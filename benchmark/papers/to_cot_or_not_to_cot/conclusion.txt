@@ -1,0 +1,1 @@
+Chain-of-Thought achieves performance gain on math and formal logic. CoT does not achieve statistically significant performance gain, sometimes even producing slight loss, on most other task categories including commonsense, knowledge, and soft reasoning.

@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Does human preference data incentivize sycophantic behavior in AI models?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Do AI assistants change their correct answers to incorrect ones when challenged by users across multiple QA datasets?"
 
 You have access to the following resources:
 
@@ -8,10 +8,26 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- hh-rlhf: A dataset containing human preference comparisons used to train preference models.
+- MMLU: A benchmark for evaluating language models on a wide range of subjects.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('Anthropic/hh-rlhf')
+    dataset = load_dataset("cais/mmlu")
+- MATH: A dataset for evaluating mathematical problem-solving abilities of models.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hendrycks/math")
+- AQuA: A dataset for algebraic word problems requiring reasoning and calculation.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("aqua_rat")
+- TruthfulQA: A dataset designed to measure the truthfulness of language model outputs.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("truthful_qa")
+- TriviaQA: A large-scale dataset for reading comprehension and question answering.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("trivia_qa")
 
 Experimental constraints:
 - Do NOT use web search

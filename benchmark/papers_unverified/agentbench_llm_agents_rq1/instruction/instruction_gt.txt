@@ -1,24 +1,49 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: What are the typical reasons for failures in LLM agents?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do LLMs perform as agents in game-grounded environments, specifically in digital card games, lateral thinking puzzles, and house-holding tasks?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 and claude-3 via API
+- gpt-4 and claude-3 and glm-4 and claude-2 and gpt-3.5-turbo and text-davinci-003 and claude-instant and chat-bison-001 and text-davinci-002 via API
 - Load with HuggingFace: meta-llama/Llama-2-70b
 - Load with HuggingFace: meta-llama/Llama-2-13b
 - Load with HuggingFace: meta-llama/Llama-2-7b
 - Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-13B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-34B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-70B-Instruct
+- Load with HuggingFace: Anthropic/claude-3
+- Load with HuggingFace: Anthropic/claude-2
+- Load with HuggingFace: Anthropic/claude
+- Load with HuggingFace: Anthropic/claude-instant
+- Load with HuggingFace: openai/gpt-3.5-turbo
+- Load with HuggingFace: openai/text-davinci-003
+- Load with HuggingFace: openai/text-davinci-002
+- Load with HuggingFace: google/chat-bison-001
+- Load with HuggingFace: ZhipuAI/chatglm-6b
+- Load with HuggingFace: ZhipuAI/codegeex2-6b
+- Load with HuggingFace: ZhipuAI/codellama-34b
+- Load with HuggingFace: ZhipuAI/codellama-13b
+- Load with HuggingFace: ZhipuAI/codellama-7b
+- Load with HuggingFace: ZhipuAI/guanaco-65b
+- Load with HuggingFace: ZhipuAI/guanaco-33b
+- Load with HuggingFace: ZhipuAI/vicuna-33b
+- Load with HuggingFace: ZhipuAI/vicuna-13b
+- Load with HuggingFace: ZhipuAI/vicuna-7b
+- Load with HuggingFace: ZhipuAI/openchat-13b
+- Load with HuggingFace: ZhipuAI/wizardlm-30b
+- Load with HuggingFace: ZhipuAI/wizardlm-13b
+- Load with HuggingFace: ZhipuAI/koala-13b
+- Load with HuggingFace: ZhipuAI/dolly-12b
+- Load with HuggingFace: ZhipuAI/oasst-12b
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Operating System: Tasks involving interaction with a simulated operating system environment to execute commands and solve problems.  [generate programmatically]
-- Database: Tasks requiring interaction with a simulated SQL database to perform queries and updates.  [generate programmatically]
-- Knowledge Graph: Tasks involving querying a knowledge graph to retrieve information and answer questions.  [generate programmatically]
-- Digital Card Game: A simulated card game environment where agents must strategize to win against an opponent.  [generate programmatically]
-- Lateral Thinking Puzzles: Puzzles that require unconventional reasoning to solve, presented in a game-like format.  [generate programmatically]
-- House-Holding: Tasks set in a simulated household environment requiring agents to perform actions to achieve specific goals.  [generate programmatically]
-- Web Shopping: Simulated online shopping tasks where agents must find and purchase items based on given criteria.  [generate programmatically]
-- Web Browsing: Tasks involving navigating and interacting with web pages to achieve specific objectives.  [generate programmatically]
+- Aquawar: A digital card game environment used to evaluate strategic decision-making in LLMs.  [generate programmatically]
+- Custom LTP tasks: A set of lateral thinking puzzles designed to test unconventional problem-solving abilities of LLMs.  [generate programmatically]
+- ALFWorld: A text-based household simulation environment for evaluating multi-step task completion by LLMs.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("alfworld")
 
 Experimental constraints:
 - Do NOT use web search
@@ -30,105 +55,91 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Operating System Task
+### 1. Digital Card Game Evaluation
 - **Procedure**: 
-  - Initialize a Docker container with a specific image and run an initialization bash script.
-  - Provide the LLM with a problem description and allow interaction with the shell.
-  - LLMs can execute bash commands or commit answers.
-  - Limit interaction to 8 rounds.
+  - Use the Aquawar digital card game environment.
+  - Each LLM acts as a player controlling a team of four fish cards with different abilities.
+  - The game is turn-based, and the LLM must choose actions for its fish cards, including normal attacks and active abilities.
+  - The identity of the fish cards is initially hidden, and the opponent can guess the identity each round.
+  - Conduct two stages of evaluation: one without assertions and one with assertions.
+  - Each game session is recorded for analysis.
 - **What to Record**: 
-  - Record the commands executed by the LLM.
-  - Capture the final answer or system state.
-- **Correspondence**: Section 3.1, Appendix B.
+  - Win rate of the LLMs.
+  - Total damage dealt and received.
+  - Number of rounds played.
+  - Game logs for strategic analysis.
+- **Correspondence**: 
+  - Figure 4d
+  - Table 2
+  - Section 3.2
 
-### 2. Database Task
+### 2. Lateral Thinking Puzzle Evaluation
 - **Procedure**: 
-  - Initialize a MySQL database in a Docker container.
-  - Provide LLMs with a problem description, table information, and allow them to generate SQL queries.
-  - LLMs can execute SQL commands or commit answers.
-  - Limit interaction to 5 rounds.
+  - Use the custom LTP tasks dataset.
+  - Each LLM acts as a solver, receiving a story and asking binary questions to deduce the truth.
+  - The host (simulated by the environment) answers with "Yes", "No", or "Irrelevant".
+  - The LLM can declare the guessed plot to end the game.
+  - Limit the interaction to a maximum of 25 rounds.
 - **What to Record**: 
-  - Record SQL queries and final answers.
-  - Compare the hash of the modified table with the correct hash.
-- **Correspondence**: Section 3.1, Appendix C.
+  - Game progress, measured by the number of key points guessed correctly.
+  - Number of rounds taken to reach a conclusion.
+  - Relevance of questions asked by the LLM.
+- **Correspondence**: 
+  - Figure 4e
+  - Table 2
+  - Section 3.2
 
-### 3. Knowledge Graph Task
+### 3. House-Holding Task Evaluation
 - **Procedure**: 
-  - Host FREEBASE using Virtuoso and provide LLMs with a task description.
-  - Allow LLMs to invoke KG-querying tools to gather information.
-  - Limit interaction to 15 actions.
+  - Use the ALFWorld text-based household simulation environment.
+  - Each LLM receives a detailed description of the environment and a task objective (e.g., "put a pan on the dining table").
+  - The LLM must break down the task into a sequence of actions and adapt based on environment feedback.
+  - Limit the interaction to a maximum of 35 actions.
 - **What to Record**: 
-  - Record the sequence of tool invocations and final answers.
-  - Calculate F1 score based on predicted and gold answers.
-- **Correspondence**: Section 3.1, Appendix D.
-
-### 4. Digital Card Game Task
-- **Procedure**: 
-  - Use the Aquawar framework for interaction.
-  - LLMs select fish and actions in a turn-based game.
-  - Evaluate in two stages: without and with assertions.
-- **What to Record**: 
-  - Record the actions taken by LLMs and the game outcome.
-  - Calculate win rate and reward score.
-- **Correspondence**: Section 3.2, Appendix E.
-
-### 5. Lateral Thinking Puzzles Task
-- **Procedure**: 
-  - Provide LLMs with a story and allow them to ask binary questions.
-  - Limit interaction to 25 rounds.
-- **What to Record**: 
-  - Record questions and answers.
-  - Measure game progress and query relevance.
-- **Correspondence**: Section 3.2, Appendix F.
-
-### 6. House-Holding Task
-- **Procedure**: 
-  - Provide LLMs with an environment description and a goal.
-  - Allow LLMs to choose actions from a given action space.
-  - Limit interaction to 35 rounds.
-- **What to Record**: 
-  - Record actions and environment feedback.
-  - Measure success rate.
-- **Correspondence**: Section 3.2, Appendix G.
-
-### 7. Web Shopping Task
-- **Procedure**: 
-  - Provide LLMs with a shopping task and allow them to search and click on items.
-  - Limit interaction to 5 rounds.
-- **What to Record**: 
-  - Record search queries and clicked items.
-  - Calculate reward based on attribute matching.
-- **Correspondence**: Section 3.3, Appendix H.
-
-### 8. Web Browsing Task
-- **Procedure**: 
-  - Provide LLMs with a task description and allow them to interact with web pages.
-  - Limit interaction to 10 rounds.
-- **What to Record**: 
-  - Record actions and selected elements.
-  - Measure step success rate.
-- **Correspondence**: Section 3.3, Appendix I.
+  - Success rate of task completion.
+  - Number of actions taken.
+  - Interaction logs for analysis of decision-making processes.
+- **Correspondence**: 
+  - Figure 4f
+  - Table 2
+  - Section 3.2
 
 ## Evaluation Details
 
-- **Metrics**:
-  - Success Rate (SR) for tasks like Operating System, Database, and House-Holding.
-  - F1 score for Knowledge Graph tasks.
-  - Reward score for Digital Card Game and Web Shopping.
-  - Step Success Rate for Web Browsing.
-- **Normalization**:
-  - For SQL tasks, normalize answers by ignoring order and accepting equivalent representations.
-  - For Knowledge Graph, use exact match for answer sets.
-- **Aggregation**:
-  - Calculate overall scores by resizing each task’s average score to 1 and averaging across tasks.
+### Digital Card Game
+- **Metrics**: 
+  - Win Rate: Number of games won divided by total games played.
+  - Damage Rate: Total damage dealt divided by total health of opponent's fish.
+  - Reward Calculation: `reward = 0.7 * win_rate + 0.3 * damage_rate`.
+- **Normalization**: 
+  - Normalize damage rates to account for different game lengths.
+- **Aggregation**: 
+  - Calculate average win rate and damage rate across multiple games for each LLM.
+
+### Lateral Thinking Puzzles
+- **Metrics**: 
+  - Game Progress: Number of key points guessed correctly divided by total key points.
+  - Round Efficiency: Number of rounds taken to reach a conclusion.
+  - Query Relevance: Proportion of relevant questions asked.
+- **Normalization**: 
+  - Adjust game progress scores based on difficulty levels of puzzles.
+- **Aggregation**: 
+  - Average game progress and round efficiency across all puzzles for each LLM.
+
+### House-Holding Tasks
+- **Metrics**: 
+  - Success Rate: Number of tasks completed successfully divided by total tasks attempted.
+- **Normalization**: 
+  - None required as tasks are binary (success/failure).
+- **Aggregation**: 
+  - Calculate overall success rate across all tasks for each LLM.
 
 ## Implementation Notes
 
-- **Prompt Templates**:
-  - Use specific templates for each task, e.g., SQL queries in markdown format for Database tasks.
-  - Include 1-shot examples for tasks like House-Holding to guide LLMs.
-- **Pitfalls**:
-  - Ensure LLMs adhere to output formats to avoid Invalid Format errors.
-  - Monitor for repeated content to prevent Task Limit Exceeded outcomes.
-- **Order of Operations**:
-  - Follow a structured sequence of initialization, interaction, and checking for each task.
+- **Prompt Templates**: 
+  - Use specific prompt templates for each environment to guide LLMs in generating appropriate actions.
+  - Include examples of valid actions and expected output formats in the prompts.
+- **Output Parsing**: 
+  - Implement logic to extract and validate actions from LLM outputs, ensuring they conform to the expected format.
+- **Order of Operations**: 
+  - Ensure that the sequence of actions in the house-holding tasks follows logical task decomposition and adapts based on feedback.

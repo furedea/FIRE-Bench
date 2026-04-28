@@ -1,0 +1,1 @@
+Current evaluation metrics for mathematical reasoning in large language models are unreliable when using the GSM8K benchmark compared to the GSM-Symbolic benchmark, as evidenced by significant variance and a performance drop on GSM-Symbolic.

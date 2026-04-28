@@ -1,25 +1,26 @@
-You are a research agent. Conduct research about the question: "RQ4: How does the Spatial Vision Aggregator (SVA) improve the integration of vision features with LLMs?"
+You are a research agent. Conduct research about the question: "RQ4: How does data curation, including data balancing and ratio adjustments, affect the performance of MLLMs?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Spatial Vision Aggregator (SVA): The Spatial Vision Aggregator (SVA) is a dynamic and spatially-aware connector designed to integrate high-resolution vision features with large language models (LLMs). It reduces the number of tokens while maintaining spatial structure, using learnable latent queries that interact with multiple vision features via cross-attention layers. This approach allows for effective aggregation of features from multiple vision encoders, preserving the spatial structure of visual data during integration with LLMs.
-  - Component: Learnable latent queries for cross-attention
-  - Component: Spatial inductive bias to maintain spatial structure
-  - Component: Multi-layer vision aggregation across LLM layers
-- Baseline for comparison: Concatenation-based approach
-- Baseline for comparison: Re-sampler
+- Cambrian-1: Cambrian-1 is a family of multimodal large language models (MLLMs) designed with a vision-centric approach. It introduces the Spatial Vision Aggregator (SVA), a dynamic and spatially-aware connector that integrates high-resolution vision features with LLMs while reducing the number of tokens. The architecture emphasizes the importance of data curation, including data balancing and distribution ratio, to improve visual grounding and overall performance.
+  - Component: Spatial Vision Aggregator (SVA)
+  - Component: Vision-centric benchmark (CV-Bench)
+  - Component: Data curation and balancing strategies
+- Baseline for comparison: LLaVA
+- Baseline for comparison: CLIP
+- Baseline for comparison: DINO
 - Reference hint: https://github.com/cambrian-mllm/cambrian
 
 Datasets for training and evaluation:
-- CV-Bench: A vision-centric benchmark designed to evaluate the fundamental 2D and 3D visual understanding of multimodal large language models.
-  Loading code:
-    from datasets import load_dataset
-    dataset = load_dataset("nyu-visionx/CV-Bench")
-- Cambrian-10M: A large-scale curated instruction tuning dataset for multimodal large language models, emphasizing high-quality visual instruction-tuning data.
+- Cambrian-10M: A large-scale curated instruction tuning dataset for multimodal large language models, emphasizing data balancing and distribution ratio.
   Loading code:
     from datasets import load_dataset
     dataset = load_dataset("nyu-visionx/Cambrian-10M")
+- CV-Bench: A vision-centric benchmark designed to evaluate the fundamental 2D and 3D visual understanding of MLLMs.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("nyu-visionx/CV-Bench")
 
 Experimental constraints:
 - Do NOT use web search
@@ -39,49 +40,37 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Evaluate the Performance of the Spatial Vision Aggregator (SVA)
-
-- **Procedure**:
-  - **Input Format**: Use high-resolution images from various benchmarks.
-  - **Prompting Strategy**: Integrate vision features with LLMs using the SVA method.
-  - **Number of Samples**: Use the full set of images from each benchmark.
-  - **Shuffling/Ordering**: Randomly shuffle the images before processing.
-  - **Splits to Use**: Use the standard train/test splits provided by each benchmark.
-
-- **What to Record**:
-  - Raw outputs from the model.
-  - Extracted answers for each benchmark task.
-  - Intermediate statistics such as attention scores and token usage.
-
-- **Correspondence to Paper**:
-  - This experiment corresponds to Figure 8, Table 4, and Section 4 of the paper.
+### 1. Data Curation Impact on MLLM Performance
+- **Procedure**: 
+  - Use the Cambrian-10M dataset to conduct data curation experiments.
+  - Apply data filtering with thresholds (e.g., 150k, 250k, 350k, 450k) to balance the dataset.
+  - Adjust data ratios to explore the impact on model performance, using a fixed dataset size of 1.35M for ratio experiments.
+  - Train the OpenAI CLIP ViT-L/14@336 model on these curated datasets.
+- **What to Record**: 
+  - Record the performance metrics across various benchmarks, including General, Knowledge, OCR & Chart, and Vision-Centric categories.
+  - Capture the average performance and specific benchmark scores for each data curation strategy.
+- **Correspondence to Figures/Tables/Sections**: 
+  - Data balancing results are detailed in Table 19.
+  - Data ratio experiments are summarized in Table 20.
+  - Section 5.2 discusses the data curation strategies and their impact.
 
 ## Evaluation Details
 
-- **Metric Definitions and Computation**:
-  - Use accuracy as the primary metric for tasks with discrete answers.
-  - For tasks requiring numerical answers, use mean absolute error (MAE).
-  - For tasks with multiple-choice answers, use the percentage of correct choices.
-
-- **Normalization/Pre-processing**:
-  - Normalize image inputs to the required resolution for each vision encoder.
-  - Ensure consistent tokenization of text inputs across all benchmarks.
-
-- **Aggregation Strategy**:
-  - Compute per-sample accuracy or error.
-  - Aggregate results per benchmark to obtain an overall performance score.
-  - Compare SVA performance against baseline methods like concatenation-based and re-sampler approaches.
+- **Metric Definitions**: 
+  - Performance is measured by the average score across multiple benchmarks, including specific categories like General, Knowledge, OCR & Chart, and Vision-Centric.
+  - Use accuracy as the primary metric for individual benchmarks.
+- **Normalization/Pre-processing**: 
+  - Ensure consistent pre-processing of input data across different data curation strategies.
+  - Apply fuzzy matching for evaluating model outputs where applicable, as detailed in Section G.2.
+- **Aggregation Strategy**: 
+  - Aggregate performance metrics per benchmark category and compute the overall average to assess the impact of data curation.
 
 ## Implementation Notes
 
-- **Key Pitfalls or Caveats**:
-  - Ensure that the spatial inductive bias is correctly implemented to maintain spatial structure during cross-attention.
-  - Be cautious of potential information loss when interpolating features from different vision encoders.
-
-- **Special Prompt Templates**:
-  - Use specific system prompts for each benchmark to ensure consistent evaluation (see Table 26 for examples).
-
-- **Order of Operations**:
-  - First, preprocess images and text inputs.
-  - Then, apply the SVA method to integrate vision features with the LLM.
-  - Finally, evaluate the model's performance on each benchmark task.
+- **Key Pitfalls**: 
+  - Be cautious of potential data leakage when using large datasets like Cambrian-10M. Ensure that test images are not present in the training data, as discussed in Appendix E.6.
+- **Special Prompt Templates**: 
+  - Use specific system prompts for different benchmarks to ensure consistent evaluation, as listed in Table 26.
+- **Order of Operations**: 
+  - Conduct data filtering and ratio adjustments before training the model.
+  - Follow the sequence of training with adapter data, followed by instruction tuning, as outlined in the experimental setup.

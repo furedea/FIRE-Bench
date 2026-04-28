@@ -1,0 +1,1 @@
+The integration of the V∗ visual search mechanism improves the accuracy of multimodal large language models on attribute recognition and spatial relationship reasoning tasks.

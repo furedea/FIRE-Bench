@@ -1,0 +1,1 @@
+Current question-answering models (UnifiedQA, RoBERTa, DeBERTaV3) exhibit social biases by often selecting biased answers instead of 'UNKNOWN', indicating reliance on these biases across the nine social dimensions. They show higher accuracy when the correct answer aligns with social biases, suggesting that biases persist even in contexts where the answer is clear.

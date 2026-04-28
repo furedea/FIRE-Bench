@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Can calibration strategies mitigate the positional bias in LLM evaluations?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How effective are calibration strategies in mitigating positional bias (preference for certain positions in a sequence) in large language model evaluators? RQ3: To what extent do calibration strategies improve alignment with human judgments in large language model evaluations?"
 
 You have access to the following resources:
 
@@ -7,11 +7,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Vicuna Benchmark: A benchmark used to evaluate the responses of ChatGPT and Vicuna-13B across 80 questions spanning 9 distinct categories.
-  GitHub repo: https://github.com/lm-sys/FastChat
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/lm-sys/FastChat.git
+- Vicuna Benchmark: A benchmark used to evaluate responses from ChatGPT and Vicuna-13B across 80 questions spanning 9 distinct question categories.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

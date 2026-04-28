@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Does the frequency of a language in the training data affect the reasoning performance of language models?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do large language models perform on multilingual reasoning benchmarks, such as XCOPA and XL-WiC, when evaluated using few-shot prompting with multilingual exemplars?"
 
 You have access to the following resources:
 
@@ -8,11 +8,8 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- MGSM: A multilingual benchmark created by translating 250 grade-school math problems from the GSM8K dataset into ten typologically diverse languages.
-  GitHub repo: https://github.com/google-research/url-nlp
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/google-research/url-nlp.git
+- XCOPA: A multilingual evaluation dataset designed to assess the causal commonsense reasoning capabilities of language models across multiple languages.  [loader unverified -- locate the data yourself]
+- XL-WiC: A multilingual word in-context semantic judgment benchmark covering thirteen languages.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

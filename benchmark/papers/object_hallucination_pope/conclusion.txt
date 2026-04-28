@@ -1,0 +1,1 @@
+Large vision-language models hallucinate objects severely, often identifying objects not present in images. Objects that frequently appear in training data or co-occur with ground-truth image objects are more prone to hallucination.

@@ -1,0 +1,1 @@
+Larger language models memorize more popular factual knowledge more effectively, but they have difficulty with less popular knowledge.

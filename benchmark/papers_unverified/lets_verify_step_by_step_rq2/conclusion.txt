@@ -1,0 +1,1 @@
+A large reward model can effectively approximate human supervision for training smaller reward models in mathematical reasoning tasks.

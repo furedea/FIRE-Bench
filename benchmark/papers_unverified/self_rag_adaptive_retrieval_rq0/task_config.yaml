@@ -1,39 +1,45 @@
 task_id: self_rag_adaptive_retrieval_rq0
 paper_type: novel_architecture
-research_question: 'RQ1: How does SELF-RAG improve the factual accuracy and versatility
-  of LLMs compared to existing models?'
+research_question: "RQ1: How do retrieval (accessing external information sources) and self-reflection (evaluating and refining one's own outputs) mechanisms enhance the factual accuracy and generation quality of large language models across tasks such as open-domain question answering, reasoning, fact verification, and long-form generation, as evaluated on datasets like PopQA, TriviaQA-unfiltered, PubHealth, ARC-Challenge, Biography generation, and ALCE-ASQA?"
 proposed_method:
-  name: SELF-RAG
-  summary: SELF-RAG is a framework that enhances the quality and factuality of large
-    language models (LLMs) through retrieval and self-reflection. It trains an arbitrary
-    LLM to adaptively retrieve passages on-demand, generate outputs, and reflect on
-    both retrieved passages and its own generations using special tokens called reflection
-    tokens. These tokens enable the model to be controllable during inference, allowing
-    it to tailor its behavior to diverse task requirements.
+  name: "Self-Reflective Retrieval-Augmented Generation (SELF-RAG)"
+  summary: "SELF-RAG is a framework designed to enhance the quality and factuality of large language models by incorporating retrieval and self-reflection mechanisms. It trains a language model to adaptively retrieve relevant passages on-demand and generate outputs while reflecting on both the retrieved passages and its own generations using special reflection tokens. These tokens enable the model to control its behavior during inference, tailoring its responses to diverse task requirements."
   key_components:
-  - Adaptive retrieval of relevant passages on-demand
-  - Generation of outputs with reflection tokens
-  - Self-reflection on retrieved passages and generated outputs
-  - Use of critique tokens to evaluate generation quality
+    - "Adaptive retrieval mechanism that retrieves passages on-demand based on task requirements."
+    - "Reflection tokens that allow the model to evaluate the necessity of retrieval and the quality of its own outputs."
+    - "End-to-end training of a language model to generate and critique text using reflection tokens."
 baselines:
-- ChatGPT
-- Llama2-chat
+  - "ChatGPT"
+  - "Llama2-chat"
+  - "Alpaca"
+  - "Toolformer"
+  - "SAIL"
 reference_implementation:
-- https://selfrag.github.io/
+  - "https://selfrag.github.io/"
 datasets:
-- name: Open-domain QA
-  source: unknown
-  description: A dataset used to evaluate the model's ability to answer arbitrary
-    questions about factual knowledge.
-- name: Reasoning
-  source: unknown
-  description: A dataset used to evaluate the model's reasoning capabilities.
-- name: Fact verification tasks
-  source: unknown
-  description: A dataset used to evaluate the model's ability to verify factual statements.
-compute_hint: single GPU, <24h
+  - name: "PopQA"
+    source: unknown
+    description: "A dataset for open-domain question answering focusing on rare entity queries."
+  - name: "TriviaQA-unfiltered"
+    source: unknown
+    description: "An open-domain question answering dataset with a large set of trivia questions."
+  - name: "PubHealth"
+    source: unknown
+    description: "A fact verification dataset about public health."
+  - name: "ARC-Challenge"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("ai2_arc", "ARC-Challenge")
+    description: "A multiple-choice reasoning dataset created from scientific exams."
+  - name: "Biography generation"
+    source: unknown
+    description: "A task for generating biographies with a focus on factual accuracy."
+  - name: "ALCE-ASQA"
+    source: unknown
+    description: "A long-form question answering dataset that evaluates correctness, fluency, and citation accuracy."
+compute_hint: "single GPU, <24h"
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
-- Implement the proposed method yourself -- do not import it from a library that bundles
-  the paper's exact code.
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"
+  - "Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code."

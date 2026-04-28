@@ -1,0 +1,1 @@
+External safeguards, such as the OpenAI moderation endpoint and NeMo-Guardrails, are limited in their effectiveness at reducing the success rate of jailbreak prompts on large language models like ChatGPT (GPT-3.5).

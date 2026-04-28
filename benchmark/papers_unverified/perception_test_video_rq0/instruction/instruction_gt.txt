@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current multimodal models perform on the Perception Test benchmark?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do pre-trained multimodal models perform on the Perception Test across different skill areas (Memory, Abstraction, Physics, Semantics) and reasoning types (descriptive, explanatory, predictive, counterfactual) using real-world videos?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Perception Test: A benchmark formed of purposefully designed, filmed, and annotated real-world videos to assess the capabilities of multimodal perception models across different skill areas and types of reasoning.  [loader unverified -- locate the data yourself]
+- Perception Test: A benchmark of 11.6k real-world videos designed to evaluate perception and reasoning skills of multimodal models, annotated with multiple-choice and grounded video question-answers, object and point tracks, temporal action and sound segments.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,115 +20,72 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Multiple-Choice Video Question-Answering (mc-vQA)
+### 1. Object Tracking with SiamFC
 - **Procedure**: 
   - Use the Perception Test dataset.
-  - Evaluate models in zero-shot, few-shot (8-shot), and fine-tuned settings.
-  - For zero-shot and few-shot, use Flamingo models (3B, 9B, 80B) and SeViLA.
-  - For fine-tuning, use SeViLA with the training split of the Perception Test.
-  - Present each video with a question and three possible answers.
-  - Use a maximum of 30 frames sampled at 1fps, with spatial resolution 320 for Flamingo.
-  - For SeViLA, sample 32 frames, with 4 designated as keyframes.
+  - Evaluate the SiamFC model in a zero-shot setting.
+  - Track every single object labeled in the dataset starting from an initial bounding box.
+  - For objects entering the field of view during the video, select a later frame where the object is not touching the image boundary to identify the query box.
 - **What to Record**: 
-  - Top-1 accuracy for each model and setting.
-  - Performance per skill area and type of reasoning.
-- **Correspondence**: 
-  - Figures 2, 3, A5
-  - Table A6
-  - Section 5
+  - Record the average Intersection-over-Union (IoU) between predicted and ground-truth boxes.
+  - Analyze performance on objects in videos shot with static vs. moving cameras, and objects involved in actions.
+- **Correspondence**: Table 4, Table A3, Section 5.
 
-### 2. Object Tracking
+### 2. Point Tracking with TAP-Net
 - **Procedure**: 
   - Use the Perception Test dataset.
-  - Evaluate using the SiamFC model in a zero-shot setting.
-  - Track every single object starting from an initial bounding box.
-  - Use a heuristic to select a later frame for the query box if the object is initially touching the image boundary.
+  - Evaluate the TAP-Net model in a zero-shot setting.
+  - Track spatial trajectories of given 2D point coordinates throughout the video.
+  - Points are annotated at 30 fps.
 - **What to Record**: 
-  - Average Intersection-over-Union (IoU) for all object tracks.
-  - Performance on objects in static vs. moving cameras, and objects involved in actions or sounds.
-- **Correspondence**: 
-  - Table A3
-  - Section 5
+  - Record the Average Jaccard metric, Position Accuracy, and Occlusion Accuracy.
+  - Analyze performance on static vs. moving points and static vs. moving camera scenarios.
+- **Correspondence**: Table 4, Table A4, Section 5.
 
-### 3. Point Tracking
+### 3. Temporal Action Localisation with ActionFormer
 - **Procedure**: 
   - Use the Perception Test dataset.
-  - Evaluate using TAP-Net in a zero-shot setting.
-  - Track spatial trajectories of initial 2D point coordinates throughout the video.
+  - Fine-tune the ActionFormer model using TSP video features and MMV audio features.
+  - Predict overlapping temporal 1D-segments covering actions and classify them using a fixed set of labels.
 - **What to Record**: 
-  - Average Jaccard, Occlusion Accuracy, and Position Accuracy.
-  - Performance on static vs. moving points and cameras.
-- **Correspondence**: 
-  - Table A4
-  - Section 5
+  - Record mean Average Precision (mAP) over classes based on temporal IoU.
+  - Analyze confusion matrix for action classes.
+- **Correspondence**: Table 4, Table A5, Figure A4, Section 5.
 
-### 4. Temporal Action Localisation
+### 4. Multiple-choice VideoQA with Flamingo and SeViLA
 - **Procedure**: 
   - Use the Perception Test dataset.
-  - Evaluate using ActionFormer with fine-tuned features.
-  - Use TSP video features and MMV audio features, and a multimodal input by concatenating video and audio features.
+  - Evaluate Flamingo in zero-shot and 8-shot settings, and SeViLA in zero-shot and fine-tuned regimes.
+  - Provide a question and three possible answers for each video.
 - **What to Record**: 
-  - Mean Average Precision (mAP) across IoU thresholds.
-  - Confusion matrix for action classes.
-- **Correspondence**: 
-  - Table A5 (top)
-  - Figure A4
-  - Section 5
-
-### 5. Temporal Sound Localisation
-- **Procedure**: 
-  - Use the Perception Test dataset.
-  - Evaluate using ActionFormer with fine-tuned features.
-  - Use video, audio, and multimodal inputs.
-- **What to Record**: 
-  - Mean Average Precision (mAP) across IoU thresholds.
-- **Correspondence**: 
-  - Table A5 (bottom)
-  - Section 5
-
-### 6. Grounded Video Question-Answering (g-vQA)
-- **Procedure**: 
-  - Use the Perception Test dataset.
-  - Evaluate using MDETR for detection on the middle frame, followed by Stark tracker for object tracking.
-- **What to Record**: 
-  - HOTA metrics for detection, association, and localisation.
-- **Correspondence**: 
-  - Table A7
-  - Figure A6
-  - Section 5
+  - Record top-1 accuracy for each model.
+  - Compare performance against human baseline and frequency-based dummy baseline.
+- **Correspondence**: Table 4, Table A6, Figure 2, Figure A5, Section 5.
 
 ## Evaluation Details
 
-### Multiple-Choice Video Question-Answering (mc-vQA)
-- **Metric**: Top-1 accuracy, calculated as the proportion of correctly answered questions.
-- **Normalization**: None required.
-- **Aggregation**: Compute accuracy per skill area and type of reasoning, then aggregate for overall performance.
-
 ### Object Tracking
-- **Metric**: Average IoU, calculated as the average overlap between predicted and ground-truth boxes over the entire track.
-- **Normalization**: None required.
-- **Aggregation**: Compute IoU for each object, then average across all objects.
+- **Metric**: Average IoU, calculated as the average intersection-over-union over the entire track between predicted and ground-truth boxes.
+- **Normalization**: Ensure bounding boxes are correctly aligned and normalized to the video frame dimensions.
 
 ### Point Tracking
 - **Metrics**: 
   - Average Jaccard: Fraction of true positives divided by the sum of true positives, false positives, and false negatives.
-  - Occlusion Accuracy: Classification accuracy for point occlusion prediction.
   - Position Accuracy: Fraction of points within a threshold of their ground truth.
-- **Normalization**: None required.
-- **Aggregation**: Average metrics across all points.
+  - Occlusion Accuracy: Classification accuracy for point occlusion prediction.
+- **Normalization**: Resize predictions to 256x256 resolution for evaluation.
 
-### Temporal Action and Sound Localisation
-- **Metric**: Mean Average Precision (mAP), calculated over IoU thresholds.
-- **Normalization**: None required.
-- **Aggregation**: Average mAP across all classes and IoU thresholds.
+### Temporal Action Localisation
+- **Metric**: Mean Average Precision (mAP) based on temporal IoU between predicted and ground truth segments.
+- **Aggregation**: Average mAP across IoU thresholds from 0.1 to 0.5.
 
-### Grounded Video Question-Answering (g-vQA)
-- **Metric**: HOTA, integrating detection, association, and localisation scores.
-- **Normalization**: None required.
-- **Aggregation**: Compute HOTA for each task, then average across all tasks.
+### Multiple-choice VideoQA
+- **Metric**: Top-1 accuracy, calculated as the fraction of correctly answered questions.
+- **Normalization**: Ensure consistent question and answer formatting across all samples.
 
 ## Implementation Notes
 
-- **Prompt Templates**: For Flamingo, use likelihood scoring for options. For SeViLA, use Localizer and Answerer modules.
-- **Output Parsing**: Ensure correct parsing of model outputs for each task, especially for mc-vQA and g-vQA.
-- **Order of Operations**: For tasks involving tracking, ensure detection is performed before tracking. For mc-vQA, ensure video trimming is applied where necessary.
+- **Object Tracking**: Use a heuristic to select a later frame for objects entering the field of view to ensure a representative query box.
+- **Point Tracking**: Annotate points densely in time and ensure occluded points are marked correctly.
+- **Action Localisation**: Use multimodal inputs by concatenating video and audio features for improved performance.
+- **VideoQA**: For Flamingo, use a maximum of 30 frames sampled at 1fps, and ignore the audio modality. For SeViLA, sample 32 frames and use the Localizer to designate keyframes.

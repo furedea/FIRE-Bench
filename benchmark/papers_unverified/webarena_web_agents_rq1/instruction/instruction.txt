@@ -1,13 +1,14 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How effective is WebArena in evaluating the performance of autonomous agents on complex web-based tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ2a: How well do baseline large language models perform on the WebArena benchmark tasks, which assess language understanding and reasoning in web-based environments, using task success rate as the metric? RQ2b: What are the limitations of current large language models when evaluated on the WebArena benchmark tasks, which involve few-shot in-context learning with and without explicit reasoning steps?"
 
 You have access to the following resources:
 
 Models:
 - gpt-4 via API
+- Load with HuggingFace: google/flan-t5-xl
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- WebArena Benchmark: A set of 812 long-horizon web-based tasks designed to evaluate the functional correctness and task success rate of autonomous agents in a realistic web environment.  [generate programmatically]
+- WebArena benchmark: A set of 812 long-horizon web-based tasks designed to evaluate the functional correctness of task completions in a realistic web environment.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

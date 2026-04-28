@@ -1,0 +1,1 @@
+Current large language models struggle with fast-changing and false-premise questions on the FRESHQA benchmark, indicating significant room for improvement.

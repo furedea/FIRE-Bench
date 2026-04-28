@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How do LMMs perform on Scene Text-Centric VQA tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do Large Multimodal Models perform in Scene Text-Centric Visual Question Answering (VQA) tasks using datasets like STVQA, TextVQA, OCRVQA, and ESTVQA?"
 
 You have access to the following resources:
 
@@ -8,13 +8,22 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- STVQA: A dataset consisting of questions related to scene text visual question answering.  [loader unverified -- locate the data yourself]
-- TextVQA: A dataset comprising questions that require reading text in images to answer.
+- STVQA: A dataset consisting of 31,000+ questions across 23,000+ images collected from various public datasets for Scene Text Visual Question Answering.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('textvqa')
-- OCRVQA: A dataset featuring questions and answers based on text found in images, particularly book covers.  [loader unverified -- locate the data yourself]
-- ESTVQA: A dataset divided into English and Chinese questions and answers for scene text visual question answering.  [loader unverified -- locate the data yourself]
+    dataset = load_dataset("cais/stvqa")
+- TextVQA: A dataset comprising 45,000+ questions on 28,000+ images sampled from specific OpenImages dataset categories expected to contain text.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/textvqa")
+- OCRVQA: A dataset featuring over 1 million question-answer pairs spanning 207,000+ book cover images for Visual Question Answering by reading text in images.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/ocrvqa")
+- ESTVQA: A dataset containing 20757 images along with 15056 English questions and 13006 Chinese questions for Scene Text Visual Question Answering.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/estvqa")
 
 Experimental constraints:
 - Do NOT use web search

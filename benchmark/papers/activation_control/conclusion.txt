@@ -1,0 +1,1 @@
+Efficiently eliciting long chain-of-thought reasoning in language models is possible through activation-level interventions. By amplifying a small set of high-impact activations in the last few layers and inserting wait tokens, long-form reasoning can be invoked without additional training, enhancing self-reflection rates and accuracy.

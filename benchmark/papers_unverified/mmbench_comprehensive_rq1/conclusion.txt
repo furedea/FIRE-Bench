@@ -1,0 +1,1 @@
+Using multiple evaluation passes with shuffled choices is more effective in providing robust evaluation results for vision-language models on the MMBench dataset, as it reveals a more significant performance gap between different models compared to traditional evaluation methods.

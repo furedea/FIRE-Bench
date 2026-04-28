@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: Can mistake location information be obtained without in-domain training data?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: What is the mistake-finding accuracy of large language models (LLMs, which are AI systems trained on vast text corpora) when evaluated on out-of-domain data from the BIG-Bench Mistake dataset, and what is the minimum accuracy threshold required for effective backtracking (revisiting and correcting errors)?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- BIG-Bench Mistake: A dataset of CoT-style traces generated using PaLM 2, annotated with the location of the first logical error.  [loader unverified -- locate the data yourself]
+- BIG-Bench Mistake: A dataset of CoT-style traces generated using PaLM 2, annotated with the location of the first logical mistake.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

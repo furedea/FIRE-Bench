@@ -1,0 +1,1 @@
+Large language models struggle to effectively reject questions when required knowledge is absent, often generating incorrect answers instead.

@@ -1,0 +1,1 @@
+Long-Context Language Models (LCLMs) are reasonably capable of performing SQL-like compositional reasoning tasks but are less effective than specialized SQL pipelines.

@@ -1,0 +1,1 @@
+Commonly used English pretraining corpora contain between 300,000 to 406 million tokens of non-English text. The composition includes primarily non-English lines, with some bilingual and translated lines also present.

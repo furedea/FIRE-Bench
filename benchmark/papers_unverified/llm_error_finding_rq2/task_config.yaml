@@ -1,19 +1,17 @@
 task_id: llm_error_finding_rq2
 paper_type: llm_evaluation
-research_question: 'RQ3: Can mistake location information be obtained without in-domain
-  training data?'
+research_question: "RQ3: What is the mistake-finding accuracy of large language models (LLMs, which are AI systems trained on vast text corpora) when evaluated on out-of-domain data from the BIG-Bench Mistake dataset, and what is the minimum accuracy threshold required for effective backtracking (revisiting and correcting errors)?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: BIG-Bench Mistake
-  source: unknown
-  description: A dataset of CoT-style traces generated using PaLM 2, annotated with
-    the location of the first logical error.
+  - name: "BIG-Bench Mistake"
+    source: unknown
+    description: "A dataset of CoT-style traces generated using PaLM 2, annotated with the location of the first logical mistake."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

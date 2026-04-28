@@ -1,0 +1,1 @@
+Large Language Model performance is better when relevant information is positioned at the very beginning or end of the input context, and it degrades significantly when the information is located in the middle.

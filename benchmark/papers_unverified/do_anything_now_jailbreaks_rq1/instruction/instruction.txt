@@ -1,17 +1,14 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How effective are jailbreak prompts in bypassing LLM safeguards?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How effective are in-the-wild jailbreak prompts in bypassing the safeguards of popular LLMs like ChatGPT (GPT-3.5), GPT-4, and PaLM2 across various forbidden scenarios?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 via API
-- Load with HuggingFace: databricks/dolly-v2-7b
-- Load with HuggingFace: lmsys/vicuna-7b-v1.1
-- Load with HuggingFace: THUDM/chatglm-6b
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Computational budget: 1000 API calls per model
 
 Datasets:
 - Jailbreak Prompt Dataset: A dataset comprising 107,250 samples across 13 forbidden scenarios to evaluate the effectiveness of jailbreak prompts on LLMs.  [generate programmatically]
-- JAILBREAKHUB Dataset: A collection of 1,405 jailbreak prompts from various online platforms used to study their characteristics and effectiveness.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

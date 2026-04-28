@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How do visual patterns in CLIP-blind pairs affect MLLM performance?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can integrating vision-only self-supervised learning features with multimodal large language models improve their visual grounding capabilities?"
 
 You have access to the following resources:
 
@@ -8,9 +8,16 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- ImageNet-1K: A large-scale dataset for image classification, used to source images for evaluating visual question answering capabilities.
-- LAION-Aesthetic: A dataset containing aesthetic images, used to source images for evaluating visual question answering capabilities.
-- Multimodal Visual Patterns (MMVP): A benchmark constructed using CLIP-blind pairs to evaluate visual abilities of state-of-the-art MLLMs with straightforward questions.  [generate programmatically]
+- ImageNet-1K: A large-scale dataset for image classification, containing 1,000 classes.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("imagenet-1k")
+- LAION-Aesthetic: A dataset of aesthetic images used for training and evaluating visual models.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("laion-aesthetic")
+- Multimodal Visual Patterns (MMVP): A benchmark constructed using CLIP-blind pairs to evaluate visual grounding capabilities of multimodal models.  [generate programmatically]
+- LLaVA Benchmark: A benchmark for evaluating visual instruction tuning in multimodal models.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

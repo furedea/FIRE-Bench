@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current Vision-Language Models understand compositional relationships, attributes, and order information?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current Vision-Language Models (CLIP, BLIP, Flava, X-VLM) understand compositional relationships, attribute binding, and word order in image-caption pairs, evaluated via the Attribution, Relation, and Order benchmarks built on Visual Genome, COCO, and Flickr30k?"
 
 You have access to the following resources:
 
@@ -10,10 +10,18 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Visual Genome Attribution: A dataset to test the understanding of objects' properties in complex natural scenes.  [loader unverified -- locate the data yourself]
-- Visual Genome Relation: A dataset to test relational understanding in complex natural scenes.  [loader unverified -- locate the data yourself]
-- COCO-Order: A dataset to test the models' ability to identify the correct ordering of words in captions.  [loader unverified -- locate the data yourself]
-- Flickr30k-Order: A dataset to test the models' ability to identify the correct ordering of words in captions.  [loader unverified -- locate the data yourself]
+- Visual Genome: A large-scale dataset with images annotated with objects, attributes, and relations.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("visual_genome", "objects")
+- COCO: A dataset containing images with complex scenes and detailed captions.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("coco", "2017")
+- Flickr30k: A dataset with images and captions, used to evaluate order sensitivity in VLMs.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("flickr30k")
 
 Experimental constraints:
 - Do NOT use web search
@@ -25,46 +33,51 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Visual Genome Relation Task
-- **Procedure**: For each image in the Visual Genome Relation dataset, present the model with a pair of captions: one correct (e.g., "the dog is behind the tree") and one incorrect (e.g., "the tree is behind the dog"). The task is to select the correct caption.
-- **Input Format**: Images with two captions (correct and incorrect).
-- **Prompting Strategy**: Direct comparison between two captions.
-- **Number of Samples**: 23,937 test cases.
-- **What to Record**: Record the model's choice (correct or incorrect) for each test case.
-- **Correspondence**: Figure 1, Section 2.1.
+### 1. Visual Genome Attribution and Relation Tasks
+- **Procedure**: 
+  - For the Visual Genome Attribution task, present the model with images and two captions: one correct and one with swapped attributes (e.g., "the crouched cat and the open door" vs. "the open cat and the crouched door").
+  - For the Visual Genome Relation task, present the model with images and two captions: one correct and one with swapped relations (e.g., "the dog is behind the tree" vs. "the tree is behind the dog").
+  - Use the Visual Genome dataset to extract images with 48 relations and 117 unique attribute pairs, resulting in 23,937 relation test cases and 28,748 attribution test cases.
+  - Ensure that the bounding box containing both objects is extracted to minimize distractions.
+- **What to Record**: 
+  - Record the model's choice between the correct and swapped captions.
+  - Calculate accuracy as the percentage of correct choices.
+- **Correspondence**: 
+  - Figure 1 and Table 2 in the paper.
 
-### 2. Visual Genome Attribution Task
-- **Procedure**: For each image in the Visual Genome Attribution dataset, present the model with a pair of captions: one correct (e.g., "the crouched cat and the open door") and one incorrect (e.g., "the open cat and the crouched door"). The task is to select the correct caption.
-- **Input Format**: Images with two captions (correct and incorrect).
-- **Prompting Strategy**: Direct comparison between two captions.
-- **Number of Samples**: 28,748 test cases.
-- **What to Record**: Record the model's choice (correct or incorrect) for each test case.
-- **Correspondence**: Figure 1, Section 2.1.
-
-### 3. COCO-Order and Flickr30k-Order Tasks
-- **Procedure**: For each image, present the model with the original caption and four systematically permuted versions. The task is to select the original caption.
-- **Input Format**: Images with five captions (one original and four permuted).
-- **Prompting Strategy**: Direct comparison among five captions.
-- **Number of Samples**: [Uncertain] (based on dataset size).
-- **What to Record**: Record the model's choice (original or permuted) for each test case.
-- **Correspondence**: Table 1, Section 2.2.
+### 2. COCO Order and Flickr30k Order Tasks
+- **Procedure**: 
+  - For each image, present the model with the original caption and four systematically permuted captions (e.g., shuffling nouns and adjectives, shuffling all words, etc.).
+  - Use the COCO and Flickr30k datasets to generate these permutations.
+  - Ensure that part-of-speech tagging is used to perform the perturbations.
+- **What to Record**: 
+  - Record the model's choice among the five captions.
+  - Calculate accuracy as the percentage of times the model selects the original caption.
+- **Correspondence**: 
+  - Figure 1 and Table 5 in the paper.
 
 ## Evaluation Details
 
-### Metric Definitions
-- **Accuracy**: The proportion of correctly identified captions (original vs. permuted or correct vs. incorrect) out of the total number of test cases.
-- **Macro Accuracy**: Average accuracy across different types of relations or attributes, treating each type equally regardless of the number of samples.
+- **Metric Definitions**:
+  - **Accuracy**: Defined as the number of correct selections (original or correct caption) divided by the total number of test cases.
+  - **Chance Level**: For the Visual Genome tasks, chance level is 50% (two options). For the COCO and Flickr30k Order tasks, chance level is 20% (five options).
 
-### Pre-processing and Normalization
-- Ensure that all captions are grammatically correct and semantically plausible to avoid biasing the model towards one choice based on language quality.
+- **Normalization and Pre-processing**:
+  - Ensure that all captions are grammatically correct and semantically plausible, even when swapped or permuted.
+  - Use Spacy for part-of-speech tagging to ensure accurate perturbations.
 
-### Aggregation Strategy
-- **Per-sample**: Record the model's choice for each test case.
-- **Per-condition**: Calculate accuracy for each type of relation or attribute separately.
-- **Overall**: Compute the overall accuracy and macro accuracy across all test cases.
+- **Aggregation Strategy**:
+  - Calculate per-sample accuracy, then aggregate to obtain per-condition accuracy (e.g., spatial relations, verbs).
+  - Report overall accuracy for each task.
 
 ## Implementation Notes
 
-- **Prompt Templates**: Use specific templates for generating correct and incorrect captions, ensuring consistency across all test cases.
-- **Output Parsing**: Implement logic to parse the model's output and determine which caption was selected.
-- **Order of Operations**: Ensure that the model is presented with the image and all caption options simultaneously to avoid any order effects in decision-making.
+- **Pitfalls and Caveats**:
+  - Ensure that the bounding boxes in the Visual Genome tasks are correctly extracted to focus on the relevant objects.
+  - Be cautious of symmetric relations (e.g., "near", "next to") which should be removed from the dataset.
+
+- **Prompt Templates**:
+  - Use specific templates for generating captions in the Visual Genome tasks: "the [attribute 1] [object 1] and the [attribute 2] [object 2]" for correct captions and "the [attribute 2] [object 1] and the [attribute 1] [object 2]" for swapped captions.
+
+- **Order of Operations**:
+  - For the COCO and Flickr30k Order tasks, ensure that the permutations are applied systematically and consistently across all test cases.

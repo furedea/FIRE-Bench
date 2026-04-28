@@ -1,0 +1,1 @@
+LLMs can perform basic shopping tasks in web-grounded environments but struggle with complex queries and show limited ability to navigate complex web environments effectively.

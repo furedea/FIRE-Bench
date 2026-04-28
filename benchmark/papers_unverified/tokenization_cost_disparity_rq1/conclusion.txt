@@ -1,0 +1,1 @@
+Languages with higher tokenization premiums incur higher costs, experience longer processing times, and have reduced long context processing capabilities.

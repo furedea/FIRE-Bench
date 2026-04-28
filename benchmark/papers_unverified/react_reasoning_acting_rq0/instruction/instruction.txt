@@ -1,35 +1,26 @@
-You are a research agent. Conduct research about the question: "RQ1: How does the ReAct approach perform on knowledge-intensive reasoning tasks compared to existing methods?"
+You are a research agent. Conduct research about the question: "RQ1: How does integrating reasoning and acting within a single framework perform on knowledge-intensive reasoning tasks, specifically multi-hop question answering using the HotpotQA dataset and fact verification using the FEVER dataset, evaluated through metrics like Exact Match and Accuracy?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- ReAct: ReAct is a novel approach that integrates reasoning and acting capabilities in large language models (LLMs) to improve performance on language understanding and decision-making tasks. It prompts LLMs to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for greater synergy between reasoning and acting. This approach helps the model induce, track, and update action plans, handle exceptions, and gather additional information from external sources like knowledge bases.
+- ReAct: ReAct is a novel approach that integrates reasoning and acting within large language models to enhance their performance on diverse tasks. It prompts models to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for dynamic reasoning and interaction with external environments. This synergy helps in inducing, tracking, and updating action plans, as well as handling exceptions and gathering additional information from external sources.
   - Component: Interleaved generation of reasoning traces and task-specific actions
-  - Component: Interaction with external environments (e.g., Wikipedia API) for information retrieval
-  - Component: Use of large language models like PaLM-540B for few-shot in-context learning
+  - Component: Interaction with external environments like Wikipedia for information retrieval
+  - Component: Use of large language models like PaLM-540B for few-shot prompting
 - Baseline for comparison: Chain-of-Thought (CoT)
 - Baseline for comparison: Act-only
+- Baseline for comparison: CoT-SC (Self-Consistency)
 - Reference hint: https://react-lm.github.io/
 
 Datasets for training and evaluation:
 - HotpotQA: A multi-hop question answering benchmark that requires reasoning over two or more Wikipedia passages.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('hotpot_qa')
-- Fever: A fact verification benchmark where each claim is annotated as SUPPORTS, REFUTES, or NOT ENOUGH INFO based on Wikipedia passages.
+    dataset = load_dataset("hotpot_qa", "fullwiki")
+- FEVER: A fact verification benchmark where each claim is annotated as SUPPORTS, REFUTES, or NOT ENOUGH INFO based on Wikipedia passages.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('fever')
-- ALFWorld: A synthetic text-based game designed to align with the embodied ALFRED benchmark, requiring navigation and interaction in a simulated household.
-  GitHub repo: https://github.com/alfworld/alfworld
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/alfworld/alfworld.git
-- WebShop: An online shopping website environment with real-world products and human instructions, requiring agents to purchase products based on user instructions.
-  GitHub repo: https://github.com/princeton-nlp/WebShop
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/princeton-nlp/WebShop.git
+    dataset = load_dataset("fever")
 
 Experimental constraints:
 - Do NOT use web search

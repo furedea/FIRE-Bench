@@ -1,0 +1,1 @@
+Current large multimodal models show varying effectiveness in integrating core vision-language capabilities across 16 emergent tasks.

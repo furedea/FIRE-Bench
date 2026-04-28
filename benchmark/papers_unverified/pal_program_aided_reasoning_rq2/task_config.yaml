@@ -1,41 +1,34 @@
-task_id: pal_program_aided_reasoning_rq3
+task_id: pal_program_aided_reasoning_rq2
 paper_type: novel_architecture
-research_question: 'RQ3: Can PAL improve performance on algorithmic tasks compared
-  to chain-of-thought prompting?'
+research_question: "RQ3: How does a program-aided language model (PAL), which uses external tools like a Python interpreter to assist in reasoning, perform on algorithmic reasoning tasks such as OBJECT COUNTING and REPEAT COPY compared to chain-of-thought prompting, where models generate intermediate reasoning steps in natural language during few-shot prompting?"
 proposed_method:
-  name: Program-Aided Language models (PAL)
-  summary: PAL is a novel approach that uses large language models (LLMs) to read
-    natural language problems and generate programs as intermediate reasoning steps,
-    while offloading the solution step to a runtime such as a Python interpreter.
-    This method allows the LLM to focus on decomposing the problem into runnable steps,
-    leveraging the interpreter for accurate computation, thus improving performance
-    on algorithmic tasks.
+  name: "Program-Aided Language Model (PAL)"
+  summary: "PAL is a novel approach that uses large language models (LLMs) to read natural language problems and generate programs as intermediate reasoning steps, while offloading the solution step to a runtime such as a Python interpreter. This method allows the LLM to focus on decomposing the problem into runnable steps, leveraging the interpreter for accurate computation."
   key_components:
-  - LLM generates intermediate reasoning steps as code
-  - Python interpreter executes the generated code to solve the problem
-  - Synergy between neural LLM and symbolic interpreter
+    - "LLM generates programmatic reasoning steps"
+    - "Python interpreter executes the generated code"
+    - "Integration of natural language and programming language reasoning"
 baselines:
-- Chain-of-Thought (COT) prompting
+  - "Chain-of-Thought (COT) prompting"
 reference_implementation: []
 datasets:
-- name: OBJECT COUNTING
-  source: synthetic
-  loader: "def generate_object_counting_data():\n    return [\n        {\"input\"\
-    : \"I have a chair, two potatoes, a cauliflower, a lettuce head, two tables, a\
-    \ cabbage, two onions, and three fridges. How many vegetables do I have?\", \"\
-    output\": 6},\n        # Add more examples as needed\n    ]\n"
-  description: A dataset involving questions about counting objects of a certain type.
-- name: REPEAT COPY
-  source: synthetic
-  loader: "def generate_repeat_copy_data():\n    return [\n        {\"input\": \"\
-    Repeat the word duck four times, but halfway through also say quack.\", \"output\"\
-    : \"duck duck quack duck duck\"},\n        # Add more examples as needed\n   \
-    \ ]\n"
-  description: A dataset requiring the generation of a sequence of words according
-    to specific instructions.
-compute_hint: single GPU, <24h
+  - name: "OBJECT COUNTING"
+    source: synthetic
+    loader: |
+      def generate_object_counting_data():
+          objects = ["chair", "potato", "cauliflower", "lettuce head", "table", "cabbage", "onion", "fridge"]
+          quantities = [1, 2, 1, 1, 2, 1, 2, 3]
+          return list(zip(objects, quantities))
+    description: "A task involving counting the number of objects belonging to a certain type."
+  - name: "REPEAT COPY"
+    source: synthetic
+    loader: |
+      def generate_repeat_copy_data():
+          instructions = "Repeat the word duck four times, but halfway through also say quack"
+          return instructions
+    description: "A task requiring generating a sequence of words according to specific instructions."
+compute_hint: "single GPU, <24h"
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
-- Implement the proposed method yourself -- do not import it from a library that bundles
-  the paper's exact code.
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"
+  - "Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code."

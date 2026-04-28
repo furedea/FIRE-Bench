@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Can generating diverse captions improve VLMs' understanding of compound nouns?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can generating diverse captions using a large language model improve the understanding of compound nouns by vision-language models in text-to-image retrieval tasks?"
 
 You have access to the following resources:
 
@@ -6,10 +6,11 @@ Models:
 - gpt-4o via API
 - Load with HuggingFace: openai/clip-vit-large-patch14
 - Load with HuggingFace: openai/clip-vit-base-patch32
+- Load with HuggingFace: openai/clip-vit-large-patch14-336
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Compun: A benchmark with 400 unique and commonly used compound nouns to evaluate the effectiveness of VLMs in interpreting compound nouns.  [loader unverified -- locate the data yourself]
+- Compun: A benchmark with 400 unique and commonly used compound nouns to evaluate the effectiveness of vision-language models in interpreting compound nouns.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

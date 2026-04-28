@@ -1,0 +1,1 @@
+Large language models are not metacognitively aware of when they are hallucinating or producing unreliable outputs, as they often fail to express internal signals about truthfulness and confidence when generating answers.

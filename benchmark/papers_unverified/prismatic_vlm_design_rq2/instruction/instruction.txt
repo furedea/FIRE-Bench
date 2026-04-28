@@ -1,23 +1,19 @@
-You are a research agent. Conduct research about the question: "RQ3: What is the impact of using base versus instruct-tuned language models on VLM performance?"
+You are a research agent. Conduct research about the question: "RQ3: What is the impact of using base language models versus instruct-tuned language models (models fine-tuned with specific instructions) on the performance and safety of vision-language models (VLMs, which integrate visual and textual data) when evaluated on LLaVa v1.5 pretraining datasets for visual question answering, object localization, and challenge tasks?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Prismatic VLMs: Prismatic VLMs are a family of visually-conditioned language models designed to explore the impact of various design choices on model performance. These models utilize a 'patch-as-token' approach, leveraging pretrained visual backbones like CLIP and DINOv2, and integrating them with language models such as Llama-2 and Vicuña. The architecture is characterized by its flexibility in swapping components and optimizing training procedures to improve efficiency and performance across diverse tasks.
-  - Component: Pretrained visual backbones (e.g., CLIP, DINOv2)
-  - Component: Vision-language projector for embedding transformation
-  - Component: Base and instruct-tuned language models (e.g., Llama-2, Vicuña)
-- Baseline for comparison: InstructBLIP
+- Prismatic VLMs: Prismatic VLMs are a family of visually-conditioned language models designed to explore the impact of various design choices on model performance. These models integrate visual and textual data using a common architecture that includes a visual representation backbone, a vision-language projector, and a language model. The architecture allows for flexible experimentation with different pretrained components, optimization procedures, and data sources to identify key factors influencing VLM capabilities.
+  - Component: Visual representation backbone (e.g., CLIP, DINOv2)
+  - Component: Vision-language projector
+  - Component: Language model (e.g., Llama-2, Vicuña v1.5)
 - Baseline for comparison: LLaVa v1.5
+- Baseline for comparison: InstructBLIP
 - Reference hint: github.com/TRI-ML/prismatic-vlms
 - Reference hint: github.com/TRI-ML/vlm-evaluation
 
 Datasets for training and evaluation:
-- LLaVa v1.5 pretraining datasets: A mixture of datasets used for pretraining VLMs, including captioning datasets like Conceptual Captions and LAION, as well as multimodal instruct tuning examples.
-  GitHub repo: https://github.com/haotian-liu/LLaVA
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/haotian-liu/LLaVA.git
+- LLaVa v1.5 pretraining datasets: A mixture of datasets used for pretraining vision-language models, including captioning datasets and multimodal instruct tuning examples.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

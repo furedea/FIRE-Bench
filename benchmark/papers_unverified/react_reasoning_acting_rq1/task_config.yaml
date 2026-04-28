@@ -1,52 +1,28 @@
 task_id: react_reasoning_acting_rq2
 paper_type: novel_architecture
-research_question: 'RQ2: How does the ReAct approach perform on interactive decision-making
-  tasks compared to existing methods?'
+research_question: "RQ2: How does performance on interactive decision-making tasks, such as ALFWorld for text-based interactions and WebShop for real-world web interactions, vary when evaluated using metrics like Success Rate and Score?"
 proposed_method:
-  name: ReAct
-  summary: ReAct is a novel approach that integrates reasoning and acting capabilities
-    in large language models (LLMs) to improve performance on interactive decision-making
-    tasks. It prompts LLMs to generate both reasoning traces and task-specific actions
-    in an interleaved manner, allowing for dynamic reasoning and interaction with
-    external environments to gather additional information.
+  name: "ReAct"
+  summary: "ReAct is a novel approach that integrates reasoning and acting in large language models to enhance their performance in diverse tasks. It prompts language models to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for greater synergy between reasoning and acting. This approach helps the model induce, track, and update action plans, handle exceptions, and interact with external sources for additional information."
   key_components:
-  - Interleaved generation of reasoning traces and actions
-  - Interaction with external environments for information gathering
-  - Use of large language models like PaLM-540B for few-shot in-context learning
+    - "Interleaved generation of reasoning traces and task-specific actions"
+    - "Integration with external environments for information retrieval"
+    - "Use of large language models like PaLM-540B for few-shot prompting"
 baselines:
-- Act
-- BUTLER
-- IL
-- IL+RL
-reference_implementation: []
+  - "Act-only"
+  - "Imitation Learning"
+  - "Reinforcement Learning"
+reference_implementation:
+  - "https://react-lm.github.io/"
 datasets:
-- name: ALFWorld
-  source: external
-  description: A synthetic text-based game designed to align with the embodied ALFRED
-    benchmark, requiring agents to achieve high-level goals by navigating and interacting
-    with a simulated household.
-  url: https://github.com/alfworld/alfworld
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/alfworld/alfworld.git
-
-    '
-- name: WebShop
-  source: external
-  description: An online shopping website environment with real-world products and
-    human instructions, requiring agents to purchase products based on user instructions
-    through web interactions.
-  url: https://github.com/princeton-nlp/WebShop
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/princeton-nlp/WebShop.git
-
-    '
-compute_hint: single GPU, <24h
+  - name: "ALFWorld"
+    source: unknown
+    description: "A synthetic text-based game designed to align with the embodied ALFRED benchmark, requiring navigation and interaction in a simulated household."
+  - name: "WebShop"
+    source: unknown
+    description: "An online shopping website environment with real-world products and human instructions, requiring agents to purchase products based on user instructions through web interactions."
+compute_hint: "single GPU, <24h"
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
-- Implement the proposed method yourself -- do not import it from a library that bundles
-  the paper's exact code.
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"
+  - "Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code."

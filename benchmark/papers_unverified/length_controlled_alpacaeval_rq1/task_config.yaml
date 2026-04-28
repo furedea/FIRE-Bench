@@ -1,18 +1,20 @@
 task_id: length_controlled_alpacaeval_rq1
 paper_type: llm_evaluation
-research_question: 'RQ2: Does length-controlled AlpacaEval improve correlation with
-  human evaluations compared to the original AlpacaEval?'
+research_question: "RQ2: Does controlling for response length in evaluations using the AlpacaEval dataset, a benchmark for assessing language model outputs, improve the Spearman correlation with human evaluation rankings in the LMSYS Chatbot Arena, a platform for comparing chatbot performance?"
 models:
   api:
-  - gpt-4o
-  huggingface: []
+    - gpt-4o
+  huggingface:
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: Chatbot Arena
-  source: unknown
-  description: A dataset used for evaluating language models through live human interactions,
-    where users rate the quality of responses from anonymized LMs.
+  - name: "AlpacaEval"
+    source: unknown
+    description: "A benchmark for assessing language model outputs, focusing on instruction-following models."
+  - name: "Chatbot Arena"
+    source: unknown
+    description: "A platform for comparing chatbot performance through human evaluation rankings."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

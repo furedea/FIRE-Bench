@@ -1,19 +1,19 @@
-You are a research agent. Conduct research about the question: "RQ3: What is the impact of using base versus instruct-tuned language models on VLM performance?"
+You are a research agent. Conduct research about the question: "RQ3: What is the impact of using base language models versus instruct-tuned language models (models fine-tuned with specific instructions) on the performance and safety of vision-language models (VLMs, which integrate visual and textual data) when evaluated on LLaVa v1.5 pretraining datasets for visual question answering, object localization, and challenge tasks?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Prismatic VLMs: Prismatic VLMs are a family of visually-conditioned language models designed to explore the impact of various design choices on model performance. These models utilize a 'patch-as-token' approach, leveraging pretrained visual backbones like CLIP and DINOv2, and integrating them with language models such as Llama-2 and Vicuña. The architecture is characterized by its flexibility in swapping components and optimizing training procedures to improve efficiency and performance across diverse tasks.
-  - Component: Pretrained visual backbones (e.g., CLIP, DINOv2)
-  - Component: Vision-language projector for embedding transformation
-  - Component: Base and instruct-tuned language models (e.g., Llama-2, Vicuña)
-- Baseline for comparison: InstructBLIP
+- Prismatic VLMs: Prismatic VLMs are a family of visually-conditioned language models designed to explore the impact of various design choices on model performance. These models integrate visual and textual data using a common architecture that includes a visual representation backbone, a vision-language projector, and a language model. The architecture allows for flexible experimentation with different pretrained components, optimization procedures, and data sources to identify key factors influencing VLM capabilities.
+  - Component: Visual representation backbone (e.g., CLIP, DINOv2)
+  - Component: Vision-language projector
+  - Component: Language model (e.g., Llama-2, Vicuña v1.5)
 - Baseline for comparison: LLaVa v1.5
+- Baseline for comparison: InstructBLIP
 - Reference hint: github.com/TRI-ML/prismatic-vlms
 - Reference hint: github.com/TRI-ML/vlm-evaluation
 
 Datasets for training and evaluation:
-- LLaVa v1.5 pretraining datasets: A mixture of datasets used for pretraining VLMs, including captioning datasets like Conceptual Captions and LAION, as well as multimodal instruct tuning examples.  [loader unverified -- locate the data yourself]
+- LLaVa v1.5 pretraining datasets: A mixture of datasets used for pretraining vision-language models, including captioning datasets and multimodal instruct tuning examples.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -34,20 +34,30 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 ## Experimental Design
 
 ### 1. Base vs. Instruct-Tuned Language Models
-- **Procedure**: Conduct a head-to-head comparison between VLMs using base language models (Llama-2) and instruct-tuned language models (Vicuña v1.5). Use the same architecture and training setup for both models to ensure a fair comparison. The input format should include images and text prompts, with the VLMs generating responses based on these inputs.
-- **Prompting Strategy**: For instruct-tuned LMs, use a chat format with a system prompt and "USER" and "ASSISTANT" blocks. For base LMs, use a simpler format without a system prompt.
-- **Number of Samples**: Use the full set of evaluation tasks from the standardized suite, ensuring coverage across visual question answering, localization, and challenge tasks.
-- **What to Record**: Record both quantitative performance metrics (accuracy, IoU, etc.) and qualitative behavior (e.g., verbosity, hallucination tendencies).
-- **Correspondence**: This experiment corresponds to Figure 7 (right) and Section 4.3 in the paper.
+- **Procedure**: Conduct a head-to-head comparison between base language models (Llama-2) and instruct-tuned language models (Vicuña v1.5) within the Prismatic VLM framework. Use the LLaVa v1.5 pretraining datasets for evaluation across visual question answering, object localization, and challenge tasks.
+  - **Input Format**: Use the specified input format for each task, ensuring that the prompt structure aligns with the model type (e.g., chat format for instruct-tuned models).
+  - **Prompting Strategy**: For instruct-tuned models, use a system prompt and formatted "USER" and "ASSISTANT" blocks. For base models, use a simpler input-output format.
+  - **Number of Samples**: Evaluate on the full validation sets for each benchmark.
+  - **Splits to Use**: Use validation sets for all benchmarks except GQA (test-dev split), VSR (zero-shot test split), and POPE (single evaluation split).
+- **What to Record**: Record raw outputs, extracted answers, and intermediate statistics such as accuracy and response length.
+- **Correspondence**: This experiment corresponds to Figure 7 (right) and Tables 2, 3, and 4 in the paper.
+
+### 2. Co-training on Language-Only Safety Data
+- **Procedure**: Evaluate the impact of co-training on language-only safety data sourced from ShareGPT. Compare models trained with and without this data.
+  - **Input Format**: Use the same input format as the base vs. instruct-tuned experiment.
+  - **Prompting Strategy**: Maintain consistent prompting across both conditions.
+  - **Number of Samples**: Use the same datasets and splits as the base vs. instruct-tuned experiment.
+- **What to Record**: Record performance metrics and qualitative safety evaluations, particularly focusing on responses to adversarial prompts.
+- **Correspondence**: This experiment corresponds to Figure 8 and related discussions in the paper.
 
 ## Evaluation Details
 
-- **Metrics**: Use accuracy for open-ended visual question answering tasks, IoU for localization tasks, and accuracy for challenge tasks formatted as multiple-choice questions.
-- **Normalization**: Compute normalized Z-scores for each model and evaluation using the mean and standard deviation across all models. This allows for comparison across different metrics and scales.
-- **Aggregation Strategy**: Aggregate results by computing global scores through averaging normalized Z-scores across all 12 benchmarks. Perform statistical significance testing using a 1-sided Fisher T-test to determine the impact of design choices.
+- **Metrics**: Use accuracy for visual question answering and localization tasks, and specific metrics for challenge tasks as defined in the official evaluation scripts.
+- **Normalization**: Compute normalized Z-scores for each model and evaluation using the mean and standard deviation across all models.
+- **Aggregation Strategy**: Aggregate results per-sample, then per-condition, and finally compute overall scores by averaging across all benchmarks.
 
 ## Implementation Notes
 
-- **Prompt Templates**: For instruct-tuned LMs, use the system prompt: "A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions." Format prompts as: ⟨s⟩USER: {Input 1} ASSISTANT: {Response} ⟨\s⟩. For base LMs, format prompts as: ⟨s⟩In: {Input 1} Out: {Response} ⟨\s⟩.
-- **Output Parsing**: Ensure consistent output parsing by using greedy decoding for deterministic evaluations.
-- **Order of Operations**: Maintain the same architecture and training setup for both base and instruct-tuned LMs to ensure a fair comparison.
+- **Prompt Templates**: Use specific prompt templates for instruct-tuned and base models as described in the paper. Ensure that the format aligns with the expected input structure for each model type.
+- **Output Parsing**: Implement logic to parse model outputs according to the expected format for each task, ensuring consistency in evaluation.
+- **Order of Operations**: Maintain the order of operations as specified in the experimental design, particularly when comparing models with and without co-training data.

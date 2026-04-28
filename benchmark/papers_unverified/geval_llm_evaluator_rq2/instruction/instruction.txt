@@ -1,0 +1,17 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How does the evaluation metric G-EVAL perform in detecting hallucinations, defined as false or misleading content, in summarization tasks compared to existing metrics, as measured by correlation metrics on the QAGS benchmark datasets QAGS-CNN and QAGS-XSUM?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- QAGS-CNN: A benchmark for evaluating hallucinations in summarization tasks, focusing on the consistency dimension of summaries.  [loader unverified -- locate the data yourself]
+- QAGS-XSUM: A benchmark for evaluating hallucinations in summarization tasks, focusing on the consistency dimension of summaries.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

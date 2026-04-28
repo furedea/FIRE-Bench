@@ -1,0 +1,1 @@
+Modern large language models are not robust in handling multiple choice questions due to a strong selection bias towards certain option IDs. This bias is caused by token-level prior probabilities rather than position-order preference. Debiasing methods that estimate and subtract the option-ID prior can effectively mitigate this issue.

@@ -1,42 +1,61 @@
 task_id: prismatic_vlm_design_rq1
 paper_type: novel_architecture
-research_question: 'RQ2: How do different image processing strategies and visual representations
-  affect VLM performance?'
+research_question: "RQ2: How do different image processing techniques and visual representations impact the performance of VLMs on visual question answering, object localization, and challenge tasks?"
 proposed_method:
-  name: Prismatic VLM
-  summary: Prismatic VLM is a visually-conditioned language model architecture that
-    explores the design space of VLMs by investigating different image processing
-    strategies and visual representations. It uses a 'patch-as-token' approach, treating
-    patch features from pretrained visual backbones as tokens projected into the input
-    space of a language model. The architecture is designed to evaluate the impact
-    of various design choices on VLM performance, particularly focusing on image processing
-    and visual representation.
+  name: "Prismatic VLMs"
+  summary: "Prismatic VLMs explore the design space of visually-conditioned language models by investigating key design decisions such as image preprocessing, architecture, and optimization. The architecture uses a 'patch-as-token' approach, treating patch features from pretrained visual backbones as tokens that can be projected into the input space of a language model. This enables training with a simple objective and allows leveraging powerful language models."
   key_components:
-  - Pretrained visual backbones (e.g., CLIP, SigLIP, DINOv2, ViT)
-  - Vision-language projector for mapping visual features to language model input
-  - Language model integration with visual features
+    - "Pretrained visual backbones (e.g., CLIP, SigLIP, DINOv2)"
+    - "Vision-language projector for mapping visual features to language model input"
+    - "Language model for generating text from combined visual and text inputs"
 baselines:
-- LLaVa v1.5
-- InstructBLIP
-- PaLI-3
+  - "LLaVa v1.5"
+  - "InstructBLIP"
+  - "PaLI-3"
 reference_implementation:
-- github.com/TRI-ML/prismatic-vlms
-- github.com/TRI-ML/vlm-evaluation
+  - "github.com/TRI-ML/prismatic-vlms"
+  - "github.com/TRI-ML/vlm-evaluation"
 datasets:
-- name: LLaVa v1.5 pretraining datasets
-  source: external
-  description: A mixture of datasets used for pretraining VLMs, including captioning
-    datasets and multimodal instruct tuning examples.
-  url: https://github.com/haotian-liu/LLaVA
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/haotian-liu/LLaVA.git
-
-    '
-compute_hint: single GPU, <24h
+  - name: "VQAv2"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("visual_question_answering", "vqa_v2")
+    description: "A dataset for visual question answering that assesses general visual reasoning."
+  - name: "GQA"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("gqa")
+    description: "A dataset for spatial and compositional reasoning in visual question answering."
+  - name: "RefCOCO"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("refcoco")
+    description: "A dataset for referring expression grounding and object localization."
+  - name: "OCID-Ref"
+    source: unknown
+    loader: 
+    description: "A 3D robotic dataset with embodied language for clutter scene grounding."
+  - name: "VizWiz"
+    source: unknown
+    loader: 
+    description: "A dataset for visual question answering with unanswerable questions."
+  - name: "TextVQA"
+    source: unknown
+    loader: 
+    description: "A dataset for reasoning around text present in images."
+  - name: "TallyQA"
+    source: unknown
+    loader: 
+    description: "A dataset for assessing a VLM's ability to count objects described in language."
+  - name: "AI2D"
+    source: unknown
+    loader: 
+    description: "A dataset consisting of multiple choice questions about scientific diagrams and charts."
+compute_hint: "single GPU, <24h"
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
-- Implement the proposed method yourself -- do not import it from a library that bundles
-  the paper's exact code.
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"
+  - "Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code."

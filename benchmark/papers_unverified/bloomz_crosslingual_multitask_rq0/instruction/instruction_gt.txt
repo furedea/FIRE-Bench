@@ -1,19 +1,23 @@
-You are a research agent. Conduct research about the question: "RQ1: Does multitask finetuning on English tasks improve performance on non-English tasks?"
+You are a research agent. Conduct research about the question: "RQ1: Does finetuning multilingual language models on tasks in a single language enhance their performance on tasks in other languages, evaluated using the xP3 dataset (a multilingual benchmark for cross-lingual transfer) and various performance metrics?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- BLOOMZ and mT0: BLOOMZ and mT0 are finetuned variants of the pretrained multilingual BLOOM and mT5 model families. They are designed to improve crosslingual generalization by finetuning on English tasks with English prompts, allowing for task generalization to non-English languages that appear only in the pretraining corpus. Finetuning on multilingual tasks with English prompts further enhances performance on both English and non-English tasks, achieving state-of-the-art zero-shot results.
-  - Component: Multitask finetuning on English tasks
-  - Component: Use of pretrained multilingual BLOOM and mT5 models
-  - Component: Evaluation on non-English held-out tasks
+- BLOOMZ and mT0: BLOOMZ and mT0 are finetuned variants of the pretrained multilingual BLOOM and mT5 model families. These models are finetuned using multitask prompted finetuning (MTF) on English tasks with English prompts, allowing for task generalization to non-English languages that appear only in the pretraining corpus. Finetuning on multilingual tasks with English prompts further improves performance on English and non-English tasks, leading to various state-of-the-art zero-shot results.
+  - Component: Multitask prompted finetuning (MTF) on English tasks
+  - Component: Use of xP3 dataset for multilingual task evaluation
+  - Component: BLOOM and mT5 model families as base architectures
 - Baseline for comparison: BLOOM
 - Baseline for comparison: mT5
+- Baseline for comparison: XGLM
+- Baseline for comparison: mTk-Instruct
 - Reference hint: https://github.com/bigscience-workshop/xmtf
 
 Datasets for training and evaluation:
-- xP3: A composite of supervised datasets in 46 languages with English and machine-translated prompts.  [loader unverified -- locate the data yourself]
-- P3: An English-only multitask mixture used for finetuning.  [loader unverified -- locate the data yourself]
+- xP3: A composite of supervised datasets in 46 languages with English and machine-translated prompts, used for evaluating cross-lingual transfer.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("bigscience/xP3")
 
 Experimental constraints:
 - Do NOT use web search
@@ -33,60 +37,60 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Multitask Finetuning on English Tasks
+### 1. Task Generalization Evaluation
 - **Procedure**: 
-  - Finetune BLOOM and mT5 models on the English-only P3 dataset.
-  - Use English prompts for all tasks during finetuning.
-  - Evaluate the finetuned models on a diverse set of non-English held-out tasks.
-  - Use the xP3 dataset for evaluation, which includes tasks in 46 languages.
-  - Ensure that the evaluation tasks are not included in the finetuning dataset to maintain a zero-shot setting.
+  - Finetune BLOOMZ and mT0 models on English-only tasks from the xP3 dataset.
+  - Evaluate the models on non-English held-out tasks using the xP3 dataset.
+  - Use English prompts for both training and evaluation.
+  - Select 5 random prompts from PromptSource for each evaluation dataset and use them across all language splits.
+  - Report the median performance of the 5 prompts for each language split.
 - **What to Record**: 
-  - Record the accuracy of the models on each non-English task.
-  - Collect raw outputs and extracted answers for further analysis.
+  - Record the accuracy for each task and language split.
+  - Collect the median accuracy across the 5 prompts for each language split.
 - **Correspondence**: 
-  - This experiment corresponds to Section 4.1 and Figure 4 in the paper.
+  - This experiment corresponds to Figure 4 and Section 4.1 in the paper.
 
-### 2. Multilingual Task Finetuning
+### 2. Language Generalization Evaluation
 - **Procedure**: 
-  - Extend the P3 dataset to xP3 by adding multilingual datasets with English prompts.
-  - Finetune BLOOM and mT5 models on the xP3 dataset.
-  - Evaluate the models on both English and non-English tasks to assess crosslingual generalization.
+  - Evaluate BLOOMZ and mT0 models on tasks in languages that were not intentionally seen during pretraining or finetuning.
+  - Use English prompts for evaluation.
+  - Select 5 random prompts from PromptSource for each evaluation dataset and use them across all language splits.
+  - Report the median performance of the 5 prompts for each language split.
 - **What to Record**: 
-  - Record the accuracy and BLEU scores for generative tasks.
-  - Collect intermediate statistics on task performance across different languages.
+  - Record the accuracy for each task and language split.
+  - Collect the median accuracy across the 5 prompts for each language split.
 - **Correspondence**: 
-  - This experiment corresponds to Section 4.3 and Table 1 in the paper.
+  - This experiment corresponds to Figure 5 and Section 4.2 in the paper.
 
-### 3. Machine-Translated Prompt Evaluation
+### 3. Multilingual Prompting Evaluation
 - **Procedure**: 
-  - Create a variant of xP3 with machine-translated prompts (xP3mt).
-  - Finetune models on xP3mt and evaluate on tasks with human-written non-English prompts.
-  - Compare performance with models finetuned on English-only prompts.
+  - Evaluate BLOOMZ and mT0 models on non-English prompts using the xP3mt dataset.
+  - Compare performance on English, machine-translated (MT), and human-translated (HT) prompts.
+  - Use the same set of 5 random prompts from PromptSource for each evaluation dataset and language split.
+  - Report the median performance of the 5 prompts for each language split.
 - **What to Record**: 
-  - Record accuracy and BLEU scores for tasks with machine-translated prompts.
-  - Compare results with those from English-only prompt finetuning.
+  - Record the accuracy for each task and language split.
+  - Collect the median accuracy across the 5 prompts for each language split.
 - **Correspondence**: 
-  - This experiment corresponds to Section 4.3 and Table 1 in the paper.
+  - This experiment corresponds to Table 1 and Section 4.3 in the paper.
 
 ## Evaluation Details
 
 - **Metrics**: 
-  - Use accuracy for classification tasks and BLEU scores for generative tasks.
-  - For tasks with multiple-choice answers, use rank classification by computing the log-likelihood of each option and selecting the highest scoring one.
+  - Use accuracy as the primary metric for task and language generalization evaluations.
+  - For multilingual prompting, compare accuracy across different prompt types (EN, MT, HT).
 - **Normalization**: 
-  - Normalize model outputs by ensuring consistent tokenization and handling of special characters across languages.
+  - Ensure that model outputs are consistent with the expected format for each task (e.g., binary classification for paraphrase identification).
 - **Aggregation Strategy**: 
-  - Aggregate results per language and task to compute overall performance metrics.
-  - Report median performance across multiple prompts for each task to account for variability in prompt effectiveness.
+  - Calculate per-sample accuracy, then aggregate to per-condition (prompt type) accuracy, and finally report overall median accuracy across prompts.
 
 ## Implementation Notes
 
-- **Prompt Templates**: 
-  - Use specific prompt templates for each task type, ensuring consistency in format and language.
-  - For machine-translated prompts, ensure accurate translation and alignment with the original task intent.
+- **Prompt Selection**: 
+  - Use 5 random prompts from PromptSource for each evaluation dataset to ensure variability and robustness in results.
+- **Output Parsing**: 
+  - Ensure that model outputs are parsed correctly to match the expected answer format (e.g., "Yes" or "No" for binary classification tasks).
 - **Order of Operations**: 
-  - Finetune models on the specified datasets before conducting evaluations.
-  - Ensure that evaluation tasks are held out during finetuning to maintain a zero-shot setting.
+  - Finetune models on English-only tasks before evaluating on non-English tasks to assess cross-lingual generalization.
 - **Pitfalls**: 
-  - Be cautious of potential language contamination in pretraining data, which may affect zero-shot generalization results.
-  - Address any biases towards short generations by adjusting finetuning data or inference settings as needed.
+  - Be cautious of potential biases introduced by prompt selection and ensure that prompts are representative of the task.

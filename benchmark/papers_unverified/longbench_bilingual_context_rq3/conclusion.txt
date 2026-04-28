@@ -1,0 +1,1 @@
+Large language models exhibit varying performance on synthetic tasks and code completion tasks using LongBench. Some models demonstrate strong capabilities in code completion, while other tasks present significant challenges.

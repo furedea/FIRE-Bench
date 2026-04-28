@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How does question difficulty affect performance distribution?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: How does the complexity of mathematical questions, indicated by the number of clauses, affect the performance distribution of large language models?"
 
 You have access to the following resources:
 
@@ -8,10 +8,10 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- GSM-Symbolic: An improved benchmark created from symbolic templates that allow for the generation of a diverse set of mathematical reasoning questions.  [generate programmatically]
-- GSM-Symbolic-M1: A variant of GSM-Symbolic with one clause removed to decrease difficulty.  [generate programmatically]
-- GSM-Symbolic-P1: A variant of GSM-Symbolic with one additional clause to increase difficulty.  [generate programmatically]
-- GSM-Symbolic-P2: A variant of GSM-Symbolic with two additional clauses to further increase difficulty.  [generate programmatically]
+- GSM-Symbolic: An improved benchmark created from symbolic templates that allow for the generation of a diverse set of mathematical questions.  [generate programmatically]
+- GSM-Symbolic-M1: A variant of GSM-Symbolic with one clause removed to decrease complexity.  [generate programmatically]
+- GSM-Symbolic-P1: A variant of GSM-Symbolic with one additional clause to increase complexity.  [generate programmatically]
+- GSM-Symbolic-P2: A variant of GSM-Symbolic with two additional clauses to further increase complexity.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

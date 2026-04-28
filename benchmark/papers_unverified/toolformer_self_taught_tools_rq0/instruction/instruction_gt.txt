@@ -1,20 +1,47 @@
-You are a research agent. Conduct research about the question: "RQ1: Can language models learn to use external tools in a self-supervised manner without large amounts of human annotations?"
+You are a research agent. Conduct research about the question: "RQ1: Can a language model autonomously learn to use a variety of external tools, such as a calculator, a Q&A system, a search engine, a translation system, and a calendar, to improve zero-shot performance on downstream tasks?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Toolformer: Toolformer is a language model architecture that autonomously learns to use external tools via simple APIs. It decides which APIs to call, when to call them, what arguments to pass, and how to incorporate the results into future token prediction. This is achieved in a self-supervised manner, requiring only a few demonstrations for each API. Toolformer integrates various tools, such as a calculator, a Q&A system, a search engine, a translation system, and a calendar, to enhance its zero-shot performance on diverse tasks.
-  - Component: API call sampling and filtering based on self-supervised loss
-  - Component: Integration of multiple tools: calculator, Q&A system, search engine, translation system, calendar
-  - Component: Finetuning on augmented datasets with API calls
+- Toolformer: Toolformer is a language model that autonomously learns to use external tools via simple APIs to enhance its performance on various tasks. It is trained to decide which APIs to call, when to call them, what arguments to pass, and how to incorporate the results into future token prediction. This is achieved in a self-supervised manner, requiring only a few demonstrations for each API. Toolformer integrates tools like a calculator, a Q&A system, a search engine, a translation system, and a calendar, significantly improving zero-shot performance on downstream tasks without sacrificing core language modeling abilities.
+  - Component: API call decision-making mechanism
+  - Component: Self-supervised learning with minimal demonstrations
+  - Component: Integration of multiple external tools (calculator, Q&A system, search engine, translation system, calendar)
 - Baseline for comparison: GPT-J
-- Baseline for comparison: GPT-J + CC
 - Baseline for comparison: OPT (66B)
 - Baseline for comparison: GPT-3 (175B)
 
 Datasets for training and evaluation:
-- CCNet: A large-scale dataset used for language modeling, consisting of web crawl data.  [loader unverified -- locate the data yourself]
-- Natural Questions: A benchmark for question answering research, used to finetune the Atlas model for the Q&A tool.  [loader unverified -- locate the data yourself]
+- LAMA (SQuAD, Google-RE, T-REx): A benchmark for evaluating language models on factual knowledge by completing short statements with missing facts.  [loader unverified -- locate the data yourself]
+- ASDiv: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
+- SVAMP: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
+- MAWPS: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
+- Web Questions: A dataset for evaluating question answering abilities.  [loader unverified -- locate the data yourself]
+- Natural Questions: A benchmark for evaluating question answering abilities with questions from real users.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("natural_questions")
+- TriviaQA: A dataset for evaluating question answering abilities.  [loader unverified -- locate the data yourself]
+- MLQA: A multilingual question-answering benchmark with questions in multiple languages and context paragraphs in English.  [loader unverified -- locate the data yourself]
+- TEMPLAMA: A dataset containing cloze queries about facts that change with time.  [loader unverified -- locate the data yourself]
+- DATESET: A synthetic dataset generated to evaluate temporal reasoning, requiring knowledge of the current date.  [generate programmatically]
+  Generation code:
+    import random
+    from datetime import datetime, timedelta
+    
+    def generate_dateset():
+        current_date = datetime.now()
+        dateset = []
+        for _ in range(1000):
+            past_date = current_date - timedelta(days=random.randint(1, 365))
+            future_date = current_date + timedelta(days=random.randint(1, 365))
+            dateset.append({
+                "query": f"What day of the week was {past_date.strftime('%B %d, %Y')}?",
+                "answer": past_date.strftime('%A')
+            })
+        return dateset
+    
+    dataset = generate_dateset()
 
 Experimental constraints:
 - Do NOT use web search
@@ -34,44 +61,61 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Toolformer API Call Sampling and Filtering
-- **Procedure**: 
-  - For each API, write a prompt that encourages the language model (LM) to annotate an example with API calls. Use the in-context learning ability of the LM to sample potential API calls.
-  - Execute these API calls and filter out those that do not reduce the loss over the next tokens.
-  - Use a sampling threshold `τs` to determine positions for API calls and a filtering threshold `τf` to decide which calls to keep.
-  - Use a weighted cross-entropy loss to evaluate the usefulness of API calls.
-- **Input Format**: Text sequences with potential API call positions.
-- **Prompting Strategy**: Use specific prompts for each tool (e.g., question answering, calculator, etc.) as detailed in Appendix A.2.
-- **Number of Samples**: Up to 25k examples per API.
-- **Shuffling/Ordering**: Randomly select positions for API calls based on probability thresholds.
-- **Splits to Use**: Use a subset of CCNet for training and evaluation.
-- **What to Record**: Record the positions of API calls, the API call results, and the loss reduction values.
-- **Correspondence**: Figure 2, Section 2.
+### 1. Zero-Shot Performance on LAMA Benchmark Subsets
+- **Procedure**: Evaluate the model on the SQuAD, Google-RE, and T-REx subsets of the LAMA benchmark. Filter out examples where the mask token is not the final token. Use a zero-shot setup without the Wikipedia Search API.
+- **Input Format**: Provide the model with a statement missing a fact and prompt it to complete the statement.
+- **Prompting Strategy**: Use the prompt "Please complete the following text so that it is factually correct: [statement]."
+- **Number of Samples**: Use the entire filtered dataset.
+- **What to Record**: Record the top five predicted words for each example.
+- **Correspondence**: Results correspond to Table 3 in the paper.
 
-### 2. Downstream Task Evaluation
-- **Procedure**: 
-  - Evaluate Toolformer on various downstream tasks such as LAMA, math datasets, question answering, multilingual question answering, and temporal datasets.
-  - Use a zero-shot setup with specific prompts for each task.
-  - For Toolformer, allow API calls during inference, except where explicitly disabled (e.g., Wikipedia Search API for LAMA).
-- **Input Format**: Task-specific input formats with prompts.
-- **Prompting Strategy**: Use task-specific prompts as detailed in Appendix C.
-- **Number of Samples**: Use standard datasets for each task.
-- **Shuffling/Ordering**: Not specified.
-- **Splits to Use**: Use standard splits for each dataset.
-- **What to Record**: Record task performance metrics such as accuracy, exact match, and lenient match criteria.
-- **Correspondence**: Tables 3-7, Section 4.2.
+### 2. Mathematical Reasoning on ASDiv, SVAMP, and MAWPS
+- **Procedure**: Evaluate the model's mathematical reasoning abilities using the ASDiv, SVAMP, and MAWPS datasets. Use a zero-shot setup with the calculator tool.
+- **Input Format**: Provide the model with a context and a question.
+- **Prompting Strategy**: Use the prompt "[context] [question] The answer is."
+- **Number of Samples**: Use the entire dataset for each benchmark.
+- **What to Record**: Record the first number predicted by the model, or the first number after the "=" sign if the prediction contains an equation.
+- **Correspondence**: Results correspond to Table 4 in the paper.
+
+### 3. Question Answering on Web Questions, Natural Questions, and TriviaQA
+- **Procedure**: Evaluate the model on question answering datasets using a zero-shot setup with the Wikipedia search tool.
+- **Input Format**: Provide the model with a question.
+- **Prompting Strategy**: Prepend the question with "Answer the following question:" and ensure it ends with a question mark.
+- **Number of Samples**: Use the entire dataset for each benchmark.
+- **What to Record**: Record whether the first 20 words predicted by the model contain the correct answer.
+- **Correspondence**: Results correspond to Table 5 in the paper.
+
+### 4. Multilingual Question Answering on MLQA
+- **Procedure**: Evaluate the model on the MLQA benchmark using a zero-shot setup with the machine translation tool.
+- **Input Format**: Provide the model with a context paragraph in English and a question in one of the target languages.
+- **Prompting Strategy**: Use the prompt "Your task is to answer a question based on the following paragraph: [context] Now answer the following question in English: [question]."
+- **Number of Samples**: Use the entire dataset for each language.
+- **What to Record**: Record the percentage of times the model's generation, capped at 10 words, contains the correct answer.
+- **Correspondence**: Results correspond to Table 6 in the paper.
+
+### 5. Temporal Reasoning on TEMPLAMA and DATESET
+- **Procedure**: Evaluate the model's temporal reasoning abilities using TEMPLAMA and DATESET. Use a zero-shot setup with the calendar tool.
+- **Input Format**: Provide the model with a cloze query or a temporal question.
+- **Prompting Strategy**: Use the same prompt as for LAMA.
+- **Number of Samples**: Use the entire dataset for each benchmark.
+- **What to Record**: Record whether the correct answer is within the first five words predicted by the model.
+- **Correspondence**: Results correspond to Table 7 in the paper.
 
 ## Evaluation Details
 
-### Metric Definitions and Computation
-- **Perplexity**: Compute the weighted cross-entropy loss over tokens. Use the formula `Li(z) = -Σ(wj-i * log pM(xj | z, x1:j-1))` for loss computation.
-- **Accuracy**: For tasks like LAMA and question answering, check if the correct answer is within the first few predicted tokens.
-- **Lenient Match**: For LAMA, check if the correct word is within the first five predicted words.
-- **Aggregation Strategy**: Aggregate results per sample, then per condition (e.g., with/without API calls), and finally overall.
+- **Metric Definitions**: 
+  - **Accuracy**: For LAMA, check if the correct word is within the first five predicted words. For math datasets, check if the first predicted number matches the expected answer. For QA datasets, check if the correct answer is within the first 20 predicted words.
+  - **Perplexity**: Evaluate on WikiText and a subset of CCNet to ensure language modeling performance is not degraded.
+
+- **Normalization and Pre-processing**: 
+  - For math datasets, equations in predictions should be parsed to extract the final numerical answer.
+  - For QA datasets, ensure questions are properly formatted with a question mark.
+
+- **Aggregation Strategy**: 
+  - Compute per-sample accuracy, then aggregate to obtain per-condition accuracy (e.g., per dataset or per language), and finally compute overall accuracy across all conditions.
 
 ## Implementation Notes
 
-- **Prompt Templates**: Use specific prompt templates for each tool as detailed in Appendix A.2.
-- **Output Parsing**: Use special tokens `<API>`, `</API>`, and `→` to mark API calls and results.
-- **Order of Operations**: Ensure API calls are sampled, executed, and filtered in the correct order before finetuning the model.
-- **Decoding Strategy**: Use a modified greedy decoding strategy where the model can start an API call if `<API>` is among the top `k` most likely tokens, with `k=10` for increased API usage.
+- **Prompt Templates**: Use specific prompt templates for each tool as detailed in the paper's Appendix A.2.
+- **Output Parsing**: For math datasets, parse equations to extract numerical answers. For QA datasets, check the presence of the correct answer within a specified word limit.
+- **Order of Operations**: Ensure API calls are made before continuing with token prediction, as described in the inference section of the paper.

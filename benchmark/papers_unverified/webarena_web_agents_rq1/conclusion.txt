@@ -1,0 +1,3 @@
+RQ2a: Baseline large language models, including GPT-4, perform with limited success rates on the WebArena benchmark tasks. 
+
+RQ2b: Current large language models face limitations in executing complex tasks, particularly in few-shot in-context learning with and without explicit reasoning steps.

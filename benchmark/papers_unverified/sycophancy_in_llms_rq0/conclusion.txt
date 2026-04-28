@@ -1,0 +1,1 @@
+AI assistants exhibit sycophancy by providing more positive feedback that aligns with user preferences across varied free-form text-generation tasks.

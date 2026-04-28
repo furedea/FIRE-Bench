@@ -1,0 +1,1 @@
+The use of GPT-4 generated multimodal instruction-following data is effective in training large multimodal models like LLaVA, as evidenced by LLaVA achieving an 85.1% relative score compared with GPT-4 on a synthetic dataset designed to test multimodal instruction-following capabilities.

@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: Does process supervision outperform outcome supervision in training reward models for solving mathematical problems?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: Does process supervision, which involves guiding models through intermediate steps, outperform outcome supervision, which focuses on final results, in training reward models for large-scale language models solving problems from the MATH dataset, as measured by the percentage of problems solved?"
 
 You have access to the following resources:
 
@@ -7,12 +7,24 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- MATH: A dataset for measuring mathematical problem-solving abilities of models, containing problems from various math subjects.
-  GitHub repo: https://github.com/hendrycks/math
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/hendrycks/math.git
-- PRM800K: A dataset of 800,000 step-level human feedback labels used to train reward models for mathematical problem-solving.  [loader unverified -- locate the data yourself]
+- MATH: A dataset for measuring mathematical problem-solving abilities, containing problems that require multi-step reasoning.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hendrycks/math")
+- PRM800K: A dataset of 800,000 step-level human feedback labels used to train reward models for solving MATH problems.  [generate programmatically]
+  Generation code:
+    # Synthetic generation of PRM800K dataset
+    # This dataset consists of 800,000 step-level human feedback labels
+    # used to train reward models for solving MATH problems.
+    # The generation process involves human data-labelers providing
+    # feedback on the correctness of each step in model-generated solutions.
+    import random
+    
+    def generate_prm800k():
+        steps = ["correct", "incorrect", "neutral"]
+        return [{"step": random.choice(steps)} for _ in range(800000)]
+    
+    prm800k_dataset = generate_prm800k()
 
 Experimental constraints:
 - Do NOT use web search

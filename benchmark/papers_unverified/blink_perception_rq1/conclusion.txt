@@ -1,0 +1,1 @@
+Varying visual prompt attributes, such as circle size and color, significantly affects the performance of multimodal LLMs, with red circles generally yielding better results. Optimal prompt settings vary by task, indicating the importance of robust prompt design for accuracy.

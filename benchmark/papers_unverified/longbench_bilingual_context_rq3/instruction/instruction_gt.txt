@@ -1,0 +1,93 @@
+You are a research agent. Conduct research and experiment about the question: "RQ4: How do large language models perform on synthetic tasks and code completion tasks using LongBench, which includes datasets like PassageCount, PassageRetrieval, LCC, and RepoBench-P?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- PassageCount: A synthetic task designed to test the model's ability to count unique passages among duplicates.  [generate programmatically]
+- PassageRetrieval-en: A synthetic task where the model identifies the original paragraph corresponding to a given summary.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/passage-retrieval-en")
+- PassageRetrieval-zh: A synthetic task in Chinese where the model identifies the original paragraph corresponding to a given summary.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/passage-retrieval-zh")
+- LCC: A code completion dataset sampled from the Long Code Completion dataset, focusing on completing code based on preceding lines.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/lcc")
+- RepoBench-P: A repository-level code completion dataset requiring aggregation of information from code across files.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/repo-bench-p")
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Synthetic Task Evaluation
+- **Procedure**: 
+  - For PassageCount, generate synthetic data by selecting passages from English Wikipedia, duplicating them randomly, and shuffling. The task is to count unique passages.
+  - For PassageRetrieval-en and PassageRetrieval-zh, use datasets from English Wikipedia and the Chinese sections of the C4 dataset. Randomly sample 30 passages and generate a summary using GPT-3.5-Turbo. The task is to identify the original paragraph corresponding to the summary.
+  - Use the provided datasets: `PassageRetrieval-en` and `PassageRetrieval-zh` via `load_dataset("openai/passage-retrieval-en")` and `load_dataset("openai/passage-retrieval-zh")`.
+  - Each model will process 200 samples per dataset.
+- **What to Record**: 
+  - Record the exact match accuracy (EM) for each task.
+  - Capture raw outputs and extracted answers for further analysis.
+- **Correspondence**: 
+  - Results are discussed in Table 3 and Section 4.1 of the paper.
+
+### 2. Code Completion Evaluation
+- **Procedure**: 
+  - For LCC, use the dataset sampled from the Long Code Completion dataset, focusing on completing code based on preceding lines.
+  - For RepoBench-P, use the dataset requiring aggregation of information from code across files. The task involves predicting the next line of code using cross-file snippets.
+  - Use the provided datasets: `LCC` and `RepoBench-P` via `load_dataset("openai/lcc")` and `load_dataset("openai/repo-bench-p")`.
+  - Each model will process 500 samples per dataset.
+- **What to Record**: 
+  - Record the edit similarity (Edit Sim) score for each task.
+  - Capture raw outputs and extracted code completions for further analysis.
+- **Correspondence**: 
+  - Results are discussed in Table 3 and Section 4.1 of the paper.
+
+## Evaluation Details
+
+### Synthetic Task Evaluation
+- **Metrics**: 
+  - Use Exact Match (EM) accuracy to evaluate the model's ability to correctly identify or count passages.
+  - EM is calculated as the percentage of predictions that exactly match the ground truth.
+- **Normalization**: 
+  - Ensure model outputs are stripped of any extraneous whitespace or punctuation before comparison.
+- **Aggregation**: 
+  - Compute per-sample EM scores, then average these scores to obtain per-condition and overall scores.
+
+### Code Completion Evaluation
+- **Metrics**: 
+  - Use Edit Similarity (Edit Sim), which is based on the Levenshtein distance, to evaluate code completion accuracy.
+  - Edit Sim is calculated as 1 minus the normalized Levenshtein distance between the predicted and true code.
+- **Normalization**: 
+  - Normalize code outputs by removing comments and ensuring consistent formatting before scoring.
+- **Aggregation**: 
+  - Compute per-sample Edit Sim scores, then average these scores to obtain per-condition and overall scores.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompt templates for each task as detailed in the paper's appendix. Ensure prompts are clear and concise to guide the model's output.
+- **Output Parsing**: 
+  - For code completion tasks, extract the first non-comment line of code from the model's output.
+  - For synthetic tasks, ensure the model's output is parsed to match the expected format (e.g., "Paragraph 1").
+- **Order of Operations**: 
+  - For tasks exceeding the model's context length, truncate the input sequence from the middle, preserving the beginning and end of the sequence.
+- **Pitfalls**: 
+  - Be cautious of models generating dialogue-like responses in non-chat tasks; adjust prompts to mitigate this behavior.

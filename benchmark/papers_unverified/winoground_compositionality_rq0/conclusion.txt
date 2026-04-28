@@ -1,0 +1,1 @@
+State-of-the-art vision and language models generally perform close to or below random chance on the Winoground task, indicating poor visio-linguistic compositional reasoning capabilities.

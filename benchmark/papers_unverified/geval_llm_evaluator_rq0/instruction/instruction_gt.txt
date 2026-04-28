@@ -1,16 +1,16 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How does G-EVAL perform in terms of correlation with human evaluations compared to existing NLG evaluators?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How does an AI-based evaluation system perform in assessing text summarization quality compared to existing metrics, using correlation measures such as Spearman and Kendall-Tau on a standard benchmark?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 and text-davinci-003 via API
+- gpt-4 via API
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- SummEval: A benchmark that compares different evaluation methods for summarization, providing human ratings for fluency, coherence, consistency, and relevance.  [loader unverified -- locate the data yourself]
-- Topical-Chat: A testbed for meta-evaluating different evaluators on dialogue response generation systems that use knowledge.  [loader unverified -- locate the data yourself]
-- QAGS-CNN: A benchmark for evaluating hallucinations in summarization tasks, focusing on the consistency dimension of summaries on the CNN/DailyMail dataset.  [loader unverified -- locate the data yourself]
-- QAGS-XSUM: A benchmark for evaluating hallucinations in summarization tasks, focusing on the consistency dimension of summaries on the XSum dataset.  [loader unverified -- locate the data yourself]
+- SummEval: A benchmark that compares different evaluation methods for summarization, providing human ratings for fluency, coherence, consistency, and relevance.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/summeval")
 
 Experimental constraints:
 - Do NOT use web search
@@ -22,72 +22,48 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Summarization Evaluation on SummEval
+### 1. Summarization Evaluation with G-EVAL
 - **Procedure**: 
-  - Use the SummEval dataset to evaluate summarization tasks.
-  - Input the news article and its corresponding summary into the model.
-  - Use the prompt to instruct the model to evaluate the summary based on coherence, consistency, fluency, and relevance.
-  - Implement the chain-of-thought (CoT) prompting strategy to guide the model through evaluation steps.
-  - Use a scale of 1 to 5 for scoring each aspect.
-  - Perform 20 samples per summary to estimate token probabilities for GPT-4.
+  - Load the SummEval dataset using the provided loading code.
+  - For each summary in the dataset, input the news article and the corresponding summary into the GPT-4 model using the G-EVAL framework.
+  - Use the following prompt structure:
+    ```
+    You will be given one summary written for a news article. Your task is to rate the summary on one metric.
+    Evaluation Criteria:
+    Coherence (1-5) - the collective quality of all sentences. The summary should be well-structured and well-organized.
+    Evaluation Steps:
+    1. Read the news article carefully and identify the main topic and key points.
+    2. Read the summary and compare it to the news article. Check if the summary covers the main topic and key points of the news article, and if it presents them in a clear and logical order.
+    3. Assign a score for coherence on a scale of 1 to 5.
+    ```
+  - Use the chain-of-thought (CoT) prompting strategy to generate detailed evaluation steps.
+  - Record the coherence score for each summary.
 - **What to Record**: 
-  - Raw scores for each evaluation aspect.
-  - Probability-weighted summed scores.
-  - Spearman and Kendall-Tau correlations with human evaluations.
-- **Correspondence**: Table 1, Section 3.4
-
-### 2. Dialogue Generation Evaluation on Topical-Chat
-- **Procedure**: 
-  - Use the Topical-Chat dataset to evaluate dialogue generation tasks.
-  - Input the conversation history, corresponding fact, and response into the model.
-  - Use the prompt to instruct the model to evaluate the response based on naturalness, coherence, engagingness, and groundedness.
-  - Use a scale of 1 to 3 for scoring engagingness.
-  - Implement CoT prompting strategy.
-- **What to Record**: 
-  - Raw scores for each evaluation aspect.
-  - Pearson and Spearman correlations with human evaluations.
-- **Correspondence**: Table 2, Section 3.5
-
-### 3. Hallucination Detection on QAGS
-- **Procedure**: 
-  - Use the QAGS-CNN and QAGS-XSUM datasets to evaluate hallucination detection in summarization tasks.
-  - Input the source text and its summary into the model.
-  - Use the prompt to instruct the model to evaluate the factual consistency of the summary.
-  - Implement CoT prompting strategy.
-  - Use a scale of 1 to 5 for scoring consistency.
-- **What to Record**: 
-  - Raw scores for factual consistency.
-  - Pearson, Spearman, and Kendall-Tau correlations with human evaluations.
-- **Correspondence**: Table 3, Section 3.6
+  - Raw outputs from the model, including coherence scores.
+  - Probability-weighted scores for each summary.
+- **Correspondence**: Section 3.4, Table 1.
 
 ## Evaluation Details
 
 - **Metric Definitions**:
-  - **Spearman Correlation**: Measure the rank correlation between model scores and human scores.
-  - **Kendall-Tau Correlation**: Measure the ordinal association between model scores and human scores.
-  - **Pearson Correlation**: Measure the linear correlation between model scores and human scores.
+  - **Spearman Correlation**: Measure the rank correlation between the model's scores and human scores. Use `scipy.stats.spearmanr` for computation.
+  - **Kendall-Tau Correlation**: Measure the ordinal association between the model's scores and human scores. Use `scipy.stats.kendalltau` for computation.
 
 - **Normalization and Pre-processing**:
-  - For GPT-4, use probability-weighted summation of scores to obtain fine-grained continuous scores.
-  - Normalize scores by calculating the probability of each score and using it to weight the score.
+  - Normalize scores using the probability-weighted summation method. For each score \( s_i \) with probability \( p(s_i) \), compute the final score as:
+    \[
+    \text{score} = \sum_{i=1}^{n} p(s_i) \times s_i
+    \]
+  - Ensure scores are continuous by using the probabilities of output tokens from the LLM.
 
 - **Aggregation Strategy**:
-  - Aggregate scores per sample using probability-weighted summation.
-  - Compute per-condition correlations with human evaluations.
-  - Report overall correlations for each evaluation aspect.
+  - Compute per-sample scores using the probability-weighted method.
+  - Aggregate scores per condition (e.g., coherence) by averaging across all samples.
+  - Compute overall correlation metrics (Spearman and Kendall-Tau) for the entire dataset.
 
 ## Implementation Notes
 
-- **Prompt Templates**:
-  - Use specific prompt templates for each task, including task introduction, evaluation criteria, and evaluation steps.
-  - Ensure prompts are clear and provide sufficient context for the model to generate accurate evaluations.
-
-- **Chain-of-Thought (CoT) Strategy**:
-  - Use CoT to guide the model through detailed evaluation steps, improving context and guidance.
-  - Ensure CoT is automatically generated by the model for each task.
-
-- **Order of Operations**:
-  - First, input the task introduction and evaluation criteria.
-  - Generate CoT using the model.
-  - Evaluate the NLG outputs using the generated CoT and form-filling paradigm.
-  - Normalize scores using token probabilities before final aggregation.
+- **Prompt Templates**: Use the specific prompt structure provided in the paper for coherence evaluation.
+- **Chain-of-Thought (CoT) Strategy**: Ensure the model generates intermediate evaluation steps to guide the scoring process.
+- **Probability Normalization**: Address potential issues with score ties by using probability-weighted scores to achieve finer granularity.
+- **Model Configuration**: For GPT-4, set `n = 20`, `temperature = 1`, and `top_p = 1` to sample 20 times for estimating token probabilities, as GPT-4 does not directly support outputting token probabilities.

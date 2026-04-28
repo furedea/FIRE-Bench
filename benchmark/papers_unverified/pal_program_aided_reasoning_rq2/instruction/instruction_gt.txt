@@ -1,29 +1,26 @@
-You are a research agent. Conduct research about the question: "RQ3: Can PAL improve performance on algorithmic tasks compared to chain-of-thought prompting?"
+You are a research agent. Conduct research about the question: "RQ3: How does a program-aided language model (PAL), which uses external tools like a Python interpreter to assist in reasoning, perform on algorithmic reasoning tasks such as OBJECT COUNTING and REPEAT COPY compared to chain-of-thought prompting, where models generate intermediate reasoning steps in natural language during few-shot prompting?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Program-Aided Language models (PAL): PAL is a novel approach that uses large language models (LLMs) to read natural language problems and generate programs as intermediate reasoning steps, while offloading the solution step to a runtime such as a Python interpreter. This method allows the LLM to focus on decomposing the problem into runnable steps, leveraging the interpreter for accurate computation, thus improving performance on algorithmic tasks.
-  - Component: LLM generates intermediate reasoning steps as code
-  - Component: Python interpreter executes the generated code to solve the problem
-  - Component: Synergy between neural LLM and symbolic interpreter
+- Program-Aided Language Model (PAL): PAL is a novel approach that uses large language models (LLMs) to read natural language problems and generate programs as intermediate reasoning steps, while offloading the solution step to a runtime such as a Python interpreter. This method allows the LLM to focus on decomposing the problem into runnable steps, leveraging the interpreter for accurate computation.
+  - Component: LLM generates programmatic reasoning steps
+  - Component: Python interpreter executes the generated code
+  - Component: Integration of natural language and programming language reasoning
 - Baseline for comparison: Chain-of-Thought (COT) prompting
 
 Datasets for training and evaluation:
-- OBJECT COUNTING: A dataset involving questions about counting objects of a certain type.  [generate programmatically]
+- OBJECT COUNTING: A task involving counting the number of objects belonging to a certain type.  [generate programmatically]
   Generation code:
     def generate_object_counting_data():
-        return [
-            {"input": "I have a chair, two potatoes, a cauliflower, a lettuce head, two tables, a cabbage, two onions, and three fridges. How many vegetables do I have?", "output": 6},
-            # Add more examples as needed
-        ]
-- REPEAT COPY: A dataset requiring the generation of a sequence of words according to specific instructions.  [generate programmatically]
+        objects = ["chair", "potato", "cauliflower", "lettuce head", "table", "cabbage", "onion", "fridge"]
+        quantities = [1, 2, 1, 1, 2, 1, 2, 3]
+        return list(zip(objects, quantities))
+- REPEAT COPY: A task requiring generating a sequence of words according to specific instructions.  [generate programmatically]
   Generation code:
     def generate_repeat_copy_data():
-        return [
-            {"input": "Repeat the word duck four times, but halfway through also say quack.", "output": "duck duck quack duck duck"},
-            # Add more examples as needed
-        ]
+        instructions = "Repeat the word duck four times, but halfway through also say quack"
+        return instructions
 
 Experimental constraints:
 - Do NOT use web search
@@ -43,37 +40,46 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Algorithmic Task Evaluation
+### 1. Object Counting Task
 - **Procedure**: 
-  - For each dataset (OBJECT COUNTING and REPEAT COPY), use the PAL method to generate Python code as intermediate reasoning steps. The LLM (CODEX) will generate these steps, which will then be executed by a Python interpreter to obtain the final answer.
-  - Use the same set of in-context examples for both PAL and COT to ensure a fair comparison.
-  - Perform greedy decoding from the language model with a temperature of 0.
-  - For OBJECT COUNTING, convert the input into a dictionary where keys are entities and values are their quantities, filtering out non-target entities. The answer is the sum of the dictionary values.
-  - For REPEAT COPY, generate a sequence of words according to specific instructions, using loops and conditionals in the generated code.
+  - Use the provided `generate_object_counting_data()` function to create the dataset.
+  - Format the input as a natural language question, e.g., "I have a chair, two potatoes, a cauliflower, a lettuce head, two tables, a cabbage, two onions, and three fridges. How many vegetables do I have?"
+  - Use PAL to generate a Python program that counts the specified objects, filtering out non-target items.
+  - Execute the generated Python code using a Python interpreter to obtain the final count.
 - **What to Record**: 
-  - Record the raw outputs of the Python interpreter.
-  - Extract the final answers from the interpreter's output.
-  - Calculate the solve rate (%) for each task.
-- **Correspondence**: 
-  - Results correspond to Table 2 in the paper, which shows the solve rate on algorithmic datasets.
+  - Record the generated Python code.
+  - Record the final output from the Python interpreter.
+  - Record the solve rate (percentage of correct answers).
+- **Correspondence**: Table 2, Section 4.3
+
+### 2. Repeat Copy Task
+- **Procedure**: 
+  - Use the provided `generate_repeat_copy_data()` function to create the dataset.
+  - Format the input as a natural language instruction, e.g., "Repeat the word duck four times, but halfway through also say quack."
+  - Use PAL to generate a Python program that constructs the required sequence of words.
+  - Execute the generated Python code using a Python interpreter to obtain the final sequence.
+- **What to Record**: 
+  - Record the generated Python code.
+  - Record the final output from the Python interpreter.
+  - Record the solve rate (percentage of correct sequences).
+- **Correspondence**: Table 2, Section 4.3
 
 ## Evaluation Details
 
-- **Metric Definitions**: 
-  - Solve rate (%) is defined as the percentage of correctly solved instances out of the total instances evaluated.
+- **Metrics**: 
+  - Solve rate: The percentage of tasks for which the model generates the correct output.
 - **Normalization/Pre-processing**: 
-  - Ensure that the model outputs are parsed correctly to extract the final numerical answer from the Python interpreter's output.
+  - Ensure that the generated Python code is syntactically correct and executable.
+  - Normalize the final output to match the expected format for comparison.
 - **Aggregation Strategy**: 
-  - Calculate the solve rate per dataset and then compare the overall performance of PAL against COT across both datasets.
+  - Calculate the solve rate per task.
+  - Compare the solve rates of PAL against the baseline chain-of-thought prompting.
 
 ## Implementation Notes
 
 - **Prompt Templates**: 
-  - Use meaningful variable names in the PAL prompts to help the model ground variables to the entities they represent.
-  - For OBJECT COUNTING, ensure that the prompt includes a dictionary structure to map entities to their counts.
-  - For REPEAT COPY, use loops and conditionals to structure the repetition logic.
-- **Pitfalls**: 
-  - Ensure that the Python code generated by the LLM is syntactically correct and executable.
-  - Be cautious of edge cases where the LLM might generate incorrect logic or variable names that do not match the problem context.
+  - Use meaningful variable names in the generated Python code to maintain clarity and link the code to the entities in the question.
+  - Use Python comment syntax (e.g., `# ...`) for natural language intermediate steps to ensure they are ignored by the interpreter.
 - **Order of Operations**: 
-  - Generate the intermediate reasoning steps first, then execute them using the Python interpreter to obtain the final answer.
+  - Ensure that the Python code is executed after it is generated by the LLM.
+  - Use a single, post-hoc execution of the generated code to obtain the final result.

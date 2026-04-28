@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: Do LLMs trained on 'A is B' fail to generalize to 'B is A'?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: Do auto-regressive language models (e.g., GPT-3, Llama-1, which predict the next word in a sequence) trained on synthetic facts (artificially generated data) of the form 'A is B' generalize to the reverse form 'B is A' in the context of a synthetic dataset of fictitious facts?"
 
 You have access to the following resources:
 

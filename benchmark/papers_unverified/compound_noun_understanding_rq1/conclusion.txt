@@ -1,0 +1,1 @@
+Generating diverse captions using a large language model can improve the understanding of compound nouns by vision-language models in text-to-image retrieval tasks, as evidenced by an 8.25% improvement in CLIP's performance and a 2.35% improvement in OpenCLIP's performance on Compun.

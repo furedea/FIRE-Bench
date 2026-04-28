@@ -1,0 +1,18 @@
+task_id: gsm_symbolic_rq1
+paper_type: llm_evaluation
+research_question: "RQ2: How does the fragility of mathematical reasoning in large language models manifest when altering superficial elements like names versus numerical values in questions?"
+models:
+  api:
+    - gpt-4o
+  huggingface:
+    - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+  - name: "GSM-Symbolic"
+    source: synthetic
+    description: "An improved benchmark created from symbolic templates that allow for the generation of a diverse set of mathematical reasoning questions."
+references: []
+constraints:
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

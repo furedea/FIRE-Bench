@@ -1,0 +1,1 @@
+Fused DINOv2 and SigLIP backbones with naive image resizing enhance the performance of VLMs on visual question answering, object localization, and challenge tasks.

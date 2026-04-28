@@ -1,21 +1,29 @@
-You are a research agent. Conduct research about the question: "RQ1: How does SELF-RAG improve the factual accuracy and versatility of LLMs compared to existing models?"
+You are a research agent. Conduct research about the question: "RQ1: How do retrieval (accessing external information sources) and self-reflection (evaluating and refining one's own outputs) mechanisms enhance the factual accuracy and generation quality of large language models across tasks such as open-domain question answering, reasoning, fact verification, and long-form generation, as evaluated on datasets like PopQA, TriviaQA-unfiltered, PubHealth, ARC-Challenge, Biography generation, and ALCE-ASQA?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- SELF-RAG: SELF-RAG is a framework that enhances the quality and factuality of large language models (LLMs) through retrieval and self-reflection. It trains an arbitrary LLM to adaptively retrieve passages on-demand, generate outputs, and reflect on both retrieved passages and its own generations using special tokens called reflection tokens. These tokens enable the model to be controllable during inference, allowing it to tailor its behavior to diverse task requirements.
-  - Component: Adaptive retrieval of relevant passages on-demand
-  - Component: Generation of outputs with reflection tokens
-  - Component: Self-reflection on retrieved passages and generated outputs
-  - Component: Use of critique tokens to evaluate generation quality
+- Self-Reflective Retrieval-Augmented Generation (SELF-RAG): SELF-RAG is a framework designed to enhance the quality and factuality of large language models by incorporating retrieval and self-reflection mechanisms. It trains a language model to adaptively retrieve relevant passages on-demand and generate outputs while reflecting on both the retrieved passages and its own generations using special reflection tokens. These tokens enable the model to control its behavior during inference, tailoring its responses to diverse task requirements.
+  - Component: Adaptive retrieval mechanism that retrieves passages on-demand based on task requirements.
+  - Component: Reflection tokens that allow the model to evaluate the necessity of retrieval and the quality of its own outputs.
+  - Component: End-to-end training of a language model to generate and critique text using reflection tokens.
 - Baseline for comparison: ChatGPT
 - Baseline for comparison: Llama2-chat
+- Baseline for comparison: Alpaca
+- Baseline for comparison: Toolformer
+- Baseline for comparison: SAIL
 - Reference hint: https://selfrag.github.io/
 
 Datasets for training and evaluation:
-- Open-domain QA: A dataset used to evaluate the model's ability to answer arbitrary questions about factual knowledge.  [loader unverified -- locate the data yourself]
-- Reasoning: A dataset used to evaluate the model's reasoning capabilities.  [loader unverified -- locate the data yourself]
-- Fact verification tasks: A dataset used to evaluate the model's ability to verify factual statements.  [loader unverified -- locate the data yourself]
+- PopQA: A dataset for open-domain question answering focusing on rare entity queries.  [loader unverified -- locate the data yourself]
+- TriviaQA-unfiltered: An open-domain question answering dataset with a large set of trivia questions.  [loader unverified -- locate the data yourself]
+- PubHealth: A fact verification dataset about public health.  [loader unverified -- locate the data yourself]
+- ARC-Challenge: A multiple-choice reasoning dataset created from scientific exams.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("ai2_arc", "ARC-Challenge")
+- Biography generation: A task for generating biographies with a focus on factual accuracy.  [loader unverified -- locate the data yourself]
+- ALCE-ASQA: A long-form question answering dataset that evaluates correctness, fluency, and citation accuracy.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

@@ -1,0 +1,1 @@
+Current vision-language models like CLIP and OpenCLIP have limited understanding of compound nouns in text-to-image retrieval tasks, as evidenced by their improved performance with the proposed method.

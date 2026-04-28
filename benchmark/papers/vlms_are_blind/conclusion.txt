@@ -1,0 +1,1 @@
+State-of-the-art vision-language models perform far below human-level accuracy on trivially simple visual tasks like counting circles, detecting line intersections, or identifying overlapping shapes.

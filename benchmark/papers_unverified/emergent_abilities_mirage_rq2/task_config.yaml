@@ -1,23 +1,25 @@
 task_id: emergent_abilities_mirage_rq2
 paper_type: empirical_study
-research_question: 'RQ3: Do emergent abilities appear predominantly with specific
-  metrics rather than task-model family pairs?'
-study_type: meta-analysis
+research_question: "RQ3: Can emergent abilities, defined as unexpected capabilities that arise in machine learning models, be induced in vision tasks using shallow nonlinear autoencoders on the CIFAR100 dataset and autoregressive Transformers (models predicting future data points based on past ones) on the Omniglot dataset by selecting specific evaluation metrics?"
+study_type: dataset audit
 data_sources:
-- name: BIG-Bench
-  source: external
-  description: A benchmark used to analyze task-metric-model family triplets for emergent
-    abilities.
-  url: https://github.com/google/BIG-bench
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/google/BIG-bench.git
-
-    '
+  - name: "CIFAR100"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("cifar100")
+    description: "A dataset of 100 classes of natural images used for training and evaluating image classification models."
+  - name: "Omniglot"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("omniglot")
+    description: "A dataset of handwritten characters from various alphabets used for training and evaluating image classification models."
 analytical_tools:
-- Meta-analysis
+  - "PyTorch"
+  - "NumPy"
+  - "Matplotlib"
 references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: Can LCLMs perform SQL-like compositional reasoning tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: How capable are Long-Context Language Models (LCLMs, which can process and generate text with extended context) in performing SQL-like compositional reasoning tasks (tasks that require combining multiple logical operations to query databases) compared to specialized SQL pipelines?"
 
 You have access to the following resources:
 
@@ -11,8 +11,11 @@ Datasets:
 - Spider: A large-scale human-labeled dataset for complex and cross-domain semantic parsing and text-to-SQL task.
   Loading code:
     from datasets import load_dataset
-    dataset = load_dataset("spider")
-- SParC: Cross-domain semantic parsing in context, a multi-turn text-to-SQL dataset.  [loader unverified -- locate the data yourself]
+    dataset = load_dataset("yale-lily/spider")
+- SParC: A cross-domain semantic parsing dataset in context, focusing on multi-turn text-to-SQL tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("yale-lily/sparc")
 
 Experimental constraints:
 - Do NOT use web search

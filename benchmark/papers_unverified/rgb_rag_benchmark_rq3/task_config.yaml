@@ -1,25 +1,18 @@
 task_id: rgb_rag_benchmark_rq3
 paper_type: llm_evaluation
-research_question: 'RQ4: Can LLMs identify and correct factual errors in retrieved
-  documents?'
+research_question: "RQ4: Can large language models (ChatGPT, Qwen-7B-Chat) identify and correct factual errors in retrieved documents when given warnings, evaluated in English and Chinese?"
 models:
   api:
-  - gpt-3.5-turbo
+    - gpt-4o
   huggingface:
-  - THUDM/ChatGLM-6B
-  - THUDM/ChatGLM2-6B
-  - lmsys/vicuna-7b-v1.3
-  - Qwen/Qwen-7B-Chat
-  - BELLE-7B-2M
+    - QwenLM/Qwen-7B-Chat
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: Retrieval-Augmented Generation Benchmark (RGB)
-  source: synthetic
-  description: A benchmark designed to evaluate the retrieval-augmented generation
-    capabilities of LLMs, focusing on noise robustness, negative rejection, information
-    integration, and counterfactual robustness.
+  - name: "Retrieval-Augmented Generation Benchmark (RGB)"
+    source: synthetic
+    description: "A benchmark designed to evaluate the retrieval-augmented generation capabilities of LLMs in English and Chinese, focusing on noise robustness, negative rejection, information integration, and counterfactual robustness."
 references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

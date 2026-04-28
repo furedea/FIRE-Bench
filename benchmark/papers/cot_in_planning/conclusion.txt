@@ -1,0 +1,1 @@
+Chain-of-thought prompting does not reliably enable large language models to learn generalizable algorithmic reasoning abilities. It relies on highly specific, pattern-matching prompts, and performance degrades with increased problem complexity.

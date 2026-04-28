@@ -1,0 +1,1 @@
+Multimodal large language models (MLLMs) show improved performance on nonverbal abstract reasoning tasks when corrective hints and chain-of-thought (CoT) prompting are used, particularly for closed-source models.

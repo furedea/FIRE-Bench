@@ -1,42 +1,25 @@
 task_id: prismatic_vlm_design_rq2
 paper_type: novel_architecture
-research_question: 'RQ3: What is the impact of using base versus instruct-tuned language
-  models on VLM performance?'
+research_question: "RQ3: What is the impact of using base language models versus instruct-tuned language models (models fine-tuned with specific instructions) on the performance and safety of vision-language models (VLMs, which integrate visual and textual data) when evaluated on LLaVa v1.5 pretraining datasets for visual question answering, object localization, and challenge tasks?"
 proposed_method:
-  name: Prismatic VLMs
-  summary: "Prismatic VLMs are a family of visually-conditioned language models designed\
-    \ to explore the impact of various design choices on model performance. These\
-    \ models utilize a 'patch-as-token' approach, leveraging pretrained visual backbones\
-    \ like CLIP and DINOv2, and integrating them with language models such as Llama-2\
-    \ and Vicu\xF1a. The architecture is characterized by its flexibility in swapping\
-    \ components and optimizing training procedures to improve efficiency and performance\
-    \ across diverse tasks."
+  name: "Prismatic VLMs"
+  summary: "Prismatic VLMs are a family of visually-conditioned language models designed to explore the impact of various design choices on model performance. These models integrate visual and textual data using a common architecture that includes a visual representation backbone, a vision-language projector, and a language model. The architecture allows for flexible experimentation with different pretrained components, optimization procedures, and data sources to identify key factors influencing VLM capabilities."
   key_components:
-  - Pretrained visual backbones (e.g., CLIP, DINOv2)
-  - Vision-language projector for embedding transformation
-  - "Base and instruct-tuned language models (e.g., Llama-2, Vicu\xF1a)"
+    - "Visual representation backbone (e.g., CLIP, DINOv2)"
+    - "Vision-language projector"
+    - "Language model (e.g., Llama-2, Vicuña v1.5)"
 baselines:
-- InstructBLIP
-- LLaVa v1.5
+  - "LLaVa v1.5"
+  - "InstructBLIP"
 reference_implementation:
-- github.com/TRI-ML/prismatic-vlms
-- github.com/TRI-ML/vlm-evaluation
+  - "github.com/TRI-ML/prismatic-vlms"
+  - "github.com/TRI-ML/vlm-evaluation"
 datasets:
-- name: LLaVa v1.5 pretraining datasets
-  source: external
-  description: A mixture of datasets used for pretraining VLMs, including captioning
-    datasets like Conceptual Captions and LAION, as well as multimodal instruct tuning
-    examples.
-  url: https://github.com/haotian-liu/LLaVA
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/haotian-liu/LLaVA.git
-
-    '
-compute_hint: single GPU, <24h
+  - name: "LLaVa v1.5 pretraining datasets"
+    source: unknown
+    description: "A mixture of datasets used for pretraining vision-language models, including captioning datasets and multimodal instruct tuning examples."
+compute_hint: "single GPU, <24h"
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
-- Implement the proposed method yourself -- do not import it from a library that bundles
-  the paper's exact code.
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"
+  - "Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code."

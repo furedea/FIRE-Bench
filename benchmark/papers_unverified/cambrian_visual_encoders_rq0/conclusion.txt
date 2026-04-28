@@ -1,0 +1,1 @@
+Different visual encoder choices impact the multimodal capabilities of MLLMs by allowing language-supervised models to generally outperform others, while self-supervised models like DINOv2 demonstrate competitive performance on vision-centric tasks.

@@ -1,30 +1,20 @@
 task_id: embers_of_autoregression_rq2
 paper_type: empirical_study
-research_question: 'RQ3: How does input probability affect the performance of LLMs?'
-study_type: dataset audit
+research_question: "RQ3: How does the probability of the input affect the performance of large language models (GPT-3.5 and GPT-4) on tasks like shift ciphers, reversal, Pig Latin, acronyms, and counting?"
+study_type: training-data study
 data_sources:
-- name: Global Voices
-  source: unknown
-  description: A collection of news articles used to generate high-probability and
-    low-probability sentences for evaluating LLM performance on tasks like rot-13
-    encoding.
-- name: WikiBio dataset
-  source: external
-  description: A dataset containing biographical information, used to evaluate LLM
-    performance on birthday retrieval tasks with varying input probabilities.
-  url: https://github.com/DavidGrangier/wikipedia-biography-dataset
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/DavidGrangier/wikipedia-biography-dataset.git
-
-    '
+  - name: "Global Voices"
+    source: unknown
+    description: "A collection of recent news articles used to generate high-probability sentences for evaluating language models."
+  - name: "C4 corpus"
+    source: unknown
+    description: "A large corpus of web-crawled text used to estimate the frequency of numbers and words for counting tasks."
 analytical_tools:
-- NLTK
-- RoBERTa
-- GPT-2
-- Levenshtein distance
+  - "GPT-2"
+  - "RoBERTa"
+  - "NLTK"
+  - "Hugging Face Datasets"
 references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

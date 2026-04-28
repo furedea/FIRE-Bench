@@ -1,15 +1,16 @@
 task_id: ai_assistants_insecure_code_rq2
 paper_type: empirical_study
-research_question: "RQ3: How do users\u2019 language and behavior when interacting\
-  \ with an AI assistant affect the degree of security vulnerabilities in their code?"
+research_question: "RQ3: How do users’ language and behavior when interacting with an AI assistant affect the degree of security vulnerabilities in their code across tasks involving encryption, signing, file path handling, SQL operations, and C string manipulation?"
 study_type: user-study
 data_sources:
-- name: User prompts and AI interactions
-  source: unknown
-  description: Data collected from user interactions with AI code assistants during
-    a study, including prompts and AI responses.
+  - name: "User study data"
+    source: synthetic
+    description: "Data collected from a user study where participants interacted with AI code assistants to solve security-related programming tasks."
 analytical_tools:
-- Prompt categorization and analysis
+  - "Logistic Regression"
+  - "Cohen-Kappa inter-rater reliability"
+  - "Chi-squared test"
+  - "Welch’s t-test"
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

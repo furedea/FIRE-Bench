@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: What are the potential causes of inverse scaling in language models?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: What are the potential causes of inverse scaling in large language models across various tasks and datasets?"
 
 You have access to the following resources:
 
@@ -8,11 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Inverse Scaling Prize: A collection of 11 datasets designed to test inverse scaling in language models, covering tasks like Resisting Correction, Memo Trap, Redefine, Prompt Injection, Modus Tollens, Pattern Match Suppression, Into the Unknown, NeQA, Sig Figs, Hindsight Neglect, and Repetitive Algebra.
-  GitHub repo: https://github.com/inverse-scaling/prize
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/inverse-scaling/prize.git
+- Inverse Scaling Prize Datasets: Custom datasets created for the Inverse Scaling Prize to test various inverse scaling phenomena in language models.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

@@ -1,19 +1,16 @@
 task_id: embers_of_autoregression_rq1
 paper_type: empirical_study
-research_question: 'RQ2: How does output probability affect the performance of LLMs?'
+research_question: "RQ2: How does the probability of the target output affect the performance of large language models (GPT-3.5 and GPT-4) on tasks like shift ciphers, reversal, Pig Latin, article swapping, acronyms, and counting?"
 study_type: dataset audit
 data_sources:
-- name: Global Voices
-  source: unknown
-  description: A collection of news articles used to generate high-probability, medium-probability,
-    and low-probability sentences for evaluating LLM performance on tasks like rot-13
-    decoding and reversal.
+  - name: "Global Voices"
+    source: unknown
+    description: "A collection of news articles used to generate high-probability sentences for evaluating language models on tasks like shift ciphers and reversal."
 analytical_tools:
-- GPT-2
-- RoBERTa
-- NLTK
-- Hugging Face Datasets
+  - "NLTK"
+  - "RoBERTa"
+  - "GPT-2"
 references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

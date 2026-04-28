@@ -1,0 +1,1 @@
+Frontier language models can detect that a given interaction transcript comes from an evaluation rather than real-world deployment with significant accuracy.

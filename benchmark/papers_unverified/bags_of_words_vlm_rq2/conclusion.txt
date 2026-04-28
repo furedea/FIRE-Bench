@@ -1,0 +1,1 @@
+The selection of challenging negative examples based on compositional structures through composition-aware hard negative mining can enhance Vision-Language Models' ability to understand and process compositional relationships, as evidenced by improved performance on compositional tasks.

@@ -1,19 +1,20 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ1: How does task probability affect the performance of LLMs?"
+You are a research agent. Conduct an empirical study answering the question: "RQ1: How does the frequency of tasks in training data affect the performance of large language models (GPT-3.5 and GPT-4) on tasks like shift ciphers, Pig Latin, acronyms, linear functions, and sorting?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- C4 corpus: A large-scale dataset used to analyze the frequency of shift ciphers and sorting tasks in Internet text.  [loader unverified -- locate the data yourself]
-- Pile corpus: A dataset used to analyze the frequency of Pig Latin variants in Internet text.  [loader unverified -- locate the data yourself]
+- C4 corpus: A large-scale dataset of web-crawled text used to analyze the frequency of shift ciphers and sorting tasks.
+  Loading code:
+    from datasets import load_dataset
+    c4 = load_dataset("allenai/c4", split='train')
+- Pile dataset: A diverse dataset of text used to analyze the frequency of Pig Latin variants.
+  Loading code:
+    from datasets import load_dataset
+    pile = load_dataset("EleutherAI/pile", split='train')
 
 Analytical tools / techniques available:
-- NLTK
-- RoBERTa
-- GPT-2
-- R
-- ggplot2
-- arm
-- multcomp
+- GPT-2 for probability estimation
+- Logistic regression for statistical analysis
 
 Study constraints:
 - Do NOT use web search
@@ -32,34 +33,75 @@ Design the protocol yourself. Run the full study end-to-end and report results t
 
 ## Experimental Design
 
-### 1. Shift Ciphers: Task Probability
-- **Procedure**: Evaluate the performance of GPT-3.5 and GPT-4 on decoding messages encoded with different shift ciphers. Specifically, compare the performance on rot-13 (a common shift cipher) versus rot-2 (a rare shift cipher). Use the C4 corpus to estimate the frequency of each shift cipher in Internet text.
-- **Input Format**: Provide the models with sentences encoded in rot-13 and rot-2. Include an example in the prompt to clarify the task.
+### 1. Shift Ciphers
+- **Procedure**: Evaluate GPT-3.5 and GPT-4 on decoding text encoded with different shift levels (rot-1 to rot-25). Use the C4 corpus to estimate the frequency of each shift level in natural text. Provide models with the shift level being used and an example of an English sentence and its encoding in the shift cipher at hand.
+- **Input Format**: Sentences from the Global Voices dataset, encoded using various shift levels.
+- **Prompting Strategy**: Include an in-context example that clarifies capitalization and non-letter character handling.
 - **Number of Samples**: 100 sentences per shift level.
-- **What to Record**: Record the decoding accuracy for each shift level.
-- **Correspondence**: Section 5.1, Figure 5.2.
+- **What to Record**: Decoding accuracy for each shift level.
+- **Correspondence**: Figure 5.2, Section 5.1.
 
-### 2. Pig Latin: Task Probability
-- **Procedure**: Evaluate the performance of GPT-3.5 and GPT-4 on encoding sentences into Pig Latin and Boar Etruscan. Compare the performance on the common Pig Latin variant versus the rare Boar Etruscan variant. Use the Pile corpus to estimate the frequency of each variant.
-- **Input Format**: Provide sentences in English and ask the models to convert them into Pig Latin or Boar Etruscan.
-- **Number of Samples**: 100 sentences per variant.
-- **What to Record**: Record the encoding accuracy for each variant.
-- **Correspondence**: Section 5.2, Figure 5.3.
+### 2. Pig Latin
+- **Procedure**: Evaluate models on encoding and decoding sentences in common Pig Latin and a rare variant called Boar Etruscan. Additionally, test models on four minimally-differing Pig Latin variants that occur in natural corpora.
+- **Input Format**: Sentences from the Global Voices dataset, converted into Pig Latin and its variants.
+- **Prompting Strategy**: Provide an example sentence in the specified Pig Latin variant.
+- **Number of Samples**: 100 sentences per condition.
+- **What to Record**: Encoding and decoding accuracy for each variant.
+- **Correspondence**: Figure 5.3, Section 5.2.
+
+### 3. Acronyms
+- **Procedure**: Compare performance on forming acronyms from the first letters of words (common task) versus the second letters (rare task).
+- **Input Format**: Sequences of words designed to form specific acronyms.
+- **Prompting Strategy**: Directly ask for the acronym formed by the sequence of words.
+- **Number of Samples**: 1000 examples per condition.
+- **What to Record**: Accuracy of acronym formation.
+- **Correspondence**: Figure 5.4, Section 5.3.
+
+### 4. Linear Functions
+- **Procedure**: Compare performance on applying a common linear function (Celsius-to-Fahrenheit conversion) versus a rare one.
+- **Input Format**: Numerical inputs for the linear functions.
+- **Prompting Strategy**: Provide the function to be applied and specify if it is a temperature conversion.
+- **Number of Samples**: 100 examples per function.
+- **What to Record**: Accuracy of function application.
+- **Correspondence**: Figure 5.5, Section 5.4.
+
+### 5. Sorting
+- **Procedure**: Compare performance on sorting words in alphabetical order (common) versus reverse alphabetical order (rare).
+- **Input Format**: Lists of words to be sorted.
+- **Prompting Strategy**: Specify the order in which the words should be sorted.
+- **Number of Samples**: 100 examples per condition.
+- **What to Record**: Sorting accuracy.
+- **Correspondence**: Figure 5.6, Section 5.5.
 
 ## Evaluation Details
 
 ### Shift Ciphers
-- **Metric**: Decoding accuracy is calculated as the proportion of correctly decoded sentences out of the total number of sentences provided.
-- **Normalization**: Ensure that the model outputs are compared against the correct decoded sentences, ignoring any extraneous punctuation or capitalization differences.
-- **Aggregation Strategy**: Calculate accuracy per shift level and compare across levels to determine the effect of task probability.
+- **Metric**: Decoding accuracy, calculated as the proportion of correctly decoded sentences.
+- **Normalization**: Ensure consistent handling of capitalization and non-letter characters.
+- **Aggregation**: Calculate accuracy per shift level and compare across levels.
 
 ### Pig Latin
-- **Metric**: Encoding accuracy is calculated as the proportion of correctly encoded sentences out of the total number of sentences provided.
-- **Normalization**: Ensure that the model outputs are compared against the correct encoded sentences, ignoring case differences.
-- **Aggregation Strategy**: Calculate accuracy per variant and compare across variants to determine the effect of task probability.
+- **Metric**: Encoding and decoding accuracy, calculated as the proportion of correctly transformed sentences.
+- **Normalization**: Ignore case differences in the output.
+- **Aggregation**: Calculate accuracy per variant and compare across variants.
+
+### Acronyms
+- **Metric**: Accuracy of acronym formation, calculated as the proportion of correctly formed acronyms.
+- **Normalization**: Ignore spaces and capitalization in the output.
+- **Aggregation**: Compare accuracy between first-letter and second-letter acronym tasks.
+
+### Linear Functions
+- **Metric**: Accuracy of function application, calculated as the proportion of correctly computed outputs.
+- **Normalization**: Round outputs to the nearest integer where applicable.
+- **Aggregation**: Compare accuracy between common and rare functions.
+
+### Sorting
+- **Metric**: Sorting accuracy, calculated as the proportion of correctly sorted lists.
+- **Normalization**: Ensure consistent handling of list formatting.
+- **Aggregation**: Compare accuracy between alphabetical and reverse alphabetical sorting.
 
 ## Implementation Notes
 
-- **Prompt Templates**: For shift ciphers, include an example in the prompt to clarify the encoding/decoding process. For Pig Latin, specify the rules for converting English to Pig Latin or Boar Etruscan.
-- **Output Parsing**: For both tasks, ensure that the model outputs are parsed to extract the relevant encoded or decoded text, ignoring any additional text generated by the model.
-- **Order of Operations**: Ensure that the tasks are presented in a consistent order to the models to avoid any order effects.
+- **Prompt Templates**: Use specific examples in prompts to clarify task requirements, such as handling of capitalization and punctuation in shift ciphers and Pig Latin.
+- **Output Parsing**: For tasks like acronyms and sorting, ensure that the model's output is parsed to extract the relevant answer, ignoring any additional text.
+- **Order of Operations**: For tasks involving transformations (e.g., shift ciphers, Pig Latin), ensure that the transformation is applied consistently across all examples.

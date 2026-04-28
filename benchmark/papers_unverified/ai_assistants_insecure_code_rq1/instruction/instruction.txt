@@ -1,12 +1,13 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ2: Do users trust AI assistants to write secure code?"
+You are a research agent. Conduct an empirical study answering the question: "RQ2: How does user trust in AI assistants (software tools that provide automated coding suggestions) to write secure code affect their perception of code security in tasks involving encryption, signing, file path handling, SQL operations, and C string manipulation?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- Post-study survey responses: Survey responses collected from participants regarding their trust in AI-generated code security.  [loader unverified -- locate the data yourself]
+- User Study Data: Data collected from a user study where participants interacted with AI code assistants to solve security-related programming tasks.  [generate programmatically]
 
 Analytical tools / techniques available:
-- Likert-scale survey analysis
+- Likert-scale analysis
+- Logistic regression
 
 Study constraints:
 - Do NOT use web search

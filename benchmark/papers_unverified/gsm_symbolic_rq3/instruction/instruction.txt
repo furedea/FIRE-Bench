@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ4: Can LLMs really understand mathematical concepts?"
+You are a research agent. Conduct research and experiment about the question: "RQ4: Can large language models (LLMs, neural networks trained on vast text corpora) accurately solve mathematical problems by discerning relevant information, or do they rely on pattern matching when irrelevant information is added, as evaluated using 8-shot Chain-of-Thought prompting on the GSM-NoOp dataset?"
 
 You have access to the following resources:
 
@@ -8,33 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- GSM8K: A dataset of grade school math questions used to evaluate the mathematical reasoning capabilities of LLMs.
-  Loading code:
-    from datasets import load_dataset
-    dataset = load_dataset("gsm8k")
-- GSM-Symbolic: An enhanced benchmark that generates diverse variants of GSM8K questions using symbolic templates.  [generate programmatically]
-  Generation code:
-    import random
-    
-    def generate_gsm_symbolic():
-        names = ["Alice", "Bob", "Charlie"]
-        family = random.choice(["nephew", "cousin", "brother"])
-        x = random.randint(5, 100)
-        y = random.randint(5, 100)
-        z = random.randint(5, 100)
-        total = random.randint(100, 500)
-        ans = total - (x + y + z)
-        return {
-            "question": f"When {random.choice(names)} watches her {family}, she gets out a variety of toys. The bag of building blocks has {x} blocks, the bin of stuffed animals has {y} stuffed animals, and the tower of stacking rings has {z} rings. She recently bought a tube of bouncy balls, bringing the total number of toys to {total}. How many bouncy balls came in the tube?",
-            "answer": ans
-        }
-- GSM-NoOp: A dataset designed to challenge LLMs by adding irrelevant information to questions.  [generate programmatically]
-  Generation code:
-    def generate_gsm_noop():
-        base_question = generate_gsm_symbolic()
-        noop_info = "Additionally, she thought about buying a kite but decided against it."
-        base_question["question"] += " " + noop_info
-        return base_question
+- GSM-NoOp: A dataset designed to challenge the reasoning capabilities of language models by adding seemingly relevant but ultimately inconsequential statements to mathematical problems.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

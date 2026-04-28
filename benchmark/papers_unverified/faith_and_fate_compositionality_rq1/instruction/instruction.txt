@@ -1,16 +1,16 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Can transformers generalize to out-of-domain (OOD) examples in compositional tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the types of errors made by transformer LLMs at different reasoning depths in compositional tasks?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 via API
+- gpt-4o via API
 - Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Multi-digit multiplication: A dataset consisting of multi-digit multiplication problems requiring step-by-step reasoning to solve.  [generate programmatically]
-- Logic grid puzzles: A dataset of logic grid puzzles, such as Einstein's puzzle, requiring constraint satisfaction and reasoning.  [generate programmatically]
-- Dynamic programming problem: A dataset involving a classic dynamic programming problem, such as finding a subsequence with the highest sum under certain constraints.  [generate programmatically]
+- Generated multiplication problems: Synthetic dataset of multi-digit multiplication problems for evaluating reasoning errors in transformer LLMs.  [generate programmatically]
+- Generated puzzles: Synthetic dataset of logic grid puzzles for evaluating reasoning errors in transformer LLMs.  [generate programmatically]
+- Generated sequences: Synthetic dataset of sequences for dynamic programming problems to evaluate reasoning errors in transformer LLMs.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

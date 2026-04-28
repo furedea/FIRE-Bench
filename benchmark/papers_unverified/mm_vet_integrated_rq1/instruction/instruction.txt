@@ -1,28 +1,15 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How can we design evaluation metrics that work well across different question and answer types?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does a large language model (LLM)-based evaluator perform in assessing open-ended outputs from large multimodal models (LMMs) using the MM-Vet dataset, which contains multimodal evaluation tasks, and averaged absolute differences (the mean of absolute score differences) as metrics?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4o via API
-- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- gpt-4 via API
+- Load with HuggingFace: meta-llama/Llama-2-13b-chat
+- Load with HuggingFace: mistral/Mistral-7B-Instruct-v0.2
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- MM-Vet: A benchmark that examines large multimodal models on complicated multimodal tasks, focusing on the integration of core vision-language capabilities.  [loader unverified -- locate the data yourself]
-- COCO: A dataset for image recognition and captioning tasks.
-  Project page: https://cocodataset.org
-  Setup:
-    # Download instructions and data are at:
-    # https://cocodataset.org
-- VQA v2: A dataset for visual question answering tasks.
-  Project page: https://visualqa.org
-  Setup:
-    # Download instructions and data are at:
-    # https://visualqa.org
-- Text VQA: A dataset for visual question answering tasks involving text recognition.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('textvqa')
+- MM-Vet: A benchmark dataset designed to evaluate large multimodal models (LMMs) on complex multimodal tasks requiring the integration of multiple vision-language capabilities.
 
 Experimental constraints:
 - Do NOT use web search

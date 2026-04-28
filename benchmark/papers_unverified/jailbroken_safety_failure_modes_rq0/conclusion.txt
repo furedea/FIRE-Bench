@@ -1,0 +1,1 @@
+Competing objectives in safety-trained large language models contribute to their vulnerability to jailbreak attacks by allowing prefix injection to exploit these objectives and provide harmful information, and by enabling refusal suppression to increase the likelihood of unsafe responses by limiting refusal options.

@@ -1,50 +1,51 @@
 task_id: loft_long_context_subsume_rag_rq1
 paper_type: llm_evaluation
-research_question: 'RQ2: Can LCLMs effectively perform Retrieval-Augmented Generation
-  (RAG) tasks?'
+research_question: "RQ2: Can Long-Context Language Models (LCLMs, which process extended sequences of text) effectively perform Retrieval-Augmented Generation (RAG, a task involving retrieving relevant information from a corpus to generate responses) on datasets like NQ, TopiOCQA, and HotPotQA, as measured by subspan exact match metrics?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: NQ
-  source: huggingface
-  description: A dataset for question answering with phrase-level answer annotations.
-  loader: 'from datasets import load_dataset
-
-    ds = load_dataset(''nq_open'')
-
-    '
-- name: TopiOCQA
-  source: unknown
-  description: A multi-turn conversational question answering dataset.
-- name: HotPotQA
-  source: huggingface
-  description: A multi-hop question answering dataset.
-  loader: 'from datasets import load_dataset
-
-    ds = load_dataset(''hotpot_qa'')
-
-    '
-- name: MuSiQue
-  source: external
-  description: A multi-hop question answering dataset.
-  url: https://github.com/stonybrooknlp/musique
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/stonybrooknlp/musique.git
-
-    '
-- name: QAMPARI
-  source: unknown
-  description: A multi-target question answering dataset requiring set operations.
-- name: QUEST
-  source: unknown
-  description: A multi-target question answering dataset requiring set operations.
+  - name: "NQ"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      nq = load_dataset("nq")
+    description: "A dataset for question answering with phrase-level answer annotations."
+  - name: "TopiOCQA"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      topiocqa = load_dataset("McGill-NLP/topiocqa")
+    description: "A multi-turn conversational question answering dataset."
+  - name: "HotPotQA"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      hotpotqa = load_dataset("hotpotqa")
+    description: "A dataset for multi-hop question answering."
+  - name: "MuSiQue"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      musique = load_dataset("allenai/musique")
+    description: "A dataset for multi-hop question answering."
+  - name: "QAMPARI"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      qampari = load_dataset("samsam3232/qampari")
+    description: "A benchmark for open-domain questions with many answers."
+  - name: "QUEST"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      quest = load_dataset("google-research/language", "quest")
+    description: "A retrieval dataset of entity-seeking queries with implicit set operations."
+references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

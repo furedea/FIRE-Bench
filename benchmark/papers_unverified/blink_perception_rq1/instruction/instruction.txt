@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: What are the specific strengths and weaknesses of multimodal LLMs on different tasks within the Blink benchmark?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the effects of varying visual prompt attributes, such as shape size and color, on the performance of multimodal LLMs in tasks like relative depth estimation, relative reflectance, and visual correspondence using datasets such as 'Depth in the Wild', 'Intrinsic Images in the Wild', and 'HPatches'?"
 
 You have access to the following resources:
 
@@ -8,7 +8,18 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Blink benchmark: A benchmark designed to evaluate the visual perception capabilities of multimodal LLMs, consisting of 14 classic computer vision tasks reformatted into 3,807 multiple-choice questions.  [loader unverified -- locate the data yourself]
+- Depth in the Wild: A dataset containing images with human annotations for relative depth estimation.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("depth-in-the-wild")
+- Intrinsic Images in the Wild: A dataset with human annotations for comparing the reflectance (albedo) of two pixels.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("intrinsic-images-in-the-wild")
+- HPatches: A dataset containing image sequences taken under different illuminations and/or viewpoints for visual correspondence tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hpatches")
 
 Experimental constraints:
 - Do NOT use web search

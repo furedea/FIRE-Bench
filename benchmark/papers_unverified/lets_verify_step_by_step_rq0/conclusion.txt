@@ -1,0 +1,1 @@
+Process supervision significantly outperforms outcome supervision in training reward models for solving problems from the MATH dataset.

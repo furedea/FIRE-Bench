@@ -1,0 +1,1 @@
+In-context learning in Large Language Models is driven by token co-occurrence reinforcement, where repeated contextual co-occurrences in demonstration examples strengthen token relationships. This mechanism explains both the beneficial functions and detrimental effects of ICL, including instances where spurious correlations in demonstrations mislead the model.

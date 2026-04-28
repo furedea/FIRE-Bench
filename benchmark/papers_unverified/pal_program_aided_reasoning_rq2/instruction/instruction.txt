@@ -1,29 +1,26 @@
-You are a research agent. Conduct research about the question: "RQ3: Can PAL improve performance on algorithmic tasks compared to chain-of-thought prompting?"
+You are a research agent. Conduct research about the question: "RQ3: How does a program-aided language model (PAL), which uses external tools like a Python interpreter to assist in reasoning, perform on algorithmic reasoning tasks such as OBJECT COUNTING and REPEAT COPY compared to chain-of-thought prompting, where models generate intermediate reasoning steps in natural language during few-shot prompting?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Program-Aided Language models (PAL): PAL is a novel approach that uses large language models (LLMs) to read natural language problems and generate programs as intermediate reasoning steps, while offloading the solution step to a runtime such as a Python interpreter. This method allows the LLM to focus on decomposing the problem into runnable steps, leveraging the interpreter for accurate computation, thus improving performance on algorithmic tasks.
-  - Component: LLM generates intermediate reasoning steps as code
-  - Component: Python interpreter executes the generated code to solve the problem
-  - Component: Synergy between neural LLM and symbolic interpreter
+- Program-Aided Language Model (PAL): PAL is a novel approach that uses large language models (LLMs) to read natural language problems and generate programs as intermediate reasoning steps, while offloading the solution step to a runtime such as a Python interpreter. This method allows the LLM to focus on decomposing the problem into runnable steps, leveraging the interpreter for accurate computation.
+  - Component: LLM generates programmatic reasoning steps
+  - Component: Python interpreter executes the generated code
+  - Component: Integration of natural language and programming language reasoning
 - Baseline for comparison: Chain-of-Thought (COT) prompting
 
 Datasets for training and evaluation:
-- OBJECT COUNTING: A dataset involving questions about counting objects of a certain type.  [generate programmatically]
+- OBJECT COUNTING: A task involving counting the number of objects belonging to a certain type.  [generate programmatically]
   Generation code:
     def generate_object_counting_data():
-        return [
-            {"input": "I have a chair, two potatoes, a cauliflower, a lettuce head, two tables, a cabbage, two onions, and three fridges. How many vegetables do I have?", "output": 6},
-            # Add more examples as needed
-        ]
-- REPEAT COPY: A dataset requiring the generation of a sequence of words according to specific instructions.  [generate programmatically]
+        objects = ["chair", "potato", "cauliflower", "lettuce head", "table", "cabbage", "onion", "fridge"]
+        quantities = [1, 2, 1, 1, 2, 1, 2, 3]
+        return list(zip(objects, quantities))
+- REPEAT COPY: A task requiring generating a sequence of words according to specific instructions.  [generate programmatically]
   Generation code:
     def generate_repeat_copy_data():
-        return [
-            {"input": "Repeat the word duck four times, but halfway through also say quack.", "output": "duck duck quack duck duck"},
-            # Add more examples as needed
-        ]
+        instructions = "Repeat the word duck four times, but halfway through also say quack"
+        return instructions
 
 Experimental constraints:
 - Do NOT use web search

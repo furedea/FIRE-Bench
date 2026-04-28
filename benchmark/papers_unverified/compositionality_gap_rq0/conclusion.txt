@@ -1,0 +1,1 @@
+The compositionality gap manifests as a roughly constant 40% across different sizes of the GPT-3 family when evaluated on multi-hop question answering tasks.

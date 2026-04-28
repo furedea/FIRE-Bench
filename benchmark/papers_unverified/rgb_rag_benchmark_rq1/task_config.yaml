@@ -1,25 +1,22 @@
 task_id: rgb_rag_benchmark_rq1
 paper_type: llm_evaluation
-research_question: 'RQ2: Can LLMs effectively reject questions when relevant information
-  is not present in retrieved documents?'
+research_question: "RQ2: Can large language models (ChatGPT, ChatGLM-6B, ChatGLM2-6B, Vicuna-7b, Qwen-7B-Chat, BELLE-7B) effectively reject questions when required knowledge is absent in retrieved documents, evaluated in English and Chinese?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - THUDM/ChatGLM-6B
-  - THUDM/ChatGLM2-6B
-  - lmsys/vicuna-7b-v1.3
-  - Qwen/Qwen-7B-Chat
-  - LianjiaTech/BELLE-7B-2M
+    - THUDM/chatglm-6b
+    - THUDM/chatglm2-6b
+    - lmsys/vicuna-7b-v1.3
+    - Qwen/Qwen-7B-Chat
+    - LianjiaTech/BELLE-7B-2M
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: Retrieval-Augmented Generation Benchmark (RGB)
-  source: synthetic
-  description: A benchmark designed to evaluate the retrieval-augmented generation
-    capabilities of LLMs, focusing on noise robustness, negative rejection, information
-    integration, and counterfactual robustness.
+  - name: "Retrieval-Augmented Generation Benchmark (RGB)"
+    source: synthetic
+    description: "A benchmark designed to evaluate the retrieval-augmented generation capabilities of LLMs in English and Chinese, focusing on noise robustness, negative rejection, information integration, and counterfactual robustness."
 references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

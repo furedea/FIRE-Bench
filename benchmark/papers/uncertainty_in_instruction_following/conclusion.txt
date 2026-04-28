@@ -1,0 +1,1 @@
+Large language models can estimate their uncertainty to some degree when following instructions, but effectiveness varies with task complexity. Verbalized self-evaluation methods are more effective on simpler tasks, while internal model states provide more reliable uncertainty signals across both simple and realistic settings.

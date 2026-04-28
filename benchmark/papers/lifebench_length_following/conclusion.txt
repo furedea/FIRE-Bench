@@ -1,0 +1,1 @@
+LLMs follow short-length instructions reasonably well but struggle significantly with longer constraints, often failing to reach vendor-claimed maximum output lengths. Long-context LLMs do not reliably improve adherence to length instructions, while reasoning models perform better at following length constraints than specialized long-text generation models.

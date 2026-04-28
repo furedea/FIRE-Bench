@@ -1,0 +1,1 @@
+Key considerations for software engineers implementing Retrieval Augmented Generation (RAG) systems across diverse domains include chunking strategies, embedding choices, and continuous calibration.

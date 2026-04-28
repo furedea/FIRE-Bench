@@ -1,13 +1,14 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: What are the limitations of current large language models in performing complex tasks in WebArena?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: What are the key challenges and areas for improvement in developing robust autonomous agents for complex web-based tasks in WebArena?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 via API
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- WebArena: A realistic and reproducible web environment with fully functional websites from domains like e-commerce, social forums, collaborative software development, and content management, used to evaluate autonomous agents.  [generate programmatically]
+- WebArena benchmark: A set of 812 long-horizon web-based tasks designed to evaluate the functional correctness of task completions by autonomous agents in a realistic web environment.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

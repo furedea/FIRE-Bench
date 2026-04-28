@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How do LLMs perform as agents across different interactive environments?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How do LLMs perform as agents in code-grounded environments, specifically in operating systems, databases, and knowledge graphs?"
 
 You have access to the following resources:
 
@@ -11,29 +11,33 @@ Models:
 - Load with HuggingFace: meta-llama/Llama-3.1-13B-Instruct
 - Load with HuggingFace: meta-llama/Llama-3.1-34B-Instruct
 - Load with HuggingFace: meta-llama/Llama-3.1-70B-Instruct
-- Load with HuggingFace: meta-llama/Llama-3.1-13B
-- Load with HuggingFace: meta-llama/Llama-3.1-7B
-- Load with HuggingFace: meta-llama/Llama-3.1-6B
-- Load with HuggingFace: meta-llama/Llama-3.1-12B
-- Load with HuggingFace: meta-llama/Llama-3.1-30B
-- Load with HuggingFace: meta-llama/Llama-3.1-33B
-- Load with HuggingFace: meta-llama/Llama-3.1-65B
-- Load with HuggingFace: meta-llama/Llama-3.1-6B-Instruct
-- Load with HuggingFace: meta-llama/Llama-3.1-12B-Instruct
-- Load with HuggingFace: meta-llama/Llama-3.1-30B-Instruct
-- Load with HuggingFace: meta-llama/Llama-3.1-33B-Instruct
-- Load with HuggingFace: meta-llama/Llama-3.1-65B-Instruct
+- Load with HuggingFace: Anthropic/claude-3
+- Load with HuggingFace: Anthropic/claude-2
+- Load with HuggingFace: Anthropic/claude
+- Load with HuggingFace: Anthropic/claude-instant
+- Load with HuggingFace: openai/gpt-3.5-turbo
+- Load with HuggingFace: openai/text-davinci-003
+- Load with HuggingFace: openai/text-davinci-002
+- Load with HuggingFace: google/chat-bison-001
+- Load with HuggingFace: Tsinghua/chatglm-6b
+- Load with HuggingFace: Tsinghua/codegeex2-6b
+- Load with HuggingFace: Tsinghua/openchat-13b
+- Load with HuggingFace: Tsinghua/wizardlm-30b
+- Load with HuggingFace: Tsinghua/wizardlm-13b
+- Load with HuggingFace: Tsinghua/koala-13b
+- Load with HuggingFace: Tsinghua/oasst-12b
+- Load with HuggingFace: Tsinghua/dolly-12b
+- Load with HuggingFace: Tsinghua/guanaco-65b
+- Load with HuggingFace: Tsinghua/guanaco-33b
+- Load with HuggingFace: Tsinghua/vicuna-33b
+- Load with HuggingFace: Tsinghua/vicuna-13b
+- Load with HuggingFace: Tsinghua/vicuna-7b
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Operating System: Simulated environment for evaluating LLMs' ability to interact with operating systems using bash commands.  [generate programmatically]
-- Database: Simulated environment for evaluating LLMs' ability to interact with databases using SQL commands.  [generate programmatically]
-- Knowledge Graph: Simulated environment for evaluating LLMs' ability to interact with knowledge graphs using querying tools.  [generate programmatically]
-- Digital Card Game: Simulated environment for evaluating LLMs' strategic thinking in a card game setting.  [generate programmatically]
-- Lateral Thinking Puzzles: Simulated environment for evaluating LLMs' lateral reasoning abilities through puzzles.  [generate programmatically]
-- House-Holding: Simulated environment for evaluating LLMs' ability to perform tasks in a household setting.  [generate programmatically]
-- Web Shopping: Simulated environment for evaluating LLMs' ability to perform shopping tasks on a web platform.  [generate programmatically]
-- Web Browsing: Simulated environment for evaluating LLMs' ability to perform browsing tasks on the web.  [generate programmatically]
+- Custom OS tasks: Tasks designed to evaluate LLMs' ability to interact with operating systems using bash commands.  [generate programmatically]
+- Custom SQL tasks: Tasks designed to evaluate LLMs' ability to interact with databases using SQL queries.  [generate programmatically]
+- Custom KG tasks: Tasks designed to evaluate LLMs' ability to interact with knowledge graphs using KG-querying tools.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

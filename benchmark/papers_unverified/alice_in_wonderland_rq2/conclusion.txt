@@ -1,0 +1,1 @@
+Standardized benchmarks like MMLU, GSM8k, and ARC-c do not accurately reflect the generalization and reasoning capabilities of state-of-the-art large language models, as they fail to reveal severe function deficits in these models.

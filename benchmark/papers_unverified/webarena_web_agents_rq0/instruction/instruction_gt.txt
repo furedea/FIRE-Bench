@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How can WebArena be designed to emulate real-world web environments for autonomous agents?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How effective is a simulated web environment, WebArena, in providing a realistic and reproducible setting for tasks across the domains of e-commerce, social forums, collaborative development, and content management?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- WebArena Benchmark: A set of 812 long-horizon web-based tasks designed to evaluate the functional correctness of task completions in a realistic web environment.  [generate programmatically]
+- WebArena environment: A simulated web environment with fully functional websites from e-commerce, social forums, collaborative development, and content management domains, designed to evaluate autonomous agents.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,63 +20,77 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Task: Evaluating Functional Correctness of WebArena Tasks
+### 1. Task Success Rate Evaluation
 - **Procedure**: 
-  - Use the WebArena Benchmark dataset consisting of 812 tasks.
+  - Use the WebArena environment to evaluate the task success rate of autonomous agents.
+  - Implement tasks across four domains: e-commerce, social forums, collaborative development, and content management.
   - Each task is described by a high-level natural language intent.
-  - Implement agents using GPT-4 and Llama-3.1-8B-Instruct models.
-  - For each task, the agent receives the task intent and interacts with the WebArena environment to complete the task.
-  - Use a few-shot in-context learning approach with two examples in the context.
-  - Implement two prompting strategies: direct action prediction and chain-of-thought (CoT) reasoning before action prediction.
-  - Ensure the agent is aware of unachievable tasks by including a "Unachievable hint" in the prompt.
-  - Record the sequence of actions taken by the agent, the final state of the environment, and whether the task was completed successfully.
+  - Use the gpt-4o model to perform tasks in a few-shot in-context learning fashion.
+  - Tasks are executed end-to-end, with the agent interacting with the environment to complete the task.
+  - Use a multi-tab web-based task setup to mimic human web browsing habits.
+  - Evaluate 812 long-horizon web-based tasks.
 - **What to Record**: 
-  - Raw outputs of the agent's actions.
-  - Extracted answers for information-seeking tasks.
-  - Intermediate statistics such as the number of steps taken and actions repeated.
-  - Success or failure of each task.
+  - Record the end-to-end task success rate.
+  - Capture the sequence of actions taken by the agent.
+  - Log the intermediate states and final outcomes.
 - **Correspondence**: 
   - Results are discussed in Section 5 and shown in Table 2.
 
-### 2. Task: Human Performance Benchmarking
+### 2. Human Performance Benchmarking
 - **Procedure**: 
-  - Sample one task from each of the 170 templates in the benchmark.
-  - Have five computer science graduate students perform these tasks in the WebArena environment.
-  - Record the time taken and success rate for each task.
+  - Sample one task from each of the 170 templates.
+  - Have five computer science graduate students perform these tasks.
+  - Measure the time taken and success rate for each task.
 - **What to Record**: 
-  - Time taken for each task.
-  - Success rate for information-seeking tasks and other task categories.
+  - Record the average time taken per task.
+  - Capture the success rate for information-seeking tasks and other task categories.
 - **Correspondence**: 
-  - Human performance results are discussed in Section 3.2 and shown in the "Human Performance" subsection.
+  - Human performance results are detailed in Section 3.2 and summarized in Table 1.
+
+### 3. Evaluation of Unachievable Tasks
+- **Procedure**: 
+  - Design tasks that are not possible to complete due to constraints like inadequate evidence or user permissions.
+  - Evaluate the agent's ability to recognize and respond to these tasks appropriately.
+- **What to Record**: 
+  - Record the agent's response to unachievable tasks.
+  - Measure the success rate of identifying unachievable tasks.
+- **Correspondence**: 
+  - Discussed in Section 5.1 and shown in Table 2.
 
 ## Evaluation Details
 
-### Information-Seeking Tasks
-- **Metric Definitions**:
-  - **Exact Match**: Score of 1 if the predicted answer is identical to the reference answer.
-  - **Must Include**: Score of 1 if the predicted answer contains the reference answer.
-  - **Fuzzy Match**: Use GPT-4 to evaluate semantic equivalence between predicted and reference answers.
-- **Pre-processing**: 
-  - Normalize dates and time durations to a standard format before comparison.
-- **Aggregation Strategy**: 
-  - Compute per-sample scores and aggregate to obtain overall success rates.
+### Metrics for Task Success
+- **Exact Match**: 
+  - Used for tasks where the response follows a standardized format.
+  - Score of 1 if the predicted answer matches the reference answer exactly.
+- **Must Include**: 
+  - Used when an unordered list of text is expected.
+  - Score of 1 if the predicted answer contains the reference answer.
+- **Fuzzy Match**: 
+  - Used for diverse answer formats.
+  - Utilizes gpt-4-0613 to assess semantic equivalence.
+  - Score of 1 for semantically equivalent answers.
+- **Programmatic Evaluation**: 
+  - For site navigation and content tasks, check intermediate states programmatically.
+  - Use locators to retrieve critical content and verify against annotated keywords.
 
-### Site Navigation and Content & Config Tasks
-- **Metric Definitions**:
-  - **Programmatic Evaluation**: Use reward functions to check if intermediate states meet task conditions.
-- **Pre-processing**: 
-  - Use locators to extract relevant content from web pages for evaluation.
-- **Aggregation Strategy**: 
-  - Aggregate success rates across tasks to evaluate overall agent performance.
+### Aggregation Strategy
+- **Per-Sample Evaluation**: 
+  - Evaluate each task individually using the defined metrics.
+- **Per-Condition Aggregation**: 
+  - Aggregate results across tasks of similar types or conditions.
+- **Overall Success Rate**: 
+  - Calculate the overall success rate by averaging across all tasks.
 
 ## Implementation Notes
 
 - **Prompt Templates**: 
-  - Use specific prompt templates for reasoning and direct action prediction agents.
-  - Include detailed instructions and examples in the prompt to guide the agent's actions.
-- **Order of Operations**: 
-  - Ensure that the agent performs reasoning before action prediction in the CoT strategy.
-  - Follow the sequence of actions as per the task requirements and stop when the task is completed or deemed unachievable.
-- **Pitfalls**: 
-  - Avoid early stopping due to misinterpretation of unachievable tasks.
-  - Ensure the agent correctly interprets observations and previous actions to avoid repetitive or invalid actions.
+  - Use specific prompt templates for reasoning and direct action prediction.
+  - Include examples in the prompt to guide the model's reasoning process.
+- **Action Space**: 
+  - Define a compound action space emulating keyboard and mouse operations.
+  - Use element IDs for precise interaction with web elements.
+- **Observation Space**: 
+  - Design the observation space to mimic a web browser experience with multi-tab functionality.
+- **Environment Reset**: 
+  - Use Docker containers to reset the environment to a deterministic initial state after each task execution.

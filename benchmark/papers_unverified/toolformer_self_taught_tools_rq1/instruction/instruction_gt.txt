@@ -1,24 +1,22 @@
-You are a research agent. Conduct research about the question: "RQ2: Does the use of external tools improve the zero-shot performance of language models on various downstream tasks?"
+You are a research agent. Conduct research about the question: "RQ2: Does the self-supervised learning of tool use affect the core language modeling abilities of the language model?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Toolformer: Toolformer is a language model architecture that autonomously learns to use external tools via simple APIs to enhance its performance on various tasks. It is trained to decide which APIs to call, when to call them, what arguments to pass, and how to incorporate the results into future token prediction. This is achieved in a self-supervised manner, requiring only a few demonstrations for each API. Toolformer integrates tools such as a calculator, a Q&A system, a search engine, a translation system, and a calendar, significantly improving zero-shot performance across various tasks without sacrificing core language modeling abilities.
+- Toolformer: Toolformer is a language model architecture that autonomously learns to use external tools via APIs in a self-supervised manner. It decides which APIs to call, when to call them, what arguments to pass, and how to incorporate the results into future token predictions. This approach allows the model to enhance its performance on tasks like arithmetic and factual lookup without sacrificing its core language modeling abilities.
   - Component: API call decision-making mechanism
-  - Component: Self-supervised learning for tool use
-  - Component: Integration of multiple external tools (calculator, Q&A system, search engine, translation system, calendar)
+  - Component: Self-supervised learning framework for tool use
+  - Component: Integration with external tools like calculators, Q&A systems, and search engines
 - Baseline for comparison: GPT-J
 - Baseline for comparison: GPT-3
-- Baseline for comparison: OPT (66B)
+- Baseline for comparison: OPT
 
 Datasets for training and evaluation:
-- LAMA: A benchmark for evaluating language models on factual knowledge by completing short statements with missing facts.  [loader unverified -- locate the data yourself]
-- ASDiv: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
-- SVAMP: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
-- MAWPS: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
-- Web Questions: A question answering dataset used to evaluate models on open-domain questions.  [loader unverified -- locate the data yourself]
-- Natural Questions: A benchmark for question answering research, providing questions and answers based on Wikipedia.  [loader unverified -- locate the data yourself]
-- TriviaQA: A large-scale question answering dataset with questions and answers collected from trivia and quiz-league websites.  [loader unverified -- locate the data yourself]
+- WikiText: A dataset consisting of Wikipedia articles used for language modeling tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("wikitext", "wikitext-103-v1")
+- CCNet: A large-scale dataset extracted from web crawl data, used for language modeling.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -38,60 +36,58 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. LAMA Benchmark Evaluation
+### 1. Language Modeling Performance Evaluation
 - **Procedure**: 
-  - Use the SQuAD, Google-RE, and T-REx subsets of the LAMA benchmark.
-  - Filter out examples where the mask token is not the final token.
-  - Use a zero-shot setup without in-context examples.
-  - Prevent Toolformer from using the Wikipedia Search API to avoid unfair advantage.
-- **Input Format**: Short statements with missing facts.
-- **Prompting Strategy**: Use a prompt that instructs the model to complete the text factually.
-- **Number of Samples**: Use the entire filtered dataset.
-- **What to Record**: Record the top five predicted words for each example.
-- **Correspondence**: Results correspond to Table 3 and Section 4.2.1.
+  - Evaluate the language modeling performance of Toolformer and baseline models (GPT-J, GPT-J + CC) on the WikiText and a subset of CCNet datasets.
+  - Use the datasets without any API calls during evaluation to assess the core language modeling abilities.
+  - Perform evaluations with API calls disabled to ensure that the integration of tool use does not degrade language modeling performance.
+- **What to Record**: 
+  - Record the perplexity scores for each model on both datasets.
+- **Correspondence**: 
+  - This experiment corresponds to Section 4.3 and Table 8 in the paper.
 
-### 2. Mathematical Reasoning Datasets Evaluation
+### 2. Downstream Task Performance Evaluation
 - **Procedure**: 
-  - Evaluate on ASDiv, SVAMP, and MAWPS datasets.
-  - Use a zero-shot setup with lenient evaluation criteria.
-  - Check for the first number predicted by the model as the answer.
-- **Input Format**: Mathematical problems presented as text.
-- **Prompting Strategy**: Use a prompt that asks the model to solve the problem and provide the answer.
-- **Number of Samples**: Use the entire dataset for each benchmark.
-- **What to Record**: Record the first number predicted by the model.
-- **Correspondence**: Results correspond to Table 4 and Section 4.2.2.
-
-### 3. Question Answering Datasets Evaluation
-- **Procedure**: 
-  - Evaluate on Web Questions, Natural Questions, and TriviaQA datasets.
-  - Use a zero-shot setup with modified evaluation criteria.
-  - Disable the question answering tool for Toolformer to prevent trivial solutions.
-- **Input Format**: Open-domain questions.
-- **Prompting Strategy**: Use a prompt that instructs the model to answer the question.
-- **Number of Samples**: Use the entire dataset for each benchmark.
-- **What to Record**: Record the first 20 words predicted by the model.
-- **Correspondence**: Results correspond to Table 5 and Section 4.2.3.
+  - Evaluate Toolformer and baseline models on various downstream tasks, including LAMA, Math Datasets, Question Answering, Multilingual Question Answering, and Temporal Datasets.
+  - Use a zero-shot setup with standard greedy decoding, allowing Toolformer to autonomously decide when to use APIs.
+  - For Toolformer, modify the decoding strategy to allow API calls when the <API> token is among the top k most likely tokens (k=10).
+  - Limit to at most one API call per input to prevent infinite loops.
+- **What to Record**: 
+  - Record task-specific performance metrics, such as accuracy or percentage of correct answers.
+  - Note the frequency and type of API calls made by Toolformer during task completion.
+- **Correspondence**: 
+  - This experiment corresponds to Sections 4.2.1 to 4.2.5 and Tables 3 to 7 in the paper.
 
 ## Evaluation Details
 
-### LAMA Benchmark
-- **Metric**: Check if the correct word is within the first five words predicted by the model.
-- **Normalization**: Ensure tokenization aligns with the model's output format.
-- **Aggregation Strategy**: Calculate accuracy as the percentage of examples where the correct word is within the top five predictions.
+### Perplexity Evaluation
+- **Metric Definition**: 
+  - Perplexity is calculated as the exponential of the average negative log-likelihood of the test set tokens.
+  - Use the formula: \( PPL = \exp\left(-\frac{1}{N}\sum_{i=1}^{N}\log p(x_i | x_{<i})\right) \), where \( N \) is the number of tokens.
+- **Normalization**: 
+  - Ensure that the model outputs are tokenized consistently with the training data tokenization.
+- **Aggregation Strategy**: 
+  - Compute perplexity per dataset and report the average perplexity across all test samples.
 
-### Mathematical Reasoning Datasets
-- **Metric**: Check if the first number predicted by the model matches the correct answer.
-- **Normalization**: Handle equations by considering the first number after the "=" sign as the prediction.
-- **Aggregation Strategy**: Calculate accuracy as the percentage of correct predictions.
-
-### Question Answering Datasets
-- **Metric**: Check if the correct answer is within the first 20 words predicted by the model.
-- **Normalization**: Ensure the model's output is tokenized correctly for comparison.
-- **Aggregation Strategy**: Calculate accuracy as the percentage of examples where the correct answer is found within the prediction window.
+### Downstream Task Evaluation
+- **Metric Definitions**: 
+  - For LAMA and TEMPLAMA: Check if the correct word is within the first five words predicted by the model.
+  - For Math Datasets: Check if the first number predicted by the model matches the expected result.
+  - For Question Answering: Check if the first 20 words contain the correct answer.
+  - For Multilingual QA: Evaluate the percentage of times the model's generation contains the correct answer.
+- **Normalization**: 
+  - Ensure consistent tokenization and handling of special tokens across all models.
+- **Aggregation Strategy**: 
+  - Calculate performance metrics per task and report the average performance across all tasks.
 
 ## Implementation Notes
 
-- **Prompt Templates**: Use specific prompt templates for each task as detailed in the paper's Appendix A.2.
-- **API Call Logic**: Implement logic to decide when to make API calls based on the probability threshold and filtering criteria.
-- **Decoding Strategy**: Use a modified greedy decoding strategy where the model can start an API call if it is one of the top k most likely tokens, with k set to 10.
-- **Order of Operations**: Ensure that API calls are executed and results are integrated into the text before continuing with token prediction.
+- **Prompt Templates**: 
+  - Use specific prompt templates for each tool (e.g., QA, Calculator, Wikipedia Search, Machine Translation, Calendar) as detailed in Appendix A.2 of the paper.
+- **Decoding Strategy**: 
+  - For Toolformer, allow API calls when the <API> token is among the top k most likely tokens (k=10) to increase the likelihood of tool use.
+- **Order of Operations**: 
+  - Ensure that API calls are executed and results are integrated into the text before continuing with token prediction.
+- **Pitfalls**: 
+  - Avoid infinite loops by limiting to at most one API call per input.
+  - Ensure that the model does not rely solely on API calls by maintaining a balance between tool use and core language modeling.

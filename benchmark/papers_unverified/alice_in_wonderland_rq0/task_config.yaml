@@ -1,19 +1,26 @@
 task_id: alice_in_wonderland_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: Do state-of-the-art LLMs exhibit reasoning breakdowns on
-  simple common sense problems?'
+research_question: "RQ1: Do state-of-the-art large language models (GPT-4, Claude 3 Opus) exhibit generalization and reasoning breakdowns when confronted with simple common sense problems like the AIW problem (a task designed to test basic reasoning and generalization) and its variations, as measured by correct response rates across different prompt types?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: AIW problem variations 1-4
-  source: synthetic
-  description: Simple common sense math problems with variations in the number of
-    brothers and sisters to test model generalization and reasoning.
+  - name: "AIW problem variations"
+    source: synthetic
+    loader: |
+      def generate_aiw_variations():
+          variations = [
+              {"brothers": 3, "sisters": 6, "correct_answer": 7},
+              {"brothers": 4, "sisters": 2, "correct_answer": 3},
+              {"brothers": 1, "sisters": 4, "correct_answer": 5},
+              {"brothers": 4, "sisters": 1, "correct_answer": 2}
+          ]
+          return variations
+    description: "A set of simple common sense math problems designed to test model generalization and reasoning by varying the number of brothers and sisters."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

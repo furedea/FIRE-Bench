@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current multimodal models perform on the Perception Test benchmark?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do pre-trained multimodal models perform on the Perception Test across different skill areas (Memory, Abstraction, Physics, Semantics) and reasoning types (descriptive, explanatory, predictive, counterfactual) using real-world videos?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Perception Test: A benchmark formed of purposefully designed, filmed, and annotated real-world videos to assess the capabilities of multimodal perception models across different skill areas and types of reasoning.  [loader unverified -- locate the data yourself]
+- Perception Test: A benchmark of 11.6k real-world videos designed to evaluate perception and reasoning skills of multimodal models, annotated with multiple-choice and grounded video question-answers, object and point tracks, temporal action and sound segments.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

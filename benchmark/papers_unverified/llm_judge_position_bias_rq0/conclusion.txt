@@ -1,0 +1,1 @@
+The order of candidate responses significantly affects evaluation outcomes, as LLMs like GPT-4 and ChatGPT show substantial positional bias, leading to high conflict rates when response positions are swapped.

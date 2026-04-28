@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How does length-controlled AlpacaEval affect the robustness and interpretability of the evaluation metric?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: How does a length-controlled evaluation dataset (where response lengths are adjusted to a standard) for chatbot performance compare in terms of robustness and interpretability to other length correction methods (such as length-normalized and length-balanced win rates), as measured by correlation with human judgments, susceptibility to manipulation, and improvement in performance against adversarial inputs?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- AlpacaEval dataset: A set of 805 instructions used to evaluate instruction-following models, originally designed for the Alpaca web demo.  [loader unverified -- locate the data yourself]
+- AlpacaEval: A benchmark for instruction-tuned LLMs that uses LLMs to estimate response quality, focusing on reducing length bias.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -23,59 +23,76 @@ Please design and execute experiments to investigate this research question. Doc
 ### 1. Length-Controlled Evaluation
 - **Procedure**: 
   - Use the AlpacaEval dataset consisting of 805 instructions.
-  - For each instruction, generate responses using both the baseline model and the evaluated model.
-  - Apply a Generalized Linear Model (GLM) to predict preferences based on model identity, length of output, and instruction difficulty.
-  - Zero out the length term in the GLM to obtain length-controlled preferences.
-  - Conduct 5-fold cross-validation with L2 regularization to fit the model parameters.
+  - For each instruction, generate responses from both the baseline model and the evaluated model.
+  - Apply a generalized linear model (GLM) to predict preferences based on model identity, length of output, and instruction difficulty.
+  - Zero out the "length of output" term to obtain length-controlled preferences.
+  - Use 5-fold cross-validation with L2 regularization to fit the GLM.
 - **What to Record**: 
   - Raw outputs from both models.
   - Predicted preferences from the GLM.
   - Length-controlled win rates.
-  - Cross-validation statistics.
 - **Correspondence**: Section 3, Figure 2, and Equation 1.
 
-### 2. Robustness to Adversarial Attacks
+### 2. Length Gameability Test
 - **Procedure**: 
-  - Evaluate the impact of adversarial attacks by truncating outputs to a few characters.
-  - Compare win rates with and without regularization on the length term.
+  - Prompt models with variations: "Answer with as much detail as possible." (verbose) and "Be as concise as possible while still providing all the necessary information to answer the question." (concise).
+  - Measure the fluctuation in win rates across these prompts.
 - **What to Record**: 
-  - Win rates before and after applying adversarial attacks.
-  - Changes in win rates due to regularization.
-- **Correspondence**: Section 4.3, Figure 5.
+  - Win rates for each verbosity condition.
+  - Normalized standard deviation of win rates.
+- **Correspondence**: Section 4.1, Figure 3.
 
-### 3. Correlation with Human Judgments
+### 3. Correlation with Chatbot Arena
 - **Procedure**: 
-  - Compute the Spearman correlation between length-controlled AlpacaEval scores and human evaluations from the Chatbot Arena.
-  - Use the same set of models evaluated in the Chatbot Arena.
+  - Compute Spearman correlation between length-controlled AlpacaEval win rates and Chatbot Arena rankings.
+  - Use models that have been evaluated in both AlpacaEval and Chatbot Arena.
 - **What to Record**: 
   - Spearman correlation coefficients.
-  - Bootstrap p-values for statistical significance.
 - **Correspondence**: Section 4.2, Figure 1.
+
+### 4. Robustness to Adversarial Attacks
+- **Procedure**: 
+  - Simulate adversarial attacks by truncating outputs and observe changes in win rates.
+  - Apply regularization on the GLM to mitigate adversarial effects.
+- **What to Record**: 
+  - Win rates before and after adversarial attacks.
+  - Changes in win rates with and without regularization.
+- **Correspondence**: Section 4.3, Figure 5.
+
+### 5. Comparison of Length Correction Methods
+- **Procedure**: 
+  - Implement and evaluate length-normalized and length-balanced win rates.
+  - Compare these methods against length-controlled win rates using metrics like Chatbot Arena correlation, gameability, and adversarial win rate gain.
+- **What to Record**: 
+  - Performance metrics for each method.
+  - Comparative analysis results.
+- **Correspondence**: Section 4.4, Table 1.
 
 ## Evaluation Details
 
-- **Metric Definitions**:
-  - **Win Rate**: The expected probability that the auto-evaluator prefers the evaluated model's output over the baseline's output.
-  - **Length-Controlled Win Rate**: Computed by removing the length term from the GLM and recalculating the win rate.
-  - **Spearman Correlation**: Used to measure the rank correlation between AlpacaEval-LC scores and Chatbot Arena scores.
+- **Spearman Correlation**: 
+  - Use `scipy.stats.spearmanr` to compute the correlation between AlpacaEval-LC win rates and Chatbot Arena rankings.
+  - Ensure that the correlation is computed on models evaluated in both settings.
 
-- **Normalization and Pre-processing**:
-  - Standardize the length differences to have unit variance before applying the tanh transformation in the GLM.
-  - Ensure that the identity and symmetry properties of the win rate are maintained.
+- **Gameability Metric**: 
+  - Calculate the normalized standard deviation of win rates across different verbosity prompts.
+  - Formula: \( \text{Normalized Std Dev} = \frac{\text{Std Dev of Win Rates}}{\text{Mean Win Rate}} \).
 
-- **Aggregation Strategy**:
-  - Compute per-sample win rates, then aggregate to obtain per-condition win rates.
-  - Use cross-validation to ensure robustness and avoid overfitting.
+- **Adversarial Win Rate Gain**: 
+  - Measure the increase in win rate due to adversarial truncation.
+  - Compare win rates with and without regularization to assess robustness.
 
 ## Implementation Notes
 
-- **Pitfalls and Caveats**:
-  - Ensure that the GLM maintains the identity and symmetry properties of the original win rate.
-  - Regularization is crucial to prevent adversarial manipulation of the length term.
+- **GLM Fitting**: 
+  - Use logistic regression with a logit link function.
+  - Ensure the model maintains identity and symmetry properties as described in the paper.
+  - Regularization is crucial to prevent adversarial manipulation; apply weak L2 regularization on the length term.
 
-- **Prompt Templates and Output Parsing**:
-  - Use specific verbosity prompts: "Answer with as much detail as possible." for verbose and "Be as concise as possible while still providing all the necessary information to answer the question." for concise outputs.
+- **Prompting Strategy**: 
+  - Use specific prompts for verbosity testing to assess gameability.
+  - Ensure consistent application of prompts across all models and conditions.
 
-- **Order of Operations**:
-  - Fit the GLM using cross-validation before applying length control.
-  - Regularize the length term to prevent adversarial exploitation.
+- **Order of Operations**: 
+  - Fit the GLM on the full dataset before applying length control.
+  - Regularize the model during fitting to ensure robustness against adversarial attacks.

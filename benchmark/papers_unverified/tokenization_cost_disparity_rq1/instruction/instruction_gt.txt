@@ -1,16 +1,18 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ2: What are the fairness implications of tokenization length differences?"
+You are a research agent. Conduct an empirical study answering the question: "RQ2: What are the fairness implications of tokenization length differences across languages in terms of cost, latency, and long context processing?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- FLORES-200: A parallel corpus comprising 2000 sentences from Wikipedia translated into 200 different languages.  [loader unverified -- locate the data yourself]
+- FLORES-200: A parallel corpus comprising 2000 sentences from Wikipedia translated into 200 different languages.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("facebook/flores", "200")
 
 Analytical tools / techniques available:
 - Python
+- HuggingFace Datasets
 - NumPy
 - Pandas
-- Matplotlib
-- Hugging Face Transformers
 
 Study constraints:
 - Do NOT use web search
@@ -29,70 +31,70 @@ Design the protocol yourself. Run the full study end-to-end and report results t
 
 ## Experimental Design
 
-### 1. Tokenization Length Analysis
+### 1. Tokenization Premium Analysis
 - **Procedure**: 
-  - Use the FLORES-200 dataset, which contains 2000 parallel sentences across 200 languages.
-  - Tokenize each sentence using various tokenizers: GPT-2, RoBERTa, ChatGPT, GPT-4, FlanT5, and others as mentioned in the paper.
-  - Calculate the tokenization length for each sentence in each language.
-  - Compute the tokenization premium for each language relative to English using the formula: \(|t(sA)|/|t(sB)|\), where \(sA\) is a sentence in language A and \(sB\) is the same sentence in English.
+  - Use the FLORES-200 dataset to analyze tokenization lengths across different languages.
+  - For each language pair, compute the tokenization premium using the formula: \(|t(sA)|/|t(sB)|\), where \(sA\) and \(sB\) are sentences in different languages, and \(|t(sA)|\) is the tokenized length.
+  - Use subword tokenization models such as GPT-2, RoBERTa, and others mentioned in the paper.
+  - Ensure that the analysis includes both English-centric and non-English-centric models.
 - **What to Record**: 
-  - Raw tokenization lengths for each sentence in each language.
-  - Tokenization premiums for each language relative to English.
-- **Correspondence**: Section 4.1, Table 1, and Table 2.
+  - Tokenization lengths for each language.
+  - Tokenization premiums for each language pair.
+  - Raw outputs of tokenized sentences.
+- **Correspondence**: Section 4.1, 4.2, 4.3, and 4.4; Tables 1, 2, 3, 4, and 5.
 
 ### 2. Cost Implications Analysis
 - **Procedure**: 
-  - Use the tokenization premiums calculated in the previous task.
-  - Map these premiums to cost premiums by assuming a pricing model where cost is proportional to the number of tokens.
+  - Calculate the cost premium for each language using the tokenization premiums obtained from the previous experiment.
+  - Assume a pricing model where cost is proportional to the number of tokens.
 - **What to Record**: 
   - Cost premiums for each language relative to English.
 - **Correspondence**: Section 5.1.
 
 ### 3. Latency Implications Analysis
 - **Procedure**: 
-  - Use the tokenization lengths from the first task.
-  - Measure the processing time for each tokenized sentence using the RoBERTa model.
-  - Plot processing time against tokenization length to assess the relationship.
+  - Measure the processing time for tokenized inputs using the RoBERTa model.
+  - Plot the processing time against tokenization lengths to assess the correlation.
+  - Conduct 20 independent runs for each sentence to ensure robustness.
 - **What to Record**: 
-  - Processing times for each sentence.
-  - Correlation between tokenization length and processing time.
-- **Correspondence**: Section 5.2, Figure 2.
+  - Processing times for each language.
+  - Correlation statistics between tokenization length and processing time.
+- **Correspondence**: Figure 2; Section 5.2.
 
 ### 4. Long Context Processing Analysis
 - **Procedure**: 
-  - Use the tokenization lengths from the first task.
-  - Evaluate the maximum context length that can be processed by models like RoBERTa, GPT-2, and GPT-4.
-  - Determine the fraction of the FLORES-200 dataset that can be processed within the context limits for each language.
+  - Compare the context processing capabilities of models like GPT-2 and GPT-4 across languages with varying tokenization premiums.
+  - Analyze the maximum input length that can be processed for each language.
 - **What to Record**: 
-  - Context capacity for each language.
-  - Fraction of dataset processable within context limits.
+  - Maximum context length for each language.
+  - Comparison of context processing capabilities.
 - **Correspondence**: Section 5.3.
 
 ## Evaluation Details
 
 - **Metric Definitions**:
-  - **Tokenization Premium**: \(|t(sA)|/|t(sB)|\), where \(sA\) is a sentence in language A and \(sB\) is the same sentence in English.
-  - **Cost Premium**: Directly proportional to the tokenization premium, assuming a per-token pricing model.
-  - **Processing Time**: Measured in seconds for each sentence, plotted against tokenization length.
-  - **Context Capacity**: Maximum number of tokens that can be processed by a model, compared across languages.
+  - **Tokenization Premium**: \(|t(sA)|/|t(sB)|\), where \(|t(sA)|\) is the tokenized length of sentence \(sA\).
+  - **Cost Premium**: Directly proportional to the tokenization premium.
+  - **Processing Time**: Measured in seconds, averaged over 20 runs.
+  - **Context Capacity**: Maximum number of tokens that can be processed by the model.
 
 - **Normalization and Pre-processing**:
-  - Ensure all sentences are tokenized using the same tokenizer settings.
-  - Normalize tokenization lengths by dividing by the length for English to compute premiums.
+  - Ensure all sentences are pre-tokenized using the same tokenizer settings.
+  - Normalize tokenization lengths by dividing by the length of the English sentence for comparison.
 
 - **Aggregation Strategy**:
-  - Compute per-sentence tokenization lengths and premiums.
-  - Aggregate by language to compute average premiums and processing times.
-  - Compare aggregated metrics across languages to assess disparities.
+  - Compute per-sample tokenization premiums and aggregate to obtain per-language averages.
+  - Aggregate processing times across runs to obtain average latency per language.
 
 ## Implementation Notes
 
 - **Pitfalls and Caveats**:
-  - Ensure that the FLORES-200 dataset is correctly aligned across languages to avoid mismatches in sentence comparisons.
-  - Be aware of the limitations of each tokenizer, especially those with high UNK token rates, which may affect the accuracy of tokenization length measurements.
+  - Ensure that the tokenizer used is consistent across all languages for a fair comparison.
+  - Be aware of the potential for high variance in tokenization lengths due to language-specific characteristics.
 
 - **Special Prompt Templates**:
-  - None specified, but ensure consistent tokenization settings across all experiments.
+  - Use consistent sentence structures across languages to minimize variability in tokenization.
 
 - **Order of Operations**:
-  - Tokenize sentences first, then compute premiums, followed by cost and latency analyses. Finally, evaluate context processing capabilities.
+  - Perform tokenization before any other processing to ensure accurate measurement of tokenization lengths.
+  - Conduct latency measurements after tokenization to capture the full processing pipeline.

@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: Can LLMs find reasoning mistakes in CoT traces?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do state-of-the-art LLMs (GPT-4, GPT-3.5, PaLM 2, Gemini Pro) perform in finding reasoning mistakes in Chain-of-Thought (CoT) traces across tasks like word sorting, tracking shuffled objects, logical deduction, multi-step arithmetic, and Dyck languages?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- BIG-Bench Mistake: A dataset of CoT-style traces generated using PaLM 2, annotated with the location of the first logical mistake.  [loader unverified -- locate the data yourself]
+- BIG-Bench Mistake: A dataset of CoT-style traces generated using PaLM 2, annotated with the location of the first logical mistake, covering tasks like word sorting, tracking shuffled objects, logical deduction, multi-step arithmetic, and Dyck languages.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,58 +20,68 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Mistake-Finding Benchmark
-
+### 1. Mistake Finding in CoT Traces
 - **Procedure**: 
   - Use the BIG-Bench Mistake dataset, which contains 2186 CoT-style traces annotated with the location of the first logical mistake.
-  - Evaluate the models using three different prompting methods:
-    - **Direct Trace-Level Prompting**: Provide the entire trace as input and prompt the model to output the mistake location or indicate no mistake.
-    - **Direct Step-Level Prompting**: For each step in the trace, prompt the model with the partial trace up to that step and ask for a binary Yes/No output indicating correctness. The mistake location is inferred from the first "No" response.
-    - **CoT Step-Level Prompting**: Similar to direct step-level prompting, but the model is asked to generate a series of reasoning steps for each partial trace. The mistake location is inferred from the first "No" response.
-  - Use temperature = 0 for all model generations.
-  - Each trace is evaluated for whether it contains a mistake (incorrectmis) or not (correctmis).
-
+  - Implement three prompting methods for mistake finding:
+    1. **Direct Trace-Level Prompting**: Provide the entire trace to the model and prompt for the mistake location. The model outputs either the step number or "No" if no mistake is found.
+    2. **Direct Step-Level Prompting**: For each step, prompt the model with the partial trace up to that step, asking for a binary Yes/No output indicating correctness. The first "No" indicates the mistake location.
+    3. **CoT Step-Level Prompting**: Similar to direct step-level, but the model generates a series of reasoning steps for each partial trace. The first "No" indicates the mistake location.
+  - Use temperature = 0 for all generations.
+  - Evaluate across five tasks: word sorting, tracking shuffled objects, logical deduction, multi-step arithmetic, and Dyck languages.
 - **What to Record**: 
-  - Mistake-finding accuracy for each model and prompting method.
-  - Separate accuracy for traces with mistakes (incorrectmis) and without mistakes (correctmis).
+  - Mistake finding accuracy for each model and prompting method.
+  - Separate accuracy for traces with and without mistakes.
+- **Correspondence**: Section 3, Table 4, and Table 9.
 
-- **Correspondence**: 
-  - Results are detailed in Table 4 and discussed in Section 3 of the paper.
-
-### 2. Correction Ability with Oracle Mistake Location
-
+### 2. Correction of Reasoning Mistakes
 - **Procedure**: 
-  - Use the backtracking method to correct CoT traces using oracle mistake location information.
-  - For traces with identified mistakes, regenerate the step at the mistake location using temperature = 1 until a different step is produced (up to 8 attempts).
-  - Replace the original mistake step with the new step and regenerate the remaining steps at temperature = 0.
-
+  - Use oracle mistake location information from the BIG-Bench Mistake dataset.
+  - Implement a backtracking method:
+    1. Generate an initial CoT trace with temperature = 0.
+    2. Identify the mistake location using oracle labels.
+    3. If a mistake is found, regenerate the step at temperature = 1 until a different step is produced (up to 8 attempts).
+    4. Replace the original step with the new one and regenerate the remaining steps at temperature = 0.
+  - Compare results with a random baseline where mistake locations are randomly selected.
 - **What to Record**: 
-  - Changes in accuracyans (correctness of the final answer) before and after correction.
-  - Separate results for traces originally correctans and incorrectans.
+  - Changes in accuracy for correct and incorrect original traces.
+  - Compare results with random baseline.
+- **Correspondence**: Section 4, Table 6.
 
-- **Correspondence**: 
-  - Results are shown in Table 6 and discussed in Section 4 of the paper.
+### 3. Classifier-Based Mistake Finding
+- **Procedure**: 
+  - Train a small classifier (PaLM 2 Otter) on out-of-domain data from the BIG-Bench Mistake dataset.
+  - Evaluate the classifier's mistake-finding accuracy on held-out tasks.
+  - Simulate classifiers at different accuracy levels to determine the minimum accuracy required for effective backtracking.
+- **What to Record**: 
+  - Mistake finding accuracy of the classifier compared to few-shot prompting.
+  - Changes in downstream task accuracy with varying classifier accuracy.
+- **Correspondence**: Section 5, Table 7, Figure 3.
 
 ## Evaluation Details
 
-- **Mistake-Finding Accuracy**: 
-  - Defined as the percentage of traces where the model correctly identifies the mistake location or correctly indicates no mistake.
-  - Calculated separately for correctmis and incorrectmis traces.
+- **Mistake Finding Accuracy**: 
+  - Defined as the percentage of traces where the model correctly identifies the mistake location or correctly identifies that there are no mistakes.
+  - Separate accuracy calculations for traces with mistakes (incorrectmis) and without mistakes (correctmis).
 
-- **Accuracyans**: 
-  - Defined as the percentage of traces where the final answer is correct.
-  - Changes in accuracyans are calculated as the difference before and after applying the correction method.
+- **Correction Accuracy**: 
+  - Measured as the change in accuracy of the final answer (accuracyans) before and after backtracking.
+  - Separate calculations for originally correct (correctans) and incorrect (incorrectans) traces.
+
+- **Classifier Evaluation**: 
+  - Mistake finding accuracy of the classifier is compared to the baseline of few-shot prompting.
+  - Evaluate the impact of classifier accuracy on the effectiveness of backtracking.
 
 ## Implementation Notes
 
-- **Prompting Methods**: 
-  - Ensure that the direct step-level and CoT step-level prompting methods only consider the first "No" response to determine the mistake location.
-  - Use the newline as a stop token to generate one step at a time for CoT traces.
+- **Prompt Templates**: 
+  - Use specific prompt templates for each task and method, available at the provided GitHub repository.
+  - Ensure consistent formatting and use of delimiters (e.g., "Thought N:") to separate steps in CoT traces.
 
 - **Backtracking Method**: 
-  - Regenerate the mistake step using temperature = 1 to introduce variability and avoid identical outputs.
-  - Limit the number of regeneration attempts to 8 to manage computational resources.
+  - Regenerate steps at temperature = 1 until a different step is produced, up to 8 attempts.
+  - Use the same model for both initial generation and correction to test self-correction capabilities.
 
-- **Annotation and Dataset Details**: 
-  - The BIG-Bench Mistake dataset includes tasks such as word sorting, tracking shuffled objects, logical deduction, multi-step arithmetic, and Dyck languages.
-  - Human annotation is used for most tasks, with automatic annotation for Dyck languages due to limited variation in phrasing.
+- **Classifier Training**: 
+  - Train classifiers on out-of-domain tasks to test transferability of mistake-finding capabilities.
+  - Use a smaller model (PaLM 2 Otter) for efficiency and interpretability.

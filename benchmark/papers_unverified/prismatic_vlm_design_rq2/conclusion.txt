@@ -1,0 +1,1 @@
+Base language models match or exceed the performance of instruct-tuned language models on vision-language tasks, with co-training on language-only data being important for safety.

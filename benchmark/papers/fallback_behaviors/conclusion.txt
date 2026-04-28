@@ -1,0 +1,1 @@
+Language models exhibit a consistent ordering of fallback behaviors under uncertainty, shifting from sequence repetitions to degenerate text to hallucinations as they become more advanced. This pattern also appears within single-generation trajectories as uncertainty increases.

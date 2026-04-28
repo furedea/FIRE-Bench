@@ -1,0 +1,1 @@
+Elicitive prompting techniques, specifically self-ask methods, effectively narrow the compositionality gap across datasets like Compositional Celebrities, Bamboogle, 2WikiMultiHopQA, and Musique, with self-ask outperforming chain of thought and direct prompting, particularly on the Bamboogle dataset.

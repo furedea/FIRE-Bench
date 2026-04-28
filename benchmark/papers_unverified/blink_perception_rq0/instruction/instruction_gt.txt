@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How do multimodal LLMs perform on the Blink benchmark compared to humans?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current multimodal large language models (GPT-4V, Gemini, LLaVA) perform on the Blink benchmark, which includes tasks like visual correspondence, relative depth, and forensic detection?"
 
 You have access to the following resources:
 
@@ -8,7 +8,25 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Blink: A benchmark for multimodal language models focusing on core visual perception abilities, consisting of 14 visual perception tasks reformatted into 3,807 multiple-choice questions.  [loader unverified -- locate the data yourself]
+- HPatches: A benchmark and evaluation of handcrafted and learned local descriptors, used for visual correspondence tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hpatches")
+- Depth in the Wild: Dataset for evaluating geometric understanding capabilities through relative depth estimation.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("depth-in-the-wild")
+- COCO captions: Captions from the COCO dataset used as prompts for generating synthetic images.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("coco", "captions")
+- Stable Diffusion XL: Synthetic images generated using Stable Diffusion XL for forensic detection tasks.  [generate programmatically]
+  Generation code:
+    from diffusers import StableDiffusionPipeline
+    model_id = "stabilityai/stable-diffusion-xl"
+    pipe = StableDiffusionPipeline.from_pretrained(model_id)
+    prompt = "A scene description from COCO captions"
+    image = pipe(prompt).images[0]
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,34 +38,38 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Evaluate Multimodal LLMs on Blink Benchmark
-- **Procedure**: 
-  - Use the Blink benchmark dataset, which consists of 3,807 multiple-choice questions across 14 visual perception tasks.
-  - For each model (GPT-4V, Gemini, Claude 3 OPUS, LLaVA, MiniGPT-4-v2, OpenFlamingo-v2, InstructBLIP), input the visual prompts and questions as specified in the Blink dataset.
-  - Ensure that the temperature is set to 0 and retry is set to 10 for consistent evaluation.
-  - For models that do not support multiple images as input, concatenate the images horizontally with a black margin in between.
-  - Use predefined rules and GPT-3.5-turbo to extract the choice from the model's output.
-- **What to Record**: 
-  - Record the raw outputs of the models, the extracted answers, and the accuracy for each task.
-- **Correspondence**: 
-  - This experiment corresponds to Figure 4, Table 1, and Section 4.2 in the paper.
+### 1. Visual Correspondence Task
+- **Procedure**: Use the HPatches dataset to evaluate the ability of multimodal LLMs to identify the same scene point across various viewpoints and lighting conditions. Each question involves two images with a reference point in the first image. The task is to select the corresponding point in the second image from multiple choices.
+- **Input Format**: Present two images with a reference point marked in the first image. Provide multiple-choice options for the second image.
+- **Prompting Strategy**: Use visual prompts (red circles) to highlight points in the images.
+- **Number of Samples**: Use the full set of available samples from the HPatches dataset.
+- **What to Record**: Record the model's selected choice and compare it to the ground truth.
+- **Correspondence**: Figure 4, Table 1, Section 4.2.
+
+### 2. Relative Depth Estimation Task
+- **Procedure**: Use the Depth in the Wild dataset to assess the models' ability to judge which of two points in an image is closer to the camera.
+- **Input Format**: Present a single image with two points marked. Provide a binary choice for which point is closer.
+- **Prompting Strategy**: Use visual prompts (red circles) to indicate the points.
+- **Number of Samples**: Use the full set of available samples from the Depth in the Wild dataset.
+- **What to Record**: Record the model's choice and compare it to the ground truth.
+- **Correspondence**: Figure 4, Table 1, Section 4.2.
+
+### 3. Forensic Detection Task
+- **Procedure**: Evaluate the models' ability to distinguish between real and synthetic images using images generated from COCO captions and Stable Diffusion XL.
+- **Input Format**: Present a set of images, including both real and synthetic, and ask the model to identify the real photograph.
+- **Prompting Strategy**: Use visual prompts to ensure clarity in image presentation.
+- **Number of Samples**: Use a balanced set of real and synthetic images.
+- **What to Record**: Record the model's choice and compare it to the ground truth.
+- **Correspondence**: Figure 4, Table 1, Section 4.2.
 
 ## Evaluation Details
 
-- **Metric Definitions**: 
-  - Accuracy is calculated as the number of correct answers divided by the total number of questions for each task.
-- **Normalization/Pre-processing**: 
-  - Ensure that all images are resized to a height of 1024px before inputting them into the models.
-  - Use circles with a 10px radius for visual prompts, colored red for most tasks and white for relative reflectance to avoid color confusion.
-- **Aggregation Strategy**: 
-  - Calculate per-sample accuracy, then aggregate to per-task accuracy, and finally compute the overall accuracy across all tasks.
+- **Metrics**: Use accuracy as the primary metric for all tasks. Compute accuracy as the number of correct answers divided by the total number of questions.
+- **Normalization**: Ensure that all model outputs are converted to a consistent format for comparison (e.g., choice labels like A, B, C, D).
+- **Aggregation Strategy**: Calculate per-sample accuracy, then aggregate to obtain per-task accuracy, and finally compute overall accuracy across all tasks.
 
 ## Implementation Notes
 
-- **Key Pitfalls**: 
-  - Be cautious of models' inability to handle multiple images; concatenation is necessary for those models.
-  - Ensure that the visual prompts are correctly applied as they significantly impact model performance.
-- **Special Prompt Templates**: 
-  - Use the provided prompt templates for each task, ensuring that the format matches the examples given in the paper.
-- **Order of Operations**: 
-  - First, resize images and apply visual prompts, then input them into the models, and finally extract and evaluate the answers.
+- **Visual Prompts**: Use red circles with a radius of 10px for marking points in images. Ensure that images are resized to a height of 1024px for consistency.
+- **Output Parsing**: Use a predefined template to extract the model's choice from its output. If the model's output does not match any choice, record it as a failure.
+- **Order of Operations**: Ensure that image processing (resizing, marking) is completed before presenting images to the model.

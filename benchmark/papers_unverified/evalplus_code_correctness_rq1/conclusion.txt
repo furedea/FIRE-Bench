@@ -1,0 +1,1 @@
+Test-suite reduction maintains similar evaluation effectiveness on LLM-generated code as the full HUMANEVAL+ benchmark, despite using 47 times fewer test cases.

@@ -1,0 +1,1 @@
+Language model hallucinations propagate and compound over a generation because models often commit to an initial incorrect answer early on and then generate further incorrect explanations. This occurs despite the model's ability to recognize these errors in isolation, leading to a snowballing effect.

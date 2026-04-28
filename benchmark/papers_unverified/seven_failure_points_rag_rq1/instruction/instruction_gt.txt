@@ -1,12 +1,16 @@
-You are a research agent. Conduct an empirical study answering the question: "What are the key considerations when engineering a RAG system?"
+You are a research agent. Conduct an empirical study answering the question: "RQ2: What are the key considerations for software engineers when implementing Retrieval Augmented Generation (RAG) systems, which combine information retrieval with text generation, across diverse domains such as research, education, and biomedical fields?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- BioASQ: A dataset comprised of biomedical questions, links to documents, and answers, used to evaluate potential failure points in RAG systems.  [loader unverified -- locate the data yourself]
+- BioASQ: A dataset comprised of biomedical questions, links to documents, and answers, prepared by biomedical experts.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("bioasq/bioasq")
 
 Analytical tools / techniques available:
-- OpenAI evals
+- OpenAI GPT-4
+- OpenAI Evals
 - Whisper
 
 Study constraints:
@@ -26,45 +30,60 @@ Design the protocol yourself. Run the full study end-to-end and report results t
 
 ## Experimental Design
 
-### 1. Biomedical Question and Answer Evaluation
+### 1. Biomedical Question and Answer System
 - **Procedure**: 
   - Use the BioASQ dataset, which includes 4017 open access documents and 1000 questions.
-  - Index all documents using a chunking strategy suitable for scientific PDFs.
-  - For each question, retrieve relevant documents using a semantic search based on embeddings.
-  - Pass the top-k retrieved documents to GPT-4 to generate answers.
-  - Validate the generated answers using OpenAI evals.
-  - Manually inspect a sample of 40 issues and all flagged inaccuracies by OpenAI evals.
+  - Index all documents by splitting them into chunks and creating embeddings for each chunk.
+  - For each question, convert it into an embedding and retrieve the top-k similar documents using cosine similarity.
+  - Pass the retrieved documents to GPT-4 to generate answers.
+  - Validate the generated answers using OpenAI Evals.
+  - Manually inspect 40 issues and all issues flagged as inaccurate by OpenAI Evals.
 - **What to Record**: 
   - Raw outputs from GPT-4.
-  - Evaluation results from OpenAI evals.
+  - Evaluation results from OpenAI Evals.
   - Manual inspection notes on discrepancies and flagged inaccuracies.
-- **Correspondence**: Section 4.3, Table 1, and Section 5.
+- **Correspondence**: Section 4.3, Table 1.
+
+### 2. Cognitive Reviewer System
+- **Procedure**: 
+  - Implement a RAG system for analyzing scientific documents.
+  - Index documents at runtime, using a robust data processing pipeline.
+  - Rank documents according to a specified research objective.
+  - Allow researchers to ask questions directly against the documents.
+- **What to Record**: 
+  - Document rankings.
+  - Generated responses to user queries.
+  - User feedback on system performance.
+- **Correspondence**: Section 4.1, Table 1.
+
+### 3. AI Tutor System
+- **Procedure**: 
+  - Integrate the RAG system into a learning management system.
+  - Index all learning content, including PDFs, videos (transcribed using Whisper), and text documents.
+  - Use a rewriter to generalize queries based on previous dialogue context.
+  - Retrieve and rank documents, then generate answers using GPT-4.
+- **What to Record**: 
+  - Transcriptions of video content.
+  - Generated answers and their source documents.
+  - User interactions and feedback.
+- **Correspondence**: Section 4.2, Table 1.
 
 ## Evaluation Details
 
-- **Metric Definitions**:
-  - Use OpenAI evals for automated evaluation of generated answers. This involves comparing the generated answers against reference answers from the BioASQ dataset.
-  - Manual inspection involves qualitative analysis of discrepancies between automated evaluations and human judgment.
-
-- **Normalization and Pre-processing**:
-  - Ensure all text inputs to the model are pre-processed to remove any non-informative content (e.g., headers, footers).
-  - Normalize outputs by trimming whitespace and ensuring consistent formatting before evaluation.
-
-- **Aggregation Strategy**:
-  - Per-sample evaluation: Record individual scores for each question-answer pair.
-  - Aggregate scores to determine overall performance metrics, such as accuracy and precision, across the entire dataset.
+- **Metrics**: 
+  - Use qualitative analysis for evaluating the generated answers.
+  - Compare automated evaluation results from OpenAI Evals with manual inspection results.
+- **Normalization/Pre-processing**: 
+  - Ensure all text inputs are pre-processed to remove noise and irrelevant information before embedding.
+- **Aggregation Strategy**: 
+  - Aggregate evaluation results per question type (yes/no, text summarization, factoid, list) and overall system performance.
 
 ## Implementation Notes
 
-- **Pitfalls and Caveats**:
-  - The paper notes that automated evaluations may be more pessimistic than human raters, especially in domain-specific contexts like biomedical data.
-  - Ensure that the chunking strategy is appropriately tuned to balance between too small (missing context) and too large (introducing noise).
-
-- **Prompt Templates and Output Parsing**:
-  - Use specific prompt templates that instruct the model to provide answers in the required format (e.g., list, summary).
-  - Implement output parsing logic to extract and format the model's response according to the expected answer type.
-
-- **Order of Operations**:
-  - Index documents before running queries.
-  - Ensure that the retrieval and ranking of documents are completed before passing them to the LLM for answer generation.
-  - Conduct evaluations only after all answers have been generated and recorded.
+- **Pitfalls**: 
+  - Be aware of the limitations of the consolidation strategy, which may exclude relevant documents from the context.
+  - Ensure that the system can handle ambiguous or incomplete queries effectively.
+- **Prompt Templates**: 
+  - Customize prompts to ensure that the generated answers adhere to the required format (e.g., list, table).
+- **Order of Operations**: 
+  - Follow the sequence of indexing, retrieval, re-ranking, and generation to maintain system integrity and performance.

@@ -1,37 +1,33 @@
 task_id: ocrbench_text_understanding_rq2
 paper_type: llm_evaluation
-research_question: 'RQ3: How do LMMs perform on Document-Oriented VQA tasks?'
+research_question: "RQ3: How effective are Large Multimodal Models in Document-Oriented Visual Question Answering (VQA) tasks using datasets such as DocVQA, InfographicVQA, and ChartQA?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: DocVQA
-  source: huggingface
-  description: A large-scale dataset with document images and questions for Document-Oriented
-    VQA.
-  loader: 'from datasets import load_dataset
-
-    ds = load_dataset(''nlpconnect/docvqa'')
-
-    '
-- name: InfoVQA
-  source: unknown
-  description: A dataset containing infographics with questions for Document-Oriented
-    VQA.
-- name: ChartQA
-  source: external
-  description: A dataset with charts and questions for Document-Oriented VQA.
-  url: https://github.com/vis-nlp/ChartQA
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/vis-nlp/ChartQA.git
-
-    '
+  - name: "DocVQA"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("docvqa")
+    description: "A large-scale dataset with document images and questions for Document-Oriented VQA."
+  - name: "InfographicVQA"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("infographicvqa")
+    description: "A dataset consisting of infographics with questions for visual question answering."
+  - name: "ChartQA"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("chartqa")
+    description: "A dataset with charts and questions requiring visual and logical reasoning for VQA."
+references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

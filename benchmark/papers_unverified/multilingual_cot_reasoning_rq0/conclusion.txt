@@ -1,0 +1,1 @@
+Large language models perform well on the Multilingual Grade School Math (MGSM) benchmark, with intermediate reasoning steps enhancing their performance.

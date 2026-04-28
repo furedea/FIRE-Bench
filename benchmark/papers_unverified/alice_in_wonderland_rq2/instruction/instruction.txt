@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How do variations in problem formulation affect the performance of LLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: Do standardized benchmarks like MMLU, GSM8k, and ARC-c accurately reflect the generalization and reasoning capabilities of state-of-the-art large language models, as assessed by their performance on simple Artificial Intelligence Workbench (AIW, a set of basic AI problems) tasks?"
 
 You have access to the following resources:
 
@@ -8,8 +8,18 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- AIW Exaggerated Numbers: AIW problem versions with exaggerated numbers created by adding an offset to the original numbers.  [generate programmatically]
-- AIW Alice Female Boost: AIW problem versions with redundant information added, such as explicitly stating 'Alice is female'.  [generate programmatically]
+- MMLU: A benchmark for measuring massive multitask language understanding.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/mmlu")
+- GSM8k: A dataset for evaluating mathematical problem-solving abilities of language models.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/gsm8k")
+- ARC-c: A dataset for evaluating reasoning capabilities in science questions.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("ai2_arc/ARC-c")
 
 Experimental constraints:
 - Do NOT use web search

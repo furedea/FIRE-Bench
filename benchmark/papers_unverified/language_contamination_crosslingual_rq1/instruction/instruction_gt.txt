@@ -1,4 +1,4 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ2: How well do English pretrained models perform on non-English tasks?"
+You are a research agent. Conduct an empirical study answering the question: "RQ2: How well do English pretrained models perform on non-English tasks, and what factors influence their cross-lingual transfer capabilities?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
@@ -6,16 +6,15 @@ Data sources available:
 - ENGLISH WIKIPEDIA: A dataset consisting of English Wikipedia articles used for pretraining language models.  [loader unverified -- locate the data yourself]
 - BOOKCORPUS: A dataset of books used for pretraining language models.  [loader unverified -- locate the data yourself]
 - STORIES: A dataset of stories used for pretraining language models.  [loader unverified -- locate the data yourself]
-- OPENWEBTEXT: An open-source version of WEBTEXT, derived from web-crawled data.  [loader unverified -- locate the data yourself]
+- OPENWEBTEXT: An open-source version of WEBTEXT, consisting of web-crawled data used for pretraining language models.  [loader unverified -- locate the data yourself]
 - CC-NEWS: A dataset of news articles used for pretraining language models.  [loader unverified -- locate the data yourself]
-- C4.EN: A dataset derived from web-crawled data, filtered to exclude non-English text.  [loader unverified -- locate the data yourself]
+- C4.EN: A dataset derived from web-crawled data, filtered to exclude non-English text, used for pretraining language models.  [loader unverified -- locate the data yourself]
 - Wiki-40B: A multilingual language modeling dataset covering 41 languages.  [loader unverified -- locate the data yourself]
 - Universal Dependencies (UD) treebanks: A collection of multilingual treebanks used for POS tagging tasks.  [loader unverified -- locate the data yourself]
 
 Analytical tools / techniques available:
 - FastText
 - Spearman correlation
-- Adam optimizer
 
 Study constraints:
 - Do NOT use web search
@@ -37,53 +36,62 @@ Design the protocol yourself. Run the full study end-to-end and report results t
 ### 1. Non-English Masked Language Modeling (MLM) Evaluation
 - **Procedure**: 
   - Use the Wiki-40B dataset, which covers 41 languages.
-  - Perform whole word masking on 15% of the words in the test set.
-  - Evaluate the models in a zero-shot manner without further training.
-  - Models to evaluate: BERT, RoBERTa, T5, mBERT, XLM-R.
+  - Perform zero-shot evaluation by applying whole word masking on 15% of the words in the test set.
+  - Evaluate the models: BERT, RoBERTa, T5, mBERT, and XLM-R.
 - **What to Record**: 
   - Bits per character (BPC) for each model across all languages.
 - **Correspondence**: 
   - Figure 2a, Table 5, Section 3.1.
 
-### 2. POS Performance Across Languages (Probing and Fine-tuning)
+### 2. POS Performance Across Languages
 - **Procedure**: 
-  - Use Universal Dependencies (UD) treebanks for each language.
-  - For probing, train a linear classifier to predict POS tags from the final layer of each model's encoder.
-  - For fine-tuning, unfreeze the encoder weights and allow them to update during training.
-  - Models to evaluate: BERT, RoBERTa, T5, mBERT, XLM-R.
-  - Report average performance across five runs with different random seeds.
+  - Use Universal Dependencies (UD) treebanks for POS tagging tasks.
+  - Conduct two types of evaluations:
+    - **Probing**: Train a linear classifier on the final layer of each model's encoder to predict POS tags.
+    - **Fine-tuning**: Fine-tune the models on the POS tagging task.
+  - Evaluate models: BERT, RoBERTa, T5, mBERT, and XLM-R.
 - **What to Record**: 
-  - Accuracy of POS tagging for both probing and fine-tuning setups.
+  - Accuracy of POS tagging for each model across all languages.
 - **Correspondence**: 
   - Figure 2b, 2c, Table 6, Table 7, Section 3.2.
 
+### 3. Correlation Analysis of Cross-lingual Generalization Factors
+- **Procedure**: 
+  - Analyze the correlation between task performance and two factors: the amount of in-language data in the pretraining corpus and language similarity to English.
+  - Use Spearman correlation to compute correlation coefficients.
+- **What to Record**: 
+  - Correlation coefficients for each factor and task performance.
+- **Correspondence**: 
+  - Table 2, Section 3.3.
+
 ## Evaluation Details
 
-### Non-English MLM Evaluation
-- **Metric**: 
-  - Bits per character (BPC) is used to measure model performance, allowing comparison between models with different tokenizations.
-- **Normalization**: 
-  - Ensure consistent tokenization across models by using whole word masking.
-- **Aggregation Strategy**: 
-  - Calculate BPC per language and aggregate results to compare overall performance across models.
+- **Bits per Character (BPC)**: 
+  - Calculate BPC by dividing the total number of bits required to encode the text by the number of characters in the text.
+  - Use this metric to compare models with different tokenizations.
 
-### POS Performance Evaluation
-- **Metric**: 
-  - Accuracy is used to evaluate POS tagging performance.
-- **Normalization**: 
-  - For words tokenized into multiple subword units, average the representation of all tokens as input to the classifier.
-- **Aggregation Strategy**: 
-  - Report average accuracy across five runs for each language and model configuration.
+- **Accuracy for POS Tagging**: 
+  - Compute the percentage of correctly predicted POS tags out of the total number of tags.
+  - Evaluate both probing and fine-tuning setups.
+
+- **Spearman Correlation**: 
+  - Use the `scipy.stats.spearmanr` function to compute the Spearman correlation coefficients.
+  - Consider p-values to determine statistical significance, with thresholds at p < 0.05 and p < 0.001.
 
 ## Implementation Notes
 
-- **Language Identification**: 
-  - Use FastText with a confidence threshold of 0.6 for automatic language identification in pretraining datasets.
 - **Tokenization**: 
-  - Be aware of tokenization differences across models, especially the handling of UNK tokens in non-Latin scripts.
-- **Training Details**: 
+  - Be aware of the tokenization differences across models, especially the handling of non-Latin scripts and the presence of UNK tokens.
+  - RoBERTa uses byte-level BPE encoding, which avoids UNK tokens for Unicode text, unlike BERT and T5.
+
+- **Probing and Fine-tuning Setup**: 
+  - For probing, use a linear classifier with parameters `m * l`, where `m` is the encoder's output dimension and `l` is the label set size.
+  - For fine-tuning, unfreeze the encoder weights to allow updates during training.
+
+- **Batch Sizes and Learning Rates**: 
   - Use a batch size of 256 for frozen models and 16 for fine-tuned models.
-  - Learning rates: 0.001 for probing and 5e-6 for fine-tuning.
-  - Use the Adam optimizer with early stopping based on validation set performance.
-- **Hardware**: 
-  - Models trained on Nvidia V100 GPUs: 16GB for frozen models, 32GB for fine-tuned models.
+  - Set learning rates to 0.001 for probing and 5e-6 for fine-tuning.
+  - Use the Adam optimizer for training.
+
+- **Hardware Requirements**: 
+  - Conduct experiments on Nvidia V100 GPUs, with 16GB for frozen models and 32GB for fine-tuned models.

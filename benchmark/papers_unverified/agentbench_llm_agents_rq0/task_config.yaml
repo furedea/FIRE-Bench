@@ -1,73 +1,58 @@
 task_id: agentbench_llm_agents_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: How do LLMs perform as agents across different interactive
-  environments?'
+research_question: "RQ1: How do LLMs perform as agents in code-grounded environments, specifically in operating systems, databases, and knowledge graphs?"
 models:
   api:
-  - gpt-4
-  - claude-3
-  - glm-4
-  - claude-2
-  - gpt-3.5-turbo
-  - text-davinci-003
-  - claude-instant
-  - chat-bison-001
-  - text-davinci-002
+    - gpt-4
+    - claude-3
+    - glm-4
+    - claude-2
+    - gpt-3.5-turbo
+    - text-davinci-003
+    - claude-instant
+    - chat-bison-001
+    - text-davinci-002
   huggingface:
-  - meta-llama/Llama-2-70b
-  - meta-llama/Llama-2-13b
-  - meta-llama/Llama-2-7b
-  - meta-llama/Llama-3.1-8B-Instruct
-  - meta-llama/Llama-3.1-13B-Instruct
-  - meta-llama/Llama-3.1-34B-Instruct
-  - meta-llama/Llama-3.1-70B-Instruct
-  - meta-llama/Llama-3.1-13B
-  - meta-llama/Llama-3.1-7B
-  - meta-llama/Llama-3.1-6B
-  - meta-llama/Llama-3.1-12B
-  - meta-llama/Llama-3.1-30B
-  - meta-llama/Llama-3.1-33B
-  - meta-llama/Llama-3.1-65B
-  - meta-llama/Llama-3.1-6B-Instruct
-  - meta-llama/Llama-3.1-12B-Instruct
-  - meta-llama/Llama-3.1-30B-Instruct
-  - meta-llama/Llama-3.1-33B-Instruct
-  - meta-llama/Llama-3.1-65B-Instruct
+    - meta-llama/Llama-2-70b
+    - meta-llama/Llama-2-13b
+    - meta-llama/Llama-2-7b
+    - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-13B-Instruct
+    - meta-llama/Llama-3.1-34B-Instruct
+    - meta-llama/Llama-3.1-70B-Instruct
+    - Anthropic/claude-3
+    - Anthropic/claude-2
+    - Anthropic/claude
+    - Anthropic/claude-instant
+    - openai/gpt-3.5-turbo
+    - openai/text-davinci-003
+    - openai/text-davinci-002
+    - google/chat-bison-001
+    - Tsinghua/chatglm-6b
+    - Tsinghua/codegeex2-6b
+    - Tsinghua/openchat-13b
+    - Tsinghua/wizardlm-30b
+    - Tsinghua/wizardlm-13b
+    - Tsinghua/koala-13b
+    - Tsinghua/oasst-12b
+    - Tsinghua/dolly-12b
+    - Tsinghua/guanaco-65b
+    - Tsinghua/guanaco-33b
+    - Tsinghua/vicuna-33b
+    - Tsinghua/vicuna-13b
+    - Tsinghua/vicuna-7b
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: Operating System
-  source: synthetic
-  description: Simulated environment for evaluating LLMs' ability to interact with
-    operating systems using bash commands.
-- name: Database
-  source: synthetic
-  description: Simulated environment for evaluating LLMs' ability to interact with
-    databases using SQL commands.
-- name: Knowledge Graph
-  source: synthetic
-  description: Simulated environment for evaluating LLMs' ability to interact with
-    knowledge graphs using querying tools.
-- name: Digital Card Game
-  source: synthetic
-  description: Simulated environment for evaluating LLMs' strategic thinking in a
-    card game setting.
-- name: Lateral Thinking Puzzles
-  source: synthetic
-  description: Simulated environment for evaluating LLMs' lateral reasoning abilities
-    through puzzles.
-- name: House-Holding
-  source: synthetic
-  description: Simulated environment for evaluating LLMs' ability to perform tasks
-    in a household setting.
-- name: Web Shopping
-  source: synthetic
-  description: Simulated environment for evaluating LLMs' ability to perform shopping
-    tasks on a web platform.
-- name: Web Browsing
-  source: synthetic
-  description: Simulated environment for evaluating LLMs' ability to perform browsing
-    tasks on the web.
+  - name: "Custom OS tasks"
+    source: synthetic
+    description: "Tasks designed to evaluate LLMs' ability to interact with operating systems using bash commands."
+  - name: "Custom SQL tasks"
+    source: synthetic
+    description: "Tasks designed to evaluate LLMs' ability to interact with databases using SQL queries."
+  - name: "Custom KG tasks"
+    source: synthetic
+    description: "Tasks designed to evaluate LLMs' ability to interact with knowledge graphs using KG-querying tools."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

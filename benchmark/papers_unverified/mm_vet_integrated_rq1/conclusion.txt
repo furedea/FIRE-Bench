@@ -1,0 +1,1 @@
+GPT-4 performs effectively in assessing open-ended outputs from large multimodal models, showing the closest alignment with human evaluations.

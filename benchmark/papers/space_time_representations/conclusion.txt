@@ -1,0 +1,1 @@
+Large language models learn coherent and grounded representations that reflect real-world spatial and temporal information, as evidenced by their ability to encode geographic coordinates and temporal data through specific neurons.

@@ -1,9 +1,9 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: Do LLMs reflect human-like behaviors as a result of question modifications?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: Do large language models (LLMs) exhibit human-like response biases, such as acquiescence, allow/forbid asymmetry, response order, opinion floating, and odd/even scale effects, when evaluated on survey questions derived from Pew Research's American Trends Panel?"
 
 You have access to the following resources:
 
 Models:
-- gpt-3.5-turbo-0613 and gpt-3.5-turbo-0914 via API
+- gpt-3.5-turbo and gpt-3.5-turbo-instruct via API
 - Load with HuggingFace: meta-llama/Llama-2-7b
 - Load with HuggingFace: meta-llama/Llama-2-13b
 - Load with HuggingFace: meta-llama/Llama-2-70b
@@ -11,11 +11,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- American Trends Panel (ATP): A set of survey questions curated by Pew Research, used to study response biases in LLMs.
-  Project page: https://www.pewresearch.org/american-trends-panel/
-  Setup:
-    # Download instructions and data are at:
-    # https://www.pewresearch.org/american-trends-panel/
+- Pew Research's American Trends Panel: Survey questions curated and administered by experts, covering topics such as politics, technology, and family, used to evaluate response biases in LLMs.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

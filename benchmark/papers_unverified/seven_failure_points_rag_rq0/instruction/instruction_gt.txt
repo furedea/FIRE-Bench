@@ -1,9 +1,9 @@
-You are a research agent. Conduct an empirical study answering the question: "What are the failure points that occur when engineering a RAG system?"
+You are a research agent. Conduct an empirical study answering the question: "RQ1: What are the failure points that occur when engineering a Retrieval Augmented Generation (RAG) system using the BioASQ dataset with 15,000 documents and 1000 question-answer pairs?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- BioASQ: A dataset comprised of biomedical questions, links to documents, and answers, used to evaluate potential failure points in RAG systems.  [loader unverified -- locate the data yourself]
+- BioASQ: A dataset comprised of biomedical questions, links to documents, and answers, used to evaluate the failure points in a RAG system.  [loader unverified -- locate the data yourself]
 
 Analytical tools / techniques available:
 - GPT-4
@@ -26,44 +26,39 @@ Design the protocol yourself. Run the full study end-to-end and report results t
 
 ## Experimental Design
 
-### 1. BioASQ Failure Points Analysis
+### 1. Failure Points Identification in RAG Systems
 - **Procedure**: 
-  - Index 4017 open access documents from the BioASQ dataset.
-  - Run 1000 question and answer pairs using GPT-4.
-  - Validate all question and answer pairs with OpenAI evals.
-  - Conduct manual inspection on 40 issues and all flagged as inaccurate by OpenAI evals.
-- **Input Format**: Questions are expressed in natural language and converted into embeddings for retrieval.
-- **Prompting Strategy**: Use GPT-4 to generate responses based on retrieved documents.
-- **Number of Samples**: 1000 question and answer pairs.
-- **Shuffling/Ordering**: Not specified; assume sequential processing.
-- **Splits to Use**: Entire dataset used for both indexing and querying.
+  - Index 15,000 documents from the BioASQ dataset.
+  - Run 1000 question-answer pairs through the RAG system using GPT-4.
+  - Use OpenAI evals to validate the generated responses.
+  - Perform manual inspection on 40 issues and all responses flagged as incorrect by OpenAI evals.
+  - Analyze discrepancies and patterns in the responses to identify failure points.
 - **What to Record**: 
-  - Raw outputs from GPT-4.
-  - Evaluation results from OpenAI evals.
-  - Manual inspection notes on discrepancies.
-- **Correspondence**: Section 5, Table 1, and Figure 1 in the paper.
+  - Raw outputs from GPT-4 for each question.
+  - Validation results from OpenAI evals.
+  - Notes from manual inspection highlighting discrepancies and patterns.
+- **Correspondence**: Section 5 of the paper.
 
 ## Evaluation Details
 
 - **Metric Definitions**:
-  - **OpenAI evals**: Automated evaluation of generated responses for accuracy.
-  - **Manual Inspection**: Human evaluation of discrepancies and flagged inaccuracies.
-- **Normalization/Pre-processing**: 
-  - Ensure all questions are converted to embeddings before querying.
-  - Normalize document embeddings for consistent retrieval.
+  - **Manual Inspection**: Qualitative analysis of discrepancies between expected and generated answers.
+  - **OpenAI Evals**: Automated evaluation using OpenAI's evals framework to flag incorrect responses.
+- **Normalization/Pre-processing**:
+  - Ensure all model outputs are in a consistent format before evaluation.
+  - Convert outputs to lowercase and remove punctuation for uniformity in comparison.
 - **Aggregation Strategy**:
   - Per-sample evaluation using OpenAI evals.
-  - Aggregate discrepancies and flagged issues for manual inspection.
+  - Aggregate results to identify common failure patterns across samples.
 
 ## Implementation Notes
 
-- **Pitfalls/Caveats**:
-  - Automated evaluation may be more pessimistic than human raters, especially in domain-specific contexts.
-  - Ensure that the embedding and retrieval processes are correctly configured to avoid missing top-ranked documents.
-- **Prompt Templates**: 
-  - Use domain-specific prompts to ensure relevance in generated responses.
-- **Output-Parsing Logic**: 
-  - Implement logic to handle different answer formats (e.g., lists, tables) as specified in the question.
+- **Pitfalls and Caveats**:
+  - The paper notes that automated evaluation may be more pessimistic than human raters, especially in domain-specific contexts like BioASQ.
+  - Ensure that manual inspection is thorough to capture nuances missed by automated tools.
+- **Prompt Templates and Output Parsing**:
+  - Use specific prompt templates that guide GPT-4 to generate answers in the required format (e.g., list, table).
+  - Implement output parsing logic to extract relevant information from GPT-4 responses.
 - **Order of Operations**:
-  - Index documents before querying.
-  - Validate responses with OpenAI evals before manual inspection.
+  - Index documents before running queries.
+  - Validate responses with OpenAI evals before manual inspection to prioritize discrepancies.

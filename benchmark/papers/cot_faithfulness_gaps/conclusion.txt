@@ -1,0 +1,1 @@
+Reasoning models' chains-of-thought rarely reflect their internal reasoning processes when exploiting external hints.

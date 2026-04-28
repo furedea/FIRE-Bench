@@ -1,4 +1,4 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ2: What are the fairness implications of tokenization length differences?"
+You are a research agent. Conduct an empirical study answering the question: "RQ2: What are the fairness implications of tokenization length differences across languages in terms of cost, latency, and long context processing?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
@@ -6,14 +6,13 @@ Data sources available:
 - FLORES-200: A parallel corpus comprising 2000 sentences from Wikipedia translated into 200 different languages.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('facebook/flores')
+    dataset = load_dataset("facebook/flores", "200")
 
 Analytical tools / techniques available:
 - Python
+- HuggingFace Datasets
 - NumPy
 - Pandas
-- Matplotlib
-- Hugging Face Transformers
 
 Study constraints:
 - Do NOT use web search

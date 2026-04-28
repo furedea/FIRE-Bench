@@ -1,16 +1,16 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ3: How does input probability affect the performance of LLMs?"
+You are a research agent. Conduct an empirical study answering the question: "RQ3: How does the probability of the input affect the performance of large language models (GPT-3.5 and GPT-4) on tasks like shift ciphers, reversal, Pig Latin, acronyms, and counting?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- Global Voices: A collection of news articles used to generate high-probability and low-probability sentences for evaluating LLM performance on tasks like rot-13 encoding.  [loader unverified -- locate the data yourself]
-- WikiBio dataset: A dataset containing biographical information, used to evaluate LLM performance on birthday retrieval tasks with varying input probabilities.  [loader unverified -- locate the data yourself]
+- Global Voices: A collection of recent news articles used to generate high-probability sentences for evaluating language models.  [loader unverified -- locate the data yourself]
+- C4 corpus: A large corpus of web-crawled text used to estimate the frequency of numbers and words for counting tasks.  [loader unverified -- locate the data yourself]
 
 Analytical tools / techniques available:
-- NLTK
-- RoBERTa
 - GPT-2
-- Levenshtein distance
+- RoBERTa
+- NLTK
+- Hugging Face Datasets
 
 Study constraints:
 - Do NOT use web search
@@ -29,57 +29,66 @@ Design the protocol yourself. Run the full study end-to-end and report results t
 
 ## Experimental Design
 
-### 1. Rot-13 Encoding with Varying Input Probabilities
+### 1. Shift Ciphers: Encoding with Varying Input Probability
 - **Procedure**: 
   - Use the Global Voices dataset to generate sentences with varying input probabilities.
-  - Classify sentences into high-probability and low-probability categories based on their occurrence in the dataset.
-  - Encode these sentences using the rot-13 cipher.
-  - Ensure that the input sentences are controlled for length and token count to isolate the effect of input probability.
+  - Encode these sentences into rot-13 using GPT-3.5 and GPT-4.
+  - Ensure that the input sentences are categorized into high, medium, and low probability based on their occurrence in the dataset.
 - **What to Record**: 
-  - Encoding accuracy for each sentence.
-  - Levenshtein edit distance between the model's output and the correct encoded sentence.
+  - Record the encoding accuracy for each probability category.
+  - Capture the Levenshtein edit distance between the model output and the correct encoded sentence.
 - **Correspondence**: 
-  - Figure 7.1 (left)
+  - Figure 7.1
+  - Table 5
   - Section 7.1
 
-### 2. Birthday Retrieval with Varying Input Probabilities
+### 2. Counting: High vs. Low-Probability Input Sequences
 - **Procedure**: 
-  - Use the WikiBio dataset to select names of public figures with varying probabilities of being mentioned in the C4 corpus.
-  - Classify names into high-probability and low-probability categories.
-  - Query the models to retrieve the birth date for each name.
-  - Ensure that the names are controlled for length and token count to isolate the effect of input probability.
+  - Use the C4 corpus to estimate the frequency of numbers and words.
+  - Create lists of characters and words with varying input probabilities.
+  - Task GPT-3.5 and GPT-4 with counting the number of characters or words in each list.
+  - Ensure that the input sequences are categorized into high and low probability based on their frequency in the corpus.
 - **What to Record**: 
-  - Accuracy of the retrieved birth date for each name.
+  - Record the counting accuracy for each probability category.
+  - Note any discrepancies in counting accuracy between high and low-probability inputs.
 - **Correspondence**: 
-  - Figure 7.3
-  - Section 7.4
+  - Figure 7.2
+  - Table 4
+  - Section 7.2
 
 ## Evaluation Details
 
-### Rot-13 Encoding
-- **Metric Definitions**: 
-  - **Encoding Accuracy**: The proportion of sentences correctly encoded using the rot-13 cipher.
-  - **Levenshtein Edit Distance**: The number of single-character edits (insertions, deletions, or substitutions) required to change the model's output into the correct encoded sentence.
-- **Normalization/Pre-processing**: 
-  - Ensure all input sentences are lowercased and punctuation is standardized before encoding.
+### Shift Ciphers: Encoding Accuracy
+- **Metric Definition**: 
+  - Encoding accuracy is defined as the percentage of correctly encoded sentences out of the total number of sentences.
+  - Use Levenshtein edit distance to measure the similarity between the model output and the correct encoded sentence.
+- **Normalization**: 
+  - Normalize the input sentences to ensure consistent tokenization across models.
 - **Aggregation Strategy**: 
-  - Calculate per-sentence accuracy and edit distance, then aggregate results by input probability category (high vs. low).
+  - Calculate per-sample accuracy and edit distance, then aggregate these metrics per condition (high, medium, low probability) and overall.
 
-### Birthday Retrieval
-- **Metric Definitions**: 
-  - **Birthday Accuracy**: The proportion of correct birth dates retrieved by the model.
-- **Normalization/Pre-processing**: 
-  - Ensure all names are formatted consistently (e.g., capitalization) before querying the model.
+### Counting Accuracy
+- **Metric Definition**: 
+  - Counting accuracy is defined as the percentage of correct counts provided by the model out of the total number of counting tasks.
+- **Normalization**: 
+  - Ensure that all input sequences are tokenized consistently and that the counting task is clearly defined in the prompt.
 - **Aggregation Strategy**: 
-  - Calculate per-name accuracy, then aggregate results by input probability category (high vs. low).
+  - Calculate per-sample accuracy, then aggregate these metrics per condition (high, low probability) and overall.
 
 ## Implementation Notes
 
+### Shift Ciphers
+- **Pitfalls**: 
+  - Ensure that the input sentences are correctly categorized into probability levels to avoid skewed results.
+  - Be cautious of the model's tendency to regularize low-probability outputs to higher-probability ones.
 - **Prompt Templates**: 
-  - For rot-13 encoding, include an example in the prompt to clarify the task and ensure consistent formatting.
-  - For birthday retrieval, ensure the prompt clearly specifies the format for the expected date output.
-- **Output Parsing Logic**: 
-  - For rot-13 encoding, strip any extraneous characters from the model's output before calculating edit distance.
-  - For birthday retrieval, parse the model's output to extract the date, ensuring it matches the expected format.
-- **Order of Operations**: 
-  - Ensure that input probability classification is performed before encoding or querying to maintain consistency in experimental conditions.
+  - Use a consistent prompt template that clearly instructs the model to encode the sentence into rot-13.
+  - Include an example in the prompt to clarify the task.
+
+### Counting
+- **Pitfalls**: 
+  - Ensure that the input sequences are free from ambiguities that might affect the counting task.
+  - Be aware of the model's potential bias towards high-probability numbers.
+- **Prompt Templates**: 
+  - Use a clear and concise prompt that specifies the counting task and the format of the input sequence.
+  - Include examples to illustrate the task.

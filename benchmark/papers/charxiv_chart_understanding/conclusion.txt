@@ -1,0 +1,1 @@
+Multimodal LLMs struggle to accurately understand and reason about real-world scientific charts, achieving less than half accuracy on reasoning questions and performing significantly worse than humans.

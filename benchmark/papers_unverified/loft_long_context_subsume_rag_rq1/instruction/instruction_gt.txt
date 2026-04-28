@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Can LCLMs effectively perform Retrieval-Augmented Generation (RAG) tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can Long-Context Language Models (LCLMs, which process extended sequences of text) effectively perform Retrieval-Augmented Generation (RAG, a task involving retrieving relevant information from a corpus to generate responses) on datasets like NQ, TopiOCQA, and HotPotQA, as measured by subspan exact match metrics?"
 
 You have access to the following resources:
 
@@ -8,12 +8,30 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- NQ: A dataset for question answering with phrase-level answer annotations.  [loader unverified -- locate the data yourself]
-- TopiOCQA: A multi-turn conversational question answering dataset.  [loader unverified -- locate the data yourself]
-- HotPotQA: A multi-hop question answering dataset.  [loader unverified -- locate the data yourself]
-- MuSiQue: A multi-hop question answering dataset.  [loader unverified -- locate the data yourself]
-- QAMPARI: A multi-target question answering dataset requiring set operations.  [loader unverified -- locate the data yourself]
-- QUEST: A multi-target question answering dataset requiring set operations.  [loader unverified -- locate the data yourself]
+- NQ: A dataset for question answering with phrase-level answer annotations.
+  Loading code:
+    from datasets import load_dataset
+    nq = load_dataset("nq")
+- TopiOCQA: A multi-turn conversational question answering dataset.
+  Loading code:
+    from datasets import load_dataset
+    topiocqa = load_dataset("McGill-NLP/topiocqa")
+- HotPotQA: A dataset for multi-hop question answering.
+  Loading code:
+    from datasets import load_dataset
+    hotpotqa = load_dataset("hotpotqa")
+- MuSiQue: A dataset for multi-hop question answering.
+  Loading code:
+    from datasets import load_dataset
+    musique = load_dataset("allenai/musique")
+- QAMPARI: A benchmark for open-domain questions with many answers.
+  Loading code:
+    from datasets import load_dataset
+    qampari = load_dataset("samsam3232/qampari")
+- QUEST: A retrieval dataset of entity-seeking queries with implicit set operations.
+  Loading code:
+    from datasets import load_dataset
+    quest = load_dataset("google-research/language", "quest")
 
 Experimental constraints:
 - Do NOT use web search
@@ -25,44 +43,45 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Retrieval-Augmented Generation (RAG) Performance Comparison
-- **Procedure**: 
+### 1. Retrieval-Augmented Generation (RAG) Performance Evaluation
+- **Procedure**:
   - Use the datasets NQ, TopiOCQA, HotPotQA, MuSiQue, QAMPARI, and QUEST.
-  - For each dataset, construct a shared corpus by including all gold passages from few-shot, development, and test queries, then sample additional passages uniformly until reaching the desired context size (128k tokens).
-  - Use the Gemini 1.5 Pro model to perform RAG tasks by reasoning over the entire corpus in context.
-  - Compare the performance against a specialized RAG pipeline using Gecko to retrieve the top-40 documents, which are then used by Gemini 1.5 Pro to generate answers.
-  - Ensure that the gold and random passages are shuffled to avoid positional biases.
-- **What to Record**: 
-  - Record the subspan exact match scores for each dataset.
-  - Capture the model's reasoning process and final answers.
-- **Correspondence**: 
-  - This experiment corresponds to Table 2 and Section 4.4 in the paper.
+  - For each dataset, construct a shared corpus by including all gold passages from few-shot, development, and test queries, then sample additional passages uniformly until reaching the desired context size (32k, 128k, or 1M tokens).
+  - Shuffle gold and random passages to avoid positional biases.
+  - Use the Gemini 1.5 Pro model to perform RAG by reasoning over the entire corpus in context.
+  - Compare against a specialized retrieve-and-read RAG pipeline using Gecko to retrieve the top-40 documents, which are then used by Gemini 1.5 Pro to generate answers.
+- **What to Record**:
+  - Raw outputs of the model.
+  - Subspan exact match scores for each dataset.
+  - Performance comparison with the RAG pipeline.
+- **Correspondence**:
+  - Figure 5: Scaling results of LCLMs compared to specialized models.
+  - Table 2: Main results on LOFT 128k context test set.
+  - Section 4.4: RAG results and analysis.
 
 ## Evaluation Details
 
 - **Metric Definitions**:
-  - **Subspan Exact Match**: This metric evaluates the exact match of predicted answers with the gold standard answers. For multi-answer datasets, use a linear sum assignment algorithm to match predicted answers to gold answers based on overlap, giving full credit if every gold answer has a perfect match.
-  
+  - **Subspan Exact Match**: For each dataset, compute the exact match between the predicted and gold answers at the subspan level. For multi-answer datasets like QAMPARI and QUEST, use a linear sum assignment algorithm to match predicted answers to gold answers based on overlap.
+  - **MRecall@k**: For retrieval tasks with multiple gold targets, use MRecall@k, where k is dataset-specific (e.g., k=2 for HotPotQA).
+
 - **Normalization and Pre-processing**:
-  - Ensure that the model outputs are formatted as lists of answers for automated evaluation.
-  - Use a consistent tokenizer (e.g., SentencePiece) to measure token counts and ensure uniformity across different context lengths.
+  - Ensure that model outputs are tokenized consistently with the gold answers using the SentencePiece tokenizer.
+  - For multi-answer datasets, align predicted and gold answers before computing exact match scores.
 
 - **Aggregation Strategy**:
-  - Compute the subspan exact match per sample.
-  - Aggregate results to obtain per-dataset scores.
-  - Calculate the average performance across all datasets to assess overall RAG capability.
+  - Compute per-sample subspan exact match scores.
+  - Aggregate scores to obtain per-dataset performance.
+  - Compare aggregated scores across different context lengths (32k, 128k, 1M) and against the RAG pipeline.
 
 ## Implementation Notes
 
 - **Prompt Design**:
-  - Use Corpus-in-Context (CiC) prompting, which involves providing task-specific instructions, inserting the entire corpus into the prompt, and including few-shot examples with chain-of-thought reasoning.
-  - Ensure that each candidate in the corpus is assigned a unique identifier for reference in the model's output.
+  - Use Corpus-in-Context (CiC) prompting, which includes task-specific instructions, a shared corpus, few-shot examples, and a query.
+  - Ensure that the query is placed at the end of the prompt to leverage prefix-caching in autoregressive models.
+  - Use Chain-of-Thought reasoning in few-shot examples to improve performance on multi-hop reasoning tasks.
 
 - **Order of Operations**:
-  - First, construct the corpus with gold and random passages.
-  - Then, format the prompt with instructions, corpus, and few-shot examples.
-  - Finally, execute the model to generate answers and evaluate the outputs.
-
-- **Pitfalls and Caveats**:
-  - Be cautious of the model's attention distribution, as performance may degrade if relevant information is positioned towards the end of the corpus.
-  - Ensure that the model's outputs are parsed correctly to match the expected answer format for evaluation.
+  - Construct the corpus by first including all gold passages, then sampling additional passages.
+  - Shuffle passages to avoid positional biases before feeding them into the model.
+  - Evaluate models on the maximum context size that fits without truncating the corpus or examples.

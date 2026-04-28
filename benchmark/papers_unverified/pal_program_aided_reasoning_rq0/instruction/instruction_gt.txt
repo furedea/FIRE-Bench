@@ -1,27 +1,34 @@
-You are a research agent. Conduct research about the question: "RQ1: Can the Program-Aided Language model (PAL) improve the accuracy of LLMs on mathematical reasoning tasks compared to chain-of-thought prompting?"
+You are a research agent. Conduct research about the question: "RQ1: How does the use of programmatic reasoning steps with a Python interpreter impact the accuracy of large language models on mathematical reasoning tasks, as evaluated on datasets such as GSM8K, SVAMP, ASDIV, and MAWPS?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Program-Aided Language model (PAL): PAL is a novel approach that uses a large language model (LLM) to read natural language problems and generate programs as intermediate reasoning steps, while offloading the solution step to a runtime such as a Python interpreter. This method allows the LLM to focus on decomposing the problem into runnable steps, leveraging the interpreter for accurate computation.
-  - Component: LLM for generating programmatic reasoning steps
-  - Component: Python interpreter for executing generated code
+- Program-Aided Language models (PAL): PAL is a novel approach that uses large language models (LLMs) to read natural language problems and generate programs as intermediate reasoning steps, while offloading the solution step to a runtime such as a Python interpreter. This method allows the LLM to focus on decomposing the problem into runnable steps, leveraging the interpreter for accurate computation.
+  - Component: LLM generates programmatic reasoning steps
+  - Component: Python interpreter executes the generated code
   - Component: Integration of natural language and programming language reasoning
 - Baseline for comparison: Chain-of-Thought (COT) prompting
 - Baseline for comparison: DIRECT prompting
+- Baseline for comparison: PaLM-540B with chain-of-thought
 - Reference hint: http://reasonwithpal.com
 
 Datasets for training and evaluation:
-- GSM8K: A dataset of grade-school level math word problems.
+- GSM8K: A benchmark dataset of grade-school math word problems.
   Loading code:
     from datasets import load_dataset
-    dataset = load_dataset("gsm8k")
-- SVAMP: A dataset for evaluating simple math word problem-solving abilities.  [loader unverified -- locate the data yourself]
-- ASDIV: A diverse corpus for evaluating and developing English math word problem solvers.  [loader unverified -- locate the data yourself]
-- SINGLEEQ: A dataset of single equation math word problems.  [loader unverified -- locate the data yourself]
-- SINGLEOP: A dataset of single operation math word problems.  [loader unverified -- locate the data yourself]
-- ADDSUB: A dataset of addition and subtraction math word problems.  [loader unverified -- locate the data yourself]
-- MULTIARITH: A dataset of multi-step arithmetic word problems.  [loader unverified -- locate the data yourself]
+    dataset = load_dataset("openai/gsm8k")
+- SVAMP: A dataset for evaluating simple math word problem-solving abilities.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("svamp")
+- ASDIV: A diverse corpus for evaluating and developing English math word problem solvers.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("asdiv")
+- MAWPS: A repository of math word problems for evaluating problem-solving models.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("mawps")
 
 Experimental constraints:
 - Do NOT use web search
@@ -41,68 +48,63 @@ Design your own experimental protocol, metrics, and baselines. Run end-to-end ex
 
 ## Experimental Design
 
-### 1. Mathematical Reasoning Tasks
+### 1. Mathematical Reasoning with PAL
 - **Procedure**: 
-  - Use the GSM8K, SVAMP, ASDIV, SINGLEEQ, SINGLEOP, ADDSUB, and MULTIARITH datasets.
-  - For each dataset, use CODEX (code-davinci-002) as the backend LLM.
-  - Implement PAL by generating Python code as intermediate reasoning steps and execute it using a Python interpreter.
-  - Compare against Chain-of-Thought (COT) and DIRECT prompting strategies.
-  - Perform greedy decoding with a temperature of 0.
-  - Use a fixed prompt for each benchmark, consisting of 3-6 examples, augmented into PAL-styled prompts.
+  - Use the PAL method to generate programmatic reasoning steps for each problem in the GSM8K, SVAMP, ASDIV, and MAWPS datasets.
+  - Implement few-shot prompting by providing 3-6 examples in the prompt, as used in previous work.
+  - For each problem, the LLM generates a sequence of interleaved natural language and Python code statements.
+  - The generated Python code is executed using a Python interpreter to obtain the final answer.
+  - Ensure variable names in the prompts are meaningful and reflect their roles in the problem.
 - **What to Record**: 
-  - Record the problem solve rate (%) for each dataset.
-  - Capture the raw outputs of the LLM, the generated Python code, and the final answers obtained from executing the code.
+  - Record the raw outputs of the LLM, including the generated Python code.
+  - Capture the final answers obtained from executing the Python code.
+  - Track intermediate statistics such as the number of correct reasoning steps generated.
 - **Correspondence**: 
-  - Results correspond to Table 1 in the paper.
+  - This experiment corresponds to the results presented in Table 1 and Section 4.1 of the paper.
 
-### 2. GSM-HARD Dataset
+### 2. Symbolic Reasoning with PAL
 - **Procedure**: 
-  - Create GSM-HARD by replacing numbers in GSM8K questions with larger numbers (up to 7 digits).
-  - Evaluate PAL, COT, and DIRECT on this modified dataset.
-  - Use the same setup as the mathematical reasoning tasks.
+  - Apply PAL to symbolic reasoning tasks from the BIG-Bench Hard dataset, including COLORED OBJECTS, PENGUINS, and DATE tasks.
+  - Use a similar prompting strategy as in mathematical reasoning, with interleaved natural language and Python code.
+  - Execute the generated Python code to solve the symbolic reasoning tasks.
 - **What to Record**: 
-  - Record the problem solve rate (%) on GSM-HARD.
-  - Analyze the outputs to determine if failures are due to arithmetic errors or reasoning errors.
+  - Record the generated reasoning steps and Python code.
+  - Capture the final answers from the Python interpreter.
+  - Note any errors or inconsistencies in the reasoning process.
 - **Correspondence**: 
-  - Results correspond to Table 1 and the discussion in Section 5.1.
+  - This experiment corresponds to the results in Table 2 and Section 4.2 of the paper.
 
-### 3. Symbolic Reasoning Tasks
+### 3. Algorithmic Tasks with PAL
 - **Procedure**: 
-  - Use the COLORED OBJECTS, PENGUINS, and DATE tasks from BIG-Bench Hard.
-  - Implement PAL by generating Python code for reasoning and execution.
-  - Compare against COT and DIRECT prompting strategies.
+  - Evaluate PAL on algorithmic tasks such as OBJECT COUNTING and REPEAT COPY.
+  - Use prompts that require the LLM to generate Python code for counting and sequence generation tasks.
+  - Execute the generated code to obtain the final results.
 - **What to Record**: 
-  - Record the solve rate for each task.
-  - Capture the raw outputs, generated code, and execution results.
+  - Record the generated code and the final outputs.
+  - Track the accuracy of the solutions compared to the expected results.
 - **Correspondence**: 
-  - Results correspond to Table 2 in the paper.
-
-### 4. Algorithmic Tasks
-- **Procedure**: 
-  - Use the OBJECT COUNTING and REPEAT COPY tasks.
-  - Implement PAL by generating Python code for reasoning and execution.
-  - Compare against COT and DIRECT prompting strategies.
-- **What to Record**: 
-  - Record the solve rate for each task.
-  - Capture the raw outputs, generated code, and execution results.
-- **Correspondence**: 
-  - Results correspond to Table 2 in the paper.
+  - This experiment corresponds to the results in Table 2 and Section 4.3 of the paper.
 
 ## Evaluation Details
 
-- **Metric Definitions**: 
-  - Problem solve rate (%) is calculated as the percentage of correctly solved problems out of the total number of problems in each dataset.
+- **Metrics**: 
+  - Use top-1 accuracy for mathematical reasoning tasks.
+  - Use solve rate for symbolic and algorithmic tasks.
 - **Normalization and Pre-processing**: 
-  - Ensure that the generated Python code is syntactically correct and executable.
-  - Normalize the final answers by ensuring they are in the expected format (e.g., numerical values).
+  - Ensure that the generated Python code is syntactically correct before execution.
+  - Normalize the final answers to a consistent format for comparison.
 - **Aggregation Strategy**: 
-  - Calculate the solve rate per dataset and aggregate results across datasets to compare overall performance between PAL, COT, and DIRECT.
+  - Calculate per-sample accuracy or solve rate.
+  - Aggregate results to obtain per-condition and overall performance metrics.
 
 ## Implementation Notes
 
 - **Prompt Templates**: 
-  - Use meaningful variable names in PAL prompts to aid the model's understanding and grounding of variables.
   - Use comment syntax (e.g., `# ...`) in Python to include natural language reasoning steps that are ignored by the interpreter.
+  - Ensure that variable names in the prompts are meaningful and reflect their roles in the problem.
 - **Order of Operations**: 
-  - Ensure that the Python code is executed after the LLM generates the reasoning steps.
-  - Use a single, post-hoc execution of the generated code to obtain the final answer.
+  - Generate the reasoning steps and code in a single pass.
+  - Execute the generated code post-hoc to obtain the final answer.
+- **Pitfalls**: 
+  - Be cautious of incorrect reasoning steps that may lead to incorrect code generation.
+  - Ensure that the Python interpreter is correctly configured to execute the generated code.

@@ -1,0 +1,1 @@
+Red teaming uncovers harmful outputs such as offensive language, misinformation, and solicitation of harmful activities.

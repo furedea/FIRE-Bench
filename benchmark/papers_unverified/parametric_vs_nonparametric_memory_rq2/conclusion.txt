@@ -1,0 +1,1 @@
+Adaptively combining non-parametric and parametric memories based on entity popularity improves performance and reduces inference costs, particularly for larger language models.

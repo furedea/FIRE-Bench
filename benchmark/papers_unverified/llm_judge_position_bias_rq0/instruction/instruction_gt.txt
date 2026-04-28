@@ -1,13 +1,13 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How does positional bias affect the evaluation results of LLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How does the order of candidate responses affect the evaluation outcomes when using GPT-4 and ChatGPT as evaluators for AI-generated responses?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 via API
+- gpt-4 and gpt-3.5-turbo-0301 via API
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Vicuna Benchmark: A benchmark used to evaluate responses from ChatGPT and Vicuna-13B across 80 questions spanning 9 distinct categories.  [loader unverified -- locate the data yourself]
+- Vicuna Benchmark: A benchmark used to evaluate the performance of AI models, specifically comparing responses from ChatGPT and Vicuna-13B across various question categories.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -21,42 +21,47 @@ Please design and execute experiments to investigate this research question. Doc
 
 ### 1. Positional Bias Evaluation
 - **Procedure**: 
-  - For each question in the Vicuna Benchmark, generate two response prompts using the evaluation template: one with Assistant 1's response first and another with Assistant 2's response first.
+  - Use the Vicuna Benchmark dataset, which includes 80 questions across 9 categories.
+  - For each question, generate two responses using ChatGPT and Vicuna-13B.
+  - Create two evaluation prompts for each question: one with the original order of responses and another with the responses swapped.
   - Use GPT-4 and ChatGPT as evaluators to score the responses in both orders.
-  - Repeat the process for all 80 questions in the benchmark.
+  - Ensure that the evaluation template includes slots for the question and both responses, and instructs the evaluator to rate each response on a scale of 1 to 10.
 - **What to Record**: 
-  - Record the scores assigned to each response in both positions.
-  - Calculate the Conflict Rate by comparing the scores for each response pair when their positions are swapped.
-- **Correspondence**: This experiment corresponds to Table 2 and Section 2.2 in the paper.
+  - Raw scores for each response in both positions.
+  - Conflict Rate, calculated as the proportion of examples where the evaluation outcome changes when the order is swapped.
+- **Correspondence**: 
+  - This experiment corresponds to Table 2 and Section 2.2 in the paper.
 
 ### 2. Multiple Evidence Calibration (MEC)
 - **Procedure**: 
-  - Use the evidence calibration template to prompt GPT-4 and ChatGPT to generate evaluation evidence before scoring.
-  - For each response pair, sample k evaluation scores (k=3) by setting the temperature to 1.
+  - Use the same setup as the positional bias evaluation.
+  - For each evaluation prompt, generate multiple evaluation evidences (k = 3) before assigning scores.
+  - Use a temperature setting of 1 to sample diverse evaluation evidences.
 - **What to Record**: 
-  - Record all sampled scores and the evaluation evidence.
-  - Calculate the average score for each response.
-- **Correspondence**: This experiment corresponds to Section 3.1 and Figure 3(a) in the paper.
+  - Multiple scores for each response based on different evidences.
+  - Average scores across all evidences.
+- **Correspondence**: 
+  - This experiment corresponds to Section 3.1 and Figure 3(a) in the paper.
 
 ### 3. Balanced Position Calibration (BPC)
 - **Procedure**: 
-  - For each response pair, create two prompts by swapping the positions of the responses.
-  - Use the MEC strategy to obtain scores for both positions.
-  - Calculate the final score as the average of scores from both positions.
+  - Combine MEC with BPC by evaluating each response in both positions and averaging the scores.
+  - For each question, generate 2k scores by swapping positions and using MEC.
 - **What to Record**: 
-  - Record the scores for each response in both positions.
-  - Calculate the final calibrated scores.
-- **Correspondence**: This experiment corresponds to Section 3.2 and Figure 3(b) in the paper.
+  - Final calibrated scores for each response, calculated as the average of 2k scores.
+- **Correspondence**: 
+  - This experiment corresponds to Section 3.2 and Figure 3(b) in the paper.
 
 ### 4. Human-in-the-Loop Calibration (HITLC)
 - **Procedure**: 
-  - Calculate the Balanced Position Diversity Entropy (BPDE) for each response pair using the results from MEC and BPC.
-  - Select the top-β% examples with the highest BPDE scores for human annotation (β=20%).
-  - Integrate human annotations into the evaluation process.
+  - Use the results from MEC and BPC to calculate the Balanced Position Diversity Entropy (BPDE) for each example.
+  - Select the top-β% examples with the highest BPDE scores for human annotation.
+  - Integrate human annotations into the final evaluation.
 - **What to Record**: 
-  - Record BPDE scores and the selected examples for human annotation.
-  - Record the final evaluation results after incorporating human feedback.
-- **Correspondence**: This experiment corresponds to Section 3.3 and Figure 3(c) in the paper.
+  - BPDE scores for each example.
+  - Final evaluation results after incorporating human annotations.
+- **Correspondence**: 
+  - This experiment corresponds to Section 3.3 and Figure 3(c) in the paper.
 
 ## Evaluation Details
 
@@ -65,19 +70,22 @@ Please design and execute experiments to investigate this research question. Doc
   \[
   \text{Conflict Rate} = \frac{\sum_{i=1}^{N} I(\text{ER}_{r1r2}^i \neq \text{ER}_{r2r1}^i)}{N}
   \]
-  where \(I(.)\) is the indicator function, and \(N\) is the total number of examples.
-- **Aggregation Strategy**: Calculate the Conflict Rate for each model and condition, then average across all examples.
+  where \(I(.)\) is the indicator function, \(N\) is the total number of examples, and \(\text{ER}_{r1r2}^i\) and \(\text{ER}_{r2r1}^i\) are the evaluation results for the original and swapped positions, respectively.
 
 ### Balanced Position Diversity Entropy (BPDE)
 - **Formula**: 
   \[
-  \text{BPDE} = \sum_{\text{er} \in \{\text{win, tie, lose}\}} -p_{\text{er}} \log p_{\text{er}}
+  \text{BPDE} = \sum_{er \in \{\text{win}, \text{tie}, \text{lose}\}} -p_{er} \log p_{er}
   \]
-  where \(p_{\text{er}}\) is the proportion of each evaluation result type.
-- **Aggregation Strategy**: Calculate BPDE for each example and use it to select examples for human annotation.
+  where \(p_{er}\) is the proportion of evaluation results for each outcome (win, tie, lose) across 2k evaluations.
+
+### Aggregation Strategy
+- **Per-Sample**: Calculate scores for each response in both positions.
+- **Per-Condition**: Average scores across multiple evidences and positions.
+- **Overall**: Use BPDE to determine examples needing human intervention and integrate human annotations for final results.
 
 ## Implementation Notes
 
-- **Prompt Templates**: Use the specific evaluation templates provided in Tables 1 and 3 of the paper. Ensure the order of responses is swapped correctly for BPC.
-- **Temperature Settings**: Use a temperature of 1 for sampling multiple evidence in MEC and a temperature of 0 for deterministic generation in other methods.
-- **Human Annotation**: Ensure annotators are familiar with AI evaluation criteria and follow the same template as the original Vicuna for consistency.
+- **Prompt Template**: Ensure the evaluation prompt includes explicit instructions to avoid bias based on response order.
+- **Temperature Setting**: Use a temperature of 1 for sampling diverse evaluation evidences in MEC.
+- **Order of Operations**: Perform MEC before BPC to ensure multiple evidences are considered before averaging scores across positions.

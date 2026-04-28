@@ -1,33 +1,29 @@
 task_id: loft_long_context_subsume_rag_rq3
 paper_type: llm_evaluation
-research_question: 'RQ4: How do LCLMs perform in many-shot in-context learning (ICL)
-  tasks?'
+research_question: "RQ4: How do Long-Context Language Models (LCLMs, which can process extended sequences of text) perform in many-shot in-context learning (ICL, where models learn from examples provided within the input context) tasks compared to traditional few-shot setups, specifically on datasets like BBH-date, BBH-salient, BBH-tracking7, BBH-web, and LIB-dialogue using classification accuracy as the metric?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: BBH-date
-  source: unknown
-  description: Multiple-choice QA dataset from Big-Bench Hard focusing on date understanding.
-- name: BBH-salient
-  source: unknown
-  description: Multiple-choice QA dataset from Big-Bench Hard focusing on salient
-    error translation detection.
-- name: BBH-tracking7
-  source: unknown
-  description: Multiple-choice QA dataset from Big-Bench Hard focusing on tracking
-    shuffled objects.
-- name: BBH-web
-  source: unknown
-  description: Multiple-choice QA dataset from Big-Bench Hard focusing on web of lies.
-- name: LIB-dialogue
-  source: unknown
-  description: Classification dataset from LongICLBench focusing on dialogue-based
-    relation extraction.
+  - name: "BBH-date"
+    source: unknown
+    description: "Multiple-choice QA dataset used for evaluating many-shot in-context learning capabilities."
+  - name: "BBH-salient"
+    source: unknown
+    description: "Multiple-choice QA dataset used for evaluating many-shot in-context learning capabilities."
+  - name: "BBH-tracking7"
+    source: unknown
+    description: "Multiple-choice QA dataset used for evaluating many-shot in-context learning capabilities."
+  - name: "BBH-web"
+    source: unknown
+    description: "Multiple-choice QA dataset used for evaluating many-shot in-context learning capabilities."
+  - name: "LIB-dialogue"
+    source: unknown
+    description: "Classification dataset used for evaluating many-shot in-context learning capabilities."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

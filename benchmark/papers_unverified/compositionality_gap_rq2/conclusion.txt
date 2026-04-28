@@ -1,0 +1,1 @@
+Integrating external information retrieval capabilities, such as a search engine, improves the performance of language models on compositional question answering tasks.

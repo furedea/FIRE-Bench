@@ -1,15 +1,14 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ2: How does output probability affect the performance of LLMs?"
+You are a research agent. Conduct an empirical study answering the question: "RQ2: How does the probability of the target output affect the performance of large language models (GPT-3.5 and GPT-4) on tasks like shift ciphers, reversal, Pig Latin, article swapping, acronyms, and counting?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- Global Voices: A collection of news articles used to generate high-probability, medium-probability, and low-probability sentences for evaluating LLM performance on tasks like rot-13 decoding and reversal.  [loader unverified -- locate the data yourself]
+- Global Voices: A collection of news articles used to generate high-probability sentences for evaluating language models on tasks like shift ciphers and reversal.  [loader unverified -- locate the data yourself]
 
 Analytical tools / techniques available:
-- GPT-2
-- RoBERTa
 - NLTK
-- Hugging Face Datasets
+- RoBERTa
+- GPT-2
 
 Study constraints:
 - Do NOT use web search
@@ -28,51 +27,57 @@ Design the protocol yourself. Run the full study end-to-end and report results t
 
 ## Experimental Design
 
-### 1. Rot-13 Decoding with Varying Output Probabilities
+### 1. Shift Ciphers: Output Probability
 - **Procedure**: 
-  - Use the Global Voices dataset to generate sentences with high, medium, and low output probabilities.
-  - Encode these sentences using the rot-13 cipher.
-  - Provide the encoded sentences to GPT-3.5 and GPT-4 for decoding.
-  - Ensure that the input probability is controlled across conditions.
+  - Use the Global Voices dataset to generate sentences with varying probabilities.
+  - Encode sentences using the rot-13 cipher.
+  - Present the encoded sentences to GPT-3.5 and GPT-4 for decoding.
+  - Ensure that the output sentences are categorized into high, medium, and low probability based on their likelihood in natural language as estimated by GPT-2.
 - **What to Record**: 
-  - Record the decoding accuracy for each probability condition.
+  - Record the decoding accuracy for each probability category.
   - Capture the raw outputs of the models for further analysis.
 - **Correspondence**: 
-  - This experiment corresponds to Section 6.1 and is illustrated in Figure 6.1 (top).
+  - This experiment corresponds to Figure 6.1 (top) and Section 6.1 in the paper.
 
-### 2. Reversal Task with Varying Output Probabilities
+### 2. Reversal: Output Probability
 - **Procedure**: 
-  - Use the Global Voices dataset to create sentences with high, medium, and low output probabilities.
-  - Reverse the order of words in these sentences.
+  - Use the Global Voices dataset to create sentences with varying probabilities.
+  - Reverse the order of words in each sentence.
   - Provide the reversed sentences to GPT-3.5 and GPT-4 for reordering.
-  - Ensure that the input probability is controlled across conditions.
+  - Ensure that the target outputs are categorized into high, medium, and low probability.
 - **What to Record**: 
-  - Record the accuracy of the models in correctly reversing the sentences for each probability condition.
-  - Capture the raw outputs of the models for further analysis.
+  - Record the accuracy of the models in correctly reversing the sentences for each probability category.
+  - Capture the raw outputs for further analysis.
 - **Correspondence**: 
-  - This experiment corresponds to Section 6.2 and is illustrated in Figure 6.1 (middle).
+  - This experiment corresponds to Figure 6.1 (middle) and Section 6.2 in the paper.
+
+### 3. Pig Latin: Output Probability
+- **Procedure**: 
+  - Use the Global Voices dataset to generate sentences with varying probabilities.
+  - Convert sentences into Pig Latin.
+  - Provide the Pig Latin sentences to GPT-3.5 and GPT-4 for translation back to English.
+  - Ensure that the target English sentences are categorized into high, medium, and low probability.
+- **What to Record**: 
+  - Record the translation accuracy for each probability category.
+  - Capture the raw outputs for further analysis.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 6.1 (bottom) and Section 6.3 in the paper.
 
 ## Evaluation Details
 
-- **Metric Definitions**:
-  - **Decoding Accuracy**: The proportion of sentences correctly decoded by the model, where correctness is defined as an exact match with the target output.
-  - **Reversal Accuracy**: The proportion of sentences correctly reordered by the model, where correctness is defined as an exact match with the original sentence order.
-
-- **Normalization and Pre-processing**:
-  - For both tasks, ignore quotation marks at the start and end of the model's output.
-  - Ensure that the model's output matches the target output exactly, except for permissible variations in punctuation and capitalization as specified in the task instructions.
-
-- **Aggregation Strategy**:
-  - Calculate per-sample accuracy for each condition.
-  - Aggregate results to determine per-condition accuracy.
-  - Compare overall accuracy across different output probability conditions to assess the impact of output probability on model performance.
+- **Metrics**: 
+  - Use decoding accuracy as the primary metric for evaluating model performance across different probability levels.
+  - Accuracy is defined as the proportion of correctly decoded or reordered sentences out of the total number of sentences in each probability category.
+- **Normalization**: 
+  - Normalize the model outputs by removing any extraneous punctuation or formatting that does not affect the semantic content of the sentence.
+- **Aggregation Strategy**: 
+  - Calculate per-sample accuracy, then aggregate these to obtain per-condition accuracy (high, medium, low probability), and finally compute overall accuracy across all conditions.
 
 ## Implementation Notes
 
-- **Prompt Templates**:
-  - For rot-13 decoding, include an example in the prompt to clarify that capitalization should be retained and non-letter characters should remain unchanged.
-  - For the reversal task, ensure the prompt specifies that punctuation should move with the words they are attached to.
-
-- **Pitfalls and Caveats**:
-  - Ensure that the input probability is controlled across conditions to isolate the effect of output probability.
-  - Be aware of potential biases introduced by the specific sentences selected from the Global Voices dataset.
+- **Prompt Templates**: 
+  - Use specific prompt templates that clearly instruct the models on the task (e.g., "Decode the following rot-13 text" or "Reverse the order of words in the following sentence").
+- **Output Parsing**: 
+  - Implement logic to parse model outputs, ensuring that only the relevant part of the output is considered for accuracy evaluation.
+- **Order of Operations**: 
+  - Ensure that the input sentences are correctly categorized into probability levels before encoding or reversing, to maintain consistency in the experimental setup.

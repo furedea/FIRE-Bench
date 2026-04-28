@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: Are the observed reasoning breakdowns in LLMs due to low-level issues or generic deficits in generalization?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can control experiments using AIW Light problems, which are specifically designed tasks to isolate low-level factors such as language parsing and arithmetic operations, determine if these factors are responsible for the observed breakdowns in reasoning and generalization in large language models when tested with AIW Light Arithmetic Siblings datasets, which are variations of AIW Light problems focused on arithmetic tasks?"
 
 You have access to the following resources:
 
@@ -8,9 +8,16 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- AIW Light Arithmetic Siblings: A control problem designed to test models' ability to handle arithmetic operations in the context of family relations.  [generate programmatically]
-- AIW Light Family: A control problem designed to test models' understanding of basic family structure and relations.  [generate programmatically]
-- AIW Light Arithmetic Total Girls: A control problem designed to test models' ability to bind attributes and execute arithmetic operations to count total females.  [generate programmatically]
+- AIW Light Arithmetic Siblings: Variations of AIW Light problems focused on arithmetic tasks, designed to test models' ability to handle operations required for solving original AIW problem.  [generate programmatically]
+  Generation code:
+    def generate_aiw_light_arithmetic_siblings():
+        variations = [
+            {"brothers": 3, "sisters": 4, "correct_answer": 7},
+            {"brothers": 2, "sisters": 1, "correct_answer": 3},
+            {"brothers": 4, "sisters": 1, "correct_answer": 5},
+            {"brothers": 1, "sisters": 1, "correct_answer": 2},
+        ]
+        return variations
 
 Experimental constraints:
 - Do NOT use web search
@@ -22,70 +29,38 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. AIW Problem Variations
+### 1. AIW Light Arithmetic Siblings
 - **Procedure**: 
-  - Use the AIW problem template: "Alice has N brothers and she also has M sisters. How many sisters does Alice’s brother have?".
-  - Create variations by instantiating different numbers N, M ≤ 7, resulting in AIW variations 1-4.
-  - Use three prompt types: STANDARD, THINKING, and RESTRICTED.
-  - Conduct 60 trials per variation and prompt type.
+  - Use the AIW Light Arithmetic Siblings dataset, which consists of variations designed to test models' ability to handle arithmetic operations.
+  - Each variation is presented in the format: "Alice has N brothers and she also has M sisters. How many siblings does Alice have?"
+  - Use the THINKING v2 prompt type, which encourages step-by-step reasoning and double-checking the solution path.
+  - Conduct 60 trials for each variation to ensure statistical significance.
 - **What to Record**: 
-  - Correct response rates for each variation and prompt type.
-  - Raw outputs and reasoning paths.
+  - Record the correct response rate for each variation.
+  - Capture the raw outputs and any reasoning provided by the models.
 - **Correspondence**: 
-  - Figure 1, Figure 3, Figure 4, Section 3.1.
-
-### 2. AIW Light Control Problems
-- **Procedure**: 
-  - Use AIW Light Arithmetic Siblings, AIW Light Family, and AIW Light Arithmetic Total Girls templates.
-  - Create variations 1-4 by varying natural numbers N, M.
-  - Use THINKING v2 prompt type.
-  - Conduct 60 trials per variation.
-- **What to Record**: 
-  - Correct response rates for each variation.
-  - Raw outputs.
-- **Correspondence**: 
-  - Figure 5, Figure 6, Figure 7, Section 3.1.1.
-
-### 3. AIW Extended and AIW Friends
-- **Procedure**: 
-  - Use AIW Extended and AIW Friends problem templates.
-  - Create variations 1-4 by varying numbers.
-  - Use THINKING v2 prompt type.
-  - Conduct 60 trials per variation.
-- **What to Record**: 
-  - Correct response rates for each variation.
-  - Raw outputs and reasoning paths.
-- **Correspondence**: 
-  - Figure 11, Section 3.2.1.
-
-### 4. AIW+ and AIW Colleague Circles
-- **Procedure**: 
-  - Use AIW+ and AIW Colleague Circles problem templates.
-  - Create variations 1-6 by varying numbers.
-  - Use THINKING v2 prompt type.
-  - Conduct 60 trials per variation.
-- **What to Record**: 
-  - Correct response rates for each variation.
-  - Raw outputs and reasoning paths.
-- **Correspondence**: 
-  - Figure 12, Figure 13, Section 3.2.2.
+  - This experiment corresponds to Figure 5 and is discussed in Section 3.1.1 of the paper.
 
 ## Evaluation Details
 
 - **Metric Definitions**: 
-  - Correct response rate is calculated as the proportion of trials where the model provides the correct answer.
-  - Use Beta-Binomial distribution to estimate the probability of correct responses.
-- **Normalization/Pre-processing**: 
-  - Parse model outputs to extract final answers using the format "### Answer: ".
+  - Correct response rate is calculated as the proportion of trials where the model provides the correct answer out of the total number of trials.
+  - Use the formula: \( \text{Correct Response Rate} = \frac{\text{Number of Correct Responses}}{\text{Total Number of Trials}} \).
+
+- **Normalization and Pre-processing**: 
+  - Ensure that model outputs are parsed to extract the final answer in the format specified by the prompt: "### Answer: ".
+  - Disregard any additional text generated by the model that does not conform to the expected output format.
+
 - **Aggregation Strategy**: 
-  - Compute correct response rates per variation and prompt type.
-  - Average correct response rates across variations and prompt types for overall performance assessment.
+  - Compute the correct response rate for each variation individually.
+  - Aggregate the results across all variations to assess overall performance on the AIW Light Arithmetic Siblings task.
 
 ## Implementation Notes
 
 - **Prompt Templates**: 
-  - Use specific prompt types (STANDARD, THINKING, RESTRICTED) with instructions for output format.
-- **Output Parsing**: 
-  - Ensure models follow the output format instruction for easy parsing.
+  - Use the THINKING v2 prompt type, which includes the instruction to think carefully step by step and double-check the solution path.
+  - Ensure that the prompt explicitly requests the final answer in the format: "### Answer: ".
+
 - **Order of Operations**: 
-  - Conduct trials for each variation and prompt type systematically to ensure consistency in data collection.
+  - Present each variation to the model in a randomized order to prevent any order effects.
+  - Ensure that the model's responses are parsed immediately after generation to maintain consistency in evaluation.

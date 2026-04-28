@@ -1,13 +1,14 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How does the FRESHPROMPT method improve the factual accuracy of LLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does incorporating search engine results into prompts affect the factual accuracy and hallucination rate of large language models (LLMs) when evaluated on question-answering tasks?"
 
 You have access to the following resources:
 
 Models:
 - gpt-4 via API
+- Load with HuggingFace: openai/gpt-3.5-turbo
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- FRESHQA: A dynamic QA benchmark with 600 questions testing factuality of LLMs, including fast-changing and false-premise questions.  [loader unverified -- locate the data yourself]
+- FRESHQA: A dynamic QA benchmark with 600 questions that test current world knowledge, including fast-changing and false-premise questions.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

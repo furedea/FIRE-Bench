@@ -1,16 +1,17 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How reliable are the crowdsourced votes in Chatbot Arena compared to expert evaluations?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: How does Chatbot Arena, a platform for evaluating chatbot interactions through crowdsourced votes, ensure the reliability and consistency of these evaluations compared to expert and GPT-4 assessments, focusing on agreement rates and win-rate consistency across randomly selected interactions?"
 
 You have access to the following resources:
 
 Models:
 - gpt-4-turbo via API
-- Load with HuggingFace: meta-llama/Llama-2-13b-chat
 - Load with HuggingFace: meta-llama/Llama-2-70b-chat
+- Load with HuggingFace: meta-llama/Llama-2-13b-chat
+- Load with HuggingFace: meta-llama/Llama-2-7b-chat
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Chatbot Arena Crowdsourced Votes: Votes collected from users on the Chatbot Arena platform, comparing responses from different LLMs.  [generate programmatically]
-- Expert Labels: Labels provided by experts for a sample of battles in Chatbot Arena to compare with crowdsourced votes.  [generate programmatically]
+- Chatbot Arena Crowdsourced Votes: Crowdsourced votes collected from users evaluating chatbot interactions on the Chatbot Arena platform.  [generate programmatically]
+- Expert Evaluations: Expert evaluations of chatbot interactions used to compare against crowdsourced votes.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search
@@ -22,40 +23,51 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Comparison of Crowd-User Votes with Expert Labels
+### 1. Agreement Rate Analysis
 - **Procedure**: 
-  - Select a random sample of 160 battles from the Chatbot Arena dataset, specifically between GPT-4-Turbo and Llama-2-13B, as well as GPT-4-Turbo and GPT-3.5-Turbo-0613.
-  - Present these battles to a group of experts who will relabel them. Experts are provided with the prompts and answers without any model identifiers and are instructed to fact-check the responses using external resources.
-  - Use GPT-4 as an additional judge for pairwise comparisons to provide a reference point.
+  - Randomly select 160 battles from the Chatbot Arena dataset, specifically between GPT-4-Turbo and Llama-2-13B, as well as GPT-4-Turbo and GPT-3.5-Turbo-0613.
+  - Present these battles to expert evaluators who will label their preferences without knowing the model identities.
+  - Use GPT-4 as an additional judge to provide pairwise comparisons for the same set of battles.
 - **What to Record**: 
-  - Record the labels assigned by the experts for each battle.
-  - Record the labels assigned by GPT-4 as a judge.
-  - Record the original crowd-user votes for comparison.
-- **Correspondence to Paper**: This experiment corresponds to Section 6.3 and Table 3, which discuss the validation of vote quality by comparing crowd-user votes with expert evaluations.
+  - Record the preferences of expert evaluators, GPT-4 judgments, and the original crowd-sourced votes.
+  - Calculate the agreement rates between crowd-users, experts, and GPT-4.
+- **Correspondence**: Section 6.3, Table 3
+
+### 2. Win-Rate Consistency Analysis
+- **Procedure**: 
+  - Use the same set of battles as in the agreement rate analysis.
+  - Calculate the win-rate of GPT-4-Turbo against Llama-2-13B and GPT-3.5-Turbo-0613 based on crowd votes, expert evaluations, and GPT-4 judgments.
+- **What to Record**: 
+  - Record the win-rates from each evaluation source.
+  - Compare the consistency of win-rates across different evaluators.
+- **Correspondence**: Section 6.3, Table 4
 
 ## Evaluation Details
 
-- **Metric Definitions**:
-  - **Agreement Rate**: Calculate the percentage of cases where the crowd-user votes agree with the expert labels. Similarly, calculate the agreement rate between expert labels and GPT-4's judgments.
-  - **Win-Rate Calculation**: For each model comparison, calculate the win-rate based on the number of times a model is preferred over another by the crowd, experts, and GPT-4.
+### Agreement Rate Calculation
+- **Metric Definition**: 
+  - Agreement rate is defined as the percentage of cases where the crowd-sourced vote matches the expert evaluation or GPT-4 judgment.
+  - Formula: \( \text{Agreement Rate} = \frac{\text{Number of Agreements}}{\text{Total Number of Comparisons}} \times 100 \)
+- **Normalization**: 
+  - Ensure all votes are binary (win/loss) for consistency in comparison.
+- **Aggregation Strategy**: 
+  - Calculate per-sample agreement, then aggregate to get an overall agreement rate for each pair of evaluators (crowd vs. expert, crowd vs. GPT-4, expert vs. GPT-4).
 
-- **Normalization and Pre-processing**:
-  - Ensure that all responses are anonymized before presenting them to experts to prevent bias.
-  - Standardize the format of responses to ensure consistency in evaluation.
-
-- **Aggregation Strategy**:
-  - Calculate per-sample agreement rates between crowd-user votes and expert labels.
-  - Aggregate these rates to determine the overall agreement rate for each model pair comparison.
+### Win-Rate Consistency Calculation
+- **Metric Definition**: 
+  - Win-rate is the proportion of battles won by a model out of the total battles evaluated.
+  - Formula: \( \text{Win-Rate} = \frac{\text{Number of Wins}}{\text{Total Number of Battles}} \)
+- **Normalization**: 
+  - Ensure consistent criteria for determining a "win" across different evaluators.
+- **Aggregation Strategy**: 
+  - Calculate win-rates for each model pair per evaluator, then compare across evaluators to assess consistency.
 
 ## Implementation Notes
 
-- **Key Pitfalls**:
-  - Ensure that experts are not influenced by any prior knowledge of the models when labeling the responses.
-  - Maintain consistency in the criteria used by experts for evaluating the responses to ensure reliability.
-
-- **Special Prompt Templates**:
-  - Use a standardized prompt template for experts that includes the user prompt and both model responses without any identifiers.
-
-- **Order of Operations**:
-  - First, collect expert labels for the selected sample of battles.
-  - Then, compare these labels with the original crowd-user votes and GPT-4's judgments to calculate agreement rates.
+- **Pitfalls**: 
+  - Ensure that expert evaluators are blinded to model identities to prevent bias.
+  - Carefully handle ties and ambiguous cases in crowd-sourced votes to maintain consistency in evaluation.
+- **Prompt Templates**: 
+  - Use a standardized prompt for expert evaluators to ensure uniformity in the evaluation process.
+- **Order of Operations**: 
+  - Conduct the expert evaluation and GPT-4 judgment independently before comparing with crowd-sourced votes to avoid any influence.

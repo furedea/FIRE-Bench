@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: What are the root causes of the poor performance of MLLMs in nonverbal abstract reasoning tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the root causes of poor performance in nonverbal abstract reasoning tasks by Multimodal Large Language Models (MLLMs, which integrate text and visual data), specifically in terms of their textual reasoning and visual awareness capabilities as evaluated on the IQ50 dataset, a benchmark for assessing abstract reasoning through text-only and visual questions?"
 
 You have access to the following resources:
 
@@ -8,9 +8,24 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet, used to assess nonverbal abstract reasoning abilities.  [loader unverified -- locate the data yourself]
-- RAVEN-S: A visual reasoning dataset containing 3,500 synthetic samples in seven categories, used to evaluate reasoning abilities in MLLMs.  [loader unverified -- locate the data yourself]
-- CCSE: A dataset containing 175 visual abstractions and reasoning problems from the China Civil Service Examination, used as a challenging benchmark for reasoning patterns.  [loader unverified -- locate the data yourself]
+- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles for assessing abstract reasoning through text-only and visual questions.  [loader unverified -- locate the data yourself]
+- RAVEN: A visual reasoning dataset containing synthetic samples in seven categories, each with a 3x3 matrix of images and eight options.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cais/raven")
+- CCSE: A dataset of visual abstractions and reasoning problems from the China Civil Service Examination, containing a matrix or sequence of images with four options.  [generate programmatically]
+  Generation code:
+    import random
+    def generate_ccse_sample():
+        patterns = ["location", "logic", "progression", "self-geometry", "relative-geometry"]
+        configurations = ["one-row", "two-rows", "matrix"]
+        return {
+            "pattern": random.choice(patterns),
+            "configuration": random.choice(configurations),
+            "images": [random_image() for _ in range(4)],
+            "options": [random_image() for _ in range(4)],
+            "answer": random.choice(range(4))
+        }
 
 Experimental constraints:
 - Do NOT use web search

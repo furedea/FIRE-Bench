@@ -1,0 +1,1 @@
+Large language models like PaLM-540B perform at state-of-the-art levels on multilingual reasoning benchmarks such as XCOPA and XL-WiC when evaluated using few-shot prompting with multilingual exemplars. However, performance does not improve with chain-of-thought prompting.

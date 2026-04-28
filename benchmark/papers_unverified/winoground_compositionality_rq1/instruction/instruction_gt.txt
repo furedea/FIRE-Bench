@@ -1,10 +1,9 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How does human performance compare to model performance on the Winoground task?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: What insights can be gained from analyzing the performance of vision and language models on the Winoground task, particularly in terms of linguistic and visual tags?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4o via API
-- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Load with HuggingFace: facebook/winoground
 - Computational budget: 1000 API calls per model
 
 Datasets:
@@ -23,21 +22,23 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-1. **Human vs. Model Performance on Winoground**
-   - **Procedure**: 
-     - Use the Winoground dataset, which consists of 400 examples, each with two images and two captions. Each caption contains the same set of words but in a different order.
-     - For each example, present the two images and two captions to the models and human annotators.
-     - Models should score each image-caption pair to determine the correct matches.
-     - Human annotators on Amazon Mechanical Turk will be asked to determine if a given caption matches a given image, with each image-caption pair being evaluated by at least ten annotators.
-   - **What to Record**: 
-     - For models: Record the scores for each image-caption pair and compute the text, image, and group scores.
-     - For humans: Record the percentage of annotators who correctly match each image-caption pair.
-   - **Correspondence**: This experiment corresponds to the results presented in Table 3 and Section 5.1 of the paper.
+### 1. Performance Analysis by Linguistic and Visual Tags
+- **Procedure**: 
+  - Load the Winoground dataset using the provided loading code.
+  - For each model, evaluate its performance on the dataset by considering the swap-dependent linguistic tags (object, relation, both) and visual tags (symbolic, pragmatics, series).
+  - Each example in the dataset is tagged with these linguistic and visual phenomena.
+  - Use the models to predict the correct image-caption pairings for each example.
+- **What to Record**: 
+  - Record the raw outputs of the models for each example.
+  - Extract the scores for each tag category: text score, image score, and group score.
+  - Calculate intermediate statistics such as the percentage of correct predictions for each tag category.
+- **Correspondence**: 
+  - This experiment corresponds to the analysis presented in Section 5.2 and is visualized in Table 4 and Table 5 of the paper.
 
 ## Evaluation Details
 
-- **Metrics**:
-  - **Text Score**: Measures if the model can select the correct caption for a given image. Computed as:
+- **Metric Definitions**:
+  - **Text Score**: Measures whether the model can select the correct caption given an image. Computed as:
     \[
     f(C0, I0, C1, I1) = 
     \begin{cases} 
@@ -45,7 +46,7 @@ Please design and execute experiments to investigate this research question. Doc
     0 & \text{otherwise}
     \end{cases}
     \]
-  - **Image Score**: Measures if the model can select the correct image for a given caption. Computed as:
+  - **Image Score**: Measures whether the model can select the correct image given a caption. Computed as:
     \[
     g(C0, I0, C1, I1) = 
     \begin{cases} 
@@ -64,23 +65,24 @@ Please design and execute experiments to investigate this research question. Doc
 
 - **Normalization and Pre-processing**:
   - Ensure that model outputs are normalized to a common scale before applying the scoring functions.
-  - Human responses are aggregated by calculating the ratio of correct matches over total responses for each pair.
+  - Pre-process captions and images to ensure consistent input formatting across models.
 
 - **Aggregation Strategy**:
-  - Compute per-sample scores for text, image, and group metrics.
-  - Aggregate these scores to obtain per-condition (e.g., model vs. human) averages.
-  - Compare overall performance across conditions.
+  - Compute per-sample scores using the defined metrics.
+  - Aggregate scores per condition (linguistic and visual tags) to analyze performance trends.
+  - Calculate overall performance by averaging scores across all conditions.
 
 ## Implementation Notes
 
 - **Pitfalls and Caveats**:
-  - Ensure that human annotators understand the task and are consistent in their judgments. Use onboarding tests to filter out unreliable annotators.
-  - Be aware of potential biases in human annotations due to cultural or linguistic differences.
+  - The paper notes that models often perform close to or below random chance, indicating potential issues with model sensitivity to compositional structure.
+  - Be cautious of models' reliance on unimodal priors, especially in visually similar image pairs.
 
-- **Special Prompt Templates**:
-  - For models, ensure that the input format is consistent with the model's expected input structure (e.g., concatenating image and caption embeddings appropriately).
+- **Special Prompt Templates and Output Parsing**:
+  - Ensure that the input format for models aligns with their pretraining configurations (e.g., tokenization strategies).
+  - Implement logic to parse model outputs into the required score format for evaluation.
 
 - **Order of Operations**:
-  - First, present the image-caption pairs to the models and collect scores.
-  - Then, conduct the human annotation task and collect responses.
-  - Finally, compute and compare the scores across models and humans.
+  - First, load and pre-process the dataset.
+  - Then, run the models on the dataset to obtain raw outputs.
+  - Finally, apply the evaluation metrics to compute scores and analyze results.

@@ -1,27 +1,26 @@
 task_id: alice_in_wonderland_rq1
 paper_type: llm_evaluation
-research_question: 'RQ2: Are the observed reasoning breakdowns in LLMs due to low-level
-  issues or generic deficits in generalization?'
+research_question: "RQ2: Can control experiments using AIW Light problems, which are specifically designed tasks to isolate low-level factors such as language parsing and arithmetic operations, determine if these factors are responsible for the observed breakdowns in reasoning and generalization in large language models when tested with AIW Light Arithmetic Siblings datasets, which are variations of AIW Light problems focused on arithmetic tasks?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: AIW Light Arithmetic Siblings
-  source: synthetic
-  description: A control problem designed to test models' ability to handle arithmetic
-    operations in the context of family relations.
-- name: AIW Light Family
-  source: synthetic
-  description: A control problem designed to test models' understanding of basic family
-    structure and relations.
-- name: AIW Light Arithmetic Total Girls
-  source: synthetic
-  description: A control problem designed to test models' ability to bind attributes
-    and execute arithmetic operations to count total females.
+  - name: "AIW Light Arithmetic Siblings"
+    source: synthetic
+    loader: |
+      def generate_aiw_light_arithmetic_siblings():
+          variations = [
+              {"brothers": 3, "sisters": 4, "correct_answer": 7},
+              {"brothers": 2, "sisters": 1, "correct_answer": 3},
+              {"brothers": 4, "sisters": 1, "correct_answer": 5},
+              {"brothers": 1, "sisters": 1, "correct_answer": 2},
+          ]
+          return variations
+    description: "Variations of AIW Light problems focused on arithmetic tasks, designed to test models' ability to handle operations required for solving original AIW problem."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

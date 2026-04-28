@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How can WebArena be designed to emulate real-world web environments for autonomous agents?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How effective is a simulated web environment, WebArena, in providing a realistic and reproducible setting for tasks across the domains of e-commerce, social forums, collaborative development, and content management?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- WebArena Benchmark: A set of 812 long-horizon web-based tasks designed to evaluate the functional correctness of task completions in a realistic web environment.  [generate programmatically]
+- WebArena environment: A simulated web environment with fully functional websites from e-commerce, social forums, collaborative development, and content management domains, designed to evaluate autonomous agents.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

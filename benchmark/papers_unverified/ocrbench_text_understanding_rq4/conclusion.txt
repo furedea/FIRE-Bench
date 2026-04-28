@@ -1,0 +1,1 @@
+Large Multimodal Models struggle with recognizing handwritten mathematical expressions using the HME100K dataset due to complex spatial structures and indirect representation.

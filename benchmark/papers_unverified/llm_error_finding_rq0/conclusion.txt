@@ -1,0 +1,1 @@
+State-of-the-art LLMs struggle with finding reasoning mistakes in Chain-of-Thought traces, with GPT-4 achieving the highest accuracy among them.

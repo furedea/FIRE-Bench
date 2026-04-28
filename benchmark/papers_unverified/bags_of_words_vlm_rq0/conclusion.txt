@@ -1,0 +1,1 @@
+Current Vision-Language Models (CLIP, BLIP, Flava, X-VLM) exhibit significant deficiencies in understanding compositional relationships, attribute binding, and word order in image-caption pairs, often performing at or below chance level on the Attribution, Relation, and Order benchmarks.

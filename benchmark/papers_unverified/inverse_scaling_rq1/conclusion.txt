@@ -1,0 +1,1 @@
+Larger models tend to exhibit inverse scaling trends by failing to apply logical reasoning correctly, struggling to break repetitive patterns, failing to identify useful new information, and having difficulty with negation in questions.

@@ -1,0 +1,1 @@
+Large Multimodal Models face challenges in Key Information Extraction tasks, particularly when dealing with smaller input resolutions.

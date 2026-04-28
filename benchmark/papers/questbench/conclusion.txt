@@ -1,0 +1,1 @@
+LLMs struggle to identify the single minimal clarification question needed to solve underspecified reasoning problems. Performance varies substantially across algebra, logic, and planning tasks, and degrades as problem complexity increases. Models often fail to recognize what information is missing to disambiguate the problem.

@@ -1,13 +1,14 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: What are the limitations of current large language models in performing complex tasks in WebArena?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: What are the key challenges and areas for improvement in developing robust autonomous agents for complex web-based tasks in WebArena?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 via API
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- WebArena: A realistic and reproducible web environment with fully functional websites from domains like e-commerce, social forums, collaborative software development, and content management, used to evaluate autonomous agents.  [generate programmatically]
+- WebArena benchmark: A set of 812 long-horizon web-based tasks designed to evaluate the functional correctness of task completions by autonomous agents in a realistic web environment.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search
@@ -19,43 +20,55 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Task Success Rate Evaluation
+### 1. Error Pattern Analysis
 - **Procedure**: 
-  - Use the WebArena environment to evaluate the task success rate of GPT-4 and GPT-3.5 models.
-  - Implement two prompting strategies: direct action prediction and chain-of-thought (CoT) reasoning before action prediction.
-  - Include an "Unachievable hint" in some experiments to instruct the model to stop if it believes the task is impossible.
-  - Use the accessibility tree with element IDs as the observation space.
-  - Limit the maximum number of state transitions to 30, and halt execution if the same action is repeated more than three times on the same observation or if the agent generates three consecutive invalid actions.
+  - Use the WebArena benchmark to evaluate the performance of autonomous agents.
+  - Analyze execution trajectories of agents to identify prevalent error patterns.
+  - Focus on tasks where agents prematurely stop due to perceived unachievability, exhibit observation bias, or fail in observation interpretation.
+  - Use a subset of tasks to perform detailed error analysis, ensuring a mix of information-seeking, site navigation, and content & configuration tasks.
 - **What to Record**: 
-  - Record the end-to-end task success rate for each model and prompting strategy.
-  - Record the success rate for achievable and unachievable tasks separately.
-- **Correspondence**: Table 2 in the paper.
+  - Record instances of early stopping, observation bias, and failures in observation interpretation.
+  - Capture the specific conditions under which these errors occur.
+  - Document the frequency and distribution of these errors across different task types.
+- **Correspondence**: 
+  - Section 5.1 (Analysis)
+  - Table 3 (Distribution of success rates on templates)
 
-### 2. Error Pattern Analysis
+### 2. Task Completion Consistency
 - **Procedure**: 
-  - Analyze the execution trajectories of GPT-4 and GPT-3.5 models to identify common error patterns.
-  - Focus on errors related to early stopping, observation bias, and misinterpretation of observations.
-  - Conduct an ablation study by removing the "Unachievable hint" to assess its impact on task performance.
+  - Evaluate the consistency of agent performance across tasks derived from the same template.
+  - Use a histogram to plot per-template success rates for models like GPT-3.5 and GPT-4.
+  - Analyze the variance in success rates to understand the consistency of agent performance.
 - **What to Record**: 
-  - Record the frequency and types of errors encountered by the models.
-  - Record the impact of removing the "Unachievable hint" on task success rates.
-- **Correspondence**: Section 5.1 and Appendix A.10 in the paper.
+  - Record success rates for each template.
+  - Note any patterns or anomalies in task completion consistency.
+- **Correspondence**: 
+  - Table 3 (Distribution of success rates on templates)
 
 ## Evaluation Details
 
-### Metrics for Task Success
-- **Exact Match**: Used for tasks where the response follows a standardized format. The predicted answer must be identical to the reference answer to receive a score of one.
-- **Must Include**: Used for tasks expecting unordered lists or key concepts. The predicted answer must contain the reference answer to receive a score of one.
-- **Fuzzy Match**: Utilizes GPT-4 to assess semantic equivalence between the predicted and reference answers. The prompt details for this evaluation are provided in Appendix A.7.
-- **Programmatic Evaluation**: For site navigation and content & config tasks, use reward functions that programmatically check intermediate states to verify task completion.
+### Error Pattern Metrics
+- **Exact Metric Definitions**:
+  - **Early Stopping Rate**: Percentage of tasks where the agent stops prematurely due to perceived unachievability.
+  - **Observation Bias Rate**: Percentage of tasks where the agent latches onto the first related piece of information without verifying its relevance.
+  - **Interpretation Failure Rate**: Percentage of tasks where the agent fails to correctly interpret the observation, leading to repeated or invalid actions.
+- **Computation**:
+  - Use manual inspection and automated scripts to identify and categorize errors.
+  - Calculate the rates by dividing the number of errors by the total number of tasks evaluated.
 
-### Aggregation Strategy
-- **Per-Sample Evaluation**: Evaluate each task individually using the defined metrics.
-- **Per-Condition Aggregation**: Aggregate results based on the prompting strategy and the presence of the "Unachievable hint."
-- **Overall Aggregation**: Calculate the overall task success rate across all conditions and models.
+### Task Completion Consistency Metrics
+- **Exact Metric Definitions**:
+  - **Per-Template Success Rate**: The percentage of tasks successfully completed for each template.
+- **Computation**:
+  - Aggregate success rates for tasks derived from the same template.
+  - Use statistical analysis to determine variance and consistency.
 
 ## Implementation Notes
 
-- **Prompt Templates**: Use specific prompt templates for reasoning and direct action prediction agents. The reasoning agent should perform step-by-step reasoning before issuing an action, while the direct agent should directly emit the next action.
-- **Order of Operations**: Ensure that the agent only issues one action at a time and follows the correct format for action generation.
-- **Environment Reset**: Use Docker containers to reset the environment to its initial state between experiments, ensuring reproducibility.
+- **Pitfalls and Caveats**:
+  - Ensure that the analysis of error patterns is comprehensive and considers all possible error types.
+  - Be cautious of overfitting the analysis to specific error patterns without considering broader trends.
+- **Order of Operations**:
+  - Perform error pattern analysis before evaluating task completion consistency to ensure a clear understanding of agent limitations.
+- **Output Parsing Logic**:
+  - Use specific identifiers and markers to categorize and record errors accurately during analysis.

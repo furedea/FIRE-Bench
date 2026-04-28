@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How do multimodal LLMs perform on the Blink benchmark compared to humans?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current multimodal large language models (GPT-4V, Gemini, LLaVA) perform on the Blink benchmark, which includes tasks like visual correspondence, relative depth, and forensic detection?"
 
 You have access to the following resources:
 
@@ -8,7 +8,25 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Blink: A benchmark for multimodal language models focusing on core visual perception abilities, consisting of 14 visual perception tasks reformatted into 3,807 multiple-choice questions.  [loader unverified -- locate the data yourself]
+- HPatches: A benchmark and evaluation of handcrafted and learned local descriptors, used for visual correspondence tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hpatches")
+- Depth in the Wild: Dataset for evaluating geometric understanding capabilities through relative depth estimation.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("depth-in-the-wild")
+- COCO captions: Captions from the COCO dataset used as prompts for generating synthetic images.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("coco", "captions")
+- Stable Diffusion XL: Synthetic images generated using Stable Diffusion XL for forensic detection tasks.  [generate programmatically]
+  Generation code:
+    from diffusers import StableDiffusionPipeline
+    model_id = "stabilityai/stable-diffusion-xl"
+    pipe = StableDiffusionPipeline.from_pretrained(model_id)
+    prompt = "A scene description from COCO captions"
+    image = pipe(prompt).images[0]
 
 Experimental constraints:
 - Do NOT use web search

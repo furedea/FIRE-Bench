@@ -1,0 +1,1 @@
+Incorporating search engine results into prompts significantly improves the factual accuracy of large language models, particularly for fast-changing and false-premise questions.

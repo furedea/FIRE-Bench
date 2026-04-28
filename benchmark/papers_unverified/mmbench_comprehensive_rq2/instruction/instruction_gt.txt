@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How does the use of large language models (LLMs) as choice extractors impact the evaluation of VLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: How does the use of large language models (LLMs) as choice extractors impact the evaluation accuracy of vision-language models on MMBench?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- MMBench: A bilingual benchmark for assessing the multi-modal capabilities of vision-language models, containing over 3000 multiple-choice questions covering 20 different ability dimensions.  [loader unverified -- locate the data yourself]
+- MMBench: A bilingual benchmark for assessing the multi-modal capabilities of vision-language models, containing over 3000 multiple-choice questions covering 20 different ability dimensions.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,57 +20,54 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. LLM-based Choice Extraction Analysis
+### 1. LLM-based Choice Extraction Evaluation
 - **Procedure**: 
-  - Use the MMBench dataset to evaluate the effectiveness of LLM-based choice extraction.
-  - For each multiple-choice question, first attempt to extract the choice label from VLM predictions using heuristic matching.
-  - If heuristic matching fails, employ GPT-4 to extract the choice label by providing the question, choices, and model prediction to the LLM, and request it to align the prediction with one of the given choices.
-  - Conduct a comparison between the heuristic matching and LLM-based extraction.
-  - Use a subset of inference records where heuristic matching fails to validate LLM extraction against human annotations.
+  - For each question in the MMBench dataset, use the VLM to generate a prediction.
+  - Attempt to extract the choice label from the VLM's prediction using heuristic matching.
+  - If heuristic matching fails, use an LLM (e.g., GPT-4) to extract the choice label by providing the question, choices, and VLM prediction to the LLM and asking it to align the prediction with one of the given choices.
+  - If the LLM finds that the model prediction is significantly different from all choices, it should return a pseudo choice 'Z'.
 - **What to Record**: 
-  - Success rates of heuristic matching and LLM-based extraction.
-  - Alignment rates between LLM-extracted choices and human annotations.
-  - Accuracy improvements from LLM-based extraction.
+  - Record the success rate of heuristic matching.
+  - Record the alignment rate between LLM-extracted choices and human annotations.
+  - Record the final accuracy of VLM predictions after LLM-based choice extraction.
 - **Correspondence**: 
-  - Figure 5, Table 1, Section 4.2
+  - Section 4.1 and 4.2, Table 6, Figure 5.
 
 ### 2. CircularEval Strategy Evaluation
 - **Procedure**: 
-  - Implement the CircularEval strategy on the MMBench dataset.
-  - For each question, perform multiple inference passes with circularly shifted choices.
-  - Record whether the VLM succeeds in all passes to determine the final accuracy.
-  - Compare results with a single-pass (VanillaEval) strategy to assess the robustness of CircularEval.
+  - For each question in the MMBench dataset, perform multiple inference passes with the VLM, each time applying a circular shift to the choices.
+  - A VLM is considered successful in solving a question only if it correctly predicts the answer in all circular passes.
 - **What to Record**: 
-  - Top-1 accuracy under both CircularEval and VanillaEval.
-  - Accuracy drop when switching from VanillaEval to CircularEval.
+  - Record the accuracy of VLMs under CircularEval compared to VanillaEval.
+  - Record the number of passes required for each question.
 - **Correspondence**: 
-  - Table 2, Section 4.3
+  - Section 4.3, Table 2, Figure 6.
 
 ## Evaluation Details
 
 ### LLM-based Choice Extraction
-- **Metric Definitions**:
-  - **Alignment Rate**: The percentage of cases where the LLM-extracted choice matches human annotations.
-  - **Accuracy Improvement**: The increase in accuracy when using LLM-based extraction compared to heuristic matching.
-- **Normalization/Pre-processing**:
-  - Ensure all model outputs are formatted consistently before passing to the LLM for extraction.
-- **Aggregation Strategy**:
-  - Calculate per-sample alignment and accuracy, then aggregate to determine overall improvement.
+- **Metric Definition**: 
+  - Alignment rate is defined as the percentage of cases where the LLM-extracted choice matches the human-annotated choice.
+  - Use the `gpt-4-0125` model for choice extraction due to its superior alignment capability.
+- **Normalization/Pre-processing**: 
+  - Ensure that the LLM is provided with the exact question, choices, and VLM prediction in a consistent format.
+- **Aggregation Strategy**: 
+  - Calculate the alignment rate per sample, then aggregate to obtain the overall alignment rate.
 
 ### CircularEval Strategy
-- **Metric Definitions**:
-  - **Top-1 Accuracy**: The percentage of questions correctly answered in all circular passes.
-  - **Accuracy Drop**: The difference in accuracy between CircularEval and VanillaEval.
-- **Aggregation Strategy**:
-  - Aggregate accuracy across all questions to determine overall performance under each evaluation strategy.
+- **Metric Definition**: 
+  - Accuracy is defined as the percentage of questions correctly answered in all circular passes.
+- **Normalization/Pre-processing**: 
+  - Apply circular shifts to the choices for each inference pass.
+- **Aggregation Strategy**: 
+  - Calculate accuracy per sample, then aggregate to obtain the overall accuracy.
 
 ## Implementation Notes
 
-- **Pitfalls/Caveats**:
-  - Ensure that the LLM used for choice extraction is properly instructed to avoid external inference beyond the provided options.
-  - Be aware of potential content moderation in proprietary VLMs that may affect evaluation results.
-- **Prompt Templates**:
-  - Use specific prompt templates for LLM-based choice extraction and MMBench-CN translation to ensure consistency.
-- **Order of Operations**:
-  - Perform heuristic matching before LLM-based extraction to minimize unnecessary LLM calls.
-  - Conduct CircularEval only after confirming the model's ability to handle multiple-choice formats.
+- **Pitfalls/Caveats**: 
+  - Ensure that the LLM does not perform external inference based on its knowledge during choice extraction; it should only match based on the literal meaning of the options and answer.
+  - Be aware of content moderation in proprietary VLMs, which may affect the evaluation results.
+- **Prompt Templates**: 
+  - Use a consistent prompt template for zero-shot inference and LLM-based choice extraction.
+- **Order of Operations**: 
+  - Perform heuristic matching first, followed by LLM-based extraction if necessary.

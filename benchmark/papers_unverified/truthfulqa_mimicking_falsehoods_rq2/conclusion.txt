@@ -1,0 +1,1 @@
+Automated metrics like GPT-judge can effectively predict human evaluations of truthfulness in language models, achieving 90-96% accuracy.

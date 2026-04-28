@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How reliable are the current GSM8K results?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How reliable are the current evaluation metrics for mathematical reasoning in large language models when using the GSM8K benchmark compared to the GSM-Symbolic benchmark?"
 
 You have access to the following resources:
 
@@ -8,31 +8,31 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- GSM8K: A benchmark dataset for evaluating the mathematical reasoning capabilities of LLMs, consisting of grade school math questions.
+- GSM8K: A dataset of grade school math questions used to evaluate the mathematical reasoning capabilities of language models.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('openai/gsm8k')
-- GSM-Symbolic: An enhanced benchmark that generates diverse variants of GSM8K questions using symbolic templates for more reliable evaluation of LLMs' performance.  [generate programmatically]
+    dataset = load_dataset("openai/gsm8k")
+- GSM-Symbolic: An enhanced benchmark that generates diverse variants of GSM8K questions using symbolic templates for more reliable evaluation of LLMs' mathematical reasoning.  [generate programmatically]
   Generation code:
     import random
     
     def generate_gsm_symbolic():
-        names = ["Sophie", "Emma", "Olivia"]
+        names = ["Alice", "Bob", "Charlie"]
         family = ["nephew", "cousin", "brother"]
         x = random.randint(5, 100)
         y = random.randint(5, 100)
         z = random.randint(5, 100)
-        total = random.randint(100, 500)
-        ans = total - (x + y + z)
+        total = x + y + z + random.randint(85, 200)
         return {
             "name": random.choice(names),
             "family": random.choice(family),
             "x": x,
             "y": y,
             "z": z,
-            "total": total,
-            "ans": ans
+            "total": total
         }
+    
+    dataset = [generate_gsm_symbolic() for _ in range(5000)]
 
 Experimental constraints:
 - Do NOT use web search

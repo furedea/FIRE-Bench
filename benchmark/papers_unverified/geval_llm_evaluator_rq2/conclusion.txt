@@ -1,0 +1,1 @@
+G-EVAL-4 performs better than all state-of-the-art evaluators in detecting hallucinations in summarization tasks, particularly on the QAGS-Xsum dataset.

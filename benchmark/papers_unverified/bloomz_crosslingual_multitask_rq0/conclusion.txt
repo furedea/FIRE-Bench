@@ -1,0 +1,1 @@
+Finetuning multilingual language models on tasks in a single language, specifically English, enhances their performance on tasks in other languages.

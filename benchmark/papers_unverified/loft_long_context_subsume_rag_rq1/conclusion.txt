@@ -1,0 +1,1 @@
+Long-Context Language Models (LCLMs) can effectively perform Retrieval-Augmented Generation (RAG) on multi-hop datasets, as they outperform RAG pipelines in these cases. However, they struggle with multi-target datasets.

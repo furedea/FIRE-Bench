@@ -1,0 +1,1 @@
+The self-supervised learning of tool use does not affect the core language modeling abilities of the language model, as Toolformer maintains language modeling performance without increasing perplexity.

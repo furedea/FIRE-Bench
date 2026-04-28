@@ -1,47 +1,34 @@
-task_id: spatial_vision_aggregator_rq4
+task_id: cambrian_visual_encoders_rq3
 paper_type: novel_architecture
-research_question: 'RQ4: How does the Spatial Vision Aggregator (SVA) improve the
-  integration of vision features with LLMs?'
+research_question: "RQ4: How does data curation, including data balancing and ratio adjustments, affect the performance of MLLMs?"
 proposed_method:
-  name: Spatial Vision Aggregator (SVA)
-  summary: The Spatial Vision Aggregator (SVA) is a dynamic and spatially-aware connector
-    designed to integrate high-resolution vision features with large language models
-    (LLMs). It reduces the number of tokens while maintaining spatial structure, using
-    learnable latent queries that interact with multiple vision features via cross-attention
-    layers. This approach allows for effective aggregation of features from multiple
-    vision encoders, preserving the spatial structure of visual data during integration
-    with LLMs.
+  name: "Cambrian-1"
+  summary: "Cambrian-1 is a family of multimodal large language models (MLLMs) designed with a vision-centric approach. It introduces the Spatial Vision Aggregator (SVA), a dynamic and spatially-aware connector that integrates high-resolution vision features with LLMs while reducing the number of tokens. The architecture emphasizes the importance of data curation, including data balancing and distribution ratio, to improve visual grounding and overall performance."
   key_components:
-  - Learnable latent queries for cross-attention
-  - Spatial inductive bias to maintain spatial structure
-  - Multi-layer vision aggregation across LLM layers
+    - "Spatial Vision Aggregator (SVA)"
+    - "Vision-centric benchmark (CV-Bench)"
+    - "Data curation and balancing strategies"
 baselines:
-- Concatenation-based approach
-- Re-sampler
+  - "LLaVA"
+  - "CLIP"
+  - "DINO"
 reference_implementation:
-- https://github.com/cambrian-mllm/cambrian
+  - "https://github.com/cambrian-mllm/cambrian"
 datasets:
-- name: CV-Bench
-  source: huggingface
-  loader: 'from datasets import load_dataset
-
-    dataset = load_dataset("nyu-visionx/CV-Bench")
-
-    '
-  description: A vision-centric benchmark designed to evaluate the fundamental 2D
-    and 3D visual understanding of multimodal large language models.
-- name: Cambrian-10M
-  source: huggingface
-  loader: 'from datasets import load_dataset
-
-    dataset = load_dataset("nyu-visionx/Cambrian-10M")
-
-    '
-  description: A large-scale curated instruction tuning dataset for multimodal large
-    language models, emphasizing high-quality visual instruction-tuning data.
-compute_hint: TPU-V4, <4 days for full model training
+  - name: "Cambrian-10M"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("nyu-visionx/Cambrian-10M")
+    description: "A large-scale curated instruction tuning dataset for multimodal large language models, emphasizing data balancing and distribution ratio."
+  - name: "CV-Bench"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("nyu-visionx/CV-Bench")
+    description: "A vision-centric benchmark designed to evaluate the fundamental 2D and 3D visual understanding of MLLMs."
+compute_hint: "TPU-V4, <4 days"
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
-- Implement the proposed method yourself -- do not import it from a library that bundles
-  the paper's exact code.
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"
+  - "Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code."

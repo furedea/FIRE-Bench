@@ -1,50 +1,64 @@
 task_id: agentbench_llm_agents_rq1
 paper_type: llm_evaluation
-research_question: 'RQ2: What are the typical reasons for failures in LLM agents?'
+research_question: "RQ2: How do LLMs perform as agents in game-grounded environments, specifically in digital card games, lateral thinking puzzles, and house-holding tasks?"
 models:
   api:
-  - gpt-4
-  - claude-3
+    - gpt-4
+    - claude-3
+    - glm-4
+    - claude-2
+    - gpt-3.5-turbo
+    - text-davinci-003
+    - claude-instant
+    - chat-bison-001
+    - text-davinci-002
   huggingface:
-  - meta-llama/Llama-2-70b
-  - meta-llama/Llama-2-13b
-  - meta-llama/Llama-2-7b
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-2-70b
+    - meta-llama/Llama-2-13b
+    - meta-llama/Llama-2-7b
+    - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-13B-Instruct
+    - meta-llama/Llama-3.1-34B-Instruct
+    - meta-llama/Llama-3.1-70B-Instruct
+    - Anthropic/claude-3
+    - Anthropic/claude-2
+    - Anthropic/claude
+    - Anthropic/claude-instant
+    - openai/gpt-3.5-turbo
+    - openai/text-davinci-003
+    - openai/text-davinci-002
+    - google/chat-bison-001
+    - ZhipuAI/chatglm-6b
+    - ZhipuAI/codegeex2-6b
+    - ZhipuAI/codellama-34b
+    - ZhipuAI/codellama-13b
+    - ZhipuAI/codellama-7b
+    - ZhipuAI/guanaco-65b
+    - ZhipuAI/guanaco-33b
+    - ZhipuAI/vicuna-33b
+    - ZhipuAI/vicuna-13b
+    - ZhipuAI/vicuna-7b
+    - ZhipuAI/openchat-13b
+    - ZhipuAI/wizardlm-30b
+    - ZhipuAI/wizardlm-13b
+    - ZhipuAI/koala-13b
+    - ZhipuAI/dolly-12b
+    - ZhipuAI/oasst-12b
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: Operating System
-  source: synthetic
-  description: Tasks involving interaction with a simulated operating system environment
-    to execute commands and solve problems.
-- name: Database
-  source: synthetic
-  description: Tasks requiring interaction with a simulated SQL database to perform
-    queries and updates.
-- name: Knowledge Graph
-  source: synthetic
-  description: Tasks involving querying a knowledge graph to retrieve information
-    and answer questions.
-- name: Digital Card Game
-  source: synthetic
-  description: A simulated card game environment where agents must strategize to win
-    against an opponent.
-- name: Lateral Thinking Puzzles
-  source: synthetic
-  description: Puzzles that require unconventional reasoning to solve, presented in
-    a game-like format.
-- name: House-Holding
-  source: synthetic
-  description: Tasks set in a simulated household environment requiring agents to
-    perform actions to achieve specific goals.
-- name: Web Shopping
-  source: synthetic
-  description: Simulated online shopping tasks where agents must find and purchase
-    items based on given criteria.
-- name: Web Browsing
-  source: synthetic
-  description: Tasks involving navigating and interacting with web pages to achieve
-    specific objectives.
+  - name: "Aquawar"
+    source: synthetic
+    description: "A digital card game environment used to evaluate strategic decision-making in LLMs."
+  - name: "Custom LTP tasks"
+    source: synthetic
+    description: "A set of lateral thinking puzzles designed to test unconventional problem-solving abilities of LLMs."
+  - name: "ALFWorld"
+    source: huggingface
+    loader: |
+      from datasets import load_dataset
+      dataset = load_dataset("alfworld")
+    description: "A text-based household simulation environment for evaluating multi-step task completion by LLMs."
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

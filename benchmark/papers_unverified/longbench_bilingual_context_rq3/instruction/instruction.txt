@@ -1,0 +1,33 @@
+You are a research agent. Conduct research and experiment about the question: "RQ4: How do large language models perform on synthetic tasks and code completion tasks using LongBench, which includes datasets like PassageCount, PassageRetrieval, LCC, and RepoBench-P?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- PassageCount: A synthetic task designed to test the model's ability to count unique passages among duplicates.  [generate programmatically]
+- PassageRetrieval-en: A synthetic task where the model identifies the original paragraph corresponding to a given summary.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/passage-retrieval-en")
+- PassageRetrieval-zh: A synthetic task in Chinese where the model identifies the original paragraph corresponding to a given summary.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/passage-retrieval-zh")
+- LCC: A code completion dataset sampled from the Long Code Completion dataset, focusing on completing code based on preceding lines.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/lcc")
+- RepoBench-P: A repository-level code completion dataset requiring aggregation of information from code across files.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/repo-bench-p")
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

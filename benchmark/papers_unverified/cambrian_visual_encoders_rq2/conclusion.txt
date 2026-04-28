@@ -1,0 +1,1 @@
+The integration of multiple vision features using aggregation methods, specifically SVA, improves the performance of multimodal large language models (MLLMs) on datasets such as GQA, DocVQA, and ScienceQA, particularly excelling in OCR and Chart tasks.

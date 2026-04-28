@@ -1,16 +1,21 @@
-You are a research agent. Conduct an empirical study answering the question: "RQ3: Do emergent abilities appear predominantly with specific metrics rather than task-model family pairs?"
+You are a research agent. Conduct an empirical study answering the question: "RQ3: Can emergent abilities, defined as unexpected capabilities that arise in machine learning models, be induced in vision tasks using shallow nonlinear autoencoders on the CIFAR100 dataset and autoregressive Transformers (models predicting future data points based on past ones) on the Omniglot dataset by selecting specific evaluation metrics?"
 
 This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
 
 Data sources available:
-- BIG-Bench: A benchmark used to analyze task-metric-model family triplets for emergent abilities.
-  GitHub repo: https://github.com/google/BIG-bench
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/google/BIG-bench.git
+- CIFAR100: A dataset of 100 classes of natural images used for training and evaluating image classification models.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cifar100")
+- Omniglot: A dataset of handwritten characters from various alphabets used for training and evaluating image classification models.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("omniglot")
 
 Analytical tools / techniques available:
-- Meta-analysis
+- PyTorch
+- NumPy
+- Matplotlib
 
 Study constraints:
 - Do NOT use web search

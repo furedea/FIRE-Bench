@@ -1,0 +1,1 @@
+Large language models perform with varying degrees of success on summarization tasks using LongBench, with some datasets like GovReport, QMSum, MultiNews, and VCSUM proving more challenging than others.

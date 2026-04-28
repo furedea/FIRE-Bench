@@ -1,0 +1,1 @@
+LLMs predict higher medical costs and longer hospital stays disproportionately for certain racial groups. Assessment and plans created by the model showed significant association between demographic attributes and recommendations for more expensive procedures, projected hospitalization durations, as well as differences in patient perception.

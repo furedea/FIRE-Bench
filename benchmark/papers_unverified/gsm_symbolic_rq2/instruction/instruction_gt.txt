@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How does question difficulty affect performance distribution?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: How does the complexity of mathematical questions, indicated by the number of clauses, affect the performance distribution of large language models?"
 
 You have access to the following resources:
 
@@ -8,10 +8,10 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- GSM-Symbolic: An improved benchmark created from symbolic templates that allow for the generation of a diverse set of mathematical reasoning questions.  [generate programmatically]
-- GSM-Symbolic-M1: A variant of GSM-Symbolic with one clause removed to decrease difficulty.  [generate programmatically]
-- GSM-Symbolic-P1: A variant of GSM-Symbolic with one additional clause to increase difficulty.  [generate programmatically]
-- GSM-Symbolic-P2: A variant of GSM-Symbolic with two additional clauses to further increase difficulty.  [generate programmatically]
+- GSM-Symbolic: An improved benchmark created from symbolic templates that allow for the generation of a diverse set of mathematical questions.  [generate programmatically]
+- GSM-Symbolic-M1: A variant of GSM-Symbolic with one clause removed to decrease complexity.  [generate programmatically]
+- GSM-Symbolic-P1: A variant of GSM-Symbolic with one additional clause to increase complexity.  [generate programmatically]
+- GSM-Symbolic-P2: A variant of GSM-Symbolic with two additional clauses to further increase complexity.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search
@@ -23,34 +23,47 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Performance Across Difficulty Levels
-- **Procedure**: 
-  - Use the GSM-Symbolic dataset and its variants (GSM-Symbolic-M1, GSM-Symbolic-P1, GSM-Symbolic-P2) to evaluate the impact of question difficulty on model performance.
-  - For each dataset variant, generate 50 samples per template, resulting in 5000 total examples for each benchmark.
-  - Use 8-shot Chain-of-Thought (CoT) prompting with greedy decoding for all evaluations.
-  - Ensure that the numerical ranges in the templates are consistent with those in the original GSM8K test set to focus on logical reasoning rather than arithmetic skills.
-- **What to Record**: 
-  - Record the accuracy and variance of model performance across different difficulty levels.
-  - Capture the distribution of performance for each model on each dataset variant.
-- **Correspondence**: 
-  - This experiment corresponds to Figure 6 and Section 4.3 in the paper.
+### 1. Evaluate LLM Performance on Questions with Varying Clause Numbers
+
+- **Procedure**:
+  - Use the GSM-Symbolic dataset and its variants (GSM-Symbolic-M1, GSM-Symbolic-P1, GSM-Symbolic-P2) to generate mathematical questions with different levels of complexity.
+  - For each dataset variant:
+    - Generate 100 templates and create 50 samples per template, resulting in 5000 examples per dataset.
+    - Use 8-shot Chain-of-Thought (CoT) prompting with greedy decoding for model evaluation.
+    - Ensure that the same set of 8-shot examples is used across all datasets for consistency.
+  - Evaluate the models: Gemma2-9B, Phi-3.5-mini, and Mathstral-7B.
+
+- **What to Record**:
+  - Record the accuracy of each model on each dataset variant.
+  - Record the variance in performance across different samples within each dataset variant.
+
+- **Correspondence to Paper**:
+  - This experiment corresponds to Section 4.3 and Figure 6 in the paper, which discusses the impact of question difficulty on performance distribution.
 
 ## Evaluation Details
 
-- **Metric Definitions**: 
+- **Metric Definitions**:
   - **Accuracy**: The percentage of correctly answered questions out of the total number of questions.
-  - **Performance Variance**: The statistical variance of accuracy across different samples within the same difficulty level.
-- **Normalization and Pre-processing**: 
-  - Ensure that all model outputs are parsed to extract the final numerical answer for comparison against the ground truth.
-- **Aggregation Strategy**: 
-  - Compute per-sample accuracy, then aggregate to obtain per-condition accuracy (for each difficulty level), and finally compute overall accuracy and variance.
+  - **Performance Variance**: The statistical variance of accuracy across different samples within the same dataset variant.
+
+- **Normalization and Pre-processing**:
+  - Ensure that all model outputs are parsed to extract the final numerical answer.
+  - Normalize numerical answers to a consistent format for comparison.
+
+- **Aggregation Strategy**:
+  - Calculate per-sample accuracy.
+  - Aggregate per-sample accuracy to obtain per-condition accuracy (i.e., accuracy for each dataset variant).
+  - Compute overall variance in accuracy for each dataset variant.
 
 ## Implementation Notes
 
-- **Key Pitfalls**: 
-  - Ensure that the numerical ranges in the templates do not exceed the arithmetic capabilities of the models, as the focus is on logical reasoning.
-  - Be cautious of potential data contamination from GSM8K in the training data of the models.
-- **Prompt Templates**: 
-  - Use the provided prompt format with 8-shot CoT prompting, ensuring consistency across all evaluations.
-- **Order of Operations**: 
-  - Maintain the order of operations in the prompt to ensure that the reasoning chain is preserved and accurately evaluated.
+- **Key Pitfalls**:
+  - Ensure that the numerical ranges in the GSM-Symbolic templates are consistent with those in the original GSM8K dataset to avoid arithmetic errors.
+  - Be cautious of potential data contamination from GSM8K when interpreting results.
+
+- **Prompt Templates**:
+  - Use a consistent prompt format for all evaluations, as specified in the paper's appendix (Figure 9).
+
+- **Order of Operations**:
+  - Generate datasets first, then evaluate models using the specified prompting strategy.
+  - Ensure that all evaluations are conducted under the same conditions to maintain consistency across experiments.

@@ -1,38 +1,37 @@
-You are a research agent. Conduct research about the question: "RQ2: How does PAL perform on symbolic reasoning tasks compared to chain-of-thought prompting?"
+You are a research agent. Conduct research about the question: "RQ2: Do language models that utilize external program execution, where models execute code to aid reasoning, achieve higher solve rates than those using step-by-step reasoning prompts in symbolic reasoning tasks such as COLORED OBJECTS (identifying attributes of colored items), PENGUINS (logical deduction about penguin characteristics), and DATE (calculating dates and times)?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Program-Aided Language Models (PAL): PAL is a novel approach that uses large language models (LLMs) to read natural language problems and generate programs as intermediate reasoning steps, while offloading the solution step to a runtime such as a Python interpreter. This method allows the LLM to focus on decomposing the problem into runnable steps, leveraging the interpreter for accurate computation.
-  - Component: LLM for problem decomposition
-  - Component: Python interpreter for executing generated code
-  - Component: Integration of natural language and programming language reasoning
+- Program-Aided Language models (PAL): PAL is a novel approach that uses large language models (LLMs) to read natural language problems and generate programs as intermediate reasoning steps, while offloading the solution step to a runtime such as a Python interpreter. This method allows the LLM to focus on decomposing the problem into runnable steps, leveraging the interpreter for accurate computation, thus improving performance on arithmetic and symbolic reasoning tasks.
+  - Component: LLM generates intermediate reasoning steps as code
+  - Component: Python interpreter executes the generated code
+  - Component: Synergy between neural LLM and symbolic interpreter
 - Baseline for comparison: Chain-of-Thought (COT) prompting
 
 Datasets for training and evaluation:
-- GSM8K: A dataset of grade-school level math word problems.
-  Loading code:
-    from datasets import load_dataset
-    dataset = load_dataset("gsm8k")
-- SVAMP: A dataset for evaluating simple math word problems.
-  GitHub repo: https://github.com/arkilpatel/SVAMP
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/arkilpatel/SVAMP.git
-- ASDIV: A diverse corpus for evaluating and developing English math word problem solvers.
-  GitHub repo: https://github.com/chaochun/nlu-asdiv-dataset
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/chaochun/nlu-asdiv-dataset.git
-- MAWPS: A repository of math word problems.  [loader unverified -- locate the data yourself]
-- BIG-Bench Hard: A collection of challenging tasks for evaluating the reasoning capabilities of language models.
-  GitHub repo: https://github.com/google/BIG-bench
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/google/BIG-bench.git
-- COLORED OBJECTS: A task requiring reasoning about colored objects on a surface.  [generate programmatically]
-- PENGUINS: A task involving reasoning about penguins' attributes and dynamics.  [generate programmatically]
-- DATE: A date understanding task involving inferring dates from natural language descriptions.  [generate programmatically]
+- COLORED OBJECTS: A task requiring answering questions about colored objects on a surface, involving tracking relative and absolute positions and colors.  [generate programmatically]
+  Generation code:
+    objects = []
+    objects += [('paperclip', 'purple')] * 1
+    objects += [('stress ball', 'pink')] * 1
+    objects += [('keychain', 'brown')] * 1
+    objects += [('scrunchiephone charger', 'green')] * 1
+    objects += [('fidget spinner', 'mauve')] * 1
+    objects += [('pen', 'burgundy')] * 1
+- PENGUINS: A task involving logical deduction about penguin characteristics, such as age, height, and weight.  [generate programmatically]
+  Generation code:
+    penguins = []
+    penguins.append(('Louis', 7, 50, 11))
+    penguins.append(('Bernard', 5, 80, 13))
+    penguins.append(('Vincent', 9, 60, 11))
+    penguins.append(('Gwen', 8, 70, 15))
+    penguins.append(('James', 12, 90, 12))
+- DATE: A date understanding task that involves inferring dates from natural language descriptions and performing date calculations.  [generate programmatically]
+  Generation code:
+    today = datetime(2015, 1, 1) - relativedelta(hours=36)
+    one_week_from_today = today + relativedelta(weeks=1)
+    one_week_from_today.strftime('%m/%d/%Y')
 
 Experimental constraints:
 - Do NOT use web search

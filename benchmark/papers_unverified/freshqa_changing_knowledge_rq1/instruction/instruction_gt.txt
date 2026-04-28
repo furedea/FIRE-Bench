@@ -1,13 +1,14 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How does the FRESHPROMPT method improve the factual accuracy of LLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does incorporating search engine results into prompts affect the factual accuracy and hallucination rate of large language models (LLMs) when evaluated on question-answering tasks?"
 
 You have access to the following resources:
 
 Models:
 - gpt-4 via API
+- Load with HuggingFace: openai/gpt-3.5-turbo
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- FRESHQA: A dynamic QA benchmark with 600 questions testing factuality of LLMs, including fast-changing and false-premise questions.  [loader unverified -- locate the data yourself]
+- FRESHQA: A dynamic QA benchmark with 600 questions that test current world knowledge, including fast-changing and false-premise questions.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -19,47 +20,51 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Evaluating FRESHPROMPT on FRESHQA
-- **Procedure**: 
+### 1. Evaluating FRESHPROMPT on GPT-3.5 and GPT-4
+
+- **Procedure**:
   - Use the FRESHQA dataset, which consists of 600 questions divided into four categories: never-changing, slow-changing, fast-changing, and false-premise.
-  - For each question, apply the FRESHPROMPT method by querying a search engine (Google Search) to retrieve relevant and up-to-date information.
-  - Incorporate the retrieved evidences into the prompt in a unified format, including source webpage, date, title, text snippet, and highlighted words.
-  - Use few-shot in-context learning with 5 demonstrations at the beginning of the prompt to guide the model in reasoning over the evidences.
-  - Sort the evidences in the prompt from oldest to newest to encourage focus on more recent information.
-  - Evaluate the responses using GPT-3.5 and GPT-4 models.
-- **What to Record**: 
-  - Record the accuracy of the model responses under two evaluation modes: RELAXED (focuses on the correctness of the primary answer) and STRICT (ensures all claims are factual and up-to-date).
-  - Capture the number of retrieved evidences and their order, as well as the impact of including or excluding certain types of information (e.g., answer box, related questions).
-- **Correspondence to a Figure / Table / Section**: 
-  - Figure 3 illustrates the FRESHPROMPT format.
-  - Table 1 and Table 5 present the accuracy results under STRICT and RELAXED evaluations, respectively.
-  - Section 4.3 discusses the results and analysis.
+  - For each question, apply the FRESHPROMPT method by incorporating search engine results into the prompt. This involves:
+    - Querying a search engine (GOOGLE SEARCH) with the question to retrieve relevant information.
+    - Extracting text snippets, source, date, title, and highlighted words from the search results.
+    - Sorting the retrieved evidences chronologically from oldest to newest.
+    - Including few-shot demonstrations at the beginning of the prompt to guide the model in reasoning over the evidences.
+  - Use GPT-3.5 and GPT-4 models to generate answers based on the augmented prompts.
+  - Evaluate the models on the test set of 500 questions, with 125 questions per category.
+
+- **What to Record**:
+  - Raw outputs of the models.
+  - Extracted answers from the model outputs.
+  - Accuracy of the answers under both RELAXED and STRICT evaluation modes.
+  - Hallucination rate, defined as the difference in accuracy between RELAXED and STRICT modes.
+
+- **Correspondence to Paper**:
+  - This experiment corresponds to the results presented in Table 1 and discussed in Section 4.3 of the paper.
 
 ## Evaluation Details
 
-- **Metric Definitions and Computation**:
-  - **Accuracy**: The percentage of questions for which the model's response is correct. Under RELAXED, the primary answer must be correct, even if additional information is outdated or hallucinated. Under STRICT, all information must be accurate and up-to-date.
-  - Use human evaluation to assess the correctness of responses, with inter-rater agreement checks to ensure reliability.
-  - Develop FRESHEVAL, an automatic metric using few-shot in-context learning to judge model responses, achieving high agreement with human evaluations.
+- **Metric Definitions**:
+  - **Accuracy**: The percentage of questions for which the model's primary answer is correct.
+  - **Hallucination Rate**: Calculated as the difference in accuracy between RELAXED and STRICT evaluation modes.
 
 - **Normalization and Pre-processing**:
-  - Normalize model outputs by ensuring the primary answer is extracted and evaluated separately from additional information.
-  - For numerical answers, approximate numbers are not accepted unless explicitly included in the ground-truth answers.
+  - Normalize model outputs by ensuring the primary answer is extracted and evaluated independently of additional context.
+  - For numerical answers, ensure exact matches unless approximate numbers are explicitly allowed in the ground-truth answers.
 
 - **Aggregation Strategy**:
-  - Compute accuracy per question type (fast-changing, slow-changing, never-changing, false-premise) and aggregate to obtain overall accuracy.
-  - Compare performance across different configurations of FRESHPROMPT (e.g., number of evidences, presence of premise check).
+  - Compute accuracy per question category (fast-changing, slow-changing, never-changing, false-premise).
+  - Aggregate results to obtain overall accuracy and hallucination rate across all categories.
 
 ## Implementation Notes
 
-- **Key Pitfalls or Caveats**:
-  - Ensure that the model provides a confident and definitive answer; responses that are ambiguous or lack a clear primary answer should not receive credit.
-  - Be cautious of hallucinations in verbose responses, as they can mislead the evaluation under STRICT criteria.
-
-- **Special Prompt Templates**:
-  - Use a specific prompt format that includes few-shot demonstrations and retrieved evidences in a structured manner.
-  - Include an explicit false premise check in the prompt for questions with potential false premises.
+- **Prompt Templates**:
+  - Use a unified format for retrieved evidences, including source webpage, date, title, text snippet, and highlighted words.
+  - Include few-shot demonstrations at the beginning of the prompt to illustrate reasoning over evidences.
 
 - **Order of Operations**:
-  - Retrieve evidences from the search engine and sort them chronologically before incorporating them into the prompt.
-  - Ensure that few-shot demonstrations are placed at the beginning of the prompt to guide the model's reasoning process.
+  - Ensure evidences are sorted chronologically before being incorporated into the prompt.
+  - Maintain the sequence of operations: retrieve evidences, sort, format, and then prompt the model.
+
+- **Pitfalls and Caveats**:
+  - Be cautious of the model's tendency to hallucinate when additional context is verbose or conflicting.
+  - Ensure that the model's output is evaluated strictly according to the criteria for RELAXED and STRICT modes, as outlined in the paper.

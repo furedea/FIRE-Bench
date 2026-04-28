@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How do transformer LLMs perform on compositional tasks requiring multi-step reasoning?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How do transformer-based large language models (LLMs) perform on compositional tasks such as multi-digit multiplication, logic grid puzzles, and dynamic programming problems across zero-shot, few-shot, and fine-tuning settings? RQ2: What are the underlying mechanisms used by transformer-based large language models (LLMs) to solve compositional tasks like multi-digit multiplication, logic grid puzzles, and dynamic programming problems?"
 
 You have access to the following resources:
 
@@ -8,9 +8,40 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Multi-digit multiplication: A task involving the multiplication of multi-digit numbers, requiring step-by-step arithmetic operations.  [generate programmatically]
-- Logic grid puzzles: A logic puzzle task often used as a benchmark for solving constraint satisfaction problems, involving a list of houses with different attributes.  [generate programmatically]
-- Dynamic programming problem: A classic problem involving finding a subsequence with the highest sum, such that no two numbers in the subsequence are adjacent in the original sequence.  [generate programmatically]
+- Generated multiplication problems: Synthetic dataset of multiplication problems with up to 5-digit numbers.  [generate programmatically]
+  Generation code:
+    def generate_multiplication_problems(max_digits=5):
+        import random
+        problems = []
+        for _ in range(1000):  # Generate 1000 problems
+            x = random.randint(10**(max_digits-1), 10**max_digits - 1)
+            y = random.randint(10**(max_digits-1), 10**max_digits - 1)
+            problems.append((x, y, x * y))
+        return problems
+- Generated logic grid puzzles: Synthetic dataset of logic grid puzzles with varying sizes and complexity.  [generate programmatically]
+  Generation code:
+    def generate_logic_grid_puzzles(num_puzzles=1000, max_size=5):
+        import random
+        puzzles = []
+        for _ in range(num_puzzles):
+            size = random.randint(2, max_size)
+            puzzle = {"houses": size, "attributes": ["color", "pet", "drink"], "clues": []}
+            # Generate random clues
+            for _ in range(size * 2):
+                clue_type = random.choice(["same_house", "direct_left", "besides"])
+                puzzle["clues"].append(clue_type)
+            puzzles.append(puzzle)
+        return puzzles
+- Generated dynamic programming sequences: Synthetic dataset of sequences with integers in the range [-5, 5] for dynamic programming tasks.  [generate programmatically]
+  Generation code:
+    def generate_dp_sequences(max_length=10, num_sequences=1000):
+        import random
+        sequences = []
+        for _ in range(num_sequences):
+            length = random.randint(2, max_length)
+            sequence = [random.randint(-5, 5) for _ in range(length)]
+            sequences.append(sequence)
+        return sequences
 
 Experimental constraints:
 - Do NOT use web search
@@ -22,52 +53,70 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Zero-shot, Few-shot, and Fine-tuning Performance Evaluation
+### 1. Multi-Digit Multiplication Task
+- **Procedure**: 
+  - Use the long-form multiplication algorithm to generate computation graphs for multi-digit multiplication problems.
+  - Conduct experiments in zero-shot, few-shot, and fine-tuning settings.
+  - For zero-shot and few-shot, use question-answer and question-scratchpad formats.
+  - For fine-tuning, train on all enumerations of questions up to the maximum problem size within budget constraints.
+- **Input Format**: 
+  - Multiplication problems with up to 5-digit numbers.
+- **Prompting Strategy**: 
+  - Use scratchpads to verbalize computation graphs in few-shot and fine-tuning settings.
+- **Number of Samples**: 
+  - 1000 problems for zero-shot and few-shot; exhaustive enumeration for fine-tuning.
+- **What to Record**: 
+  - Raw outputs, accuracy, and intermediate computation steps.
+- **Correspondence**: 
+  - Figure 2, Section 3.1.
 
-- **Procedure**:
-  - **Input Format**: For each task, provide the model with the task description and input data. For zero-shot, no additional context is given. For few-shot, include a few examples with solutions. For fine-tuning, train the model on a large set of task-specific examples.
-  - **Prompting Strategy**: Use scratchpads for few-shot and fine-tuning settings to guide the model through intermediate steps. Scratchpads are verbalizations of computation graphs, providing a linearized representation of the task.
-  - **Number of Samples**: Evaluate on 500 test examples per task.
-  - **Shuffling/Ordering**: Randomly shuffle the test examples to ensure unbiased evaluation.
-  - **Splits to Use**: Use separate splits for in-domain (seen during training) and out-of-domain (unseen during training) evaluation.
+### 2. Logic Grid Puzzles Task
+- **Procedure**: 
+  - Use a greedy elimination algorithm to solve logic grid puzzles.
+  - Conduct experiments in zero-shot, few-shot, and fine-tuning settings.
+  - For fine-tuning, train on puzzles of sizes ranging from 2x2 to 4x4.
+- **Input Format**: 
+  - Puzzles with varying sizes and complexity.
+- **Prompting Strategy**: 
+  - Use scratchpads to verbalize reasoning paths in few-shot and fine-tuning settings.
+- **Number of Samples**: 
+  - 1000 puzzles for zero-shot and few-shot; subset of all instances up to (K, M) ≤ (4, 4) for fine-tuning.
+- **What to Record**: 
+  - Raw outputs, accuracy, and reasoning paths.
+- **Correspondence**: 
+  - Figure 18, Section 3.1.
 
-- **What to Record**:
-  - Raw outputs from the models.
-  - Extracted answers for each task.
-  - Intermediate statistics such as accuracy per task complexity level.
-
-- **Correspondence to a Figure / Table / Section**:
-  - Section 3.1
-  - Figure 2, Figure 3, Figure 4, Figure 5
+### 3. Dynamic Programming Task
+- **Procedure**: 
+  - Use a recursive approach to solve dynamic programming problems.
+  - Conduct experiments in zero-shot, few-shot, and fine-tuning settings.
+  - For fine-tuning, train on sequences up to 5 elements.
+- **Input Format**: 
+  - Sequences with integers in the range [-5, 5].
+- **Prompting Strategy**: 
+  - Use scratchpads to verbalize computation steps in few-shot and fine-tuning settings.
+- **Number of Samples**: 
+  - 1000 sequences for zero-shot and few-shot; exhaustive enumeration for fine-tuning.
+- **What to Record**: 
+  - Raw outputs, accuracy, and intermediate computation steps.
+- **Correspondence**: 
+  - Figure 21, Section 3.1.
 
 ## Evaluation Details
 
-- **Metric Definitions and Computation**:
-  - **Accuracy**: The proportion of correctly solved tasks out of the total number of tasks. Compute separately for in-domain and out-of-domain examples.
-  - **Relative Information Gain**: Used to predict surface patterns that models are likely to recognize. Compute as:
-    \[
-    \text{RelativeIG}(Y_j, X) = \frac{H(Y_j) - H(Y_j|X)}{H(Y_j)}
-    \]
-    where \(H\) denotes entropy.
-
-- **Normalization/Pre-processing**:
-  - Normalize model outputs by ensuring consistent formatting (e.g., removing extraneous whitespace or punctuation) before scoring.
-
-- **Aggregation Strategy**:
-  - Compute per-sample accuracy, then aggregate to per-condition (in-domain vs. out-of-domain) and overall accuracy.
+- **Metrics**: 
+  - Accuracy for all tasks.
+- **Normalization/Pre-processing**: 
+  - Ensure consistent input formatting across different settings.
+- **Aggregation Strategy**: 
+  - Compute per-sample accuracy, aggregate to per-condition accuracy, and then compute overall accuracy.
 
 ## Implementation Notes
 
-- **Key Pitfalls or Caveats**:
-  - The paper notes that models may rely on pattern matching rather than true reasoning, leading to poor generalization on out-of-domain examples.
-  - Ensure that the scratchpad accurately reflects the computation graph to guide the model effectively.
-
-- **Special Prompt Templates**:
-  - Use detailed scratchpads for few-shot and fine-tuning settings. Example scratchpad for multiplication:
-    ```
-    Question: What is 35 times 90?
-    Scratchpad: Let's perform the multiplication step by step...
-    ```
-
-- **Order of Operations**:
-  - For fine-tuning, ensure that the model is exposed to a comprehensive set of examples covering various task complexities before evaluating on test data.
+- **Pitfalls/Caveats**: 
+  - Ensure that the computation graphs are correctly linearized for autoregressive models.
+  - Be cautious of the model's tendency to memorize rather than generalize.
+- **Prompt Templates**: 
+  - Use specific templates for scratchpads that detail each step of the computation or reasoning process.
+- **Order of Operations**: 
+  - Follow the exact sequence of operations as defined in the computation graphs to ensure faithful reproduction of the experiments.

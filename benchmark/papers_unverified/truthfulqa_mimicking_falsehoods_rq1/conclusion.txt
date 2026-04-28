@@ -1,0 +1,1 @@
+Larger model sizes generally decrease truthfulness, with the largest models producing more imitative falsehoods on the TruthfulQA benchmark.

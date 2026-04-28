@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How well do large language models perform on the Multilingual Grade School Math (MGSM) benchmark?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do large language models perform on the Multilingual Grade School Math (MGSM) benchmark, which involves solving arithmetic problems in ten typologically diverse languages using various prompting strategies that generate intermediate reasoning steps before arriving at a final answer?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- MGSM: A benchmark consisting of 250 grade-school math problems translated into ten typologically diverse languages to evaluate multilingual arithmetic reasoning abilities.  [loader unverified -- locate the data yourself]
+- MGSM: A multilingual benchmark created by manually translating 250 grade-school math problems from the GSM8K dataset into ten typologically diverse languages.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

@@ -1,0 +1,1 @@
+Large language models like ChatGPT and Qwen-7B-Chat struggle to identify and correct factual errors in retrieved documents, even when given warnings, in both English and Chinese.

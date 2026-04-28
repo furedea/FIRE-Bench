@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: Can LCLMs perform retrieval tasks across different modalities as effectively as specialized models?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do Long-Context Language Models (LCLMs, which can process extended sequences of input data) perform in text, visual, and audio retrieval tasks compared to specialized models like CLIP for visual retrieval and PaLM 2 DE for audio retrieval, using datasets such as ArguAna, MS COCO, and FLEURS-en?"
 
 You have access to the following resources:
 
@@ -8,28 +8,18 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- ArguAna: Argument retrieval dataset used for evaluating text retrieval tasks.
-- FEVER: Fact extraction and verification dataset used for evaluating text retrieval tasks.
-- FIQA: Financial opinion mining and question answering dataset used for evaluating text retrieval tasks.
-- MS MARCO: Web search dataset used for evaluating text retrieval tasks.
-- NQ: Natural Questions dataset used for evaluating question answering tasks.
-- Quora: Duplication detection dataset used for evaluating text retrieval tasks.
-- SciFact: Citation prediction dataset used for evaluating text retrieval tasks.
-- Touché-2020: Argument retrieval dataset used for evaluating text retrieval tasks.
-- TopiOCQA: Multi-turn conversational question answering dataset used for evaluating text retrieval tasks.
-- HotPotQA: Multi-hop question answering dataset used for evaluating text retrieval tasks.
-- MuSiQue: Multi-hop question answering dataset used for evaluating text retrieval tasks.
-- QAMPARI: Multi-target question answering dataset used for evaluating text retrieval tasks.
-- QUEST: Multi-target question answering dataset used for evaluating text retrieval tasks.
-- Flickr30k: Image retrieval dataset used for evaluating visual retrieval tasks.
-- MS COCO: Image retrieval dataset used for evaluating visual retrieval tasks.
-- OVEN: Image-text retrieval dataset used for evaluating visual retrieval tasks.
-- MSR-VTT: Video retrieval dataset used for evaluating visual retrieval tasks.
-- FLEURS-en: Audio retrieval dataset used for evaluating audio retrieval tasks in English.
-- FLEURS-es: Audio retrieval dataset used for evaluating audio retrieval tasks in Spanish.
-- FLEURS-fr: Audio retrieval dataset used for evaluating audio retrieval tasks in French.
-- FLEURS-hi: Audio retrieval dataset used for evaluating audio retrieval tasks in Hindi.
-- FLEURS-zh: Audio retrieval dataset used for evaluating audio retrieval tasks in Chinese.
+- ArguAna: A dataset for argument retrieval tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("beir", "arguana")
+- MS COCO: A dataset for image retrieval tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("coco", "2017")
+- FLEURS-en: A dataset for audio retrieval tasks in English.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("google/fleurs", "en")
 
 Experimental constraints:
 - Do NOT use web search
@@ -41,65 +31,60 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Text Retrieval Performance Comparison
+### 1. Text Retrieval Performance Evaluation
 - **Procedure**: 
-  - Use datasets: ArguAna, FEVER, FIQA, MS MARCO, NQ, Quora, SciFact, Touché-2020, TopiOCQA, HotPotQA, MuSiQue, QAMPARI, QUEST.
+  - Use the ArguAna, FEVER, FIQA, MS MARCO, NQ, Quora, SciFact, Touché-2020, TopiOCQA, HotPotQA, MuSiQue, QAMPARI, and QUEST datasets.
   - For each dataset, sample up to 100 test queries, 5 few-shot queries, and 10 development queries.
-  - Construct a shared corpus for each retrieval and RAG dataset by including all gold passages from few-shot, development, and test queries, then sample additional passages until reaching the desired context size (32k, 128k, or 1M tokens).
+  - Construct a shared corpus for each retrieval task by including all gold passages from few-shot, development, and test queries, then sample additional passages until reaching the desired context size (32k, 128k, or 1M tokens).
   - Shuffle gold and random passages to avoid positional biases.
   - Use Corpus-in-Context (CiC) prompting with task-specific instructions and few-shot examples.
-  - Evaluate using Recall@1 for single-document retrieval and MRecall@k for multi-document retrieval.
 - **What to Record**: 
-  - Raw outputs of the model, including retrieved document IDs.
-  - Recall@1 and MRecall@k scores.
+  - Record Recall@1 for single-document retrieval tasks.
+  - Record MRecall@k for multi-document retrieval tasks, where k is specific to each dataset (e.g., k=2 for HotPotQA).
 - **Correspondence**: Section 4.1, Table 2, Figure 5.
 
-### 2. Visual Retrieval Performance Comparison
+### 2. Visual Retrieval Performance Evaluation
 - **Procedure**: 
-  - Use datasets: Flickr30k, MS COCO, OVEN, MSR-VTT.
-  - For each dataset, sample up to 100 test queries.
-  - Construct shared corpora with images or image-text pairs, ensuring smaller corpora are subsets of larger ones.
+  - Use the Flickr30k, MS COCO, OVEN, and MSR-VTT datasets.
+  - For each dataset, perform text-to-image or text-to-video retrieval using the same corpus construction method as text retrieval.
   - Use CiC prompting with task-specific instructions.
-  - Evaluate using Recall@1.
 - **What to Record**: 
-  - Raw outputs of the model, including retrieved image IDs.
-  - Recall@1 scores.
+  - Record Recall@1 for each dataset.
 - **Correspondence**: Section 4.2, Table 2, Figure 5.
 
-### 3. Audio Retrieval Performance Comparison
+### 3. Audio Retrieval Performance Evaluation
 - **Procedure**: 
-  - Use datasets: FLEURS-en, FLEURS-es, FLEURS-fr, FLEURS-hi, FLEURS-zh.
-  - For each dataset, sample up to 100 test queries.
-  - Construct shared corpora with audio clips, ensuring smaller corpora are subsets of larger ones.
+  - Use the FLEURS-en, FLEURS-es, FLEURS-fr, FLEURS-hi, and FLEURS-zh datasets.
+  - Perform audio retrieval using the same corpus construction method as text retrieval.
   - Use CiC prompting with task-specific instructions.
-  - Evaluate using Recall@1.
 - **What to Record**: 
-  - Raw outputs of the model, including retrieved audio IDs.
-  - Recall@1 scores.
+  - Record Recall@1 for each dataset.
 - **Correspondence**: Section 4.3, Table 2, Figure 5.
 
 ## Evaluation Details
 
 ### Text Retrieval
 - **Metrics**: 
-  - Recall@1: Proportion of queries for which the top retrieved document is correct.
-  - MRecall@k: Score of 1.0 if all k gold set items are retrieved in top-k, 0.0 otherwise.
-- **Normalization**: Ensure document IDs are correctly parsed and matched against ground truth.
-- **Aggregation**: Compute average Recall@1 and MRecall@k across all queries for each dataset.
+  - Recall@1: The proportion of queries for which the top retrieved document is a gold document.
+  - MRecall@k: For multi-document retrieval, gives a score of 1.0 if all k gold set items are retrieved in top-k and 0.0 otherwise.
+- **Normalization**: Ensure that the model outputs are parsed correctly to match the expected format for evaluation.
+- **Aggregation Strategy**: Compute per-sample metrics, then average across all samples in a dataset to obtain per-dataset performance.
 
 ### Visual and Audio Retrieval
 - **Metrics**: 
-  - Recall@1: Proportion of queries for which the top retrieved image or audio is correct.
-- **Normalization**: Ensure image and audio IDs are correctly parsed and matched against ground truth.
-- **Aggregation**: Compute average Recall@1 across all queries for each dataset.
+  - Recall@1: The proportion of queries for which the top retrieved image or audio is a gold target.
+- **Normalization**: Ensure that the model outputs are parsed correctly to match the expected format for evaluation.
+- **Aggregation Strategy**: Compute per-sample metrics, then average across all samples in a dataset to obtain per-dataset performance.
 
 ## Implementation Notes
 
 - **Prompt Design**: 
-  - Use task-specific instructions and few-shot examples to guide the model.
-  - For retrieval tasks, ensure document IDs are placed both before and after the content to mitigate causal attention issues.
-- **Order of Operations**: 
-  - Construct the corpus first, then apply CiC prompting with the query at the end of the prompt.
-- **Pitfalls**: 
-  - Ensure gold documents are shuffled to avoid positional biases.
-  - Be aware of potential API call blocks due to safety filters; treat these as incorrect in evaluation.
+  - Use task-specific instructions and few-shot examples to guide the model's behavior.
+  - For retrieval tasks, ensure that document IDs are both prefixed and suffixed to mitigate the effects of causal attention in decoder-only LCLMs.
+- **Corpus Construction**: 
+  - Ensure that smaller corpora are subsets of larger ones to maintain consistency across different context lengths.
+  - Shuffle gold and random passages to avoid positional biases.
+- **Chain-of-Thought Reasoning**: 
+  - Include reasoning steps in few-shot examples for tasks requiring complex multi-hop reasoning.
+- **Handling Large Contexts**: 
+  - Use prefix-caching to optimize the encoding of large contexts, as the query appears at the end of the prompt.

@@ -1,17 +1,13 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How does positional bias affect the evaluation results of LLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How does the order of candidate responses affect the evaluation outcomes when using GPT-4 and ChatGPT as evaluators for AI-generated responses?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 via API
+- gpt-4 and gpt-3.5-turbo-0301 via API
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Vicuna Benchmark: A benchmark used to evaluate responses from ChatGPT and Vicuna-13B across 80 questions spanning 9 distinct categories.
-  GitHub repo: https://github.com/lm-sys/FastChat
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/lm-sys/FastChat.git
+- Vicuna Benchmark: A benchmark used to evaluate the performance of AI models, specifically comparing responses from ChatGPT and Vicuna-13B across various question categories.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

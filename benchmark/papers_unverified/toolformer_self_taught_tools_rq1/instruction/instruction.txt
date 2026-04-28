@@ -1,44 +1,22 @@
-You are a research agent. Conduct research about the question: "RQ2: Does the use of external tools improve the zero-shot performance of language models on various downstream tasks?"
+You are a research agent. Conduct research about the question: "RQ2: Does the self-supervised learning of tool use affect the core language modeling abilities of the language model?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Toolformer: Toolformer is a language model architecture that autonomously learns to use external tools via simple APIs to enhance its performance on various tasks. It is trained to decide which APIs to call, when to call them, what arguments to pass, and how to incorporate the results into future token prediction. This is achieved in a self-supervised manner, requiring only a few demonstrations for each API. Toolformer integrates tools such as a calculator, a Q&A system, a search engine, a translation system, and a calendar, significantly improving zero-shot performance across various tasks without sacrificing core language modeling abilities.
+- Toolformer: Toolformer is a language model architecture that autonomously learns to use external tools via APIs in a self-supervised manner. It decides which APIs to call, when to call them, what arguments to pass, and how to incorporate the results into future token predictions. This approach allows the model to enhance its performance on tasks like arithmetic and factual lookup without sacrificing its core language modeling abilities.
   - Component: API call decision-making mechanism
-  - Component: Self-supervised learning for tool use
-  - Component: Integration of multiple external tools (calculator, Q&A system, search engine, translation system, calendar)
+  - Component: Self-supervised learning framework for tool use
+  - Component: Integration with external tools like calculators, Q&A systems, and search engines
 - Baseline for comparison: GPT-J
 - Baseline for comparison: GPT-3
-- Baseline for comparison: OPT (66B)
+- Baseline for comparison: OPT
 
 Datasets for training and evaluation:
-- LAMA: A benchmark for evaluating language models on factual knowledge by completing short statements with missing facts.
+- WikiText: A dataset consisting of Wikipedia articles used for language modeling tasks.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('facebook/LAMA')
-- ASDiv: A dataset for evaluating mathematical reasoning abilities.
-  GitHub repo: https://github.com/chaochun/nlu-asdiv-dataset
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/chaochun/nlu-asdiv-dataset.git
-- SVAMP: A dataset for evaluating mathematical reasoning abilities.
-  GitHub repo: https://github.com/arkilpatel/SVAMP
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/arkilpatel/SVAMP.git
-- MAWPS: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
-- Web Questions: A question answering dataset used to evaluate models on open-domain questions.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('web_questions')
-- Natural Questions: A benchmark for question answering research, providing questions and answers based on Wikipedia.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('natural_questions')
-- TriviaQA: A large-scale question answering dataset with questions and answers collected from trivia and quiz-league websites.
-  Loading code:
-    from datasets import load_dataset
-    ds = load_dataset('trivia_qa')
+    dataset = load_dataset("wikitext", "wikitext-103-v1")
+- CCNet: A large-scale dataset extracted from web crawl data, used for language modeling.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

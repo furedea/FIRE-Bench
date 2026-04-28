@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ4: How do LCLMs perform in many-shot in-context learning (ICL) tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ4: How do Long-Context Language Models (LCLMs, which can process extended sequences of text) perform in many-shot in-context learning (ICL, where models learn from examples provided within the input context) tasks compared to traditional few-shot setups, specifically on datasets like BBH-date, BBH-salient, BBH-tracking7, BBH-web, and LIB-dialogue using classification accuracy as the metric?"
 
 You have access to the following resources:
 
@@ -8,11 +8,11 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- BBH-date: Multiple-choice QA dataset from Big-Bench Hard focusing on date understanding.  [loader unverified -- locate the data yourself]
-- BBH-salient: Multiple-choice QA dataset from Big-Bench Hard focusing on salient error translation detection.  [loader unverified -- locate the data yourself]
-- BBH-tracking7: Multiple-choice QA dataset from Big-Bench Hard focusing on tracking shuffled objects.  [loader unverified -- locate the data yourself]
-- BBH-web: Multiple-choice QA dataset from Big-Bench Hard focusing on web of lies.  [loader unverified -- locate the data yourself]
-- LIB-dialogue: Classification dataset from LongICLBench focusing on dialogue-based relation extraction.  [loader unverified -- locate the data yourself]
+- BBH-date: Multiple-choice QA dataset used for evaluating many-shot in-context learning capabilities.  [loader unverified -- locate the data yourself]
+- BBH-salient: Multiple-choice QA dataset used for evaluating many-shot in-context learning capabilities.  [loader unverified -- locate the data yourself]
+- BBH-tracking7: Multiple-choice QA dataset used for evaluating many-shot in-context learning capabilities.  [loader unverified -- locate the data yourself]
+- BBH-web: Multiple-choice QA dataset used for evaluating many-shot in-context learning capabilities.  [loader unverified -- locate the data yourself]
+- LIB-dialogue: Classification dataset used for evaluating many-shot in-context learning capabilities.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -24,37 +24,39 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Many-shot ICL Performance Comparison
+### 1. Many-shot ICL Performance Evaluation
 - **Procedure**: 
-  - Use the datasets BBH-date, BBH-salient, BBH-tracking7, BBH-web, and LIB-dialogue.
-  - For each dataset, construct a shared many-shot ICL context ensuring that training examples in smaller contexts are included in larger ones.
-  - Ensure each class is represented at least once in the context.
-  - Use a maximum context length of 32k tokens for BBH datasets and up to 128k or 1M for LIB-dialogue.
-  - Present the model with a series of examples (many-shot) before querying it with a new instance.
+  - For each dataset (BBH-date, BBH-salient, BBH-tracking7, BBH-web, LIB-dialogue), prepare the input by including a large number of examples in the context. The number of examples should be scaled up to the maximum that fits within the model's context window (up to 128k tokens for GPT-4o).
+  - Use a consistent format for input examples, ensuring each class is represented at least once in the context.
+  - For each task, evaluate the model's performance by providing a query after the examples and recording the model's classification output.
+  - Ensure that the same set of queries is used across different context lengths to maintain consistency.
 - **What to Record**: 
-  - Record the classification accuracy for each dataset.
-  - Capture the model's raw outputs and the predicted class for each query.
+  - Record the raw outputs of the model for each query.
+  - Extract the predicted class labels from the model's outputs.
+  - Calculate the classification accuracy for each dataset.
 - **Correspondence**: 
-  - This experiment corresponds to Section 4.6 and Table 2 in the paper.
+  - This experiment corresponds to Figure 7 and Table 2 in the paper, as well as Section 4.6.
 
 ## Evaluation Details
 
-- **Metric Definitions**: 
-  - Use classification accuracy as the primary metric, defined as the number of correct predictions divided by the total number of predictions.
+- **Metric Definition**: 
+  - Classification accuracy is defined as the number of correct predictions divided by the total number of predictions. Use the formula: 
+    \[
+    \text{Accuracy} = \frac{\text{Number of Correct Predictions}}{\text{Total Number of Predictions}}
+    \]
 - **Normalization/Pre-processing**: 
-  - Ensure that the input examples are tokenized consistently across different context lengths.
-  - Normalize the model outputs to ensure they are in a comparable format for accuracy computation.
+  - Ensure that the model outputs are parsed correctly to extract the predicted class labels. This may involve stripping any extraneous text or formatting from the model's output.
 - **Aggregation Strategy**: 
-  - Compute accuracy per dataset and then average across all datasets to get an overall performance measure.
+  - Calculate accuracy per dataset and then average across all datasets to obtain an overall performance measure for the many-shot ICL tasks.
 
 ## Implementation Notes
 
-- **Prompt Templates**: 
-  - Use specific prompt templates that include task-specific instructions and examples formatted to guide the model's response.
-  - Ensure that the prompt includes a clear delimiter between examples and the query.
+- **Prompt Design**: 
+  - Use the Corpus-in-Context (CiC) prompting strategy, which involves providing a large number of examples in the context before the query.
+  - Ensure that the prompt includes clear instructions and examples formatted consistently to guide the model's output.
 - **Order of Operations**: 
-  - Present the examples in the prompt before the query to simulate many-shot learning.
-  - Ensure that the context is constructed such that smaller contexts are subsets of larger ones, maintaining consistency across different context lengths.
+  - First, prepare the input context with examples, then append the query, and finally, process the model's output to extract predictions.
 - **Pitfalls**: 
-  - Be cautious of the model's tendency to rely on parametric knowledge rather than the provided context, especially in tasks with well-known datasets.
-  - Monitor for any API call failures due to content filtering and treat these as incorrect predictions.
+  - Be cautious of the model's tendency to rely on parametric knowledge rather than the provided context. Ensure that the context is comprehensive and relevant to the query.
+- **Special Considerations**: 
+  - For tasks with complex reasoning requirements, consider including chain-of-thought reasoning in the examples to improve model performance. However, note that this may not always lead to improvements, as observed with GPT-4o.

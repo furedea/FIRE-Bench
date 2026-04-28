@@ -1,0 +1,1 @@
+The benchmark effectively assesses the multi-modal capabilities of vision-language models across 20 ability dimensions using bilingual multiple-choice questions in English and Chinese.

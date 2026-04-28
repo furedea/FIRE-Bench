@@ -1,0 +1,1 @@
+LLMs struggle to predict or simulate human behavior in a classic risky choice setting, assuming that people make decisions more rationally than we actually do. LLMs also assume people act rationally when reasoning backwards from observed actions to internal utilities, aligning with how humans make inferences about others' choices

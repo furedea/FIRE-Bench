@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: How reliable are the current GSM8K results?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How reliable are the current evaluation metrics for mathematical reasoning in large language models when using the GSM8K benchmark compared to the GSM-Symbolic benchmark?"
 
 You have access to the following resources:
 
@@ -8,28 +8,31 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- GSM8K: A benchmark dataset for evaluating the mathematical reasoning capabilities of LLMs, consisting of grade school math questions.  [loader unverified -- locate the data yourself]
-- GSM-Symbolic: An enhanced benchmark that generates diverse variants of GSM8K questions using symbolic templates for more reliable evaluation of LLMs' performance.  [generate programmatically]
+- GSM8K: A dataset of grade school math questions used to evaluate the mathematical reasoning capabilities of language models.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("openai/gsm8k")
+- GSM-Symbolic: An enhanced benchmark that generates diverse variants of GSM8K questions using symbolic templates for more reliable evaluation of LLMs' mathematical reasoning.  [generate programmatically]
   Generation code:
     import random
     
     def generate_gsm_symbolic():
-        names = ["Sophie", "Emma", "Olivia"]
+        names = ["Alice", "Bob", "Charlie"]
         family = ["nephew", "cousin", "brother"]
         x = random.randint(5, 100)
         y = random.randint(5, 100)
         z = random.randint(5, 100)
-        total = random.randint(100, 500)
-        ans = total - (x + y + z)
+        total = x + y + z + random.randint(85, 200)
         return {
             "name": random.choice(names),
             "family": random.choice(family),
             "x": x,
             "y": y,
             "z": z,
-            "total": total,
-            "ans": ans
+            "total": total
         }
+    
+    dataset = [generate_gsm_symbolic() for _ in range(5000)]
 
 Experimental constraints:
 - Do NOT use web search
@@ -41,64 +44,63 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Evaluate Performance on GSM-Symbolic
+### 1. Evaluate LLM Performance on GSM-Symbolic vs. GSM8K
 - **Procedure**: 
-  - Use the GSM-Symbolic dataset, which is generated programmatically using symbolic templates based on GSM8K questions.
-  - Conduct evaluations using 8-shot Chain-of-Thought (CoT) prompting with greedy decoding.
-  - Generate 50 samples per template, resulting in 5000 total examples for each benchmark.
-  - Evaluate models on 50 datasets of 100 examples each, where each example is a mutation of one of the original 100 examples from GSM8K.
+  - Use the GSM8K dataset and the GSM-Symbolic dataset generated programmatically.
+  - For each model (Gemma2-9B, Phi-3.5-mini, Mathstral-7B, Llama3-8B, GPT-4o), perform evaluations using 8-shot Chain-of-Thought (CoT) prompting.
+  - Ensure that the GSM-Symbolic dataset consists of 5000 examples generated from 100 templates, with 50 samples per template.
+  - Conduct evaluations on 50 different sets generated from GSM-Symbolic templates.
 - **What to Record**: 
-  - Record the raw outputs of the models.
-  - Extract accuracy scores for each dataset.
-  - Calculate performance variance across different datasets.
+  - Record the accuracy of each model on both GSM8K and GSM-Symbolic datasets.
+  - Capture the variance in performance across different sets for GSM-Symbolic.
 - **Correspondence**: 
-  - This experiment corresponds to Figure 2 and Section 4.1 in the paper.
+  - This experiment corresponds to Figure 2, Table 1, and Section 4.1 in the paper.
 
-### 2. Sensitivity to Changes in Names and Numbers
+### 2. Sensitivity Analysis to Changes in Names and Numbers
 - **Procedure**: 
-  - Create variations of GSM-Symbolic by changing only proper names, only numerical values, and both.
+  - Modify the GSM-Symbolic dataset to create variations where only names are changed, only numbers are changed, and both are changed.
   - Evaluate the models using the same 8-shot CoT prompting strategy.
 - **What to Record**: 
-  - Record accuracy scores for each variation.
-  - Calculate and compare performance variance for each type of change.
+  - Record the accuracy for each variation (names changed, numbers changed, both changed).
+  - Analyze the shift in performance distribution and variance.
 - **Correspondence**: 
   - This experiment corresponds to Figure 4 and Section 4.2 in the paper.
 
-### 3. Impact of Question Difficulty
+### 3. Impact of Question Difficulty on Performance
 - **Procedure**: 
-  - Generate new templates by modifying the number of clauses in GSM-Symbolic questions to create GSM-Symbolic-Minus-1 (GSM-M1), GSM-Symbolic-Plus-1 (GSM-P1), and GSM-Symbolic-Plus-2 (GSM-P2).
-  - Evaluate models on these datasets using the same prompting strategy.
+  - Create new datasets by modifying GSM-Symbolic to have different difficulty levels: GSM-Symbolic-Minus-1 (GSM-M1), GSM-Symbolic-Plus-1 (GSM-P1), and GSM-Symbolic-Plus-2 (GSM-P2).
+  - Evaluate the models on these datasets using 8-shot CoT prompting.
 - **What to Record**: 
-  - Record accuracy scores for each difficulty level.
-  - Calculate performance variance and observe trends as difficulty increases.
+  - Record the accuracy and variance for each difficulty level.
+  - Observe the trend in performance as difficulty increases.
 - **Correspondence**: 
   - This experiment corresponds to Figure 6 and Section 4.3 in the paper.
 
-### 4. Evaluation on GSM-NoOp
+### 4. Evaluation on GSM-NoOp Dataset
 - **Procedure**: 
-  - Create GSM-NoOp by adding irrelevant but seemingly relevant information to GSM-Symbolic questions.
-  - Evaluate models using the same 8-shot CoT prompting strategy.
+  - Generate the GSM-NoOp dataset by adding irrelevant but seemingly relevant information to GSM-Symbolic questions.
+  - Evaluate the models using 8-shot CoT prompting.
 - **What to Record**: 
-  - Record accuracy scores and note any significant performance drops.
-  - Analyze model responses to identify patterns in handling irrelevant information.
+  - Record the accuracy on GSM-NoOp and compare it to GSM8K and GSM-Symbolic.
+  - Analyze the models' ability to ignore irrelevant information.
 - **Correspondence**: 
-  - This experiment corresponds to Figure 7 and Section 4.4 in the paper.
+  - This experiment corresponds to Figure 7, Figure 8, and Section 4.4 in the paper.
 
 ## Evaluation Details
 
 - **Metric Definitions**: 
-  - Accuracy is defined as the percentage of correctly answered questions out of the total number of questions.
-  - Performance variance is calculated as the standard deviation of accuracy scores across different datasets.
+  - Accuracy is defined as the percentage of correctly answered questions out of the total questions evaluated.
+  - Performance variance is calculated as the standard deviation of accuracy across different sets or conditions.
 - **Normalization/Pre-processing**: 
-  - Ensure that model outputs are parsed correctly to extract final answers for scoring.
+  - Ensure that model outputs are parsed correctly to extract final answers for comparison with ground truth.
 - **Aggregation Strategy**: 
-  - Calculate per-sample accuracy, then aggregate to per-condition (e.g., name changes, number changes) and overall accuracy.
+  - Compute per-sample accuracy, then aggregate to per-condition accuracy, and finally calculate overall accuracy and variance for each model and dataset condition.
 
 ## Implementation Notes
 
-- **Prompt Template**: 
-  - Use the provided prompt format with a preamble instructing the model to solve step-by-step, followed by 8-shot examples and the target question.
+- **Prompt Templates**: 
+  - Use the provided prompt format for 8-shot CoT prompting, ensuring consistency across all evaluations.
 - **Output Parsing**: 
-  - Implement logic to extract the final answer from the model's response, ensuring it matches the expected format.
+  - Implement logic to correctly parse model outputs, especially for extracting numerical answers from generated text.
 - **Order of Operations**: 
-  - Maintain consistent evaluation settings across all experiments to ensure comparability of results.
+  - Maintain the sequence of operations as described in the experimental design to ensure consistency and comparability of results.

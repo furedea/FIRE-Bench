@@ -1,14 +1,19 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: Can a large reward model approximate human supervision for smaller reward models?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: Can a large reward model approximate human supervision effectively for training smaller reward models in mathematical reasoning tasks?"
 
 You have access to the following resources:
 
 Models:
 - gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- MATH: A dataset for measuring mathematical problem-solving abilities of models, containing problems from various math subjects.  [loader unverified -- locate the data yourself]
-- PRM800K: A dataset of 800,000 step-level human feedback labels used to train reward models for mathematical problem-solving.  [generate programmatically]
+- MATH: A dataset measuring mathematical problem-solving abilities.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hendrycks/math")
+- PRM800K: A dataset of 800,000 step-level human feedback labels used to train reward models.  [generate programmatically]
+- MathMix: A large-scale dataset of high-quality math-relevant tokens used for pretraining.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,59 +25,58 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Large-Scale Supervision Experiment
+### 1. Large-Scale Supervision with PRM800K
 - **Procedure**: 
-  - Use the large-scale PRM trained on the PRM800K dataset to evaluate its performance on a subset of the MATH test set.
-  - Generate 1860 solutions per problem using the generator model.
-  - Evaluate the PRM's ability to select the correct solution using a best-of-N search strategy.
-  - Compare the performance of the PRM against the ORM and a majority voting baseline.
+  - Train a large-scale Process-Supervised Reward Model (PRM) using the PRM800K dataset.
+  - Evaluate the PRM by performing a best-of-N search over uniformly sampled solutions from the generator.
+  - For each test problem, select the solution ranked highest by the PRM and automatically grade it based on its final answer.
+  - Use a subset of the MATH test set for evaluation, specifically the 500 held-out problems.
 - **What to Record**: 
-  - Percentage of problems solved (best-of-N) for different values of N.
-  - Performance comparison between PRM, ORM, and majority voting.
-- **Correspondence**: Figure 3, Section 3.
+  - Record the percentage of problems solved correctly (best-of-N performance).
+  - Compare the performance of PRM against Outcome-Supervised Reward Models (ORM) and majority voting.
+- **Correspondence**: Figure 3, Section 3
 
-### 2. Small-Scale Synthetic Supervision Experiment
+### 2. Small-Scale Synthetic Supervision
 - **Procedure**: 
-  - Use the large-scale PRM to supervise the training of smaller reward models.
+  - Use the large-scale PRM to supervise smaller models by providing both process and outcome supervision.
   - Sample between 1 and 200 solutions per problem from a small-scale generator.
   - Provide three forms of supervision: process supervision from PRMlarge, outcome supervision from PRMlarge, and outcome supervision from final-answer checking.
-  - Evaluate the best reward model from each series by its best-of-N performance across different values of N.
+  - Evaluate each reward model by its best-of-500 selection.
 - **What to Record**: 
-  - Best-of-500 performance for each reward model.
-  - Best-of-N performance across different values of N.
-- **Correspondence**: Figure 4a and 4b, Section 4.1.
+  - Record the best-of-N performance across different values of N.
+  - Compare the effectiveness of process supervision versus outcome supervision.
+- **Correspondence**: Figure 4a, Figure 4b, Section 4.1
 
-### 3. Active Learning Experiment
+### 3. Active Learning Impact
 - **Procedure**: 
   - Train a small-scale reward model, PRMselector, on a single sample from each problem.
   - Use PRMselector to score 1000 samples per problem.
-  - Select N samples per problem for training larger reward models, with 80% being the most convincing wrong-answer samples and 20% being the most convincing remaining samples.
+  - Select N samples per problem such that 80% are the most convincing wrong-answer samples, and 20% are the most convincing samples that remain.
   - Score the selected samples with PRMlarge and train on those scores.
 - **What to Record**: 
-  - Performance of reward models trained with active learning compared to uniform data labeling.
-  - Data efficiency improvement factor.
-- **Correspondence**: Figure 4a, Section 4.2.
+  - Record the data efficiency improvement from active learning compared to uniform data labeling.
+  - Evaluate the performance of the data labeling scheme.
+- **Correspondence**: Figure 4a, Section 4.2
 
 ## Evaluation Details
 
 - **Metric Definitions**:
-  - **% Problems Solved (Best-of-N)**: The percentage of problems for which the highest-ranked solution (out of N generated solutions) is correct.
-  - **Scoring Strategy for PRM**: Use the product of step-level scores, considering neutral steps as positive, to compute a solution-level score.
+  - **Best-of-N Performance**: The fraction of problems solved correctly when selecting the best solution out of N generated solutions.
+  - **PRM Score for a Solution**: The probability that every step is correct under the PRM, implemented as the product of the correctness probabilities for each step.
 
 - **Normalization and Pre-processing**:
-  - For PRM scoring, compute the probability that every step is correct and use the product of these probabilities as the solution score.
+  - For PRM scoring, consider neutral steps as positive and use the product of step-level scores as the reduction strategy.
 
 - **Aggregation Strategy**:
-  - Aggregate performance metrics by computing the percentage of problems solved for each condition (e.g., different values of N) and compare across different supervision methods.
+  - Aggregate performance by calculating the percentage of problems solved correctly for each condition (e.g., PRM, ORM, majority voting) and compare across different values of N.
 
 ## Implementation Notes
 
-- **Pitfalls and Caveats**:
-  - Ensure that the threshold for determining step correctness in synthetic supervision is set appropriately (e.g., a step is incorrect if PRMlarge assigns a negative label with >20% probability).
-  - Be cautious of potential biases introduced by the active learning strategy, which favors labeling high-scoring wrong-answer solutions.
-
-- **Special Prompt Templates**:
-  - Train the generator to produce solutions in a newline-delimited step-by-step format to facilitate step-level evaluation.
+- **Prompt Templates and Output Parsing**:
+  - Train the generator to produce solutions in a newline-delimited step-by-step format to facilitate parsing individual steps.
 
 - **Order of Operations**:
-  - For active learning, iteratively retrain PRMselector using the latest data before selecting samples for the next iteration of data collection.
+  - Ensure that the PRM is trained to predict the correctness of each step after the last token in each step, and perform a single PRM forward pass over the whole solution to determine step-level predictions.
+
+- **Active Learning Strategy**:
+  - Iteratively retrain the PRM using the latest data at several points in the data collection process, selecting the most convincing wrong-answer solutions for labeling.

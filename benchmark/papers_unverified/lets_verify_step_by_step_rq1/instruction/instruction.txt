@@ -1,19 +1,17 @@
-You are a research agent. Conduct research and experiment about the question: "RQ2: How does active learning impact the data efficiency of process supervision?"
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does active learning impact the data efficiency of process supervision in training reward models for mathematical reasoning tasks?"
 
 You have access to the following resources:
 
 Models:
 - gpt-4o via API
-- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- MATH: A dataset for measuring mathematical problem solving with automatically checkable answers.
-  GitHub repo: https://github.com/hendrycks/math
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/hendrycks/math.git
-- PRM800K: A dataset of 800,000 step-level human feedback labels used to train reward models.  [loader unverified -- locate the data yourself]
+- MATH: A dataset for measuring mathematical problem-solving abilities, containing problems from various math subjects.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hendrycks/math")
+- PRM800K: A dataset of 800,000 step-level human feedback labels used to train reward models for mathematical reasoning tasks.
 
 Experimental constraints:
 - Do NOT use web search

@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: Can LLMs find reasoning mistakes in CoT traces?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do state-of-the-art LLMs (GPT-4, GPT-3.5, PaLM 2, Gemini Pro) perform in finding reasoning mistakes in Chain-of-Thought (CoT) traces across tasks like word sorting, tracking shuffled objects, logical deduction, multi-step arithmetic, and Dyck languages?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- BIG-Bench Mistake: A dataset of CoT-style traces generated using PaLM 2, annotated with the location of the first logical mistake.  [loader unverified -- locate the data yourself]
+- BIG-Bench Mistake: A dataset of CoT-style traces generated using PaLM 2, annotated with the location of the first logical mistake, covering tasks like word sorting, tracking shuffled objects, logical deduction, multi-step arithmetic, and Dyck languages.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

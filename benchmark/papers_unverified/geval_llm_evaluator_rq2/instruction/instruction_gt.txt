@@ -1,0 +1,70 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How does the evaluation metric G-EVAL perform in detecting hallucinations, defined as false or misleading content, in summarization tasks compared to existing metrics, as measured by correlation metrics on the QAGS benchmark datasets QAGS-CNN and QAGS-XSUM?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- QAGS-CNN: A benchmark for evaluating hallucinations in summarization tasks, focusing on the consistency dimension of summaries.  [loader unverified -- locate the data yourself]
+- QAGS-XSUM: A benchmark for evaluating hallucinations in summarization tasks, focusing on the consistency dimension of summaries.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluation of G-EVAL on the QAGS Benchmark for Hallucination Detection in Summarization
+
+- **Procedure**:
+  - Use the QAGS-CNN and QAGS-XSUM datasets to evaluate the performance of G-EVAL in detecting hallucinations in summarization tasks.
+  - For each dataset, input the source document and the generated summary into the G-EVAL framework.
+  - Utilize the chain-of-thought (CoT) prompting strategy to guide the evaluation process. The CoT should include steps such as reading the source document, identifying key points, comparing the summary to the source, and checking for factual consistency.
+  - Assign scores based on the evaluation criteria, focusing on the consistency dimension of the summaries.
+  - Use GPT-4 as the backbone model for G-EVAL-4 and GPT-3.5 for G-EVAL-3.5.
+
+- **What to Record**:
+  - Raw outputs from the G-EVAL framework, including the CoT and final scores.
+  - Extracted answers regarding the presence of hallucinations in the summaries.
+  - Intermediate statistics such as the probability-weighted scores.
+
+- **Correspondence**:
+  - This experiment corresponds to Section 3.6 and Table 3 in the paper, which discusses the results of G-EVAL on the QAGS benchmark.
+
+## Evaluation Details
+
+- **Metric Definitions and Computation**:
+  - Use Pearson correlation, Spearman correlation, and Kendall-Tau correlation to measure the agreement between G-EVAL scores and human judgments.
+  - For Spearman correlation, compute the rank order of the scores and compare it to the rank order of human evaluations.
+  - For Kendall-Tau correlation, calculate the number of concordant and discordant pairs to assess the rank correlation.
+
+- **Normalization and Pre-processing**:
+  - Normalize the scores using the probabilities of output tokens from the LLMs. The final score is computed as a weighted summation of the predefined scores, where the weight is the probability of each score:
+    \[
+    \text{score} = \sum_{i=1}^{n} p(s_i) \times s_i
+    \]
+  - Ensure that the scores are continuous and fine-grained to capture subtle differences between generated texts.
+
+- **Aggregation Strategy**:
+  - Aggregate scores per sample, then per condition (QAGS-CNN and QAGS-XSUM), and finally compute overall correlations with human judgments.
+
+## Implementation Notes
+
+- **Key Pitfalls**:
+  - Be aware of the potential bias of LLM-based evaluators towards LLM-generated texts, which may affect the evaluation results.
+  - Ensure that the CoT provides sufficient context and guidance to the LLM for accurate evaluation.
+
+- **Special Prompt Templates**:
+  - Use the provided example prompts for coherence and engagingness evaluation as a basis for designing prompts specific to hallucination detection.
+  - Include detailed evaluation steps in the CoT to ensure comprehensive assessment of the summaries.
+
+- **Order of Operations**:
+  - First, generate the CoT using the LLM with the task introduction and evaluation criteria.
+  - Then, evaluate the summaries using the generated CoT and record the scores.
+  - Finally, compute the correlations with human judgments and analyze the results.

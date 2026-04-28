@@ -1,0 +1,1 @@
+Large language models struggle with integrating information from multiple documents in retrieval-augmented generation, particularly when noise is present, resulting in lower accuracy.

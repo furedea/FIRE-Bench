@@ -1,14 +1,16 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: Can automated metrics predict human evaluations of truthfulness?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: Can automated metrics effectively predict human evaluations of truthfulness in language models?"
 
 You have access to the following resources:
 
 Models:
 - gpt-4o via API
-- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Load with HuggingFace: EleutherAI/gpt-neo-2.7B
+- Load with HuggingFace: EleutherAI/gpt-j-6B
+- Load with HuggingFace: google/t5-large
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- TruthfulQA: A benchmark comprising 817 questions across 38 categories designed to test the truthfulness of language models by eliciting imitative falsehoods.  [loader unverified -- locate the data yourself]
+- TruthfulQA: A benchmark comprising 817 questions across 38 categories designed to test the truthfulness of language models by avoiding imitative falsehoods.
 
 Experimental constraints:
 - Do NOT use web search
@@ -20,42 +22,58 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Automated Metric Evaluation
+### 1. Truthfulness Evaluation with GPT-judge
 - **Procedure**: 
-  - Use the GPT-judge model, a GPT-3-6.7B model fine-tuned to classify answers as true or false, to evaluate the truthfulness of model-generated answers from the TruthfulQA dataset.
-  - The training set for GPT-judge consists of triples of the form (question, answer, label), where the label is either true or false. The training set includes 6.9k examples from the benchmark with reference answers and 15.5k examples with model-generated answers labeled by human evaluators.
-  - Evaluate GPT-judge on a validation set consisting of answers from a new model family not included in the training set.
+  - Use the TruthfulQA dataset to evaluate the truthfulness of model-generated answers.
+  - For each question, generate answers using the specified models (GPT-4o, GPT-Neo-2.7B, GPT-J-6B, T5-large).
+  - Apply the GPT-judge model to classify each answer as true or false.
+  - Use a zero-shot setting for all models, ensuring no gradient updates or examples from TruthfulQA appear in prompts.
+  - For GPT-3-175B, test with different prompts: 'helpful', 'harmful', 'QA', 'chat', and 'long-form'.
+  - Generate answers using greedy decoding (temperature set to zero).
 - **What to Record**: 
-  - Validation accuracy of GPT-judge in predicting human evaluations.
-  - Comparison of GPT-judge scores with human evaluation scores.
+  - Raw outputs from each model.
+  - Truthfulness scores assigned by GPT-judge.
+  - Human evaluation scores for comparison.
 - **Correspondence**: 
-  - Figure 8: Comparison of GPT-judge automated metric to human evaluation.
-  - Table 1: Automated metrics for truthfulness.
-  - Section 4.4: Automated metric predicts human evaluation with high accuracy.
+  - Section 4.4, Figure 8, Table 1.
+
+### 2. Multiple-Choice Task Evaluation
+- **Procedure**: 
+  - Convert the TruthfulQA questions into a multiple-choice format using true and false reference answers.
+  - Compute the likelihood of each reference answer using the models.
+  - Calculate the truthfulness score as the normalized likelihood of true answers.
+- **What to Record**: 
+  - Likelihood scores for each reference answer.
+  - Truthfulness scores based on likelihood normalization.
+- **Correspondence**: 
+  - Section 3.2, Figure 4c.
 
 ## Evaluation Details
 
-- **Metric Definitions**:
-  - **Validation Accuracy**: The fraction of questions for which the binary truth label assigned by GPT-judge matches the label from human evaluation.
-  - **Calibration**: Evaluate the calibration of GPT-judge by plotting accuracy as a function of confidence for the validation set (Figure 9).
+### Truthfulness Metric
+- **Metric Definition**: 
+  - Use GPT-judge, a fine-tuned GPT-3-6.7B model, to classify answers as true or false.
+  - Validation accuracy is calculated as the percentage of answers correctly classified by GPT-judge compared to human evaluations.
+- **Normalization**: 
+  - Threshold scalar truth scores at 0.5 for binary classification (true if ≥0.5).
+- **Aggregation Strategy**: 
+  - Calculate per-sample truthfulness scores.
+  - Aggregate scores to determine per-condition and overall truthfulness.
 
-- **Pre-processing**:
-  - Normalize model outputs by mapping them to one of the predefined qualitative labels (e.g., "mostly true", "false") before scoring.
-
-- **Aggregation Strategy**:
-  - Compute per-sample truthfulness scores using GPT-judge.
-  - Aggregate scores to obtain per-condition and overall validation accuracy.
+### Informativeness Metric
+- **Metric Definition**: 
+  - Use a similar fine-tuned model to evaluate informativeness, scoring answers as informative or uninformative.
+- **Aggregation Strategy**: 
+  - Calculate per-sample informativeness scores.
+  - Aggregate scores to determine overall informativeness.
 
 ## Implementation Notes
 
-- **Pitfalls and Caveats**:
-  - Ensure that the GPT-judge model is not trained on the validation set to avoid data leakage.
-  - Be aware of the potential for GPT-judge to misclassify longer, multi-sentence answers, especially those with mixed truth and falsehoods.
-
-- **Prompt Templates**:
-  - Use the default QA prompt for generating answers from models, except for specific experiments where alternative prompts (e.g., "helpful", "harmful") are tested.
-
-- **Order of Operations**:
-  - First, fine-tune GPT-judge on the training set.
-  - Then, evaluate on the validation set and compare with human evaluations.
-  - Finally, analyze the calibration and robustness of GPT-judge across different model families and answer formats.
+- **Prompt Templates**: 
+  - Use specific prompts for GPT-3-175B: 'helpful', 'harmful', 'QA', 'chat', and 'long-form'.
+  - Ensure prompts do not include examples from TruthfulQA to maintain a true zero-shot setting.
+- **Output Parsing**: 
+  - For the multiple-choice task, compute likelihoods for each reference answer independently and normalize across all answers.
+- **Order of Operations**: 
+  - Generate model outputs first, then apply GPT-judge for evaluation.
+  - Ensure human evaluations are conducted independently and blinded to model and prompt conditions.

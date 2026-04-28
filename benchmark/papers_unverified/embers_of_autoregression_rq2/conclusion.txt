@@ -1,0 +1,1 @@
+Input probability has a moderate effect on encoding accuracy and shows inconsistent effects on counting accuracy for large language models like GPT-3.5 and GPT-4.

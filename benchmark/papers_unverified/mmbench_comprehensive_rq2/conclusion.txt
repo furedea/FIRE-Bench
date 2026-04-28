@@ -1,0 +1,1 @@
+LLM-based choice extraction significantly improves the evaluation accuracy of vision-language models on MMBench by aligning predictions with human annotations.

@@ -1,20 +1,18 @@
 task_id: multilingual_cot_reasoning_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: How well do large language models perform on the Multilingual
-  Grade School Math (MGSM) benchmark?'
+research_question: "RQ1: How well do large language models perform on the Multilingual Grade School Math (MGSM) benchmark, which involves solving arithmetic problems in ten typologically diverse languages using various prompting strategies that generate intermediate reasoning steps before arriving at a final answer?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - meta-llama/Llama-3.1-8B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: MGSM
-  source: unknown
-  description: A benchmark consisting of 250 grade-school math problems translated
-    into ten typologically diverse languages to evaluate multilingual arithmetic reasoning
-    abilities.
+  - name: "MGSM"
+    source: synthetic
+    description: "A multilingual benchmark created by manually translating 250 grade-school math problems from the GSM8K dataset into ten typologically diverse languages."
+references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

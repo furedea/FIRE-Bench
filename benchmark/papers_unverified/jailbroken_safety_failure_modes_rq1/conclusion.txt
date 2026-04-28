@@ -1,0 +1,1 @@
+Mismatched generalization between pretraining and safety training in large language models leads to vulnerabilities against jailbreak attacks by allowing Base64 encoding and other obfuscation techniques to bypass safety mechanisms.

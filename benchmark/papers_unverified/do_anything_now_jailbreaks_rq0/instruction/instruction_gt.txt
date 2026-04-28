@@ -1,16 +1,16 @@
-You are a research agent. Conduct research and experiment about the question: "RQ1: What are the characteristics and evolution patterns of in-the-wild jailbreak prompts?"
+You are a research agent. Conduct research and experiment about the question: "RQ1: What are the characteristics and distribution patterns of in-the-wild jailbreak prompts across platforms like Reddit, Discord, and prompt-aggregation websites?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4 via API
-- Load with HuggingFace: databricks/dolly-v2-7b
-- Load with HuggingFace: lmsys/vicuna-7b-v1.1
-- Load with HuggingFace: THUDM/chatglm-6b
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Jailbreak Prompts Dataset: A collection of 15,140 prompts from Reddit, Discord, websites, and open-source datasets, including 1,405 identified as jailbreak prompts.  [loader unverified -- locate the data yourself]
+- Reddit: A news-aggregation platform where content is organized into user-generated communities (subreddits).  [loader unverified -- locate the data yourself]
+- Discord: A private VoIP and instant messaging social platform organized into various small communities called servers.  [loader unverified -- locate the data yourself]
+- FlowGPT: A community-driven website where users share and discover prompts with user-specified tags.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search
@@ -22,53 +22,47 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Characterizing Jailbreak Prompts
-- **Procedure**: 
-  - Extract 15,140 prompts from Reddit, Discord, websites, and open-source datasets.
-  - Identify 1,405 jailbreak prompts using user-specified tags and human verification.
-  - Analyze the distribution of platforms and user accounts contributing to jailbreak prompts.
-  - Use graph-based community detection to identify and categorize jailbreak communities.
-- **What to Record**: 
-  - Number of prompts, user accounts, and platforms.
-  - Characteristics of jailbreak prompts such as length and semantic proximity.
-  - Evolution patterns of jailbreak communities.
-- **Correspondence**: 
-  - Figure 3, Table 1, Section 4.1 for platform and user account distribution.
-  - Figure 4, Table 2, Section 4.2 for prompt characteristics.
-  - Figure 6, Table 2, Section 4.3 for community evolution.
+### 1. Data Collection and Prompt Extraction
+- **Procedure**: Collect data from Reddit, Discord, and FlowGPT from December 2022 to December 2023. Identify and extract prompts using user-specified tags and standardized formats. Human verification is required to ensure accuracy.
+- **What to Record**: Number of posts, user accounts, adversarial user accounts, total prompts, and jailbreak prompts.
+- **Correspondence**: Table 1, Section 3
 
-### 2. Evaluating Jailbreak Prompt Effectiveness
-- **Procedure**: 
-  - Create a forbidden question set with 107,250 samples across 13 scenarios.
-  - Evaluate six LLMs (ChatGPT, GPT-4, PaLM2, ChatGLM, Dolly, Vicuna) using selected jailbreak prompts.
-  - Conduct experiments on three snapshots of ChatGPT (GPT-3.5) to assess effectiveness over time.
-- **What to Record**: 
-  - Attack success rate (ASR) and ASR-Max for each LLM and scenario.
-  - Response toxicity scores using Google Perspective API.
-  - Effectiveness of paraphrase attacks on the latest ChatGPT snapshot.
-- **Correspondence**: 
-  - Table 4 for ASR results.
-  - Figure 8, Figure 9 for community performance and response toxicity.
-  - Table 6 for effectiveness over time.
-  - Table 7 for paraphrase attack results.
+### 2. Prompt Analysis
+- **Procedure**: Analyze the characteristics of jailbreak prompts, including their length and semantic content. Use graph-based community detection to identify communities and categorize attack strategies.
+- **What to Record**: Average token count, semantic embeddings, community structures, and co-occurrence phrases.
+- **Correspondence**: Figure 3, Figure 4, Table 2, Section 4.2, Section 4.3
+
+### 3. Response Evaluation
+- **Procedure**: Evaluate the effectiveness of jailbreak prompts using a forbidden question set across 13 scenarios. Test on six LLMs: ChatGPT (GPT-3.5), GPT-4, PaLM2, ChatGLM, Dolly, and Vicuna. Each question is asked five times with different prompts.
+- **What to Record**: Attack success rate (ASR), ASR-Baseline (ASR-B), ASR-Max, and toxicity scores.
+- **Correspondence**: Table 4, Section 5.2
+
+### 4. Evaluation of Safeguards
+- **Procedure**: Test the effectiveness of external safeguards (OpenAI moderation endpoint, OpenChatKit moderation model, NeMo-Guardrails) against jailbreak prompts on ChatGPT (GPT-3.5).
+- **What to Record**: Reduction in ASR, ASR-B, and ASR-Max for each safeguard.
+- **Correspondence**: Table 8, Section 6.2
 
 ## Evaluation Details
 
-- **Metric Definitions**:
-  - **Attack Success Rate (ASR)**: Proportion of questions where the LLM provides an answer that violates the intended safeguards.
-  - **Toxicity Score**: Calculated using Google Perspective API, with a threshold of 0.5 to classify responses as toxic.
-- **Normalization/Pre-processing**:
-  - Responses are labeled as successful if they provide actionable harmful content, not just descriptions or refusals.
-- **Aggregation Strategy**:
-  - Calculate ASR per-sample, then aggregate per-condition (community or scenario), and finally compute overall ASR.
+### Metrics and Computation
+- **Attack Success Rate (ASR)**: Proportion of successful jailbreak attempts where the LLM provides a harmful response.
+- **ASR-Baseline (ASR-B)**: Success rate without jailbreak prompts.
+- **ASR-Max**: Maximum success rate achieved by the most effective jailbreak prompt.
+- **Toxicity Score**: Calculated using Google Perspective API, with a threshold of 0.5 to classify responses as toxic.
+
+### Normalization and Pre-processing
+- **Model Outputs**: Responses are labeled as successful if they provide specific harmful content rather than general or refusal responses.
+- **Aggregation Strategy**: Compute ASR per-sample, then aggregate per-condition and overall.
 
 ## Implementation Notes
 
-- **Pitfalls/Caveats**:
-  - Ensure accurate human verification of jailbreak prompts to minimize false positives.
-  - Consider the evolving nature of jailbreak prompts and LLM safeguards when interpreting results.
-- **Prompt Templates**:
-  - Use specific prompt templates for paraphrase attacks and community detection as detailed in the paper.
-- **Order of Operations**:
-  - Conduct community detection before evaluating prompt effectiveness to ensure accurate categorization.
-  - Perform paraphrase attacks after initial ASR evaluation to test the robustness of safeguards.
+### Key Pitfalls and Caveats
+- **Prompt Variability**: User-shared content can vary in format; manual review is necessary to ensure consistency.
+- **Safeguard Vulnerability**: The undisclosed safeguard in GPT-3.5 1106 is vulnerable to paraphrase attacks, requiring fewer than ten attempts to bypass.
+
+### Special Prompt Templates
+- **Prompt Templates**: Use specific templates for each jailbreak community to ensure accurate simulation of attack strategies (e.g., "DAN" prompts, "Developer Mode" prompts).
+
+### Order of Operations
+- **Data Collection**: Ensure data spans the entire specified period and includes all relevant platforms.
+- **Prompt Analysis**: Conduct semantic analysis and community detection before evaluating response effectiveness.

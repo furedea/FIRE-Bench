@@ -1,0 +1,1 @@
+Performance on interactive decision-making tasks, such as ALFWorld and WebShop, varies with ReAct significantly outperforming Act-only and imitation learning methods in terms of Success Rate and Score.

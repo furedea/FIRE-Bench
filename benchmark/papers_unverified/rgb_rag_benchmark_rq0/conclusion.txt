@@ -1,0 +1,1 @@
+Large language models demonstrate strong robustness to noise in retrieval-augmented generation, but their accuracy significantly decreases as the noise ratio increases.

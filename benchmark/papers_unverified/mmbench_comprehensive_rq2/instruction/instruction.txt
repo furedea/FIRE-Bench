@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How does the use of large language models (LLMs) as choice extractors impact the evaluation of VLMs?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: How does the use of large language models (LLMs) as choice extractors impact the evaluation accuracy of vision-language models on MMBench?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- MMBench: A bilingual benchmark for assessing the multi-modal capabilities of vision-language models, containing over 3000 multiple-choice questions covering 20 different ability dimensions.  [loader unverified -- locate the data yourself]
+- MMBench: A bilingual benchmark for assessing the multi-modal capabilities of vision-language models, containing over 3000 multiple-choice questions covering 20 different ability dimensions.  [generate programmatically]
 
 Experimental constraints:
 - Do NOT use web search

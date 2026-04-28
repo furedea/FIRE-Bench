@@ -1,0 +1,1 @@
+Natural language explanations provided by language models do not enable humans to accurately simulate the model's behavior under counterfactual inputs.

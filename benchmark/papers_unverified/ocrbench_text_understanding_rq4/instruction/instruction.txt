@@ -1,4 +1,4 @@
-You are a research agent. Conduct research and experiment about the question: "RQ5: How do LMMs perform on Handwritten Mathematical Expression Recognition tasks?"
+You are a research agent. Conduct research and experiment about the question: "RQ5: How well do Large Multimodal Models recognize handwritten mathematical expressions using the HME100K dataset?"
 
 You have access to the following resources:
 
@@ -8,7 +8,7 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- HME100K: A dataset consisting of 74,502 images for training and 24,607 images for testing, with 245 symbol classes, used for evaluating handwritten mathematical expression recognition.  [loader unverified -- locate the data yourself]
+- HME100K: A dataset consisting of images for training and testing handwritten mathematical expression recognition, with 245 symbol classes.  [loader unverified -- locate the data yourself]
 
 Experimental constraints:
 - Do NOT use web search

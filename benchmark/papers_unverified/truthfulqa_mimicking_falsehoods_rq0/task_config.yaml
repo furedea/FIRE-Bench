@@ -1,28 +1,21 @@
 task_id: truthfulqa_mimicking_falsehoods_rq0
 paper_type: llm_evaluation
-research_question: 'RQ1: How truthful are current language models compared to humans?'
+research_question: "RQ1: How truthful are current language models (GPT-3, GPT-Neo/J, GPT-2, UnifiedQA) in generating answers to questions across 38 categories, including health, law, and conspiracies, in a zero-shot setting?"
 models:
   api:
-  - gpt-4o
+    - gpt-4o
   huggingface:
-  - EleutherAI/gpt-neo-2.7B
-  - EleutherAI/gpt-j-6B
-  - gpt2-xl
-  - allenai/unifiedqa-t5-11b
+    - EleutherAI/gpt-neo-2.7B
+    - EleutherAI/gpt-j-6B
+    - gpt2
+    - allenai/unifiedqa-t5-large
 api_key_var: OPENAI_API_KEY
 budget_per_model: 1000
 datasets:
-- name: TruthfulQA
-  source: external
-  description: A benchmark comprising 817 questions across 38 categories designed
-    to test the truthfulness of language models by eliciting imitative falsehoods.
-  url: https://github.com/sylinrl/TruthfulQA
-  url_kind: github
-  loader: '# Clone the repo and follow its README to load the data:
-
-    # git clone https://github.com/sylinrl/TruthfulQA.git
-
-    '
+  - name: "TruthfulQA"
+    source: local
+    description: "A benchmark comprising 817 questions across 38 categories designed to test the truthfulness of language models by eliciting imitative falsehoods."
+references: []
 constraints:
-- Do NOT use web search
-- Run FULL end-to-end experiments
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

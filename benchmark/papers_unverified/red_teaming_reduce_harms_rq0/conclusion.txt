@@ -1,0 +1,1 @@
+Scaling behaviors make RLHF models harder to red team, whereas other models exhibit a flat trend in efficacy across different sizes and types.

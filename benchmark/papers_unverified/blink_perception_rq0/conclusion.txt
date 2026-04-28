@@ -1,0 +1,1 @@
+Current multimodal large language models (GPT-4V, Gemini, LLaVA) perform poorly on the Blink benchmark, struggling with visual correspondence, relative depth estimation, and forensic detection tasks compared to human performance.

@@ -1,0 +1,1 @@
+Semantically equivalent adversarial perturbations to input prompts can cause language models to hallucinate or produce inconsistent outputs.

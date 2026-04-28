@@ -1,9 +1,8 @@
-You are a research agent. Conduct research and experiment about the question: "RQ3: How can the compositional understanding of Vision-Language Models be improved?"
+You are a research agent. Conduct research and experiment about the question: "RQ3: Can the selection of challenging negative examples based on compositional structures (the arrangement and combination of visual and textual elements) through composition-aware hard negative mining (a technique in contrastive learning that uses these challenging examples) enhance Vision-Language Models' ability to understand and process compositional relationships, as evaluated on COCO and Visual Genome datasets using Accuracy and Recall@1 metrics?"
 
 You have access to the following resources:
 
 Models:
-- gpt-4o via API
 - Load with HuggingFace: openai/clip-vit-base-patch32
 - Load with HuggingFace: salesforce/blip
 - Load with HuggingFace: zengyan-97/x-vlm
@@ -11,10 +10,14 @@ Models:
 - Computational budget: 1000 API calls per model
 
 Datasets:
-- Visual Genome: A large-scale dataset with images annotated with objects, attributes, and relations.  [loader unverified -- locate the data yourself]
-- COCO: A dataset containing images with complex scenes and detailed captions.  [loader unverified -- locate the data yourself]
-- Flickr30k: A dataset with images and captions used for image-text retrieval tasks.  [loader unverified -- locate the data yourself]
-- ARO: A benchmark to evaluate VLMs' understanding of attribution, relation, and order.  [generate programmatically]
+- COCO: A large-scale object detection, segmentation, and captioning dataset.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("coco")
+- Visual Genome: A dataset with dense annotations of objects, attributes, and relationships in images.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("visual_genome")
 
 Experimental constraints:
 - Do NOT use web search
@@ -26,46 +29,40 @@ Please design and execute experiments to investigate this research question. Doc
 
 ## Experimental Design
 
-### 1. Visual Genome Relation and Attribution Tasks
-- **Procedure**: 
-  - For the Visual Genome Relation task, present the model with an image and two captions: one correct (e.g., "the dog is behind the tree") and one incorrect (e.g., "the tree is behind the dog"). For the Attribution task, present captions like "the crouched cat and the open door" versus "the open cat and the crouched door".
-  - Use the dataset generated from Visual Genome with 23,937 relation test cases and 28,748 attribution test cases.
-  - Ensure that the bounding box containing both objects is extracted to minimize distractions.
-- **What to Record**: Record the model's accuracy in selecting the correct caption over the incorrect one.
-- **Correspondence**: Figure 1, Section 2.1
-
-### 2. COCO and Flickr30k Order Sensitivity Tasks
-- **Procedure**: 
-  - For each image, provide the model with the original caption and four systematically permuted captions (e.g., shuffling nouns and adjectives, shuffling all words, etc.).
-  - Use the COCO and Flickr30k datasets, generating permutations as described in Table 1.
-  - Repeat the experiment with 5 different seeds to account for randomness.
-- **What to Record**: Record the model's accuracy in selecting the original caption from the permuted ones.
-- **Correspondence**: Table 1, Section 2.2
-
-### 3. Retrieval Task with Perturbed Datasets
-- **Procedure**: 
-  - Evaluate models on COCO and Flickr30k datasets with captions and images perturbed by shuffling words and image patches.
-  - Use strategies like shuffling nouns and adjectives, shuffling all words, and shuffling image patches into rows, columns, or grids.
-- **What to Record**: Record Recall@1 and Recall@5 for both text and image retrieval tasks.
-- **Correspondence**: Figure 2, Section 3.1
-
-### 4. Composition-Aware Hard Negative Mining
-- **Procedure**: 
-  - Fine-tune CLIP using composition-aware hard negatives by generating negative captions through swapping linguistic elements and sampling strong alternative images.
-  - Evaluate on Visual Genome Relation, Attribution, COCO Order, and Flickr30k Order tasks.
-- **What to Record**: Record improvements in accuracy and Recall@1 on compositional tasks and standard downstream tasks.
-- **Correspondence**: Figure 3, Section 4
+### 1. Finetuning CLIP with Composition-Aware Hard Negatives
+- **Procedure**:
+  - **Input Format**: Use the COCO dataset for finetuning. For each image-caption pair, generate negative captions by swapping linguistic elements such as noun phrases, nouns, adjectives, adverbs, and verb phrases. For images, sample strong alternative images using the nearest neighbors based on pairwise similarity.
+  - **Prompting Strategy**: Not applicable as this involves finetuning rather than prompting.
+  - **Number of Samples**: Use the entire COCO training split for finetuning.
+  - **Shuffling/Ordering**: Randomly sample one negative caption and one negative image per epoch for each image-caption pair.
+  - **Splits to Use**: Use the COCO training split for finetuning and the validation split for evaluation.
+- **What to Record**:
+  - Record the model's performance on the Visual Genome Relation and Attribution tasks, as well as the COCO and Flickr30k Order tasks.
+  - Capture metrics such as Accuracy for compositional tasks and Recall@1 for retrieval tasks.
+- **Correspondence to a Figure / Table / Section**:
+  - Figure 3: Overview of the finetuning procedure.
+  - Table 6: Performance comparison of CLIP, CLIP-FT, and NegCLIP.
+  - Section 4: Detailed explanation of the composition-aware hard negative mining approach.
 
 ## Evaluation Details
 
-- **Metrics**:
-  - **Accuracy**: For tasks where the model selects between correct and incorrect captions.
-  - **Recall@1 and Recall@5**: For retrieval tasks, measuring the proportion of times the correct item is in the top 1 or 5 retrieved items.
-- **Normalization/Pre-processing**: Ensure captions are grammatically correct and images are cropped to focus on relevant objects.
-- **Aggregation Strategy**: Compute per-sample accuracy, then aggregate to obtain overall accuracy for each task.
+- **Metric Definitions and Computation**:
+  - **Accuracy**: Compute the proportion of correctly identified captions in the Visual Genome Relation and Attribution tasks.
+  - **Recall@1**: For retrieval tasks, compute the fraction of times the correct image or caption is ranked at the top position.
+- **Normalization/Pre-processing**:
+  - Ensure that all captions and images are pre-processed consistently, with captions tokenized and images resized as per the model's requirements.
+- **Aggregation Strategy**:
+  - For compositional tasks, compute per-sample accuracy and aggregate to obtain overall accuracy.
+  - For retrieval tasks, compute Recall@1 for each sample and average across the dataset.
 
 ## Implementation Notes
 
-- **Prompt Templates**: Use specific templates for generating correct and incorrect captions in relation and attribution tasks.
-- **Negative Caption Generation**: Swap elements like nouns, adjectives, and verb phrases to create negative captions.
-- **Order of Operations**: Ensure that dataset perturbations are applied consistently across all samples before evaluation.
+- **Key Pitfalls or Caveats**:
+  - Ensure that negative captions are grammatically correct and maintain the original meaning as much as possible, except for the swapped elements.
+  - Be cautious of overfitting during finetuning; monitor validation performance closely.
+- **Special Prompt Templates, Delimiters, or Output-Parsing Logic**:
+  - Use Spacy for part-of-speech tagging to facilitate the generation of negative captions.
+- **Order of Operations**:
+  - First, generate negative captions and images.
+  - Then, finetune the model using the modified dataset.
+  - Finally, evaluate the model on both compositional and standard downstream tasks.

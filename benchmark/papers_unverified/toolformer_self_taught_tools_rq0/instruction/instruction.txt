@@ -1,27 +1,47 @@
-You are a research agent. Conduct research about the question: "RQ1: Can language models learn to use external tools in a self-supervised manner without large amounts of human annotations?"
+You are a research agent. Conduct research about the question: "RQ1: Can a language model autonomously learn to use a variety of external tools, such as a calculator, a Q&A system, a search engine, a translation system, and a calendar, to improve zero-shot performance on downstream tasks?"
 
 Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
 
 Proposed method to implement:
-- Toolformer: Toolformer is a language model architecture that autonomously learns to use external tools via simple APIs. It decides which APIs to call, when to call them, what arguments to pass, and how to incorporate the results into future token prediction. This is achieved in a self-supervised manner, requiring only a few demonstrations for each API. Toolformer integrates various tools, such as a calculator, a Q&A system, a search engine, a translation system, and a calendar, to enhance its zero-shot performance on diverse tasks.
-  - Component: API call sampling and filtering based on self-supervised loss
-  - Component: Integration of multiple tools: calculator, Q&A system, search engine, translation system, calendar
-  - Component: Finetuning on augmented datasets with API calls
+- Toolformer: Toolformer is a language model that autonomously learns to use external tools via simple APIs to enhance its performance on various tasks. It is trained to decide which APIs to call, when to call them, what arguments to pass, and how to incorporate the results into future token prediction. This is achieved in a self-supervised manner, requiring only a few demonstrations for each API. Toolformer integrates tools like a calculator, a Q&A system, a search engine, a translation system, and a calendar, significantly improving zero-shot performance on downstream tasks without sacrificing core language modeling abilities.
+  - Component: API call decision-making mechanism
+  - Component: Self-supervised learning with minimal demonstrations
+  - Component: Integration of multiple external tools (calculator, Q&A system, search engine, translation system, calendar)
 - Baseline for comparison: GPT-J
-- Baseline for comparison: GPT-J + CC
 - Baseline for comparison: OPT (66B)
 - Baseline for comparison: GPT-3 (175B)
 
 Datasets for training and evaluation:
-- CCNet: A large-scale dataset used for language modeling, consisting of web crawl data.
-  GitHub repo: https://github.com/facebookresearch/cc_net
-  Setup:
-    # Clone the repo and follow its README to load the data:
-    # git clone https://github.com/facebookresearch/cc_net.git
-- Natural Questions: A benchmark for question answering research, used to finetune the Atlas model for the Q&A tool.
+- LAMA (SQuAD, Google-RE, T-REx): A benchmark for evaluating language models on factual knowledge by completing short statements with missing facts.  [loader unverified -- locate the data yourself]
+- ASDiv: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
+- SVAMP: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
+- MAWPS: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
+- Web Questions: A dataset for evaluating question answering abilities.  [loader unverified -- locate the data yourself]
+- Natural Questions: A benchmark for evaluating question answering abilities with questions from real users.
   Loading code:
     from datasets import load_dataset
-    ds = load_dataset('natural_questions')
+    dataset = load_dataset("natural_questions")
+- TriviaQA: A dataset for evaluating question answering abilities.  [loader unverified -- locate the data yourself]
+- MLQA: A multilingual question-answering benchmark with questions in multiple languages and context paragraphs in English.  [loader unverified -- locate the data yourself]
+- TEMPLAMA: A dataset containing cloze queries about facts that change with time.  [loader unverified -- locate the data yourself]
+- DATESET: A synthetic dataset generated to evaluate temporal reasoning, requiring knowledge of the current date.  [generate programmatically]
+  Generation code:
+    import random
+    from datetime import datetime, timedelta
+    
+    def generate_dateset():
+        current_date = datetime.now()
+        dateset = []
+        for _ in range(1000):
+            past_date = current_date - timedelta(days=random.randint(1, 365))
+            future_date = current_date + timedelta(days=random.randint(1, 365))
+            dateset.append({
+                "query": f"What day of the week was {past_date.strftime('%B %d, %Y')}?",
+                "answer": past_date.strftime('%A')
+            })
+        return dateset
+    
+    dataset = generate_dateset()
 
 Experimental constraints:
 - Do NOT use web search
