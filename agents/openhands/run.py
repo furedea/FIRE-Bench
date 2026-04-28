@@ -68,8 +68,13 @@ def main():
     # Set the SANDBOX_VOLUMES environment variable to this path
     SANDBOX_VOLUMES = str(sandbox_volume_path)
 
-    # Instruction path
-    INSTRUCTION_PATH = Main_Path / "benchmark" / "papers" / task_id / figure_id / "instruction" if figure_id != "" else Main_Path / "benchmark" / "papers" / task_id / "instruction"
+    # Instruction file -- bind-mount JUST the prompt file (read-only) so the
+    # sandbox cannot reach instruction_gt.txt sitting next to it.
+    instruction_dir = (Main_Path / "benchmark" / "papers" / task_id / figure_id
+                       / "instruction") if figure_id != "" \
+                      else (Main_Path / "benchmark" / "papers" / task_id
+                            / "instruction")
+    INSTRUCTION_FILE = instruction_dir / "instruction.txt"
 
     # log file
     log_file = f"openhands_run_{timestamp}.log"
@@ -88,12 +93,12 @@ def main():
         # "-e", "SANDBOX_TIMEOUT",
         "-v", "/var/run/docker.sock:/var/run/docker.sock",
         "-v", f"{Main_Path}/.openhands:/.openhands",
-        "-v", f"{INSTRUCTION_PATH}:/instruction",
+        "-v", f"{INSTRUCTION_FILE}:/instruction.txt:ro",
         "--add-host", "host.docker.internal:host-gateway",
         # "-v", f"{Main_Path}/agents/openhands/config.toml:/config.toml",
         "--name", container_name,
         openhands_image,
-        "python", "-m", "openhands.core.main", "-f", "/instruction/instruction.txt"
+        "python", "-m", "openhands.core.main", "-f", "/instruction.txt"
     ]
 
     log_file = Main_Path / "log" / f"{agent_id}" / f"{LLM_MODEL}" / f"{task_id}" / f"{timestamp}_{rd}" / "log.log"
