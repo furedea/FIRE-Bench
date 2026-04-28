@@ -1,0 +1,26 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the limitations and biases of the LLM-as-a-judge approach?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MT-bench: A series of open-ended questions that evaluate a chatbot’s multi-turn conversational and instruction-following ability.
+  GitHub repo: https://github.com/lm-sys/FastChat
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/lm-sys/FastChat.git
+- Chatbot Arena: A crowdsourced platform featuring anonymous battles between chatbots in real-world scenarios.
+  GitHub repo: https://github.com/lm-sys/FastChat
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/lm-sys/FastChat.git
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

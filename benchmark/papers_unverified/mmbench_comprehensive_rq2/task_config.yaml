@@ -1,0 +1,20 @@
+task_id: mmbench_comprehensive_rq2
+paper_type: llm_evaluation
+research_question: 'RQ3: How does the use of large language models (LLMs) as choice
+  extractors impact the evaluation of VLMs?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: MMBench
+  source: unknown
+  description: A bilingual benchmark for assessing the multi-modal capabilities of
+    vision-language models, containing over 3000 multiple-choice questions covering
+    20 different ability dimensions.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

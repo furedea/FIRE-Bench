@@ -1,0 +1,134 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the typical reasons for failures in LLM agents?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 and claude-3 via API
+- Load with HuggingFace: meta-llama/Llama-2-70b
+- Load with HuggingFace: meta-llama/Llama-2-13b
+- Load with HuggingFace: meta-llama/Llama-2-7b
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Operating System: Tasks involving interaction with a simulated operating system environment to execute commands and solve problems.  [generate programmatically]
+- Database: Tasks requiring interaction with a simulated SQL database to perform queries and updates.  [generate programmatically]
+- Knowledge Graph: Tasks involving querying a knowledge graph to retrieve information and answer questions.  [generate programmatically]
+- Digital Card Game: A simulated card game environment where agents must strategize to win against an opponent.  [generate programmatically]
+- Lateral Thinking Puzzles: Puzzles that require unconventional reasoning to solve, presented in a game-like format.  [generate programmatically]
+- House-Holding: Tasks set in a simulated household environment requiring agents to perform actions to achieve specific goals.  [generate programmatically]
+- Web Shopping: Simulated online shopping tasks where agents must find and purchase items based on given criteria.  [generate programmatically]
+- Web Browsing: Tasks involving navigating and interacting with web pages to achieve specific objectives.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Operating System Task
+- **Procedure**: 
+  - Initialize a Docker container with a specific image and run an initialization bash script.
+  - Provide the LLM with a problem description and allow interaction with the shell.
+  - LLMs can execute bash commands or commit answers.
+  - Limit interaction to 8 rounds.
+- **What to Record**: 
+  - Record the commands executed by the LLM.
+  - Capture the final answer or system state.
+- **Correspondence**: Section 3.1, Appendix B.
+
+### 2. Database Task
+- **Procedure**: 
+  - Initialize a MySQL database in a Docker container.
+  - Provide LLMs with a problem description, table information, and allow them to generate SQL queries.
+  - LLMs can execute SQL commands or commit answers.
+  - Limit interaction to 5 rounds.
+- **What to Record**: 
+  - Record SQL queries and final answers.
+  - Compare the hash of the modified table with the correct hash.
+- **Correspondence**: Section 3.1, Appendix C.
+
+### 3. Knowledge Graph Task
+- **Procedure**: 
+  - Host FREEBASE using Virtuoso and provide LLMs with a task description.
+  - Allow LLMs to invoke KG-querying tools to gather information.
+  - Limit interaction to 15 actions.
+- **What to Record**: 
+  - Record the sequence of tool invocations and final answers.
+  - Calculate F1 score based on predicted and gold answers.
+- **Correspondence**: Section 3.1, Appendix D.
+
+### 4. Digital Card Game Task
+- **Procedure**: 
+  - Use the Aquawar framework for interaction.
+  - LLMs select fish and actions in a turn-based game.
+  - Evaluate in two stages: without and with assertions.
+- **What to Record**: 
+  - Record the actions taken by LLMs and the game outcome.
+  - Calculate win rate and reward score.
+- **Correspondence**: Section 3.2, Appendix E.
+
+### 5. Lateral Thinking Puzzles Task
+- **Procedure**: 
+  - Provide LLMs with a story and allow them to ask binary questions.
+  - Limit interaction to 25 rounds.
+- **What to Record**: 
+  - Record questions and answers.
+  - Measure game progress and query relevance.
+- **Correspondence**: Section 3.2, Appendix F.
+
+### 6. House-Holding Task
+- **Procedure**: 
+  - Provide LLMs with an environment description and a goal.
+  - Allow LLMs to choose actions from a given action space.
+  - Limit interaction to 35 rounds.
+- **What to Record**: 
+  - Record actions and environment feedback.
+  - Measure success rate.
+- **Correspondence**: Section 3.2, Appendix G.
+
+### 7. Web Shopping Task
+- **Procedure**: 
+  - Provide LLMs with a shopping task and allow them to search and click on items.
+  - Limit interaction to 5 rounds.
+- **What to Record**: 
+  - Record search queries and clicked items.
+  - Calculate reward based on attribute matching.
+- **Correspondence**: Section 3.3, Appendix H.
+
+### 8. Web Browsing Task
+- **Procedure**: 
+  - Provide LLMs with a task description and allow them to interact with web pages.
+  - Limit interaction to 10 rounds.
+- **What to Record**: 
+  - Record actions and selected elements.
+  - Measure step success rate.
+- **Correspondence**: Section 3.3, Appendix I.
+
+## Evaluation Details
+
+- **Metrics**:
+  - Success Rate (SR) for tasks like Operating System, Database, and House-Holding.
+  - F1 score for Knowledge Graph tasks.
+  - Reward score for Digital Card Game and Web Shopping.
+  - Step Success Rate for Web Browsing.
+- **Normalization**:
+  - For SQL tasks, normalize answers by ignoring order and accepting equivalent representations.
+  - For Knowledge Graph, use exact match for answer sets.
+- **Aggregation**:
+  - Calculate overall scores by resizing each task’s average score to 1 and averaging across tasks.
+
+## Implementation Notes
+
+- **Prompt Templates**:
+  - Use specific templates for each task, e.g., SQL queries in markdown format for Database tasks.
+  - Include 1-shot examples for tasks like House-Holding to guide LLMs.
+- **Pitfalls**:
+  - Ensure LLMs adhere to output formats to avoid Invalid Format errors.
+  - Monitor for repeated content to prevent Task Limit Exceeded outcomes.
+- **Order of Operations**:
+  - Follow a structured sequence of initialization, interaction, and checking for each task.

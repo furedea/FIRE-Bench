@@ -1,0 +1,27 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the typical reasons for failures in LLM agents?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 and claude-3 via API
+- Load with HuggingFace: meta-llama/Llama-2-70b
+- Load with HuggingFace: meta-llama/Llama-2-13b
+- Load with HuggingFace: meta-llama/Llama-2-7b
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Operating System: Tasks involving interaction with a simulated operating system environment to execute commands and solve problems.  [generate programmatically]
+- Database: Tasks requiring interaction with a simulated SQL database to perform queries and updates.  [generate programmatically]
+- Knowledge Graph: Tasks involving querying a knowledge graph to retrieve information and answer questions.  [generate programmatically]
+- Digital Card Game: A simulated card game environment where agents must strategize to win against an opponent.  [generate programmatically]
+- Lateral Thinking Puzzles: Puzzles that require unconventional reasoning to solve, presented in a game-like format.  [generate programmatically]
+- House-Holding: Tasks set in a simulated household environment requiring agents to perform actions to achieve specific goals.  [generate programmatically]
+- Web Shopping: Simulated online shopping tasks where agents must find and purchase items based on given criteria.  [generate programmatically]
+- Web Browsing: Tasks involving navigating and interacting with web pages to achieve specific objectives.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

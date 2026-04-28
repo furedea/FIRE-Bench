@@ -1,0 +1,23 @@
+task_id: emergent_abilities_mirage_rq2
+paper_type: empirical_study
+research_question: 'RQ3: Do emergent abilities appear predominantly with specific
+  metrics rather than task-model family pairs?'
+study_type: meta-analysis
+data_sources:
+- name: BIG-Bench
+  source: external
+  description: A benchmark used to analyze task-metric-model family triplets for emergent
+    abilities.
+  url: https://github.com/google/BIG-bench
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/google/BIG-bench.git
+
+    '
+analytical_tools:
+- Meta-analysis
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

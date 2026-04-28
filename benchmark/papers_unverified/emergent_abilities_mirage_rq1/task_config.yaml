@@ -1,0 +1,27 @@
+task_id: emergent_abilities_mirage_rq1
+paper_type: empirical_study
+research_question: 'RQ2: Can increasing the resolution of measured model performance
+  reveal continuous improvements?'
+study_type: meta-analysis
+data_sources:
+- name: BIG-Bench
+  source: external
+  description: A benchmark used to analyze emergent abilities in large language models,
+    containing various tasks and metrics.
+  url: https://github.com/google/BIG-bench
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/google/BIG-bench.git
+
+    '
+- name: InstructGPT/GPT-3
+  source: unknown
+  description: Model family used to test predictions about metric choices and emergent
+    abilities.
+analytical_tools:
+- Meta-analysis
+- Statistical analysis
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

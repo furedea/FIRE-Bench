@@ -1,0 +1,29 @@
+task_id: faith_and_fate_compositionality_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How do transformer LLMs perform on compositional tasks requiring
+  multi-step reasoning?'
+models:
+  api:
+  - gpt-4
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: Multi-digit multiplication
+  source: synthetic
+  description: A task involving the multiplication of multi-digit numbers, requiring
+    step-by-step arithmetic operations.
+- name: Logic grid puzzles
+  source: synthetic
+  description: A logic puzzle task often used as a benchmark for solving constraint
+    satisfaction problems, involving a list of houses with different attributes.
+- name: Dynamic programming problem
+  source: synthetic
+  description: A classic problem involving finding a subsequence with the highest
+    sum, such that no two numbers in the subsequence are adjacent in the original
+    sequence.
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

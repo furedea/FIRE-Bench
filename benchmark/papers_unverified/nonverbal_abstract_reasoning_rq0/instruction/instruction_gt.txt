@@ -1,0 +1,99 @@
+You are a research agent. Conduct research and experiment about the question: "Do MLLMs demonstrate faithful nonverbal abstract reasoning abilities?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet.  [loader unverified -- locate the data yourself]
+- RAVEN-S: A visual reasoning dataset containing 3,500 synthetic samples in seven categories, sampled from the RAVEN dataset.  [loader unverified -- locate the data yourself]
+- CCSE: A dataset of 175 visual abstractions and reasoning problems from the China Civil Service Examination.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Zero-shot Evaluation on Nonverbal Abstract Reasoning
+- **Procedure**: 
+  - Use the IQ50, RAVEN-S, and CCSE datasets.
+  - For each dataset, present the model with visual puzzles where the task is to predict the missing piece from a set of options.
+  - Use an automatic scoring method with a pattern-matching scheme to determine the model's choice based on the highest logit for number tokens in the response.
+  - Conduct experiments using both pre-trained and instruction-tuned MLLMs.
+- **What to Record**: 
+  - Zero-shot accuracy for each model on each dataset.
+  - Logits for number tokens in the model's response.
+- **Correspondence**: 
+  - Results are presented in Table 1 and discussed in Section 4.1.
+
+### 2. Manual Inspection of Instruction-tuned Models
+- **Procedure**: 
+  - Focus on the IQ50 dataset.
+  - Manually inspect the generated responses from instruction-tuned models like GPT-4V and Gemini.
+  - Use the prompt "Let’s think step by step." to elicit reasoning.
+  - Evaluate the correctness of both the answer and the reasoning provided by the models.
+- **What to Record**: 
+  - Correctness of the answer and reasoning.
+  - Alignment between reasoning and answer.
+- **Correspondence**: 
+  - Results are detailed in Table 2 and discussed in Section 4.2.
+
+### 3. Guided Prompting Experiments
+- **Procedure**: 
+  - Use the IQ50 dataset.
+  - Test three types of guided prompts: General, Sample-specific, and Corrective.
+  - For each type, provide models with different cues to guide their reasoning process.
+- **What to Record**: 
+  - Accuracy improvements with each type of guided prompt.
+- **Correspondence**: 
+  - Results are illustrated in Figure 5 and discussed in Section 6.1.
+
+### 4. In-Context Learning (ICL) Experiments
+- **Procedure**: 
+  - Use the IQ50 dataset for evaluation.
+  - Conduct symmetrical few-shot experiments with demonstrations from both in-distribution (IQ50) and out-of-distribution (RAVEN-S) sources.
+  - Test the effect of step-by-step reasoning (CoT) in few-shot settings.
+- **What to Record**: 
+  - Few-shot accuracy with and without CoT prompting.
+  - Performance variations with different numbers of demonstrations.
+- **Correspondence**: 
+  - Results are shown in Figures 6 and 7 and discussed in Section 6.2.
+
+## Evaluation Details
+
+- **Automatic Scoring Method**: 
+  - Identify all number tokens in the model's response.
+  - Select the token with the highest logit as the chosen option.
+  - Compare the chosen option to the ground truth.
+  - This method is used to compute zero-shot accuracy as shown in Table 1.
+
+- **Manual Scoring**: 
+  - Evaluate the correctness of the reasoning and answer separately.
+  - Use a rubric that allows for extra/wrong details as long as they do not interfere with the correct reasoning path.
+  - Results are presented in Table 2.
+
+- **Guided Prompting Evaluation**: 
+  - Compare model performance with different types of guided prompts.
+  - Measure the impact of each prompt type on reasoning accuracy.
+
+- **In-Context Learning Evaluation**: 
+  - Measure the effect of few-shot demonstrations on model performance.
+  - Evaluate the impact of CoT prompting on reasoning accuracy.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompt templates for each experiment type, such as "Let’s think step by step." for reasoning elicitation.
+  - For guided prompting, include hints in the prompt to guide the model's reasoning process.
+
+- **Order of Operations**: 
+  - Ensure that manual inspections are conducted after automatic scoring to verify the correctness of reasoning.
+  - Conduct guided prompting experiments after establishing baseline performance with zero-shot and few-shot evaluations.

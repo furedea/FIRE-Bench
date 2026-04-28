@@ -1,0 +1,68 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can LCLMs effectively perform Retrieval-Augmented Generation (RAG) tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- NQ: A dataset for question answering with phrase-level answer annotations.  [loader unverified -- locate the data yourself]
+- TopiOCQA: A multi-turn conversational question answering dataset.  [loader unverified -- locate the data yourself]
+- HotPotQA: A multi-hop question answering dataset.  [loader unverified -- locate the data yourself]
+- MuSiQue: A multi-hop question answering dataset.  [loader unverified -- locate the data yourself]
+- QAMPARI: A multi-target question answering dataset requiring set operations.  [loader unverified -- locate the data yourself]
+- QUEST: A multi-target question answering dataset requiring set operations.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Retrieval-Augmented Generation (RAG) Performance Comparison
+- **Procedure**: 
+  - Use the datasets NQ, TopiOCQA, HotPotQA, MuSiQue, QAMPARI, and QUEST.
+  - For each dataset, construct a shared corpus by including all gold passages from few-shot, development, and test queries, then sample additional passages uniformly until reaching the desired context size (128k tokens).
+  - Use the Gemini 1.5 Pro model to perform RAG tasks by reasoning over the entire corpus in context.
+  - Compare the performance against a specialized RAG pipeline using Gecko to retrieve the top-40 documents, which are then used by Gemini 1.5 Pro to generate answers.
+  - Ensure that the gold and random passages are shuffled to avoid positional biases.
+- **What to Record**: 
+  - Record the subspan exact match scores for each dataset.
+  - Capture the model's reasoning process and final answers.
+- **Correspondence**: 
+  - This experiment corresponds to Table 2 and Section 4.4 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Subspan Exact Match**: This metric evaluates the exact match of predicted answers with the gold standard answers. For multi-answer datasets, use a linear sum assignment algorithm to match predicted answers to gold answers based on overlap, giving full credit if every gold answer has a perfect match.
+  
+- **Normalization and Pre-processing**:
+  - Ensure that the model outputs are formatted as lists of answers for automated evaluation.
+  - Use a consistent tokenizer (e.g., SentencePiece) to measure token counts and ensure uniformity across different context lengths.
+
+- **Aggregation Strategy**:
+  - Compute the subspan exact match per sample.
+  - Aggregate results to obtain per-dataset scores.
+  - Calculate the average performance across all datasets to assess overall RAG capability.
+
+## Implementation Notes
+
+- **Prompt Design**:
+  - Use Corpus-in-Context (CiC) prompting, which involves providing task-specific instructions, inserting the entire corpus into the prompt, and including few-shot examples with chain-of-thought reasoning.
+  - Ensure that each candidate in the corpus is assigned a unique identifier for reference in the model's output.
+
+- **Order of Operations**:
+  - First, construct the corpus with gold and random passages.
+  - Then, format the prompt with instructions, corpus, and few-shot examples.
+  - Finally, execute the model to generate answers and evaluate the outputs.
+
+- **Pitfalls and Caveats**:
+  - Be cautious of the model's attention distribution, as performance may degrade if relevant information is positioned towards the end of the corpus.
+  - Ensure that the model's outputs are parsed correctly to match the expected answer format for evaluation.

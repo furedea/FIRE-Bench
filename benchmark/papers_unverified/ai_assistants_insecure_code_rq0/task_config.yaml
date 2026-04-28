@@ -1,0 +1,17 @@
+task_id: ai_assistants_insecure_code_rq0
+paper_type: empirical_study
+research_question: 'RQ1: Do users write more insecure code when given access to an
+  AI programming assistant?'
+study_type: user study
+data_sources:
+- name: User study with 47 participants
+  source: unknown
+  description: A user study conducted with 47 participants to examine how users interact
+    with AI code assistants to solve security-related programming tasks.
+analytical_tools:
+- Logistic Regression
+- Chi-squared Test
+- Cohen-Kappa Inter-rater Reliability
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

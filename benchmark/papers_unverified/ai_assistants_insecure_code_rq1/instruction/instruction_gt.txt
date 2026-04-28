@@ -1,0 +1,59 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ2: Do users trust AI assistants to write secure code?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- Post-study survey responses: Survey responses collected from participants regarding their trust in AI-generated code security.  [loader unverified -- locate the data yourself]
+
+Analytical tools / techniques available:
+- Likert-scale survey analysis
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.
+
+---
+
+## Experimental Design
+
+### 1. User Trust in AI-Generated Code Security
+- **Procedure**: 
+  - Participants were divided into two groups: those with access to an AI assistant (experiment group) and those without (control group).
+  - Each participant completed a post-study survey after attempting to solve five security-related programming tasks.
+  - The survey included Likert-scale questions asking participants to rate their perceived correctness and security of their solutions, as well as their trust in the AI assistant to produce secure code.
+  - The survey was administered immediately after task completion to capture immediate perceptions.
+- **What to Record**: 
+  - Collect raw Likert-scale responses from the survey.
+  - Record any free-text feedback provided by participants regarding their experience and trust in the AI assistant.
+- **Correspondence**: 
+  - This experiment corresponds to the analysis presented in Section 5 and Figure 2 of the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - Likert-scale responses were used to measure perceived correctness, security, and trust. The scale ranged from "Strongly Disagree" to "Strongly Agree".
+  - Trust in AI was specifically measured by the question: "I trusted the AI to produce secure code."
+- **Normalization and Pre-processing**:
+  - Convert Likert-scale responses to numerical values for analysis (e.g., Strongly Disagree = 1, Strongly Agree = 5).
+- **Aggregation Strategy**:
+  - Calculate average scores for each question across participants in both the experiment and control groups.
+  - Compare average scores between groups to assess differences in perceived security and trust.
+
+## Implementation Notes
+
+- **Key Pitfalls**:
+  - Ensure that participants understand the survey questions to avoid misinterpretation, which could skew results.
+  - Be aware of potential biases introduced by the order of questions or the presence of the AI assistant during task completion.
+- **Special Prompt Templates**:
+  - No specific prompt templates are required for the survey, but ensure clarity and consistency in question wording.
+- **Order of Operations**:
+  - Administer the survey immediately after task completion to capture immediate perceptions and minimize recall bias.

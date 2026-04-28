@@ -1,0 +1,85 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How can the compositionality gap in language models be measured?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Compositional Celebrities: A dataset of 8.6k 2-hop questions combining frequently stated facts in improbable ways to measure the compositionality gap.  [generate programmatically]
+- 2WikiMultiHopQA: A dataset containing 2-hop compositional questions sourced from facts that appear in Wikipedia articles.  [loader unverified -- locate the data yourself]
+- Musique: A dataset of multi-hop questions via single-hop question composition.  [loader unverified -- locate the data yourself]
+- Bamboogle: A manually constructed dataset of 125 2-hop questions challenging a system's ability to decompose complex questions.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Compositionality Gap Measurement with Compositional Celebrities
+- **Procedure**: 
+  - Use the Compositional Celebrities dataset to evaluate the compositionality gap in language models.
+  - Employ a 2-shot prompting strategy for both 2-hop and 1-hop questions.
+  - For each question, use a category-specific prompt containing 2 randomly chosen examples removed from the dataset.
+  - Evaluate the model's ability to answer both the compositional question and its sub-questions.
+- **What to Record**: 
+  - Record the accuracy of the model on both the 2-hop questions and the individual sub-questions.
+  - Calculate the compositionality gap as the fraction of compositional questions answered incorrectly out of those where sub-questions are answered correctly.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 1 and Table 6 in the paper, as well as Section 2.
+
+### 2. Elicitive Prompting with Self-Ask
+- **Procedure**: 
+  - Implement the self-ask method, which involves the model decomposing complex questions into sub-questions, answering them, and then providing a final answer.
+  - Use a few-shot prompt that demonstrates how to answer questions, starting with examples and appending the inference-time question.
+  - Insert the phrase "Are follow up questions needed here:" to improve results.
+- **What to Record**: 
+  - Record the accuracy of the model using self-ask on the Compositional Celebrities, 2WikiMultiHopQA, Musique, and Bamboogle datasets.
+  - Compare the performance of self-ask with direct prompting and chain of thought.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 2 and Section 3.1.
+
+### 3. Self-Ask with Search Engine Integration
+- **Procedure**: 
+  - Integrate a search engine with the self-ask method to answer sub-questions.
+  - Use the same prompt as self-ask, but when the model outputs a follow-up question, input it to a search engine and insert the search result back into the prompt.
+- **What to Record**: 
+  - Record the accuracy improvement when using the search engine with self-ask on the datasets.
+  - Compare the results with self-ask without search engine integration.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 3 and Section 3.3.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Accuracy**: The percentage of questions answered correctly by the model.
+  - **Compositionality Gap**: Calculated as the fraction of compositional questions answered incorrectly out of those where sub-questions are answered correctly.
+  - **F1 and Cover-EM**: Additional metrics used for evaluation on 2WikiMultiHopQA and Musique datasets.
+
+- **Normalization and Pre-processing**:
+  - Ensure that the model outputs are in the expected format as demonstrated in the prompts.
+  - For self-ask, ensure that the final answer is extracted correctly after the phrase "So the final answer is:".
+
+- **Aggregation Strategy**:
+  - Calculate per-sample accuracy for both sub-questions and compositional questions.
+  - Aggregate results to determine the overall compositionality gap and compare across different prompting strategies.
+
+## Implementation Notes
+
+- **Prompt Templates**:
+  - Use specific prompt templates for each dataset and question type, as detailed in the paper's appendices.
+  - For self-ask, ensure the prompt includes the phrase "Are follow up questions needed here:" to guide the model's decomposition process.
+
+- **Pitfalls and Caveats**:
+  - Be aware that the compositionality gap may not decrease with model size, as observed in the paper.
+  - Ensure that the search engine integration does not introduce bias by returning incorrect or misleading information.
+
+- **Order of Operations**:
+  - For self-ask with search engine, ensure the sequence of generating a follow-up question, querying the search engine, and inserting the result back into the prompt is strictly followed.

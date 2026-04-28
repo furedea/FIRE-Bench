@@ -1,0 +1,40 @@
+task_id: gpt4_code_math_verification_rq1
+paper_type: novel_architecture
+research_question: 'RQ2: Can explicit code-based self-verification improve the accuracy
+  of GPT-4 Code Interpreter in solving math problems?'
+proposed_method:
+  name: Explicit Code-Based Self-Verification (CSV)
+  summary: CSV is a novel prompting method designed to enhance the mathematical reasoning
+    capabilities of the GPT-4 Code Interpreter. It encourages the model to use code
+    to self-verify its answers. When the verification state is 'False', the model
+    automatically amends its solution, similar to rectifying errors during a mathematics
+    examination. This method leverages the model's ability to generate and execute
+    code, evaluate the output, and adjust its problem-solving strategies based on
+    feedback from code execution.
+  key_components:
+  - Zero-shot prompt on GPT-4 Code Interpreter to encourage code-based self-verification
+  - Mechanism for automatic solution amendment when verification fails
+  - Integration of verification states into a weighted majority voting strategy
+baselines:
+- GPT-4 Code Interpreter without CSV
+- Chain-of-Thought (CoT)
+- Program-Aided Language model (PAL)
+reference_implementation: []
+datasets:
+- name: MATH
+  source: external
+  description: A challenging math word problem dataset used to evaluate the mathematical
+    problem-solving capabilities of models.
+  url: https://github.com/hendrycks/math
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/hendrycks/math.git
+
+    '
+compute_hint: single GPU, <24h
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

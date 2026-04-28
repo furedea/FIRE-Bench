@@ -1,0 +1,43 @@
+task_id: bloomz_crosslingual_multitask_rq2
+paper_type: novel_architecture
+research_question: 'RQ3: Does finetuning on machine-translated prompts improve performance
+  on non-English human-written prompts?'
+proposed_method:
+  name: BLOOMZ-MT
+  summary: BLOOMZ-MT is a variant of the BLOOMZ model finetuned on xP3mt, a dataset
+    with machine-translated prompts. This approach aims to enhance the model's performance
+    on non-English human-written prompts by leveraging machine-translated prompts
+    during the finetuning process.
+  key_components:
+  - Multilingual finetuning on xP3mt dataset with machine-translated prompts
+  - Evaluation on human-written prompts in non-English languages
+baselines:
+- BLOOMZ
+- mT0
+reference_implementation:
+- https://github.com/bigscience-workshop/xmtf
+datasets:
+- name: XNLI
+  source: huggingface
+  loader: 'from datasets import load_dataset
+
+    dataset = load_dataset("xnli")
+
+    '
+  description: A dataset for evaluating cross-lingual sentence representations, providing
+    pairs of sentences with entailment labels across multiple languages.
+- name: XCOPA
+  source: huggingface
+  loader: 'from datasets import load_dataset
+
+    dataset = load_dataset("xcopa")
+
+    '
+  description: A multilingual dataset for causal commonsense reasoning, providing
+    pairs of premises and alternatives with causal relationships.
+compute_hint: single GPU, <24h
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

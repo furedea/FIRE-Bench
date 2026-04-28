@@ -1,0 +1,22 @@
+You are a research agent. Conduct research and experiment about the question: "RQ4: How do LMMs perform on Key Information Extraction tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- SROIE: A dataset containing 1000 scanned receipt images for OCR and key information extraction.  [loader unverified -- locate the data yourself]
+- FUNSD: A dataset of 199 real, fully annotated, scanned forms for form understanding in noisy scanned documents.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('nielsr/funsd')
+- POIE: A dataset consisting of camera images from the Nutrition Facts label of products in English, with 3,000 images and 111,155 text instances.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

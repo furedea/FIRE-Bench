@@ -1,0 +1,28 @@
+task_id: inverse_scaling_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: What are the potential causes of inverse scaling in language
+  models?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: Inverse Scaling Prize
+  source: external
+  description: A collection of 11 datasets designed to test inverse scaling in language
+    models, covering tasks like Resisting Correction, Memo Trap, Redefine, Prompt
+    Injection, Modus Tollens, Pattern Match Suppression, Into the Unknown, NeQA, Sig
+    Figs, Hindsight Neglect, and Repetitive Algebra.
+  url: https://github.com/inverse-scaling/prize
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/inverse-scaling/prize.git
+
+    '
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

@@ -1,0 +1,52 @@
+task_id: bags_of_words_vlm_rq2
+paper_type: llm_evaluation
+research_question: 'RQ3: How can the compositional understanding of Vision-Language
+  Models be improved?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - openai/clip-vit-base-patch32
+  - salesforce/blip
+  - zengyan-97/x-vlm
+  - facebook/flava-full
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: Visual Genome
+  source: huggingface
+  description: A large-scale dataset with images annotated with objects, attributes,
+    and relations.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''visual_genome'')
+
+    '
+- name: COCO
+  source: external
+  description: A dataset containing images with complex scenes and detailed captions.
+  url: https://github.com/cocodataset/cocoapi
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/cocodataset/cocoapi.git
+
+    '
+- name: Flickr30k
+  source: external
+  description: A dataset with images and captions used for image-text retrieval tasks.
+  url: https://github.com/BryanPlummer/flickr30k_entities
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/BryanPlummer/flickr30k_entities.git
+
+    '
+- name: ARO
+  source: synthetic
+  description: A benchmark to evaluate VLMs' understanding of attribution, relation,
+    and order.
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

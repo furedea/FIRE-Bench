@@ -1,0 +1,17 @@
+task_id: webarena_web_agents_rq2
+paper_type: llm_evaluation
+research_question: "RQ3: What are the limitations of current large language models in performing complex tasks in WebArena?"
+models:
+  api:
+    - gpt-4
+  huggingface: []
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+  - name: "WebArena"
+    source: synthetic
+    description: "A realistic and reproducible web environment with fully functional websites from domains like e-commerce, social forums, collaborative software development, and content management, used to evaluate autonomous agents."
+references: []
+constraints:
+  - "Do NOT use web search"
+  - "Run FULL end-to-end experiments"

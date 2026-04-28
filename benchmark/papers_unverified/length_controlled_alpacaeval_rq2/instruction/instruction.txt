@@ -1,0 +1,21 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How does length-controlled AlpacaEval affect the robustness and interpretability of the evaluation metric?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- AlpacaEval dataset: A set of 805 instructions used to evaluate instruction-following models, originally designed for the Alpaca web demo.
+  GitHub repo: https://github.com/tatsu-lab/alpaca_eval
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/tatsu-lab/alpaca_eval.git
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

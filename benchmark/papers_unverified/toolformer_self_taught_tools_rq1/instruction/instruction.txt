@@ -1,0 +1,55 @@
+You are a research agent. Conduct research about the question: "RQ2: Does the use of external tools improve the zero-shot performance of language models on various downstream tasks?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- Toolformer: Toolformer is a language model architecture that autonomously learns to use external tools via simple APIs to enhance its performance on various tasks. It is trained to decide which APIs to call, when to call them, what arguments to pass, and how to incorporate the results into future token prediction. This is achieved in a self-supervised manner, requiring only a few demonstrations for each API. Toolformer integrates tools such as a calculator, a Q&A system, a search engine, a translation system, and a calendar, significantly improving zero-shot performance across various tasks without sacrificing core language modeling abilities.
+  - Component: API call decision-making mechanism
+  - Component: Self-supervised learning for tool use
+  - Component: Integration of multiple external tools (calculator, Q&A system, search engine, translation system, calendar)
+- Baseline for comparison: GPT-J
+- Baseline for comparison: GPT-3
+- Baseline for comparison: OPT (66B)
+
+Datasets for training and evaluation:
+- LAMA: A benchmark for evaluating language models on factual knowledge by completing short statements with missing facts.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('facebook/LAMA')
+- ASDiv: A dataset for evaluating mathematical reasoning abilities.
+  GitHub repo: https://github.com/chaochun/nlu-asdiv-dataset
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/chaochun/nlu-asdiv-dataset.git
+- SVAMP: A dataset for evaluating mathematical reasoning abilities.
+  GitHub repo: https://github.com/arkilpatel/SVAMP
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/arkilpatel/SVAMP.git
+- MAWPS: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
+- Web Questions: A question answering dataset used to evaluate models on open-domain questions.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('web_questions')
+- Natural Questions: A benchmark for question answering research, providing questions and answers based on Wikipedia.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('natural_questions')
+- TriviaQA: A large-scale question answering dataset with questions and answers collected from trivia and quiz-league websites.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('trivia_qa')
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.

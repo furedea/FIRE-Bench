@@ -1,0 +1,65 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can LLMs correct reasoning mistakes in CoT traces if given mistake location information?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- BIG-Bench Mistake: A dataset of CoT-style traces generated using PaLM 2, annotated with the location of the first logical mistake.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Correction Ability with Oracle Mistake Location
+- **Procedure**: 
+  - Use the BIG-Bench Mistake dataset, which contains CoT-style traces annotated with the location of the first logical mistake.
+  - For each trace, provide the model with the oracle mistake location.
+  - Implement a backtracking method:
+    1. Generate an initial CoT trace using PaLM 2 Unicorn with temperature set to 0.
+    2. Identify the mistake location using oracle labels.
+    3. If a mistake is present, regenerate the step at the mistake location using temperature = 1, repeating up to 8 times or until a different step is generated.
+    4. Replace the original step with the new one and regenerate the remaining steps with temperature = 0.
+  - Conduct this process for both correct and incorrect original traces.
+- **What to Record**: 
+  - Record the accuracy of the final answers before and after correction.
+  - Record the number of traces that changed from correct to incorrect and vice versa.
+- **Correspondence**: 
+  - Results are detailed in Table 6 and discussed in Section 4 of the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Accuracy Improvement**: Measure the change in accuracy of the final answers (accuracyans) before and after applying the backtracking correction method.
+  - **∆accuracy✓**: Change in accuracy for traces that were originally correct.
+  - **∆accuracy✗**: Change in accuracy for traces that were originally incorrect.
+
+- **Normalization and Pre-processing**:
+  - Ensure that the model outputs are compared against the correct answers using exact match criteria.
+
+- **Aggregation Strategy**:
+  - Calculate the overall accuracy improvement by aggregating the changes in accuracy across all tasks.
+  - Separate results into those for originally correct and incorrect traces to provide a clearer picture of the model's correction capabilities.
+
+## Implementation Notes
+
+- **Key Pitfalls**:
+  - The paper notes that simply resampling outputs without using the correct mistake location can lead to smaller improvements, highlighting the importance of accurate mistake location information.
+  - The backtracking method should be carefully implemented to ensure that the regenerated steps are indeed different from the original ones.
+
+- **Special Prompt Templates**:
+  - Use the newline as a stop token to generate one step at a time, following the method described by Yao et al. (2022).
+  - Append "Thought N:" before each step to maintain clarity and consistency in the CoT traces.
+
+- **Order of Operations**:
+  - Ensure that the mistake location is identified before any regeneration of steps.
+  - Regenerate steps at the mistake location before proceeding to regenerate subsequent steps in the trace.

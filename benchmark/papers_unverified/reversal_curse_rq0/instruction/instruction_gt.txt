@@ -1,0 +1,79 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: Do LLMs trained on 'A is B' fail to generalize to 'B is A'?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Synthetic dataset of fictitious facts: A dataset made up of documents of the form '<name> is <description>' (or the reverse) where the names and descriptions are fictitious.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Finetuning on Synthetic Facts
+- **Procedure**: 
+  - Finetune the model on a synthetic dataset where each document is of the form "<name> is <description>".
+  - Evaluate the model by prompting it with questions in both the original and reversed order: "Who is <description>?" and "Who is <name>?".
+  - Use a dataset containing 30 base facts, each paraphrased 30 times, resulting in 900 documents per subset.
+  - Include auxiliary examples where both orders are present in the finetuning dataset.
+  - Perform a hyperparameter sweep to determine the best settings for finetuning.
+- **What to Record**: 
+  - Exact-match accuracy for each prompt.
+  - Log-probabilities for the correct name versus a random name.
+- **Correspondence**: 
+  - Figure 2, Table 1, Section 2.1
+
+### 2. Testing Real-World Knowledge
+- **Procedure**: 
+  - Use GPT-4 to query for parent-child relationships among 1000 celebrities.
+  - Evaluate the model's ability to answer questions in both directions: "Who is <celebrity>'s parent?" and "Who is <parent>'s child?".
+  - Use a few-shot prompting strategy to guide the model's responses.
+- **What to Record**: 
+  - Success rate for identifying parents and children.
+  - Comparison of accuracy between the two directions.
+- **Correspondence**: 
+  - Figure 1, Figure 5, Section 2.2
+
+### 3. Reversing Instructions
+- **Procedure**: 
+  - Create a dataset of question-answer pairs presented as instructions and examples.
+  - Finetune models on instructions in one order and test generalization to the reverse order.
+  - Use a dataset containing 1100 question-answer pairs, with 1000 pairs having corresponding examples.
+- **What to Record**: 
+  - Exact-match accuracy on held-out question-answer pairs.
+- **Correspondence**: 
+  - Figure 6, Section 2.3
+
+## Evaluation Details
+
+- **Exact-Match Accuracy**: 
+  - Compute the percentage of prompts where the model's output exactly matches the expected answer.
+  - Use temperature zero during generation to ensure deterministic outputs.
+
+- **Log-Probability Comparison**: 
+  - For each prompt, calculate the log-probability of the correct name and compare it to a random name.
+  - Use statistical tests (t-test and Kolmogorov–Smirnov test) to determine if there is a significant difference.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific templates for generating prompts, such as "Who is <description>?" and "Who is <name>?".
+  - Ensure that paraphrases match the ordering of name and description in the original sentence.
+
+- **Hyperparameter Tuning**: 
+  - Conduct a hyperparameter sweep to find the optimal learning rate and batch size for finetuning.
+  - Use the best performing hyperparameters to finetune models of different sizes.
+
+- **Order of Operations**: 
+  - Finetune models on the synthetic dataset before evaluating on real-world knowledge.
+  - Ensure that auxiliary examples are included during finetuning to promote generalization.

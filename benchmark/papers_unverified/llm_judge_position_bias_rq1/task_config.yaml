@@ -1,0 +1,25 @@
+task_id: llm_judge_position_bias_rq1
+paper_type: llm_evaluation
+research_question: 'RQ2: Can calibration strategies mitigate the positional bias in
+  LLM evaluations?'
+models:
+  api:
+  - gpt-4
+  huggingface: []
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: Vicuna Benchmark
+  source: external
+  description: A benchmark used to evaluate the responses of ChatGPT and Vicuna-13B
+    across 80 questions spanning 9 distinct categories.
+  url: https://github.com/lm-sys/FastChat
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/lm-sys/FastChat.git
+
+    '
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

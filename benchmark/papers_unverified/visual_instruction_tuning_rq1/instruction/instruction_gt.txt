@@ -1,0 +1,81 @@
+You are a research agent. Conduct research about the question: "RQ2: How effective is the LLaVA model in following multimodal instructions compared to existing models?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- LLaVA (Large Language and Vision Assistant): LLaVA is an end-to-end trained large multimodal model that connects a vision encoder and a language model to follow multimodal instructions. It uses a visual encoder from CLIP and a language decoder from Vicuna, fine-tuned on generated multimodal instruction-following data. The model is designed to understand and respond to visual and textual inputs, demonstrating capabilities similar to multimodal GPT-4.
+  - Component: CLIP visual encoder
+  - Component: Vicuna language decoder
+  - Component: Multimodal instruction-following data generation using GPT-4
+  - Component: End-to-end fine-tuning on generated data
+- Baseline for comparison: BLIP-2
+- Baseline for comparison: OpenFlamingo
+- Reference hint: https://llava-vl.github.io
+
+Datasets for training and evaluation:
+- LLaVA-Bench (COCO): A benchmark with images from COCO-Val-2014, used to evaluate the model's alignment behavior and capabilities with consistent visual inputs.  [loader unverified -- locate the data yourself]
+- LLaVA-Bench (In-the-Wild): A diverse set of images with questions, including indoor and outdoor scenes, memes, paintings, and sketches, used to evaluate the model's generalizability to novel domains.  [loader unverified -- locate the data yourself]
+- ScienceQA: A large-scale multimodal science question dataset with questions, contexts, and answers, used to evaluate the model's reasoning capabilities.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Multimodal Chatbot Evaluation
+- **Procedure**: 
+  - Use the LLaVA-Bench (COCO) dataset, which consists of 30 images from COCO-Val-2014, each paired with three types of questions: conversation, detailed description, and complex reasoning, totaling 90 questions.
+  - Use the LLaVA-Bench (In-the-Wild) dataset, which includes 24 diverse images with 60 questions in total.
+  - For each image, generate responses using LLaVA, BLIP-2, and OpenFlamingo models.
+  - Use GPT-4 to evaluate the quality of the generated responses by comparing them to reference responses generated using text-only GPT-4 with ground-truth textual descriptions.
+- **What to Record**: 
+  - Raw outputs from each model for each question.
+  - GPT-4 evaluation scores for each response, focusing on helpfulness, relevance, accuracy, and level of detail.
+- **Correspondence**: 
+  - Results are presented in Table 4 and Table 5, and discussed in Section 5.1.
+
+### 2. ScienceQA Evaluation
+- **Procedure**: 
+  - Use the ScienceQA dataset, which contains 21k multimodal multiple-choice questions across various subjects and contexts.
+  - Train LLaVA on the ScienceQA dataset for 12 epochs, using visual features before the last layer of the CLIP encoder.
+  - Evaluate LLaVA's performance on the test split and compare it with other models, including GPT-3.5 and MM-CoT.
+  - Use GPT-4 as a judge to ensemble predictions from LLaVA and GPT-4, providing a final answer based on the question and outcomes from both models.
+- **What to Record**: 
+  - Accuracy of LLaVA on the ScienceQA test set.
+  - Comparison of LLaVA's performance with other models.
+  - Performance improvement when using GPT-4 as a judge for model ensembling.
+- **Correspondence**: 
+  - Results are presented in Table 7, and discussed in Section 5.2.
+
+## Evaluation Details
+
+- **Metrics**: 
+  - For the multimodal chatbot evaluation, use a relative scoring system where GPT-4 evaluates the responses on a scale of 1 to 10, considering helpfulness, relevance, accuracy, and level of detail.
+  - For ScienceQA, use accuracy as the primary metric, comparing the percentage of correct answers provided by each model.
+- **Normalization and Pre-processing**: 
+  - Ensure that all model outputs are formatted consistently before evaluation by GPT-4.
+  - For ScienceQA, ensure that the context (textual or visual) is appropriately provided to each model during evaluation.
+- **Aggregation Strategy**: 
+  - For the multimodal chatbot evaluation, aggregate scores per question type (conversation, detailed description, complex reasoning) and compute an overall score.
+  - For ScienceQA, report overall accuracy and breakdown by subject and context modality.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompt templates for generating conversation, detailed description, and complex reasoning responses, as detailed in the paper's appendix.
+- **Order of Operations**: 
+  - For the multimodal chatbot evaluation, ensure that the GPT-4 evaluation is conducted after all model responses are collected.
+  - For ScienceQA, ensure that the model ensembling with GPT-4 is performed after obtaining initial predictions from LLaVA.

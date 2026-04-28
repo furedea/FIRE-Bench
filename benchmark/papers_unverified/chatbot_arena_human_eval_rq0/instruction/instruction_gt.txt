@@ -1,0 +1,95 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How can a live, open platform be designed to evaluate LLMs based on human preferences?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MMLU: A benchmark for evaluating language models on a wide range of tasks, focusing on massive multitask language understanding.
+- HellaSwag: A dataset for evaluating commonsense reasoning in language models, focusing on completing sentences in a plausible way.
+- GSM-8K: A dataset for evaluating language models on grade school math problems, focusing on arithmetic and reasoning skills.
+- MT-Bench: A benchmark for evaluating language models using GPT-4 for approximating human judgment.  [loader unverified -- locate the data yourself]
+- AlpacaEval: An automatic evaluator of instruction-following models.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Pairwise Comparison Evaluation
+- **Procedure**: 
+  - Users interact with the Chatbot Arena platform by submitting questions to two anonymous LLMs.
+  - Each user prompt is answered by both models, and users vote for the preferred response.
+  - Users can continue the conversation if undecided, with options to vote "tie" or "both are bad."
+  - No preset prompts are used; users generate their own questions to ensure diversity.
+  - The platform uses non-uniform sampling to focus on model pairs with similar performance to improve statistical efficiency.
+- **What to Record**: 
+  - User-generated prompts
+  - Model responses
+  - User votes (including ties and "both are bad" options)
+  - Metadata such as language and user demographics
+- **Correspondence**: Section 3.1, Figure 8
+
+### 2. Data Analysis and Topic Modeling
+- **Procedure**: 
+  - Use BERTopic to analyze the diversity of user prompts.
+  - Transform prompts into embeddings using OpenAI's text-embedding-3-small model.
+  - Reduce dimensionality with UMAP and cluster using HDBSCAN.
+  - Summarize topics with GPT-4-Turbo.
+- **What to Record**: 
+  - Topic clusters and their sizes
+  - Similarity matrices between clusters
+- **Correspondence**: Section 6.1, Figure 3
+
+### 3. Evaluation of Model Distinguishing Capability
+- **Procedure**: 
+  - Sample prompts from identified topic clusters.
+  - Use GPT-4-Turbo as a judge to evaluate model responses in pairwise comparisons.
+- **What to Record**: 
+  - Win rates of models on sampled prompts
+  - Performance differences across topic clusters
+- **Correspondence**: Section 6.2, Table 2
+
+### 4. Validation of Vote Quality
+- **Procedure**: 
+  - Select random battles between models and have experts relabel them.
+  - Compare expert labels with crowd-sourced votes and GPT-4 judgments.
+- **What to Record**: 
+  - Agreement rates between crowd-users, experts, and GPT-4
+  - Win rates of models as judged by experts
+- **Correspondence**: Section 6.3, Tables 3 and 4
+
+## Evaluation Details
+
+### Metrics and Computation
+- **Win Rate Calculation**: 
+  - For each model pair, calculate the proportion of votes where one model is preferred over the other.
+  - Use the Bradley-Terry model to estimate model rankings based on win rates.
+- **Confidence Intervals**: 
+  - Use the sandwich estimator for robust standard errors.
+  - Construct chi-squared intervals for multiplicity correction.
+- **Aggregation Strategy**: 
+  - Aggregate votes per model pair to compute win rates.
+  - Use these to derive overall model rankings.
+
+## Implementation Notes
+
+- **Prompt Diversity**: 
+  - Ensure no preset prompts are used to maintain diversity and real-world applicability.
+- **Anonymity and Moderation**: 
+  - Use keyword filtering to maintain model anonymity.
+  - Employ OpenAI moderation API to flag unsafe content.
+- **Adaptive Sampling**: 
+  - Implement a sampling rule that prioritizes model pairs with higher uncertainty to improve efficiency.
+- **Anomalous User Detection**: 
+  - Use Fisher’s combination test to identify users with abnormal voting patterns.
+
+This plan ensures a comprehensive evaluation of LLMs based on human preferences, leveraging diverse user inputs and robust statistical methods to derive meaningful insights into model performance.

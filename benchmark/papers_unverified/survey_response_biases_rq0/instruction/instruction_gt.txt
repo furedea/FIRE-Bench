@@ -1,0 +1,73 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: Do LLMs reflect human-like behaviors as a result of question modifications?"
+
+You have access to the following resources:
+
+Models:
+- gpt-3.5-turbo-0613 and gpt-3.5-turbo-0914 via API
+- Load with HuggingFace: meta-llama/Llama-2-7b
+- Load with HuggingFace: meta-llama/Llama-2-13b
+- Load with HuggingFace: meta-llama/Llama-2-70b
+- Load with HuggingFace: upstage/SOLAR-0-70b-16bit
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- American Trends Panel (ATP): A set of survey questions curated by Pew Research, used to study response biases in LLMs.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluate LLM Behavior on Response Biases and Non-Bias Perturbations
+
+- **Procedure**:
+  - **Input Format**: Use question pairs (q, q′) from the datasets Qbias and Qperturb. Each pair consists of an original question (q) and a modified question (q′).
+  - **Prompting Strategy**: For each question, append an alphabetical letter to each response option and instruct the model to answer with one of the alphabetical options. Use a temperature of 1 for sampling.
+  - **Number of Samples**: Collect 50 responses per model for each question pair.
+  - **Shuffling/Ordering**: Ensure that the order of response options is consistent with the bias type being tested (e.g., reverse order for response order bias).
+  - **Splits to Use**: Use the entire set of 2578 question pairs, covering 5 biases and 3 non-bias perturbations.
+
+- **What to Record**:
+  - Raw outputs of the model responses.
+  - Extracted answers (the selected alphabetical option).
+  - Intermediate statistics such as the count of each response option for both q and q′.
+
+- **Correspondence to Paper**:
+  - This experiment corresponds to Figure 2, Table 3, and Section 3.1 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions and Computation**:
+  - **Change in Response Distribution (∆b)**: Calculate the change in the number of responses for specific options between q and q′ for each bias type as defined in Table 2 of the paper.
+  - **Student’s t-test**: Conduct a t-test to determine if the average change (¯∆b) across all questions is significantly different from 0. The null hypothesis is that ¯∆b is 0.
+
+- **Normalization/Pre-processing**:
+  - Normalize the entropy of the answer distributions to measure model uncertainty, using the formula:
+    \[
+    \text{Normalized Entropy} = -\frac{\sum_{i=1}^{n} p_i \log_2 p_i}{\log_2 n}
+    \]
+  - Ensure that the response options are consistently labeled across q and q′ for accurate comparison.
+
+- **Aggregation Strategy**:
+  - Compute per-sample changes in response distribution.
+  - Aggregate these changes to compute per-condition averages (¯∆b and ¯∆p).
+  - Conduct statistical tests to determine overall trends.
+
+## Implementation Notes
+
+- **Key Pitfalls or Caveats**:
+  - Ensure that the models generate only one token for the response to match the expected format.
+  - Be aware of the potential for models to generate invalid responses; continue sampling until a valid response is obtained.
+
+- **Special Prompt Templates**:
+  - Use the prompt template provided in Appendix C of the paper, which includes explicit instructions to answer with one of the alphabetical options.
+
+- **Order of Operations**:
+  - First, generate responses for all question pairs.
+  - Then, compute the change in response distributions and perform statistical analysis.
+  - Finally, analyze the correlation between model uncertainty and response changes.

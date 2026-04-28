@@ -1,0 +1,83 @@
+You are a research agent. Conduct research about the question: "RQ3: What are the architectural and training considerations for effectively instruction-tuning a multimodal model?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- LLaVA: LLaVA is a large multimodal model that connects a vision encoder and a language model to perform general-purpose visual and language understanding. It is trained using a two-stage instruction-tuning procedure on generated multimodal instruction-following data.
+  - Component: CLIP visual encoder
+  - Component: Vicuna language model
+  - Component: Two-stage instruction-tuning procedure
+- Baseline for comparison: BLIP-2
+- Baseline for comparison: OpenFlamingo
+- Reference hint: https://llava-vl.github.io
+
+Datasets for training and evaluation:
+- CC-595K: A filtered subset of the CC3M dataset used for pre-training the model.  [loader unverified -- locate the data yourself]
+- LLaVA-Instruct-158K: A dataset of 158K unique language-image instruction-following samples generated using GPT-4.  [loader unverified -- locate the data yourself]
+- ScienceQA: A large-scale multimodal science question dataset with annotated answers and explanations.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Multimodal Chatbot Evaluation
+- **Procedure**: 
+  - Use the LLaVA model to generate responses to a set of predefined questions based on visual inputs.
+  - Visual inputs are selected from the COCO-Val-2014 dataset, with 30 images chosen randomly.
+  - For each image, generate three types of questions: conversation, detailed description, and complex reasoning, totaling 90 questions.
+  - Responses from LLaVA are compared against those from BLIP-2 and OpenFlamingo.
+- **What to Record**: 
+  - Record the generated responses from LLaVA, BLIP-2, and OpenFlamingo.
+  - Use GPT-4 to evaluate the quality of responses based on helpfulness, relevance, accuracy, and level of detail, scoring on a scale of 1 to 10.
+- **Correspondence**: 
+  - Results are discussed in Section 5.1 and shown in Tables 4 and 5.
+
+### 2. ScienceQA Evaluation
+- **Procedure**: 
+  - Fine-tune the LLaVA model on the ScienceQA dataset, which includes 21k multimodal multiple-choice questions.
+  - Use the visual features before the last layer of the CLIP encoder.
+  - Train the model for 12 epochs, predicting reasons first and then the answer.
+- **What to Record**: 
+  - Record the accuracy of LLaVA on the test set of ScienceQA.
+  - Compare results with other methods like GPT-3.5, LLaMA-Adapter, and MM-CoT.
+- **Correspondence**: 
+  - Results are discussed in Section 5.2 and shown in Table 7.
+
+## Evaluation Details
+
+### Multimodal Chatbot Evaluation
+- **Metric Definition**: 
+  - Use GPT-4 to score responses on a scale of 1 to 10 based on helpfulness, relevance, accuracy, and level of detail.
+- **Normalization**: 
+  - Normalize scores by comparing them to a text-only GPT-4 model using ground-truth textual descriptions as visual input.
+- **Aggregation Strategy**: 
+  - Calculate mean and standard deviation of scores across multiple inference runs for each model.
+
+### ScienceQA Evaluation
+- **Metric Definition**: 
+  - Accuracy is calculated as the percentage of correctly answered questions out of the total number of questions.
+- **Aggregation Strategy**: 
+  - Report overall accuracy and breakdown by subject, context modality, and grade level.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompt templates for generating conversation, detailed description, and complex reasoning data, as detailed in the supplementary materials.
+- **Output Parsing**: 
+  - Ensure that the model's responses are parsed correctly to extract the relevant information for evaluation.
+- **Order of Operations**: 
+  - Follow the two-stage instruction-tuning procedure: first align features using the CC-595K dataset, then fine-tune on the LLaVA-Instruct-158K dataset.

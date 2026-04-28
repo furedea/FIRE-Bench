@@ -1,0 +1,90 @@
+task_id: toolformer_self_taught_tools_rq1
+paper_type: novel_architecture
+research_question: 'RQ2: Does the use of external tools improve the zero-shot performance
+  of language models on various downstream tasks?'
+proposed_method:
+  name: Toolformer
+  summary: Toolformer is a language model architecture that autonomously learns to
+    use external tools via simple APIs to enhance its performance on various tasks.
+    It is trained to decide which APIs to call, when to call them, what arguments
+    to pass, and how to incorporate the results into future token prediction. This
+    is achieved in a self-supervised manner, requiring only a few demonstrations for
+    each API. Toolformer integrates tools such as a calculator, a Q&A system, a search
+    engine, a translation system, and a calendar, significantly improving zero-shot
+    performance across various tasks without sacrificing core language modeling abilities.
+  key_components:
+  - API call decision-making mechanism
+  - Self-supervised learning for tool use
+  - Integration of multiple external tools (calculator, Q&A system, search engine,
+    translation system, calendar)
+baselines:
+- GPT-J
+- GPT-3
+- OPT (66B)
+reference_implementation: []
+datasets:
+- name: LAMA
+  source: huggingface
+  description: A benchmark for evaluating language models on factual knowledge by
+    completing short statements with missing facts.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''facebook/LAMA'')
+
+    '
+- name: ASDiv
+  source: external
+  description: A dataset for evaluating mathematical reasoning abilities.
+  url: https://github.com/chaochun/nlu-asdiv-dataset
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/chaochun/nlu-asdiv-dataset.git
+
+    '
+- name: SVAMP
+  source: external
+  description: A dataset for evaluating mathematical reasoning abilities.
+  url: https://github.com/arkilpatel/SVAMP
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/arkilpatel/SVAMP.git
+
+    '
+- name: MAWPS
+  source: unknown
+  description: A dataset for evaluating mathematical reasoning abilities.
+- name: Web Questions
+  source: huggingface
+  description: A question answering dataset used to evaluate models on open-domain
+    questions.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''web_questions'')
+
+    '
+- name: Natural Questions
+  source: huggingface
+  description: A benchmark for question answering research, providing questions and
+    answers based on Wikipedia.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''natural_questions'')
+
+    '
+- name: TriviaQA
+  source: huggingface
+  description: A large-scale question answering dataset with questions and answers
+    collected from trivia and quiz-league websites.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''trivia_qa'')
+
+    '
+compute_hint: 8 NVIDIA A100 40GB GPUs, BF16, up to 2k training steps
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

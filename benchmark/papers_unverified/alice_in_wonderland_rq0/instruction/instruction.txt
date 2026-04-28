@@ -1,0 +1,17 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: Do state-of-the-art LLMs exhibit reasoning breakdowns on simple common sense problems?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- AIW problem variations 1-4: Simple common sense math problems with variations in the number of brothers and sisters to test model generalization and reasoning.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

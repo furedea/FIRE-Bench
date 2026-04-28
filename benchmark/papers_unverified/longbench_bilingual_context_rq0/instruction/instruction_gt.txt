@@ -1,0 +1,75 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How does LongBench facilitate the evaluation of long context understanding in LLMs?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- LongBench: A bilingual, multi-task benchmark for evaluating long context understanding in large language models, comprising 21 datasets across 6 task categories in both English and Chinese.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Single-Document QA
+- **Procedure**: For each dataset (NarrativeQA, Qasper, MultiFieldQA-en, MultiFieldQA-zh), provide the model with a long document as context and a question as input. The model should generate a concise answer.
+- **Input Format**: Use the provided prompt templates for each dataset. Ensure the context is the full document and the input is the question.
+- **Number of Samples**: Use all available samples from each dataset.
+- **What to Record**: Record the model's generated answers and compute F1 scores against the ground truth.
+- **Correspondence**: Table 1, Section 3.2.1
+
+### 2. Multi-Document QA
+- **Procedure**: For datasets like HotpotQA, 2WikiMultihopQA, MuSiQue, and DuReader, provide multiple documents as context and a question as input. The model should synthesize information across documents to answer the question.
+- **Input Format**: Use the provided prompt templates. Ensure the context includes all relevant documents.
+- **Number of Samples**: Use all available samples from each dataset.
+- **What to Record**: Record the model's generated answers and compute F1 scores against the ground truth.
+- **Correspondence**: Table 1, Section 3.2.1
+
+### 3. Summarization
+- **Procedure**: For each dataset (GovReport, QMSum, MultiNews, VCSUM), provide the model with a long document or multiple documents as context. The model should generate a concise summary.
+- **Input Format**: Use the provided prompt templates. Ensure the context is the full document(s).
+- **Number of Samples**: Use all available samples from each dataset.
+- **What to Record**: Record the model's generated summaries and compute ROUGE-L scores against the ground truth.
+- **Correspondence**: Table 1, Section 3.2.1
+
+### 4. Few-shot Learning
+- **Procedure**: For each dataset (TREC, TriviaQA, SAMSum, LSHT), provide few-shot examples as context and a new input to classify or summarize.
+- **Input Format**: Use the provided prompt templates. Ensure the context includes few-shot examples.
+- **Number of Samples**: Use all available samples from each dataset.
+- **What to Record**: Record the model's generated outputs and compute accuracy or F1 scores as appropriate.
+- **Correspondence**: Table 1, Section 3.2.1
+
+### 5. Synthetic Tasks
+- **Procedure**: For PassageCount and PassageRetrieval tasks, provide multiple passages as context and a task-specific input (e.g., a summary or a count request).
+- **Input Format**: Use the provided prompt templates. Ensure the context includes all passages.
+- **Number of Samples**: Use all available samples from each dataset.
+- **What to Record**: Record the model's generated outputs and compute exact match accuracy.
+- **Correspondence**: Table 1, Section 3.2.1
+
+### 6. Code Completion
+- **Procedure**: For LCC and RepoBench-P, provide preceding lines of code and cross-file snippets as context. The model should predict the next line of code.
+- **Input Format**: Use the provided prompt templates. Ensure the context includes all relevant code snippets.
+- **Number of Samples**: Use all available samples from each dataset.
+- **What to Record**: Record the model's generated code and compute Edit Sim scores.
+- **Correspondence**: Table 1, Section 3.2.1
+
+## Evaluation Details
+
+- **Metrics**: Use F1 for QA tasks, ROUGE-L for summarization, accuracy for classification, and Edit Sim for code completion.
+- **Normalization**: For QA and summarization, normalize model outputs by removing extraneous text and focusing on the first line or sentence as specified.
+- **Aggregation Strategy**: Compute per-sample scores, then average per-condition (e.g., per dataset), and finally compute an overall average across all tasks.
+
+## Implementation Notes
+
+- **Prompt Templates**: Use specific templates for each task as detailed in the Evaluation Setups section.
+- **Truncation Strategy**: If input length exceeds model capacity, truncate from the middle, preserving the beginning and end of the sequence.
+- **Output Length**: Set a maximum output length for each task to prevent excessive generation, as specified in the Maximum Output Length section.

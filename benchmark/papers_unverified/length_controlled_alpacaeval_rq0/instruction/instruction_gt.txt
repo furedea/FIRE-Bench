@@ -1,0 +1,76 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How can regression analysis be used to control for length bias in AlpacaEval?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- AlpacaEval: A benchmark for instruction-tuned LLMs using a fixed set of 805 instructions to evaluate model responses.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Length-Controlled AlpacaEval
+
+- **Procedure**:
+  - Collect a dataset of ratings `{x, zm, zb, m, b, y}` from the AlpacaEval leaderboard.
+  - Fit a Generalized Linear Model (GLM) to predict the preference `y` using the features: model identity, length of output, and instruction difficulty.
+  - Use logistic regression with the formula:
+    \[
+    q_{\theta,\phi,\psi}(y = 1|zm, zb, m, b, x) = \text{logistic}\left(\theta_m - \theta_b + \phi_{m,b} \cdot \tanh\left(\frac{\text{len}(zm) - \text{len}(zb)}{\text{std}(\text{len}(zm) - \text{len}(zb))}\right) + (\psi_m - \psi_b)\gamma_x\right)
+    \]
+  - Zero out the length term to obtain counterfactual estimates of AlpacaEval win rate:
+    \[
+    \text{winrate}_{LC}(m, b) = 100 \cdot \mathbb{E}_x\left[\text{logistic}\left(\theta_m - \theta_b + (\psi_m - \psi_b)\gamma_x\right)\right]
+    \]
+  - Use 5-fold cross-validation with L2 regularization to fit the model parameters.
+
+- **What to Record**:
+  - Raw outputs of the GLM predictions.
+  - Length-corrected win rates.
+  - Spearman correlation with Chatbot Arena.
+  - Normalized standard deviation of win rates across verbosity prompts.
+
+- **Correspondence**:
+  - Figure 2: Visual representation of the regression model.
+  - Figure 3: Length gameability results.
+  - Figure 4: Leaderboard changes due to length control.
+  - Section 4.1, 4.2, 4.3: Results and analysis of length-controlled AlpacaEval.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Spearman Correlation**: Measure the rank correlation between AlpacaEval-LC and Chatbot Arena rankings.
+  - **Length Gameability**: Compute the normalized standard deviation of win rates across different verbosity prompts (concise, standard, verbose).
+
+- **Normalization and Pre-processing**:
+  - Standardize the length difference by dividing by its standard deviation.
+  - Apply a `tanh` transformation to the standardized length difference to account for diminishing returns.
+
+- **Aggregation Strategy**:
+  - Compute per-sample predictions using the GLM.
+  - Aggregate predictions to obtain per-condition win rates.
+  - Calculate overall metrics such as Spearman correlation and gameability.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - Ensure the GLM maintains the identity and symmetry properties of the original win rate.
+  - Regularization is crucial to prevent adversarial attacks that exploit length corrections.
+
+- **Special Prompt Templates**:
+  - Use specific verbosity prompts: "Answer with as much detail as possible." for verbose and "Be as concise as possible while still providing all the necessary information to answer the question." for concise.
+
+- **Order of Operations**:
+  - First, fit the joint regression to estimate instruction difficulty terms.
+  - Then, fit the model-specific parameters using the pre-estimated instruction difficulty terms.

@@ -1,0 +1,78 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How can the red teaming process be improved and standardized?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- 38,961 red team attacks dataset: A dataset of red team attacks on language models to analyze and learn from, including various types of harmful outputs.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Red Teaming Task
+- **Procedure**: 
+  - Participants engage in open-ended conversations with an AI assistant to elicit harmful outputs.
+  - Each conversation consists of multiple turns, with participants encouraged to focus on a single topic per attack.
+  - Participants are presented with two model-generated responses per turn and select the more harmful one.
+  - Conversations are typically 1-4 turns long, with some extending further.
+  - Participants rate their success on a 5-point Likert scale (0 to 4).
+  - Red team members are assigned to models randomly and are unaware of the model type.
+- **Input Format**: 
+  - Participants provide a short description of their intended attack strategy before starting.
+- **What to Record**: 
+  - Raw conversation transcripts.
+  - Participant self-ratings of attack success.
+  - Harmlessness scores for each AI response.
+  - Task description harmlessness scores.
+- **Correspondence**: 
+  - Described in Section 3.1 and illustrated in Figure 3.
+
+### 2. Review Task
+- **Procedure**: 
+  - A separate group of annotators reviews a sample of 500 attacks each on the 52B Prompted LM and RLHF models.
+  - Annotators rate the success of attacks on the same 5-point Likert scale.
+  - Annotators tag transcripts with up to 2 of 20 predefined topic tags.
+- **What to Record**: 
+  - Annotator ratings of attack success.
+  - Topic tags for each transcript.
+- **Correspondence**: 
+  - Described in Section 3.5 and illustrated in Figure 8.
+
+## Evaluation Details
+
+### Harmlessness Scoring
+- **Metric Definition**: 
+  - Harmlessness scores are computed using a preference model trained to predict less harmful responses.
+  - Scores are aggregated using the minimum harmlessness score across all turns in a conversation.
+- **Normalization**: 
+  - Scores are normalized such that lower scores indicate more harmful outputs.
+- **Aggregation Strategy**: 
+  - Per-sample scores are aggregated to compute mean and minimum harmlessness scores for each model type and size.
+
+### Attack Success Rating
+- **Metric Definition**: 
+  - Self-reported success on a 5-point Likert scale, where 0 indicates no success and 4 indicates high success.
+- **Aggregation Strategy**: 
+  - Average success rates are computed for each model type and size.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use 1-shot learning for plain LMs and 14-shot learning for prompted LMs.
+  - Rejection sampling involves generating 16 samples and selecting the 2 least harmful.
+- **Output Parsing**: 
+  - Ensure that the preference model scores each AI response conditioned on preceding dialogue.
+- **Order of Operations**: 
+  - Red team members must first describe their attack strategy before engaging in dialogue.
+  - Annotators must complete the review task after the red team task data collection is complete.

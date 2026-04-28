@@ -1,0 +1,17 @@
+You are a research agent. Conduct research and experiment about the question: "RQ4: How can the ranking of LLMs be efficiently estimated from pairwise comparisons?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Chatbot Arena: A dataset of over 240K pairwise votes collected from a crowdsourced platform where users compare responses from two anonymous LLMs and vote for the preferred one.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

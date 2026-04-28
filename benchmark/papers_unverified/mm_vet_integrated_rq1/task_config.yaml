@@ -1,0 +1,47 @@
+task_id: mm_vet_integrated_rq1
+paper_type: llm_evaluation
+research_question: 'RQ2: How can we design evaluation metrics that work well across
+  different question and answer types?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: MM-Vet
+  source: unknown
+  description: A benchmark that examines large multimodal models on complicated multimodal
+    tasks, focusing on the integration of core vision-language capabilities.
+- name: COCO
+  source: external
+  description: A dataset for image recognition and captioning tasks.
+  url: https://cocodataset.org
+  url_kind: website
+  loader: '# Download instructions and data are at:
+
+    # https://cocodataset.org
+
+    '
+- name: VQA v2
+  source: external
+  description: A dataset for visual question answering tasks.
+  url: https://visualqa.org
+  url_kind: website
+  loader: '# Download instructions and data are at:
+
+    # https://visualqa.org
+
+    '
+- name: Text VQA
+  source: huggingface
+  description: A dataset for visual question answering tasks involving text recognition.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''textvqa'')
+
+    '
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

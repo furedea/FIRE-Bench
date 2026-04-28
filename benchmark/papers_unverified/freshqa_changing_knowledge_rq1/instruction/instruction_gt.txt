@@ -1,0 +1,65 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does the FRESHPROMPT method improve the factual accuracy of LLMs?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- FRESHQA: A dynamic QA benchmark with 600 questions testing factuality of LLMs, including fast-changing and false-premise questions.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluating FRESHPROMPT on FRESHQA
+- **Procedure**: 
+  - Use the FRESHQA dataset, which consists of 600 questions divided into four categories: never-changing, slow-changing, fast-changing, and false-premise.
+  - For each question, apply the FRESHPROMPT method by querying a search engine (Google Search) to retrieve relevant and up-to-date information.
+  - Incorporate the retrieved evidences into the prompt in a unified format, including source webpage, date, title, text snippet, and highlighted words.
+  - Use few-shot in-context learning with 5 demonstrations at the beginning of the prompt to guide the model in reasoning over the evidences.
+  - Sort the evidences in the prompt from oldest to newest to encourage focus on more recent information.
+  - Evaluate the responses using GPT-3.5 and GPT-4 models.
+- **What to Record**: 
+  - Record the accuracy of the model responses under two evaluation modes: RELAXED (focuses on the correctness of the primary answer) and STRICT (ensures all claims are factual and up-to-date).
+  - Capture the number of retrieved evidences and their order, as well as the impact of including or excluding certain types of information (e.g., answer box, related questions).
+- **Correspondence to a Figure / Table / Section**: 
+  - Figure 3 illustrates the FRESHPROMPT format.
+  - Table 1 and Table 5 present the accuracy results under STRICT and RELAXED evaluations, respectively.
+  - Section 4.3 discusses the results and analysis.
+
+## Evaluation Details
+
+- **Metric Definitions and Computation**:
+  - **Accuracy**: The percentage of questions for which the model's response is correct. Under RELAXED, the primary answer must be correct, even if additional information is outdated or hallucinated. Under STRICT, all information must be accurate and up-to-date.
+  - Use human evaluation to assess the correctness of responses, with inter-rater agreement checks to ensure reliability.
+  - Develop FRESHEVAL, an automatic metric using few-shot in-context learning to judge model responses, achieving high agreement with human evaluations.
+
+- **Normalization and Pre-processing**:
+  - Normalize model outputs by ensuring the primary answer is extracted and evaluated separately from additional information.
+  - For numerical answers, approximate numbers are not accepted unless explicitly included in the ground-truth answers.
+
+- **Aggregation Strategy**:
+  - Compute accuracy per question type (fast-changing, slow-changing, never-changing, false-premise) and aggregate to obtain overall accuracy.
+  - Compare performance across different configurations of FRESHPROMPT (e.g., number of evidences, presence of premise check).
+
+## Implementation Notes
+
+- **Key Pitfalls or Caveats**:
+  - Ensure that the model provides a confident and definitive answer; responses that are ambiguous or lack a clear primary answer should not receive credit.
+  - Be cautious of hallucinations in verbose responses, as they can mislead the evaluation under STRICT criteria.
+
+- **Special Prompt Templates**:
+  - Use a specific prompt format that includes few-shot demonstrations and retrieved evidences in a structured manner.
+  - Include an explicit false premise check in the prompt for questions with potential false premises.
+
+- **Order of Operations**:
+  - Retrieve evidences from the search engine and sort them chronologically before incorporating them into the prompt.
+  - Ensure that few-shot demonstrations are placed at the beginning of the prompt to guide the model's reasoning process.

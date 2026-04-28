@@ -1,0 +1,53 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How do multimodal LLMs perform on the Blink benchmark compared to humans?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Blink: A benchmark for multimodal language models focusing on core visual perception abilities, consisting of 14 visual perception tasks reformatted into 3,807 multiple-choice questions.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluate Multimodal LLMs on Blink Benchmark
+- **Procedure**: 
+  - Use the Blink benchmark dataset, which consists of 3,807 multiple-choice questions across 14 visual perception tasks.
+  - For each model (GPT-4V, Gemini, Claude 3 OPUS, LLaVA, MiniGPT-4-v2, OpenFlamingo-v2, InstructBLIP), input the visual prompts and questions as specified in the Blink dataset.
+  - Ensure that the temperature is set to 0 and retry is set to 10 for consistent evaluation.
+  - For models that do not support multiple images as input, concatenate the images horizontally with a black margin in between.
+  - Use predefined rules and GPT-3.5-turbo to extract the choice from the model's output.
+- **What to Record**: 
+  - Record the raw outputs of the models, the extracted answers, and the accuracy for each task.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 4, Table 1, and Section 4.2 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**: 
+  - Accuracy is calculated as the number of correct answers divided by the total number of questions for each task.
+- **Normalization/Pre-processing**: 
+  - Ensure that all images are resized to a height of 1024px before inputting them into the models.
+  - Use circles with a 10px radius for visual prompts, colored red for most tasks and white for relative reflectance to avoid color confusion.
+- **Aggregation Strategy**: 
+  - Calculate per-sample accuracy, then aggregate to per-task accuracy, and finally compute the overall accuracy across all tasks.
+
+## Implementation Notes
+
+- **Key Pitfalls**: 
+  - Be cautious of models' inability to handle multiple images; concatenation is necessary for those models.
+  - Ensure that the visual prompts are correctly applied as they significantly impact model performance.
+- **Special Prompt Templates**: 
+  - Use the provided prompt templates for each task, ensuring that the format matches the examples given in the paper.
+- **Order of Operations**: 
+  - First, resize images and apply visual prompts, then input them into the models, and finally extract and evaluate the answers.

@@ -1,0 +1,62 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How can we design evaluation metrics that work well across different question and answer types?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MM-Vet: A benchmark that examines large multimodal models on complicated multimodal tasks, focusing on the integration of core vision-language capabilities.  [loader unverified -- locate the data yourself]
+- COCO: A dataset for image recognition and captioning tasks.  [loader unverified -- locate the data yourself]
+- VQA v2: A dataset for visual question answering tasks.  [loader unverified -- locate the data yourself]
+- Text VQA: A dataset for visual question answering tasks involving text recognition.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. LLM-Based Evaluator for Open-Ended Outputs
+- **Procedure**: 
+  - Use GPT-4 to evaluate model outputs with a few-shot prompt strategy.
+  - The prompt includes examples with both short and long open-ended answers to cover diverse answer styles.
+  - For each sample, fill the prompt template with its question, ground truth, and model output.
+  - Conduct the evaluation five times per sample to account for variance in GPT-4 outputs.
+- **Input Format**: 
+  - Each input consists of a question, a ground truth answer, and a model-generated prediction.
+- **Prompting Strategy**: 
+  - Use a few-shot prompt with examples that define fully correct (1.0), incorrect (0.0), and partially correct responses.
+- **Number of Samples**: 
+  - Evaluate 218 questions from the MM-Vet dataset.
+- **What to Record**: 
+  - Record the correctness score for each sample, ranging from 0 to 1.
+  - Calculate the average score for each capability and capability integration.
+- **Correspondence**: 
+  - This experiment corresponds to Section 3.2 and Table 1 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**: 
+  - Correctness score is defined as a value between 0.0 (totally wrong) and 1.0 (totally right), with intermediate values for partial correctness.
+  - Use the formula \( S = \frac{\sum_{i=1}^N s_i}{N} \times 100\% \) to compute the total score, where \( s_i \) is the score of sample \( i \) and \( N \) is the number of samples.
+  - For capability-specific scores, use \( S_c = \frac{\sum s_i}{N_c} \times 100\% \), where \( C \) is the set of samples requiring a specific capability.
+- **Normalization/Pre-processing**: 
+  - Ensure that model outputs are formatted consistently with the ground truth for accurate scoring.
+- **Aggregation Strategy**: 
+  - Aggregate scores per sample, then per capability, and finally compute an overall score.
+
+## Implementation Notes
+
+- **Pitfalls/Caveats**: 
+  - The paper notes that GPT-4 outputs can vary even with a temperature setting of 0, necessitating multiple evaluations per sample.
+- **Prompt Templates**: 
+  - Use a specific few-shot prompt template as shown in Table 1, which includes examples with <AND> and <OR> conditions to guide the scoring.
+- **Order of Operations**: 
+  - Ensure that the prompt is filled with the question, ground truth, and prediction in the specified order before inputting to GPT-4 for evaluation.

@@ -1,0 +1,30 @@
+task_id: lets_verify_step_by_step_rq2
+paper_type: llm_evaluation
+research_question: 'RQ3: Can a large reward model approximate human supervision for
+  smaller reward models?'
+models:
+  api:
+  - gpt-4o
+  huggingface: []
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: MATH
+  source: external
+  description: A dataset for measuring mathematical problem-solving abilities of models,
+    containing problems from various math subjects.
+  url: https://github.com/hendrycks/math
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/hendrycks/math.git
+
+    '
+- name: PRM800K
+  source: synthetic
+  description: A dataset of 800,000 step-level human feedback labels used to train
+    reward models for mathematical problem-solving.
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

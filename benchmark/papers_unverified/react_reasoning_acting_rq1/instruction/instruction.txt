@@ -1,0 +1,39 @@
+You are a research agent. Conduct research about the question: "RQ2: How does the ReAct approach perform on interactive decision-making tasks compared to existing methods?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- ReAct: ReAct is a novel approach that integrates reasoning and acting capabilities in large language models (LLMs) to improve performance on interactive decision-making tasks. It prompts LLMs to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for dynamic reasoning and interaction with external environments to gather additional information.
+  - Component: Interleaved generation of reasoning traces and actions
+  - Component: Interaction with external environments for information gathering
+  - Component: Use of large language models like PaLM-540B for few-shot in-context learning
+- Baseline for comparison: Act
+- Baseline for comparison: BUTLER
+- Baseline for comparison: IL
+- Baseline for comparison: IL+RL
+
+Datasets for training and evaluation:
+- ALFWorld: A synthetic text-based game designed to align with the embodied ALFRED benchmark, requiring agents to achieve high-level goals by navigating and interacting with a simulated household.
+  GitHub repo: https://github.com/alfworld/alfworld
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/alfworld/alfworld.git
+- WebShop: An online shopping website environment with real-world products and human instructions, requiring agents to purchase products based on user instructions through web interactions.
+  GitHub repo: https://github.com/princeton-nlp/WebShop
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/princeton-nlp/WebShop.git
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.

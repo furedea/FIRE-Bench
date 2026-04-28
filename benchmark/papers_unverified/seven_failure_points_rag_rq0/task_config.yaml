@@ -1,0 +1,22 @@
+task_id: seven_failure_points_rag_rq0
+paper_type: empirical_study
+research_question: What are the failure points that occur when engineering a RAG system?
+study_type: dataset audit
+data_sources:
+- name: BioASQ
+  source: external
+  description: A dataset comprised of biomedical questions, links to documents, and
+    answers, used to evaluate potential failure points in RAG systems.
+  url: https://github.com/BioASQ
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/BioASQ.git
+
+    '
+analytical_tools:
+- GPT-4
+- OpenAI evals
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

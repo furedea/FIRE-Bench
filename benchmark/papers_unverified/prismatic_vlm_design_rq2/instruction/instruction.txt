@@ -1,0 +1,34 @@
+You are a research agent. Conduct research about the question: "RQ3: What is the impact of using base versus instruct-tuned language models on VLM performance?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- Prismatic VLMs: Prismatic VLMs are a family of visually-conditioned language models designed to explore the impact of various design choices on model performance. These models utilize a 'patch-as-token' approach, leveraging pretrained visual backbones like CLIP and DINOv2, and integrating them with language models such as Llama-2 and Vicuña. The architecture is characterized by its flexibility in swapping components and optimizing training procedures to improve efficiency and performance across diverse tasks.
+  - Component: Pretrained visual backbones (e.g., CLIP, DINOv2)
+  - Component: Vision-language projector for embedding transformation
+  - Component: Base and instruct-tuned language models (e.g., Llama-2, Vicuña)
+- Baseline for comparison: InstructBLIP
+- Baseline for comparison: LLaVa v1.5
+- Reference hint: github.com/TRI-ML/prismatic-vlms
+- Reference hint: github.com/TRI-ML/vlm-evaluation
+
+Datasets for training and evaluation:
+- LLaVa v1.5 pretraining datasets: A mixture of datasets used for pretraining VLMs, including captioning datasets like Conceptual Captions and LAION, as well as multimodal instruct tuning examples.
+  GitHub repo: https://github.com/haotian-liu/LLaVA
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/haotian-liu/LLaVA.git
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.

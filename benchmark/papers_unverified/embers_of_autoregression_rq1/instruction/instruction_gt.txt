@@ -1,0 +1,78 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ2: How does output probability affect the performance of LLMs?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- Global Voices: A collection of news articles used to generate high-probability, medium-probability, and low-probability sentences for evaluating LLM performance on tasks like rot-13 decoding and reversal.  [loader unverified -- locate the data yourself]
+
+Analytical tools / techniques available:
+- GPT-2
+- RoBERTa
+- NLTK
+- Hugging Face Datasets
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.
+
+---
+
+## Experimental Design
+
+### 1. Rot-13 Decoding with Varying Output Probabilities
+- **Procedure**: 
+  - Use the Global Voices dataset to generate sentences with high, medium, and low output probabilities.
+  - Encode these sentences using the rot-13 cipher.
+  - Provide the encoded sentences to GPT-3.5 and GPT-4 for decoding.
+  - Ensure that the input probability is controlled across conditions.
+- **What to Record**: 
+  - Record the decoding accuracy for each probability condition.
+  - Capture the raw outputs of the models for further analysis.
+- **Correspondence**: 
+  - This experiment corresponds to Section 6.1 and is illustrated in Figure 6.1 (top).
+
+### 2. Reversal Task with Varying Output Probabilities
+- **Procedure**: 
+  - Use the Global Voices dataset to create sentences with high, medium, and low output probabilities.
+  - Reverse the order of words in these sentences.
+  - Provide the reversed sentences to GPT-3.5 and GPT-4 for reordering.
+  - Ensure that the input probability is controlled across conditions.
+- **What to Record**: 
+  - Record the accuracy of the models in correctly reversing the sentences for each probability condition.
+  - Capture the raw outputs of the models for further analysis.
+- **Correspondence**: 
+  - This experiment corresponds to Section 6.2 and is illustrated in Figure 6.1 (middle).
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Decoding Accuracy**: The proportion of sentences correctly decoded by the model, where correctness is defined as an exact match with the target output.
+  - **Reversal Accuracy**: The proportion of sentences correctly reordered by the model, where correctness is defined as an exact match with the original sentence order.
+
+- **Normalization and Pre-processing**:
+  - For both tasks, ignore quotation marks at the start and end of the model's output.
+  - Ensure that the model's output matches the target output exactly, except for permissible variations in punctuation and capitalization as specified in the task instructions.
+
+- **Aggregation Strategy**:
+  - Calculate per-sample accuracy for each condition.
+  - Aggregate results to determine per-condition accuracy.
+  - Compare overall accuracy across different output probability conditions to assess the impact of output probability on model performance.
+
+## Implementation Notes
+
+- **Prompt Templates**:
+  - For rot-13 decoding, include an example in the prompt to clarify that capitalization should be retained and non-letter characters should remain unchanged.
+  - For the reversal task, ensure the prompt specifies that punctuation should move with the words they are attached to.
+
+- **Pitfalls and Caveats**:
+  - Ensure that the input probability is controlled across conditions to isolate the effect of output probability.
+  - Be aware of potential biases introduced by the specific sentences selected from the Global Voices dataset.

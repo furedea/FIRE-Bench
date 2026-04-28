@@ -1,0 +1,65 @@
+You are a research agent. Conduct research and experiment about the question: "RQ4: How do LMMs perform on Key Information Extraction tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- SROIE: A dataset containing 1000 scanned receipt images for OCR and key information extraction.  [loader unverified -- locate the data yourself]
+- FUNSD: A dataset of 199 real, fully annotated, scanned forms for form understanding in noisy scanned documents.  [loader unverified -- locate the data yourself]
+- POIE: A dataset consisting of camera images from the Nutrition Facts label of products in English, with 3,000 images and 111,155 text instances.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Key Information Extraction (KIE) Task
+- **Procedure**: 
+  - Use the SROIE, FUNSD, and POIE datasets for evaluating the Key Information Extraction capabilities of LMMs.
+  - For the SROIE dataset, employ the following prompts to assist LMMs in generating the respective values for “company”, “date”, “address”, and “total”: 
+    - “What is the name of the company that issued this receipt?”
+    - “When was this receipt issued?”
+    - “Where was this receipt issued?”
+    - “What is the total amount of this receipt?”
+  - For FUNSD and POIE datasets, use the prompt: “What is the value for ‘{key}’?”
+  - Ensure that the input images are processed at the highest resolution supported by the model to capture fine details.
+- **What to Record**: 
+  - Record the raw outputs of the models.
+  - Extract the predicted key-value pairs for each document.
+  - Calculate the accuracy of the extracted information against the ground truth.
+- **Correspondence**: 
+  - This experiment corresponds to the results presented in Table 2 and Section 3.2 of the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Accuracy**: The proportion of correctly extracted key-value pairs to the total number of key-value pairs in the dataset.
+  - For each key in the dataset, check if the predicted value matches the ground truth value exactly.
+
+- **Pre-processing**:
+  - Normalize the text outputs by trimming whitespace and converting all text to lowercase to ensure consistency in comparison.
+
+- **Aggregation Strategy**:
+  - Calculate accuracy per sample (document).
+  - Aggregate these accuracies to compute the overall accuracy for each dataset.
+  - Compare the performance across different models and datasets to identify trends and challenges.
+
+## Implementation Notes
+
+- **Prompt Design**: 
+  - The paper emphasizes the importance of manual prompt design to guide the models in extracting the correct information. Ensure that the prompts are clear and specific to the task.
+  
+- **Resolution Considerations**:
+  - The paper notes that models with higher input resolutions perform better on KIE tasks due to the need to capture fine details. Ensure that the models are configured to use the maximum resolution they support.
+
+- **Output Parsing**:
+  - Implement logic to parse the model outputs to extract the relevant key-value pairs. This may involve identifying delimiters or specific patterns in the text output that correspond to the keys and values.

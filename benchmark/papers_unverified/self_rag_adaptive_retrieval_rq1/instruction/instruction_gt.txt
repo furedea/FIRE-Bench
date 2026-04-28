@@ -1,0 +1,79 @@
+You are a research agent. Conduct research about the question: "RQ2: What is the impact of reflection tokens on the performance of SELF-RAG?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- SELF-RAG: SELF-RAG is a framework that enhances the quality and factuality of large language models (LLMs) through retrieval and self-reflection. It trains an arbitrary LM to adaptively retrieve passages on-demand and generate and reflect on retrieved passages and its own generations using special tokens called reflection tokens. These tokens make the LM controllable during inference, allowing it to tailor its behavior to diverse task requirements.
+  - Component: Reflection tokens: Special tokens that enable the model to decide when to retrieve information and to critique its own output for factuality and quality.
+- Baseline for comparison: ChatGPT
+- Baseline for comparison: Llama2-chat
+- Baseline for comparison: Alpaca
+- Reference hint: https://selfrag.github.io/
+
+Datasets for training and evaluation:
+- PopQA: A dataset consisting of open-domain questions about factual knowledge.  [loader unverified -- locate the data yourself]
+- PubHealth: A fact verification dataset about public health.  [loader unverified -- locate the data yourself]
+- ASQA: A long-form QA task dataset.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Ablation Studies on the Impact of Reflection Tokens
+- **Procedure**: 
+  - Implement three model variants: SELF-RAG, No Retriever, and No Critic.
+  - Use the datasets PopQA, PubHealth, and ASQA for evaluation.
+  - For each dataset, run the models with the following configurations:
+    - **SELF-RAG**: Full model with retrieval and critique tokens.
+    - **No Retriever**: Model trained without retrieval passages.
+    - **No Critic**: Model trained without reflection tokens, using top retrieved documents without critique.
+  - Evaluate the models on the test sets of each dataset.
+- **Input Format**: 
+  - For PopQA and PubHealth, use the standard question-answer format.
+  - For ASQA, use long-form question-answer format with citation requirements.
+- **What to Record**: 
+  - Record accuracy for PopQA and PubHealth.
+  - Record citation precision for ASQA.
+  - Collect intermediate statistics on retrieval frequency and critique token predictions.
+- **Correspondence**: 
+  - Results correspond to Figure 3a and Table 3a in the paper.
+  - Detailed analysis is discussed in Section 5.2.
+
+## Evaluation Details
+
+- **Metrics**:
+  - **Accuracy**: For PopQA and PubHealth, compute the percentage of correct answers.
+  - **Citation Precision**: For ASQA, compute the precision of citations, defined as the number of correctly cited claims divided by the total number of claims made.
+- **Normalization and Pre-processing**:
+  - For accuracy, ensure model outputs are lowercased and stripped of punctuation to match gold answers.
+  - For citation precision, ensure that citations are correctly formatted and aligned with the referenced documents.
+- **Aggregation Strategy**:
+  - Compute per-sample accuracy and citation precision.
+  - Aggregate results to obtain per-condition averages.
+  - Compare overall performance across different model variants.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - Ensure that the retrieval model is correctly integrated and retrieves relevant passages for each input.
+  - Pay attention to the correct insertion and prediction of reflection tokens during training and inference.
+- **Special Prompt Templates**:
+  - Use specific prompts for each dataset as outlined in the paper's appendix.
+  - Ensure that prompts for ASQA include instructions for citation.
+- **Order of Operations**:
+  - During inference, first predict retrieval necessity, then generate output, and finally critique the output using reflection tokens.
+  - Ensure that the critique process is applied after each segment generation to maintain consistency with the SELF-RAG framework.

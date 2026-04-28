@@ -1,0 +1,31 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the potential biases and limitations of using LLM-based evaluators like G-EVAL?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 and text-davinci-003 via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- SummEval: A benchmark that compares different evaluation methods for summarization, providing human ratings for fluency, coherence, consistency, and relevance.
+  GitHub repo: https://github.com/Yale-LILY/SummEval
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/Yale-LILY/SummEval.git
+- Topical-Chat: A testbed for meta-evaluating different evaluators on dialogue response generation systems that use knowledge.
+  GitHub repo: https://github.com/alexa/Topical-Chat
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/alexa/Topical-Chat.git
+- QAGS: A benchmark for evaluating hallucinations in the summarization task, measuring the consistency dimension of summaries.
+  GitHub repo: https://github.com/W4ngatang/qags
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/W4ngatang/qags.git
+- Dataset from Zhang et al. (2023): A dataset used to compare human-written summaries and LLM-generated summaries, with human judges' ratings.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

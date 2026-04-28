@@ -1,0 +1,22 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: What are the systematic visual shortcomings in current MLLMs?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- ImageNet-1K: A large-scale dataset for image classification, used to evaluate visual models.
+- LAION-Aesthetic: A dataset containing aesthetically pleasing images, used for evaluating visual models.
+  GitHub repo: https://github.com/LAION-AI/aesthetic-predictor
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/LAION-AI/aesthetic-predictor.git
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

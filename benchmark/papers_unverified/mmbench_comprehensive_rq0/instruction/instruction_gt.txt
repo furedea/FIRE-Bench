@@ -1,0 +1,86 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How does MMBench improve upon existing benchmarks in evaluating VLMs?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MMBench: A systematically designed objective benchmark for evaluating the multi-modal capabilities of vision-language models, featuring over 3000 multiple-choice questions across 20 ability dimensions.  [generate programmatically]
+- VQAv2: A dataset for visual question answering, providing question-answer pairs related to images.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("visual_genome", "vqav2")
+- COCO Caption: A dataset containing images with human-generated captions, used for image captioning tasks.  [loader unverified -- locate the data yourself]
+- OwlEval: A subjective benchmark incorporating human judgment for evaluating vision-language models.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluation of VLMs using MMBench
+- **Procedure**: 
+  - Use the MMBench dataset, which contains over 3000 multiple-choice questions across 20 ability dimensions.
+  - Evaluate each model using the CircularEval strategy, which involves feeding each question to a VLM multiple times with shuffled choices to ensure robustness.
+  - For models with limited instruction-following capabilities, use GPT-4 to convert free-form predictions into pre-defined choices.
+  - Conduct evaluations in both English and Chinese contexts using MMBench and MMBench-CN.
+  - Use the dev subset for initial testing and the test subset for final evaluation, with a 4:6 split ratio.
+- **What to Record**: 
+  - Record the Top-1 accuracy for each model across all ability dimensions.
+  - Capture the choice distribution of ground-truth answers and model predictions.
+  - Document any instances of content moderation or rejection by proprietary models.
+- **Correspondence**: 
+  - Results are detailed in Table 3 and Figure 7 for overall performance and bilingual comparison, respectively.
+
+### 2. Comparison with Existing Benchmarks
+- **Procedure**: 
+  - Compare the performance of VLMs on MMBench with their performance on traditional benchmarks like VQAv2 and COCO Caption.
+  - Use exact matching and LLM-based choice extraction to evaluate the models on these datasets.
+- **What to Record**: 
+  - Record accuracy and false negative rates for each benchmark.
+  - Note any discrepancies in model performance across different benchmarks.
+- **Correspondence**: 
+  - Detailed in Section 5.3, highlighting the advantages of MMBench in providing fine-grained analysis.
+
+## Evaluation Details
+
+### Metric Definitions and Computation
+- **Top-1 Accuracy**: 
+  - Calculate the percentage of questions where the model's predicted choice matches the ground-truth answer.
+- **CircularEval Strategy**: 
+  - A model is considered successful on a question only if it correctly predicts the answer in all circular passes.
+  - This strategy reduces the impact of random guessing and biases in choice selection.
+
+### Normalization and Pre-processing
+- **Choice Extraction**: 
+  - Use GPT-4 to extract choice labels from free-form text predictions.
+  - If the model's prediction cannot be matched to a choice, return a pseudo choice 'Z'.
+
+### Aggregation Strategy
+- **Per-sample to Overall**: 
+  - Aggregate results from individual samples to compute per-condition accuracy.
+  - Further aggregate per-condition results to obtain overall accuracy for each model.
+
+## Implementation Notes
+
+### Key Pitfalls and Caveats
+- **Content Moderation**: 
+  - Proprietary models may reject certain questions due to content moderation policies, affecting accuracy.
+  - Estimate an upper-bound performance by assuming perfect answers for rejected questions.
+
+### Special Prompt Templates
+- **Zero-shot Inference Prompt**: 
+  - Use a standardized prompt format for all models to ensure consistency in zero-shot evaluation.
+
+### Order of Operations
+- **Evaluation Sequence**: 
+  - Conduct initial evaluations on the dev subset to fine-tune the evaluation process.
+  - Perform final evaluations on the test subset, ensuring no ground-truth answers are disclosed.

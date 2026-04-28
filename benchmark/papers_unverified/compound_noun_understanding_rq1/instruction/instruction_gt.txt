@@ -1,0 +1,76 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can generating diverse captions improve VLMs' understanding of compound nouns?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: openai/clip-vit-large-patch14
+- Load with HuggingFace: openai/clip-vit-base-patch32
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Compun: A benchmark with 400 unique and commonly used compound nouns to evaluate the effectiveness of VLMs in interpreting compound nouns.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Retrieval with Example Captions
+- **Procedure**: 
+  - For each compound noun (CN) in the Compun benchmark, use GPT-4 to generate 5 diverse captions. The prompt to GPT-4 should be: 
+    ```
+    Return a list of 5 diverse captions with a compound_noun in a photo. The captions should be a maximum of 10 words and one-liners. All 5 captions should describe the compound noun in diverse settings with different verbs and actions being performed with the compound noun.
+    ```
+  - Construct 5 custom text prompts for each CN using the format: 
+    ```
+    A photo of a {class name}. An example of {compound name} in an image is {caption}.
+    ```
+  - Use these prompts to perform text-to-image retrieval with CLIP and OpenCLIP models.
+  - Calculate the mean cosine similarity between each image and the 5 generated prompts.
+  - Select the image with the highest mean similarity as the retrieval result.
+- **What to Record**: 
+  - Raw outputs of cosine similarity scores for each image-prompt pair.
+  - The selected image for each CN based on the highest mean similarity.
+  - Overall accuracy of retrieval for each model.
+- **Correspondence**: 
+  - Figure 1 illustrates the retrieval process.
+  - Table 1 presents the performance comparison of various models using this method.
+  - Section 4 details the retrieval with example captions approach.
+
+## Evaluation Details
+
+- **Metric Definition**: 
+  - Use the evaluation metric \( f(C, P, N1, N2) \) defined as:
+    \[
+    f(C, P, N1, N2) =
+    \begin{cases} 
+    1 & \text{if } s(C, P) > s(C, N1) \text{ and } s(C, P) > s(C, N2) \\
+    0 & \text{otherwise}
+    \end{cases}
+    \]
+  - Here, \( s(.) \) is the cosine similarity between the text prompt and image embeddings.
+- **Normalization and Pre-processing**: 
+  - Ensure all text prompts are encoded using the CLIP text encoder.
+  - Normalize image embeddings before computing cosine similarity.
+- **Aggregation Strategy**: 
+  - Compute mean similarity for each image across the 5 prompts.
+  - Aggregate results to calculate overall accuracy by averaging the binary outcomes of \( f(C, P, N1, N2) \) across all CNs.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use the specific prompt format for generating captions and constructing retrieval prompts as detailed in the experimental design.
+- **Output Parsing**: 
+  - Ensure that GPT-4 outputs are strictly in the form of a list of strings, each representing a caption.
+- **Order of Operations**: 
+  - First generate captions using GPT-4, then construct prompts, and finally perform retrieval using the VLMs.
+- **Pitfalls**: 
+  - Be cautious of the diversity and relevance of generated captions to ensure they provide meaningful context for retrieval.
+- **Caveats**: 
+  - The performance improvement is contingent on the quality and diversity of the generated captions, which may vary depending on the LLM's output.

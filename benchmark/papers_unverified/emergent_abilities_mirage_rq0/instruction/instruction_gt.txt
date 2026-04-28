@@ -1,0 +1,88 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ1: Do nonlinear or discontinuous metrics create the appearance of emergent abilities in language models?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- BIG-Bench: A benchmark used to analyze emergent abilities in language models, focusing on tasks with claimed emergent abilities.  [loader unverified -- locate the data yourself]
+
+Analytical tools / techniques available:
+- Meta-analysis
+- Statistical analysis
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.
+
+---
+
+## Experimental Design
+
+### 1. Metric Influence on Emergent Abilities in InstructGPT/GPT-3
+- **Procedure**: 
+  - Use the InstructGPT/GPT-3 model family to perform two arithmetic tasks: 2-shot multiplication of two 2-digit integers and 2-shot addition of two 4-digit integers.
+  - Evaluate model performance using two different metrics: a nonlinear metric (Accuracy) and a linear metric (Token Edit Distance).
+  - For each task, collect model outputs across different model scales.
+  - Compare the performance trends when using each metric.
+- **What to Record**: 
+  - Raw model outputs for each task and model scale.
+  - Performance scores under both Accuracy and Token Edit Distance metrics.
+  - Observations of performance trends (e.g., sharp vs. smooth transitions).
+- **Correspondence**: Figure 3, Section 3 of the paper.
+
+### 2. Meta-Analysis of Emergent Abilities on BIG-Bench
+- **Procedure**: 
+  - Analyze the BIG-Bench dataset to identify task-metric-model family triplets that exhibit emergent abilities.
+  - Focus on metrics that are nonlinear or discontinuous, such as Multiple Choice Grade and Exact String Match.
+  - Change the evaluation metric to a linear or continuous metric, such as Brier Score, and observe the effect on the emergence phenomenon.
+- **What to Record**: 
+  - Emergence scores for each task-metric-model family triplet.
+  - Changes in emergence scores when metrics are switched.
+  - Distribution of emergent abilities across different metrics.
+- **Correspondence**: Figure 5, Figure 6, Section 4 of the paper.
+
+### 3. Inducing Emergent Abilities in Vision Tasks
+- **Procedure**: 
+  - Train shallow nonlinear autoencoders on CIFAR100 images and autoregressive Transformers on Omniglot characters.
+  - Define a discontinuous metric for image reconstruction and a subset accuracy metric for classification.
+  - Evaluate model performance under these metrics and observe for emergent abilities.
+- **What to Record**: 
+  - Reconstruction and classification performance scores.
+  - Emergent ability trends under the defined metrics.
+- **Correspondence**: Figure 7, Figure 8, Section 5 of the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Accuracy**: Proportion of completely correct outputs (all tokens correct).
+  - **Token Edit Distance**: Number of token substitutions, additions, or deletions needed to match the target sequence.
+  - **Emergence Score**: Defined as `sign(arg max_i y_i - arg min_i y_i)(max_i y_i - min_i y_i) / sqrt(Median({(y_i - y_{i-1})^2}_i))`, where `y_i` is model performance at scale `x_i`.
+  - **Brier Score**: Mean squared error between predicted probabilities and actual outcomes for binary tasks.
+
+- **Normalization and Pre-processing**:
+  - For Accuracy, ensure that outputs are tokenized consistently with the target sequences.
+  - For Token Edit Distance, compute the distance for each output-target pair and average over the dataset.
+
+- **Aggregation Strategy**:
+  - Compute per-sample scores, then average to obtain per-condition scores.
+  - Compare overall trends across different metrics and model scales.
+
+## Implementation Notes
+
+- **Pitfalls**:
+  - Ensure sufficient test data to accurately measure performance, especially for nonlinear metrics like Accuracy.
+  - Be cautious of overfitting when defining new metrics for vision tasks.
+
+- **Special Prompt Templates**:
+  - Use consistent input formatting for arithmetic tasks to ensure comparability across model scales.
+
+- **Order of Operations**:
+  - Collect raw outputs first, then apply different metrics to the same set of outputs to isolate the effect of metric choice.

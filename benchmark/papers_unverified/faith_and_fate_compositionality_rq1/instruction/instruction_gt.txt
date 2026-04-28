@@ -1,0 +1,78 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can transformers generalize to out-of-domain (OOD) examples in compositional tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Multi-digit multiplication: A dataset consisting of multi-digit multiplication problems requiring step-by-step reasoning to solve.  [generate programmatically]
+- Logic grid puzzles: A dataset of logic grid puzzles, such as Einstein's puzzle, requiring constraint satisfaction and reasoning.  [generate programmatically]
+- Dynamic programming problem: A dataset involving a classic dynamic programming problem, such as finding a subsequence with the highest sum under certain constraints.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Zero-shot and Few-shot Evaluation
+- **Procedure**: 
+  - For each task (multi-digit multiplication, logic grid puzzles, dynamic programming problem), evaluate the models in a zero-shot setting by directly querying them with task instances without any prior examples.
+  - In the few-shot setting, provide a small number of examples (5) before querying the models with new instances.
+  - Use the same input format for both zero-shot and few-shot settings, ensuring consistency in task presentation.
+  - For few-shot, use question-answer pairs and question-scratchpad pairs to test the impact of explicit reasoning steps.
+- **What to Record**: 
+  - Record the accuracy of the models on each task.
+  - Capture the raw outputs for further analysis of partial correctness.
+- **Correspondence**: 
+  - Figures 2, 15, 16, 17, 20 in the paper.
+
+### 2. Fine-tuning on In-domain Data
+- **Procedure**: 
+  - Fine-tune GPT3 on task-specific data for each task, using question-answer pairs and question-scratchpad pairs.
+  - Use a training-validation-test split, with 10% of data reserved for validation and 10% for testing.
+  - Evaluate the model on both in-domain and out-of-domain (OOD) test sets to assess generalization.
+- **What to Record**: 
+  - Record the accuracy on in-domain and OOD test sets.
+  - Capture the model's predictions and compare them against ground truth to analyze error types.
+- **Correspondence**: 
+  - Figures 3, 18, 19, 21, 22, 23, 24 in the paper.
+
+### 3. Analysis of Partial Correctness and Error Types
+- **Procedure**: 
+  - Analyze model outputs to identify patterns of partial correctness, such as correct prediction of leading or trailing digits in multiplication.
+  - Classify errors into categories: fully correct, local error, propagation error, and restoration error.
+- **What to Record**: 
+  - Record the frequency of each error type across different reasoning depths.
+  - Capture the relative information gain for input-output pairs to predict surface patterns.
+- **Correspondence**: 
+  - Figures 6, 7, 26, 27, 28, 29, 30, 31, 32 in the paper.
+
+## Evaluation Details
+
+- **Metrics**: 
+  - Use accuracy as the primary metric for evaluating model performance on each task.
+  - For partial correctness, calculate the accuracy of specific output components (e.g., first digit, last digit).
+- **Normalization and Pre-processing**: 
+  - Ensure consistent formatting of inputs and outputs across different models and tasks.
+  - Normalize numerical outputs to account for leading zeros or formatting differences.
+- **Aggregation Strategy**: 
+  - Compute per-sample accuracy, then aggregate to obtain per-condition accuracy (e.g., zero-shot vs. few-shot) and overall accuracy.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompt templates for each task, ensuring clarity and consistency in task presentation.
+  - For scratchpad prompts, include detailed step-by-step reasoning to guide the model.
+- **Pitfalls**: 
+  - Be cautious of tokenization issues that may affect model performance, especially in tasks involving numerical calculations.
+  - Ensure that the model's computational budget is managed effectively, particularly during fine-tuning.
+- **Order of Operations**: 
+  - Follow the prescribed order of operations in the computation graph for each task to maintain consistency in reasoning steps.

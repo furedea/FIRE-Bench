@@ -1,0 +1,60 @@
+You are a research agent. Conduct research and experiment about the question: "RQ4: How do LCLMs perform in many-shot in-context learning (ICL) tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- BBH-date: Multiple-choice QA dataset from Big-Bench Hard focusing on date understanding.  [loader unverified -- locate the data yourself]
+- BBH-salient: Multiple-choice QA dataset from Big-Bench Hard focusing on salient error translation detection.  [loader unverified -- locate the data yourself]
+- BBH-tracking7: Multiple-choice QA dataset from Big-Bench Hard focusing on tracking shuffled objects.  [loader unverified -- locate the data yourself]
+- BBH-web: Multiple-choice QA dataset from Big-Bench Hard focusing on web of lies.  [loader unverified -- locate the data yourself]
+- LIB-dialogue: Classification dataset from LongICLBench focusing on dialogue-based relation extraction.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Many-shot ICL Performance Comparison
+- **Procedure**: 
+  - Use the datasets BBH-date, BBH-salient, BBH-tracking7, BBH-web, and LIB-dialogue.
+  - For each dataset, construct a shared many-shot ICL context ensuring that training examples in smaller contexts are included in larger ones.
+  - Ensure each class is represented at least once in the context.
+  - Use a maximum context length of 32k tokens for BBH datasets and up to 128k or 1M for LIB-dialogue.
+  - Present the model with a series of examples (many-shot) before querying it with a new instance.
+- **What to Record**: 
+  - Record the classification accuracy for each dataset.
+  - Capture the model's raw outputs and the predicted class for each query.
+- **Correspondence**: 
+  - This experiment corresponds to Section 4.6 and Table 2 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**: 
+  - Use classification accuracy as the primary metric, defined as the number of correct predictions divided by the total number of predictions.
+- **Normalization/Pre-processing**: 
+  - Ensure that the input examples are tokenized consistently across different context lengths.
+  - Normalize the model outputs to ensure they are in a comparable format for accuracy computation.
+- **Aggregation Strategy**: 
+  - Compute accuracy per dataset and then average across all datasets to get an overall performance measure.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompt templates that include task-specific instructions and examples formatted to guide the model's response.
+  - Ensure that the prompt includes a clear delimiter between examples and the query.
+- **Order of Operations**: 
+  - Present the examples in the prompt before the query to simulate many-shot learning.
+  - Ensure that the context is constructed such that smaller contexts are subsets of larger ones, maintaining consistency across different context lengths.
+- **Pitfalls**: 
+  - Be cautious of the model's tendency to rely on parametric knowledge rather than the provided context, especially in tasks with well-known datasets.
+  - Monitor for any API call failures due to content filtering and treat these as incorrect predictions.

@@ -1,0 +1,74 @@
+You are a research agent. Conduct research about the question: "RQ1: How does the ReAct approach perform on knowledge-intensive reasoning tasks compared to existing methods?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- ReAct: ReAct is a novel approach that integrates reasoning and acting capabilities in large language models (LLMs) to improve performance on language understanding and decision-making tasks. It prompts LLMs to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for greater synergy between reasoning and acting. This approach helps the model induce, track, and update action plans, handle exceptions, and gather additional information from external sources like knowledge bases.
+  - Component: Interleaved generation of reasoning traces and task-specific actions
+  - Component: Interaction with external environments (e.g., Wikipedia API) for information retrieval
+  - Component: Use of large language models like PaLM-540B for few-shot in-context learning
+- Baseline for comparison: Chain-of-Thought (CoT)
+- Baseline for comparison: Act-only
+- Reference hint: https://react-lm.github.io/
+
+Datasets for training and evaluation:
+- HotpotQA: A multi-hop question answering benchmark that requires reasoning over two or more Wikipedia passages.  [loader unverified -- locate the data yourself]
+- Fever: A fact verification benchmark where each claim is annotated as SUPPORTS, REFUTES, or NOT ENOUGH INFO based on Wikipedia passages.  [loader unverified -- locate the data yourself]
+- ALFWorld: A synthetic text-based game designed to align with the embodied ALFRED benchmark, requiring navigation and interaction in a simulated household.  [loader unverified -- locate the data yourself]
+- WebShop: An online shopping website environment with real-world products and human instructions, requiring agents to purchase products based on user instructions.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Knowledge-Intensive Reasoning Tasks
+
+#### HotpotQA and Fever Evaluation
+- **Procedure**: 
+  - Use the ReAct approach to evaluate on the HotpotQA and Fever datasets.
+  - Implement a simple Wikipedia web API with three types of actions: `search[entity]`, `lookup[string]`, and `finish[answer]`.
+  - For HotpotQA, randomly select 6 cases from the training set and manually compose ReAct-format trajectories to use as few-shot exemplars in the prompts.
+  - For Fever, randomly select 3 cases from the training set for the same purpose.
+  - Each trajectory consists of multiple thought-action-observation steps, where free-form thoughts are used for various purposes such as decomposing questions, extracting information, performing commonsense reasoning, and synthesizing the final answer.
+  - Baselines include Standard prompting, Chain-of-Thought (CoT) prompting, CoT with self-consistency (CoT-SC), and Act-only prompting.
+  - Combine ReAct and CoT-SC by switching methods based on heuristics: ReAct → CoT-SC when ReAct fails to return an answer within given steps, and CoT-SC → ReAct when the majority answer among CoT-SC samples occurs less than half the time.
+- **What to Record**: 
+  - Record the exact match (EM) and accuracy for HotpotQA and Fever respectively.
+  - Capture the reasoning traces, actions, and observations for each trajectory.
+- **Correspondence**: 
+  - Results are presented in Table 1 and discussed in Section 3.3.
+
+## Evaluation Details
+
+- **Metrics**:
+  - **Exact Match (EM)**: For HotpotQA, calculate the percentage of predictions that match any one of the ground truth answers exactly.
+  - **Accuracy**: For Fever, calculate the percentage of correctly classified claims as SUPPORTS, REFUTES, or NOT ENOUGH INFO.
+- **Normalization and Pre-processing**:
+  - Normalize model outputs by trimming whitespace and converting to lowercase before comparison.
+- **Aggregation Strategy**:
+  - Compute per-sample metrics first, then aggregate to obtain per-condition results, and finally compute overall performance metrics.
+
+## Implementation Notes
+
+- **Prompt Design**:
+  - ReAct prompts should include interleaved reasoning and action steps, with thoughts guiding the retrieval and synthesis process.
+  - Ensure that the prompts for baselines are systematically ablated versions of ReAct prompts, removing specific components like thoughts or actions as needed.
+- **Order of Operations**:
+  - Maintain the sequence of thought-action-observation in ReAct to ensure the model can effectively reason and act based on the current context.
+- **Pitfalls**:
+  - Be cautious of repetitive generation of thoughts and actions, which can lead to reasoning errors.
+  - Ensure that the search results from the Wikipedia API are informative to avoid derailing the reasoning process.

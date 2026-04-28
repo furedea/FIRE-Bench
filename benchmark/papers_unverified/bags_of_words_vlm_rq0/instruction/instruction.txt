@@ -1,0 +1,22 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current Vision-Language Models understand compositional relationships, attributes, and order information?"
+
+You have access to the following resources:
+
+Models:
+- Load with HuggingFace: openai/clip-vit-base-patch32
+- Load with HuggingFace: salesforce/blip
+- Load with HuggingFace: facebook/flava-full
+- Load with HuggingFace: zengyan-97/x-vlm
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Visual Genome Attribution: A dataset to test the understanding of objects' properties in complex natural scenes.  [loader unverified -- locate the data yourself]
+- Visual Genome Relation: A dataset to test relational understanding in complex natural scenes.  [loader unverified -- locate the data yourself]
+- COCO-Order: A dataset to test the models' ability to identify the correct ordering of words in captions.  [loader unverified -- locate the data yourself]
+- Flickr30k-Order: A dataset to test the models' ability to identify the correct ordering of words in captions.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

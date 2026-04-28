@@ -1,0 +1,80 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ3: Do emergent abilities appear predominantly with specific metrics rather than task-model family pairs?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- BIG-Bench: A benchmark used to analyze task-metric-model family triplets for emergent abilities.  [loader unverified -- locate the data yourself]
+
+Analytical tools / techniques available:
+- Meta-analysis
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.
+
+---
+
+## Experimental Design
+
+### 1. Metric Influence on Emergent Abilities
+- **Procedure**: 
+  - Analyze task-metric-model family triplets from the BIG-Bench dataset.
+  - Focus on metrics such as Multiple Choice Grade and Exact String Match.
+  - For each triplet, calculate the emergence score using the formula provided in the paper.
+  - Compare the emergence scores across different metrics to identify patterns.
+- **What to Record**: 
+  - Emergence scores for each task-metric-model family triplet.
+  - Metrics that show the highest emergence scores.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 5 and Section 4 of the paper.
+
+### 2. Metric Change Impact on Emergent Abilities
+- **Procedure**: 
+  - Select tasks where the LaMDA model family shows emergent abilities using the Multiple Choice Grade metric.
+  - Re-evaluate these tasks using the Brier Score metric.
+  - Compare the performance and emergence scores before and after the metric change.
+- **What to Record**: 
+  - Performance scores under both metrics.
+  - Changes in emergence scores after switching metrics.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 6 and Section 4 of the paper.
+
+## Evaluation Details
+
+- **Emergence Score Calculation**: 
+  - Use the formula provided in the paper:
+    \[
+    \text{Emergence Score} = \text{sign}(\text{arg max}_i y_i - \text{arg min}_i y_i)(\text{max}_i y_i - \text{min}_i y_i) / \sqrt{\text{Median}(\{(y_i - y_{i-1})^2\}_i)}
+    \]
+  - Here, \( y_i \) denotes model performance at model scales \( x_i \).
+
+- **Normalization and Pre-processing**:
+  - Ensure all performance scores are normalized to a common scale before calculating emergence scores.
+  - For metrics like Brier Score, ensure predictions are converted to probabilities if necessary.
+
+- **Aggregation Strategy**:
+  - Calculate emergence scores per task-metric-model family triplet.
+  - Aggregate scores to identify metrics with the highest frequency of emergent abilities.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - Ensure that the resolution of the dataset is sufficient to accurately measure performance changes, especially for smaller models.
+  - Be cautious of overfitting when interpreting emergence scores, as they can be sensitive to the choice of metric.
+
+- **Special Prompt Templates**:
+  - When evaluating tasks with different metrics, ensure that the output format aligns with the requirements of each metric (e.g., exact string match requires precise output formatting).
+
+- **Order of Operations**:
+  - First, calculate performance scores using the original metric.
+  - Then, switch to the alternative metric and recalculate scores.
+  - Finally, compute and compare emergence scores across metrics.

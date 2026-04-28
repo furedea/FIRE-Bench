@@ -1,0 +1,104 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How reliable are the current GSM8K results?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- GSM8K: A benchmark dataset for evaluating the mathematical reasoning capabilities of LLMs, consisting of grade school math questions.  [loader unverified -- locate the data yourself]
+- GSM-Symbolic: An enhanced benchmark that generates diverse variants of GSM8K questions using symbolic templates for more reliable evaluation of LLMs' performance.  [generate programmatically]
+  Generation code:
+    import random
+    
+    def generate_gsm_symbolic():
+        names = ["Sophie", "Emma", "Olivia"]
+        family = ["nephew", "cousin", "brother"]
+        x = random.randint(5, 100)
+        y = random.randint(5, 100)
+        z = random.randint(5, 100)
+        total = random.randint(100, 500)
+        ans = total - (x + y + z)
+        return {
+            "name": random.choice(names),
+            "family": random.choice(family),
+            "x": x,
+            "y": y,
+            "z": z,
+            "total": total,
+            "ans": ans
+        }
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluate Performance on GSM-Symbolic
+- **Procedure**: 
+  - Use the GSM-Symbolic dataset, which is generated programmatically using symbolic templates based on GSM8K questions.
+  - Conduct evaluations using 8-shot Chain-of-Thought (CoT) prompting with greedy decoding.
+  - Generate 50 samples per template, resulting in 5000 total examples for each benchmark.
+  - Evaluate models on 50 datasets of 100 examples each, where each example is a mutation of one of the original 100 examples from GSM8K.
+- **What to Record**: 
+  - Record the raw outputs of the models.
+  - Extract accuracy scores for each dataset.
+  - Calculate performance variance across different datasets.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 2 and Section 4.1 in the paper.
+
+### 2. Sensitivity to Changes in Names and Numbers
+- **Procedure**: 
+  - Create variations of GSM-Symbolic by changing only proper names, only numerical values, and both.
+  - Evaluate the models using the same 8-shot CoT prompting strategy.
+- **What to Record**: 
+  - Record accuracy scores for each variation.
+  - Calculate and compare performance variance for each type of change.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 4 and Section 4.2 in the paper.
+
+### 3. Impact of Question Difficulty
+- **Procedure**: 
+  - Generate new templates by modifying the number of clauses in GSM-Symbolic questions to create GSM-Symbolic-Minus-1 (GSM-M1), GSM-Symbolic-Plus-1 (GSM-P1), and GSM-Symbolic-Plus-2 (GSM-P2).
+  - Evaluate models on these datasets using the same prompting strategy.
+- **What to Record**: 
+  - Record accuracy scores for each difficulty level.
+  - Calculate performance variance and observe trends as difficulty increases.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 6 and Section 4.3 in the paper.
+
+### 4. Evaluation on GSM-NoOp
+- **Procedure**: 
+  - Create GSM-NoOp by adding irrelevant but seemingly relevant information to GSM-Symbolic questions.
+  - Evaluate models using the same 8-shot CoT prompting strategy.
+- **What to Record**: 
+  - Record accuracy scores and note any significant performance drops.
+  - Analyze model responses to identify patterns in handling irrelevant information.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 7 and Section 4.4 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**: 
+  - Accuracy is defined as the percentage of correctly answered questions out of the total number of questions.
+  - Performance variance is calculated as the standard deviation of accuracy scores across different datasets.
+- **Normalization/Pre-processing**: 
+  - Ensure that model outputs are parsed correctly to extract final answers for scoring.
+- **Aggregation Strategy**: 
+  - Calculate per-sample accuracy, then aggregate to per-condition (e.g., name changes, number changes) and overall accuracy.
+
+## Implementation Notes
+
+- **Prompt Template**: 
+  - Use the provided prompt format with a preamble instructing the model to solve step-by-step, followed by 8-shot examples and the target question.
+- **Output Parsing**: 
+  - Implement logic to extract the final answer from the model's response, ensuring it matches the expected format.
+- **Order of Operations**: 
+  - Maintain consistent evaluation settings across all experiments to ensure comparability of results.

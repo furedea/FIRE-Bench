@@ -1,0 +1,66 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do large language models perform on the Multilingual Grade School Math (MGSM) benchmark?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MGSM: A benchmark consisting of 250 grade-school math problems translated into ten typologically diverse languages to evaluate multilingual arithmetic reasoning abilities.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Multilingual Grade School Math (MGSM) Evaluation
+- **Procedure**: 
+  - Use the MGSM dataset, which consists of 250 math problems translated into ten languages.
+  - Evaluate using four prompting strategies:
+    - **DIRECT**: Provide the problem in the native language and expect a direct answer.
+    - **NATIVE-COT**: Provide the problem in the native language and expect a step-by-step solution in the same language.
+    - **EN-COT**: Provide the problem in the native language but expect a step-by-step solution in English.
+    - **TRANSLATE-EN**: Translate the problem to English and expect a step-by-step solution in English.
+  - Use few-shot prompting with up to 6 exemplars, adjusting for token limits in GPT-3.
+  - Conduct experiments using both GPT-3 and PaLM models.
+- **What to Record**: 
+  - Raw model outputs for each problem and prompting strategy.
+  - Accuracy of the model's final answers compared to the correct answers.
+- **Correspondence**: 
+  - Results are detailed in Table 3 and discussed in Section 4.1.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Accuracy**: The percentage of problems for which the model's final answer matches the correct answer.
+  - Compute accuracy separately for each language and aggregate across all languages for overall performance.
+
+- **Normalization and Pre-processing**:
+  - Ensure all numerical answers are in Arabic numerals for consistency across languages.
+  - For EN-COT and TRANSLATE-EN, ensure that intermediate reasoning steps are correctly parsed and lead to the final answer.
+
+- **Aggregation Strategy**:
+  - Calculate per-sample accuracy.
+  - Aggregate per-language accuracy.
+  - Compute overall accuracy by averaging across all languages.
+
+## Implementation Notes
+
+- **Prompt Templates**:
+  - Use specific templates for each prompting strategy as outlined in the paper's appendices.
+  - Ensure that few-shot exemplars are correctly formatted and relevant to the target language or English, depending on the strategy.
+
+- **Pitfalls and Caveats**:
+  - Be aware of token limits in GPT-3, which may restrict the number of exemplars used in some languages.
+  - Ensure that translations are accurate and consistent with the original problem statements to avoid introducing errors.
+
+- **Order of Operations**:
+  - For TRANSLATE-EN, ensure translation occurs before any reasoning steps are generated.
+  - Maintain consistency in the order of exemplars and problem presentation to avoid bias.

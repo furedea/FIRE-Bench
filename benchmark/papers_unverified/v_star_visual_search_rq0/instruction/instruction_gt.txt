@@ -1,0 +1,111 @@
+You are a research agent. Conduct research about the question: "RQ1: How does the SEAL framework integrate visual search into MLLMs?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- SEAL framework: The SEAL framework is a novel meta-architecture designed to integrate an LLM-guided visual search mechanism into multimodal large language models (MLLMs). It consists of a VQA LLM and a visual search model that collaborate through a visual working memory (VWM). This integration allows the model to actively reason about and search for needed visual information, enhancing its ability to process high-resolution images and focus on critical visual details.
+  - Component: VQA LLM with Visual Working Memory
+  - Component: Visual Search Model
+  - Component: Visual Working Memory (VWM)
+- Baseline for comparison: GPT-4V
+- Baseline for comparison: LLaVA
+- Baseline for comparison: MiniGPT-4
+- Baseline for comparison: InstructBLIP
+- Baseline for comparison: Otter
+
+Datasets for training and evaluation:
+- COCO2017: A large-scale object detection, segmentation, and captioning dataset.  [loader unverified -- locate the data yourself]
+- GQA: A dataset for real-world visual reasoning and compositional question answering.  [loader unverified -- locate the data yourself]
+- VAW: A dataset for learning to predict visual attributes in the wild.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. SEAL Framework Evaluation
+- **Procedure**: 
+  - Implement the SEAL framework consisting of a VQA LLM and a visual search model. 
+  - Use the COCO2017, GQA, and VAW datasets for evaluation.
+  - For each dataset, input images and corresponding questions into the SEAL framework.
+  - The VQA LLM should first attempt to answer the question using initial global visual features. If insufficient, it should list missing visual details and initialize the Visual Working Memory (VWM).
+  - The visual search model then searches for these details, updates the VWM, and the VQA LLM generates the final answer.
+  - Use a hierarchical search strategy to divide images into patches based on aspect ratio and search priority.
+- **What to Record**: 
+  - Raw outputs of the VQA LLM before and after visual search.
+  - Coordinates and confidence scores of identified targets.
+  - Search cue heatmaps and search lengths.
+  - Accuracy of answers compared to ground truth.
+- **Correspondence**: 
+  - Figure 3 and Algorithm 1 in the paper illustrate the SEAL framework and its working pipeline.
+
+### 2. V∗Bench Evaluation
+- **Procedure**: 
+  - Evaluate the SEAL framework on the V∗Bench, which consists of high-resolution images with tasks focused on attribute recognition and spatial relationship reasoning.
+  - Input each image and question into the SEAL framework and record the model's answer.
+  - Use multiple-choice format for evaluation, with four options for open-ended questions and two for binary questions.
+- **What to Record**: 
+  - Model's selected answer for each question.
+  - Comparison of SEAL's performance against baselines like GPT-4V and other MLLMs.
+- **Correspondence**: 
+  - Table 1 in the paper shows the evaluation results on V∗Bench.
+
+### 3. Ablation Studies
+- **Procedure**: 
+  - Conduct ablation studies by removing or replacing components of the SEAL framework.
+  - Evaluate the necessity of the visual search mechanism by comparing performance with and without it.
+  - Replace the visual search model with alternative detection models like GroundingDINO and OWL-ViT.
+- **What to Record**: 
+  - Performance metrics (accuracy) for each ablation setup.
+  - Comparison of search lengths and efficiency.
+- **Correspondence**: 
+  - Table 2 in the paper presents the results of the ablation studies.
+
+## Evaluation Details
+
+### Metric Definitions
+- **Accuracy**: 
+  - For V∗Bench, accuracy is defined as the percentage of correctly answered questions out of the total questions.
+  - Use the highest log-likelihood approach for end-to-end models to select the predicted answer.
+- **Search Length**: 
+  - Defined as the number of search steps from the initial image to the patch where the target is located.
+  - Compare search lengths across different search strategies.
+
+### Pre-processing and Normalization
+- **Model Outputs**: 
+  - Normalize confidence scores of target coordinates to a range of 0 to 1.
+  - Convert search cue heatmaps to priority scores for patch selection.
+
+### Aggregation Strategy
+- **Per-Sample**: 
+  - Record individual accuracy and search length for each sample.
+- **Per-Condition**: 
+  - Aggregate accuracy and search length across different conditions (e.g., with and without visual search).
+- **Overall**: 
+  - Calculate overall accuracy and average search length for the entire dataset.
+
+## Implementation Notes
+
+### Key Pitfalls
+- Ensure that the visual search model is only engaged when the initial global visual features are insufficient.
+- Carefully manage the token length in the VWM to avoid exceeding model input limits.
+
+### Special Prompt Templates
+- Use fixed-format instructions for the visual search model, such as "Please locate the [object] in the image."
+
+### Order of Operations
+- The VQA LLM must first attempt to answer using global features before engaging the visual search model.
+- The visual search model should update the VWM before the VQA LLM generates the final answer.

@@ -1,0 +1,77 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the characteristics and challenges of the SWE-bench benchmark?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- SWE-bench: A benchmark consisting of 2,294 software engineering problems drawn from real GitHub issues and corresponding pull requests across 12 popular Python repositories.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. SWE-bench Task Resolution
+- **Procedure**: 
+  - Input: Provide the model with an issue text description and a complete codebase.
+  - Prompting Strategy: Use a template that includes the issue description, relevant code files, and an example patch file format.
+  - Number of Samples: Use all 2,294 task instances from SWE-bench.
+  - Shuffling/Ordering: No shuffling; process tasks in the order they appear in the dataset.
+  - Splits: Use the full dataset as there are no predefined splits.
+- **What to Record**: 
+  - Raw outputs: The generated patch files.
+  - Extracted answers: Whether the patch applies successfully and passes all tests.
+  - Intermediate statistics: Number of lines edited, files edited, and functions edited.
+- **Correspondence**: Section 2.2, Figure 1, Table 1.
+
+### 2. SWE-bench Lite Evaluation
+- **Procedure**: 
+  - Input: Use a subset of 300 instances from SWE-bench Lite.
+  - Prompting Strategy: Same as the full SWE-bench task.
+  - Number of Samples: 300 instances.
+  - Shuffling/Ordering: No shuffling; process tasks in the order they appear in the dataset.
+  - Splits: Use the full subset as there are no predefined splits.
+- **What to Record**: 
+  - Raw outputs: The generated patch files.
+  - Extracted answers: Whether the patch applies successfully and passes all tests.
+  - Intermediate statistics: Number of lines edited, files edited, and functions edited.
+- **Correspondence**: Section 2.4, Appendix A.7.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Task Resolution Rate**: Percentage of task instances where the generated patch applies successfully and all tests pass.
+  - **Patch Application Rate**: Percentage of task instances where the generated patch applies successfully, regardless of test outcomes.
+  - **Fail-to-Pass Test Rate**: Percentage of fail-to-pass tests that pass after applying the patch.
+  - **Pass-to-Pass Test Rate**: Percentage of pass-to-pass tests that remain passing after applying the patch.
+
+- **Normalization/Pre-processing**:
+  - Ensure all generated patches are in the correct `.patch` format before application.
+  - Use a script to automatically fix minor formatting issues in patches that prevent application.
+
+- **Aggregation Strategy**:
+  - Per-sample: Evaluate each task instance individually.
+  - Per-condition: Aggregate results across all task instances for each model.
+  - Overall: Compute overall metrics across all models and task instances.
+
+## Implementation Notes
+
+- **Key Pitfalls**:
+  - Ensure that the model-generated patches are correctly formatted to avoid application errors.
+  - Be aware of the context window limitations of each model, especially when using retrieval methods.
+
+- **Special Prompt Templates**:
+  - Use a consistent template for all task instances, including delimiters for issue text, code, and patch examples.
+
+- **Order of Operations**:
+  - Apply the test patch before the model-generated patch to ensure the correct testing environment.
+  - Run tests after applying the model-generated patch to evaluate task resolution.

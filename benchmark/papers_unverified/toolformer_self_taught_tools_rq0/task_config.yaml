@@ -1,0 +1,51 @@
+task_id: toolformer_self_taught_tools_rq0
+paper_type: novel_architecture
+research_question: 'RQ1: Can language models learn to use external tools in a self-supervised
+  manner without large amounts of human annotations?'
+proposed_method:
+  name: Toolformer
+  summary: Toolformer is a language model architecture that autonomously learns to
+    use external tools via simple APIs. It decides which APIs to call, when to call
+    them, what arguments to pass, and how to incorporate the results into future token
+    prediction. This is achieved in a self-supervised manner, requiring only a few
+    demonstrations for each API. Toolformer integrates various tools, such as a calculator,
+    a Q&A system, a search engine, a translation system, and a calendar, to enhance
+    its zero-shot performance on diverse tasks.
+  key_components:
+  - API call sampling and filtering based on self-supervised loss
+  - 'Integration of multiple tools: calculator, Q&A system, search engine, translation
+    system, calendar'
+  - Finetuning on augmented datasets with API calls
+baselines:
+- GPT-J
+- GPT-J + CC
+- OPT (66B)
+- GPT-3 (175B)
+reference_implementation: []
+datasets:
+- name: CCNet
+  source: external
+  description: A large-scale dataset used for language modeling, consisting of web
+    crawl data.
+  url: https://github.com/facebookresearch/cc_net
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/facebookresearch/cc_net.git
+
+    '
+- name: Natural Questions
+  source: huggingface
+  description: A benchmark for question answering research, used to finetune the Atlas
+    model for the Q&A tool.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''natural_questions'')
+
+    '
+compute_hint: 8 NVIDIA A100 40GB GPUs, BF16, up to 2k steps
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

@@ -1,0 +1,18 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: Can different training setups alleviate the Reversal Curse?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Synthetic dataset with paraphrases and both orders: A dataset made up of documents of the form '<name> is <description>' and the reverse, where the names and descriptions are fictitious.  [generate programmatically]
+- Dataset of question-answer pairs: A dataset of question-answer pairs presented either as instructions or as examples.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

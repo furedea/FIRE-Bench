@@ -1,0 +1,17 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: Do LLMs trained on 'A is B' fail to generalize to 'B is A'?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Synthetic dataset of fictitious facts: A dataset made up of documents of the form '<name> is <description>' (or the reverse) where the names and descriptions are fictitious.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

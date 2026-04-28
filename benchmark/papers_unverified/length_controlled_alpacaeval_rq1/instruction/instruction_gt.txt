@@ -1,0 +1,73 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Does length-controlled AlpacaEval improve correlation with human evaluations compared to the original AlpacaEval?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Chatbot Arena: A dataset used for evaluating language models through live human interactions, where users rate the quality of responses from anonymized LMs.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Length-Controlled AlpacaEval Evaluation
+- **Procedure**: 
+  - Use the AlpacaEval dataset consisting of 805 instructions.
+  - For each instruction, generate responses from both the baseline model (GPT-4 turbo) and the evaluated model.
+  - Apply the length-controlled AlpacaEval method by fitting a generalized linear model (GLM) to predict preferences based on model identity, length of output, and instruction difficulty.
+  - Zero out the length term in the GLM to obtain length-controlled preferences.
+  - Conduct pairwise comparisons of model outputs using the length-controlled preferences.
+- **What to Record**: 
+  - Raw outputs from both models for each instruction.
+  - Length-controlled win rates for each model.
+  - Spearman correlation coefficients between length-controlled win rates and Chatbot Arena human evaluations.
+- **Correspondence**: 
+  - Figure 1: Demonstrates the increase in correlation with Chatbot Arena.
+  - Section 4.2: Discusses the improvement in correlation with human evaluations.
+
+### 2. Length Gameability Test
+- **Procedure**: 
+  - Prompt models with variations: "Answer with as much detail as possible." (verbose) and "Be as concise as possible while still providing all the necessary information to answer the question." (concise).
+  - Measure the fluctuation in win rates under these different verbosity conditions.
+- **What to Record**: 
+  - Win rates for each verbosity condition.
+  - Normalized standard deviation of win rates across verbosity prompts.
+- **Correspondence**: 
+  - Figure 3: Illustrates the decrease in length gameability with length-controlled AlpacaEval.
+  - Section 4.1: Details the reduction in sensitivity to verbosity prompts.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Spearman Correlation Coefficient**: Used to measure the rank correlation between length-controlled AlpacaEval win rates and Chatbot Arena human evaluations. Computed using `scipy.stats.spearmanr`.
+  - **Normalized Standard Deviation**: Calculated as the standard deviation of win rates across different verbosity prompts, normalized by the mean win rate.
+
+- **Pre-processing**:
+  - Normalize the length differences using the standard deviation of length differences across the dataset.
+  - Apply a `tanh` transformation to the normalized length differences to account for diminishing returns on log odds.
+
+- **Aggregation Strategy**:
+  - Compute win rates for each model-instruction pair.
+  - Aggregate win rates across all instructions to obtain an overall win rate for each model.
+  - Calculate the Spearman correlation coefficient for the aggregated win rates against Chatbot Arena scores.
+
+## Implementation Notes
+
+- **Regression Model**:
+  - Use a logistic regression model with three terms: model identity, length of output, and instruction difficulty.
+  - Ensure the model maintains identity and symmetry properties: `q(y = 1 | zb, zb, b, b, x) = 0.5` and `q(y | zm, zb, b, m, x) = 1.0 − q(y | zb, zm, b, m, x)`.
+
+- **Regularization**:
+  - Apply L2 regularization on the length term coefficients to prevent adversarial manipulation by truncating outputs.
+
+- **Cross-validation**:
+  - Use 5-fold cross-validation to ensure robustness and avoid overfitting, especially when estimating instruction difficulty terms shared across models.

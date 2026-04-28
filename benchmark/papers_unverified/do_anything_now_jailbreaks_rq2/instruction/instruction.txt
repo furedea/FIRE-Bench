@@ -1,0 +1,20 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How effective are external safeguards in mitigating jailbreak prompts?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: databricks/dolly-v2-7b
+- Load with HuggingFace: lmsys/vicuna-7b-v1.1
+- Load with HuggingFace: THUDM/chatglm-6b
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Jailbreak Prompt Dataset: A dataset comprising 1,405 jailbreak prompts collected from various online platforms to evaluate the effectiveness of jailbreak prompts on LLMs.  [loader unverified -- locate the data yourself]
+- Forbidden Question Set: A set of 107,250 questions across 13 forbidden scenarios to test the resistance of LLMs against jailbreak prompts.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

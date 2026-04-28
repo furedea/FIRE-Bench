@@ -1,0 +1,23 @@
+You are a research agent. Conduct research and experiment about the question: "Do MLLMs demonstrate faithful nonverbal abstract reasoning abilities?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet.  [loader unverified -- locate the data yourself]
+- RAVEN-S: A visual reasoning dataset containing 3,500 synthetic samples in seven categories, sampled from the RAVEN dataset.
+  GitHub repo: https://github.com/WellyZhang/RAVEN
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/WellyZhang/RAVEN.git
+- CCSE: A dataset of 175 visual abstractions and reasoning problems from the China Civil Service Examination.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

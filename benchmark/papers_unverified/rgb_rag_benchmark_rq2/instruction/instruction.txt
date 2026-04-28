@@ -1,0 +1,21 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How well can LLMs integrate information from multiple documents in retrieval-augmented generation?"
+
+You have access to the following resources:
+
+Models:
+- gpt-3.5-turbo via API
+- Load with HuggingFace: THUDM/ChatGLM-6B
+- Load with HuggingFace: THUDM/ChatGLM2-6B
+- Load with HuggingFace: lmsys/vicuna-7b-v1.3
+- Load with HuggingFace: Qwen/Qwen-7B-Chat
+- Load with HuggingFace: LianjiaTech/BELLE-7B-2M
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Retrieval-Augmented Generation Benchmark (RGB): A benchmark designed to evaluate the retrieval-augmented generation capabilities of LLMs, focusing on noise robustness, negative rejection, information integration, and counterfactual robustness.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

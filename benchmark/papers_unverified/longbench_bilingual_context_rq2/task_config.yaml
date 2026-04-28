@@ -1,0 +1,19 @@
+task_id: longbench_bilingual_context_rq2
+paper_type: llm_evaluation
+research_question: 'RQ3: How do context compression techniques impact LLM performance
+  on LongBench?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: LongBench
+  source: unknown
+  description: A bilingual, multi-task benchmark for evaluating long context understanding,
+    comprising 21 datasets across 6 task categories in both English and Chinese.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

@@ -1,0 +1,64 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How effective is WebArena in evaluating the performance of autonomous agents on complex web-based tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- WebArena Benchmark: A set of 812 long-horizon web-based tasks designed to evaluate the functional correctness and task success rate of autonomous agents in a realistic web environment.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluation of Baseline Agents using WebArena Benchmark
+- **Procedure**: 
+  - Use the WebArena Benchmark consisting of 812 long-horizon web-based tasks.
+  - Implement agents using GPT-4, GPT-3.5, and TEXT-BISON-001 models.
+  - Employ a few-shot in-context learning approach with two examples in the context.
+  - For each task, provide the model with the task's natural language intent, the current observation (web page's accessibility tree, URL, open tabs), and the previous action.
+  - Use two prompting strategies: direct action prediction and chain-of-thought (CoT) reasoning before action prediction.
+  - Include an "Unachievable hint" in the prompt to instruct the model to stop if it believes the task is impossible.
+  - Limit the maximum number of state transitions to 30. Terminate execution if the same action is repeated more than three times on the same observation or if three consecutive invalid actions are generated.
+- **What to Record**: 
+  - Raw outputs of the models for each task.
+  - Task success rate for each model and prompting strategy.
+  - Functional correctness of task executions.
+  - Instances where the model correctly identifies unachievable tasks.
+- **Correspondence**: 
+  - Results are detailed in Table 2 and discussed in Section 5 of the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Task Success Rate**: The percentage of tasks successfully completed by the agent.
+  - **Functional Correctness**: Evaluated using two approaches:
+    - `rinfo`: For information-seeking tasks, compare the predicted answer with the annotated reference using exact match, must include, or fuzzy match functions.
+    - `rprog`: For site navigation and content & config tasks, programmatically check intermediate states to verify if the outcome aligns with the intended result.
+- **Normalization and Pre-processing**:
+  - For `rinfo`, use exact match for standardized responses, must include for unordered lists or key concepts, and fuzzy match using GPT-4 for diverse answer formats.
+  - For `rprog`, use locators to retrieve critical content and annotate keywords for verification.
+- **Aggregation Strategy**:
+  - Compute per-sample success rates.
+  - Aggregate results per condition (e.g., model type, prompting strategy).
+  - Calculate overall success rates and functional correctness across all tasks.
+
+## Implementation Notes
+
+- **Key Pitfalls**:
+  - Models may prematurely stop due to the "Unachievable hint," affecting achievable task performance.
+  - Observation bias where models latch onto the first related information without verifying its relevance.
+- **Special Prompt Templates**:
+  - Use a system message to define available actions and rules for issuing actions.
+  - Include examples in the prompt to guide the model's reasoning or direct action prediction.
+- **Order of Operations**:
+  - Ensure reasoning is performed before action prediction in the CoT strategy.
+  - Follow the sequence of actions as per the task's requirements and model's observations.

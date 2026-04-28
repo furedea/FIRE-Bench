@@ -1,0 +1,59 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does active learning impact the data efficiency of process supervision?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MATH: A dataset for measuring mathematical problem solving with automatically checkable answers.  [loader unverified -- locate the data yourself]
+- PRM800K: A dataset of 800,000 step-level human feedback labels used to train reward models.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluation of Active Learning Strategies in Process Supervision
+- **Procedure**: 
+  - Use the PRM800K dataset to train a small-scale reward model, PRMselector, on a single sample from each problem.
+  - Score 1000 samples per problem using PRMselector.
+  - For training larger reward models, select N samples per problem such that 80% are the most convincing wrong-answer samples (according to PRMselector), and 20% are the most convincing samples that remain (right- or wrong-answer).
+  - Score the selected samples with PRMlarge and train on those scores.
+- **What to Record**: 
+  - Record the performance of the reward models in terms of the percentage of problems solved (best-of-500 selection).
+  - Track the data efficiency improvement by comparing the slopes of the line of best fit with and without active learning.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 4a and Section 4.2 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Data Efficiency Improvement**: Measure the improvement in data efficiency by comparing the slopes of the performance curves (percentage of problems solved) with and without active learning. The improvement is quantified as a 2.6x increase in data efficiency.
+  
+- **Normalization and Pre-processing**:
+  - Ensure that the samples selected for labeling are scored consistently using PRMlarge.
+  - Apply a threshold to determine the correctness of each step based on PRMlarge's output probabilities.
+
+- **Aggregation Strategy**:
+  - Aggregate the performance results by calculating the percentage of problems solved for each condition (with and without active learning).
+  - Compare the aggregated results to determine the relative improvement in data efficiency.
+
+## Implementation Notes
+
+- **Active Learning Strategy**:
+  - The active learning strategy involves selecting samples that are most likely to be informative, specifically focusing on convincing wrong-answer samples.
+  - Ensure that the selection process maintains a balance by including a mix of wrong-answer and right-answer samples.
+
+- **Thresholding Logic**:
+  - Use a threshold of 20% probability for PRMlarge to determine if a step is incorrect. This threshold is based on the observation that PRMlarge tends to favor positive labels.
+
+- **Iterative Retraining**:
+  - Although iterative retraining of PRMselector was explored, it showed instability. The current setup does not include iterative retraining, but this remains a potential area for future exploration.

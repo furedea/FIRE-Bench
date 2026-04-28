@@ -1,0 +1,42 @@
+task_id: prismatic_vlm_design_rq1
+paper_type: novel_architecture
+research_question: 'RQ2: How do different image processing strategies and visual representations
+  affect VLM performance?'
+proposed_method:
+  name: Prismatic VLM
+  summary: Prismatic VLM is a visually-conditioned language model architecture that
+    explores the design space of VLMs by investigating different image processing
+    strategies and visual representations. It uses a 'patch-as-token' approach, treating
+    patch features from pretrained visual backbones as tokens projected into the input
+    space of a language model. The architecture is designed to evaluate the impact
+    of various design choices on VLM performance, particularly focusing on image processing
+    and visual representation.
+  key_components:
+  - Pretrained visual backbones (e.g., CLIP, SigLIP, DINOv2, ViT)
+  - Vision-language projector for mapping visual features to language model input
+  - Language model integration with visual features
+baselines:
+- LLaVa v1.5
+- InstructBLIP
+- PaLI-3
+reference_implementation:
+- github.com/TRI-ML/prismatic-vlms
+- github.com/TRI-ML/vlm-evaluation
+datasets:
+- name: LLaVa v1.5 pretraining datasets
+  source: external
+  description: A mixture of datasets used for pretraining VLMs, including captioning
+    datasets and multimodal instruct tuning examples.
+  url: https://github.com/haotian-liu/LLaVA
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/haotian-liu/LLaVA.git
+
+    '
+compute_hint: single GPU, <24h
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

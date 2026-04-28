@@ -1,0 +1,64 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Does the frequency of a language in the training data affect the reasoning performance of language models?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MGSM: A multilingual benchmark created by translating 250 grade-school math problems from the GSM8K dataset into ten typologically diverse languages.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Multilingual Grade School Math (MGSM) Evaluation
+- **Procedure**: 
+  - Use the MGSM dataset, which consists of 250 math problems translated into ten languages.
+  - Implement four prompting strategies: DIRECT, NATIVE-COT, EN-COT, and TRANSLATE-EN.
+  - For each language, use few-shot prompting with up to 6 exemplars, adjusting for token limits.
+  - Conduct experiments using both GPT-3 and PaLM models.
+  - Use greedy decoding (temperature τ = 0) for generating outputs.
+- **What to Record**: 
+  - Record the accuracy of each model and prompting strategy across all languages.
+  - Capture the raw outputs and intermediate reasoning steps for analysis.
+- **Correspondence**: 
+  - Results are detailed in Table 3 and discussed in Section 4.1.
+
+### 2. Language Frequency Analysis
+- **Procedure**: 
+  - Analyze the correlation between language frequency in the training data and model performance.
+  - Use the MGSM dataset and PaLM model for this analysis.
+  - Compare performance across languages with varying representation in the training data.
+- **What to Record**: 
+  - Record the accuracy for each language and compare it against its frequency in the training data.
+- **Correspondence**: 
+  - Results are visualized in Figure 1 and discussed in Section 4.2.
+
+## Evaluation Details
+
+- **Metrics**: 
+  - Accuracy is the primary metric, calculated as the percentage of correctly solved problems.
+- **Normalization/Pre-processing**: 
+  - Ensure all answers are in Arabic numerals for consistency across languages.
+- **Aggregation Strategy**: 
+  - Calculate accuracy per language and aggregate to compare high-resource vs. underrepresented languages.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific templates for each prompting strategy, as detailed in Figures 6, 7, and 8.
+  - Ensure the correct language is used for NATIVE-COT and EN-COT strategies.
+- **Exemplar Selection**: 
+  - Adjust the number of exemplars based on token limits, especially for languages with longer tokenized inputs.
+- **Order of Operations**: 
+  - Translate problems to English before applying the TRANSLATE-EN strategy.
+  - Use few-shot examples in the same language as the problem for NATIVE-EXEMPLARS.

@@ -1,0 +1,104 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the performance differences among LLMs on LongBench?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- LongBench: A bilingual, multi-task benchmark for evaluating long context understanding, comprising 21 datasets across 6 task categories in both English and Chinese.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Performance Evaluation on LongBench
+- **Procedure**: 
+  - Evaluate each model (gpt-4o, Llama-3.1-8B-Instruct) on the LongBench dataset.
+  - Use a zero-shot setting for all tasks except few-shot learning, where examples are provided as part of the context.
+  - For tasks where the input length exceeds the model's maximum context length, truncate the input sequence from the middle.
+  - Use greedy decoding for reproducibility.
+  - Specific prompt templates are provided for each task (see Implementation Notes).
+  - Maximum output lengths are set for each dataset to prevent non-stop generation.
+- **What to Record**: 
+  - Raw outputs of the models.
+  - Extracted answers for QA tasks.
+  - ROUGE-L scores for summarization tasks.
+  - F1 scores for QA tasks.
+  - Accuracy for classification tasks.
+- **Correspondence**: 
+  - Results are reported in Table 2 and Table 3.
+  - Truncation experiments are visualized in Figure 2.
+
+### 2. Truncation Experiments
+- **Procedure**: 
+  - Conduct experiments with truncation sizes of 4k and 8k on LongBench.
+  - Compare performance with the model's maximum length configuration.
+- **What to Record**: 
+  - Macro-average scores across all tasks for each truncation size.
+- **Correspondence**: 
+  - Results are shown in Figure 2.
+
+### 3. LongBench-E Evaluation
+- **Procedure**: 
+  - Evaluate models on LongBench-E, a subset of LongBench with evenly distributed context lengths.
+  - Analyze performance across different context length ranges: 0-4k, 4k-8k, and 8k+.
+- **What to Record**: 
+  - Macro-average scores for each length range.
+- **Correspondence**: 
+  - Results are shown in Figure 3 and Table 9.
+
+### 4. Context Compression Techniques
+- **Procedure**: 
+  - Implement retrieval-based context compression using three retrievers: text-embedding-ada-002, Contriever, and BM25.
+  - Use summarization-based context compression by generating summaries for text chunks.
+- **What to Record**: 
+  - Performance improvements or declines with each compression technique.
+- **Correspondence**: 
+  - Results are reported in Table 4 and Table 5.
+
+### 5. Context Understanding vs. Memorization
+- **Procedure**: 
+  - Evaluate models on QA tasks without providing the long context, only the questions.
+  - Compare performance with and without context.
+- **What to Record**: 
+  - Scores without context and the difference (∆score) from the original scores.
+- **Correspondence**: 
+  - Results are shown in Table 6.
+
+## Evaluation Details
+
+- **Metrics**:
+  - **F1 Score**: Used for QA tasks, calculated as the harmonic mean of precision and recall.
+  - **ROUGE-L**: Used for summarization tasks, measures the longest common subsequence between the generated and reference summaries.
+  - **Accuracy**: Used for classification tasks, calculated as the number of correct predictions divided by the total number of predictions.
+  - **Edit Sim**: Used for code completion tasks, based on Levenshtein distance.
+
+- **Normalization and Pre-processing**:
+  - For few-shot learning and code completion tasks, extract the first line of the response.
+  - For code completion, ignore comment lines in the output.
+
+- **Aggregation Strategy**:
+  - Compute per-sample scores, then average to obtain per-condition scores.
+  - Report macro-average scores across all tasks for overall performance.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Specific templates are provided for each task, ensuring the models understand the task requirements.
+  - Instructions are placed at both the beginning and end of the prompt to reinforce task understanding.
+
+- **Truncation Strategy**: 
+  - When input length exceeds the model's maximum context length, truncate from the middle to preserve crucial information at the start and end of the sequence.
+
+- **Order of Operations**:
+  - Ensure that the input format and maximum output length are set before model evaluation.
+  - Apply context compression techniques before feeding inputs to the models.

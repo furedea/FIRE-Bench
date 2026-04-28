@@ -1,0 +1,79 @@
+You are a research agent. Conduct research about the question: "RQ3: Does finetuning on machine-translated prompts improve performance on non-English human-written prompts?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- BLOOMZ-MT: BLOOMZ-MT is a variant of the BLOOMZ model finetuned on xP3mt, a dataset with machine-translated prompts. This approach aims to enhance the model's performance on non-English human-written prompts by leveraging machine-translated prompts during the finetuning process.
+  - Component: Multilingual finetuning on xP3mt dataset with machine-translated prompts
+  - Component: Evaluation on human-written prompts in non-English languages
+- Baseline for comparison: BLOOMZ
+- Baseline for comparison: mT0
+- Reference hint: https://github.com/bigscience-workshop/xmtf
+
+Datasets for training and evaluation:
+- XNLI: A dataset for evaluating cross-lingual sentence representations, providing pairs of sentences with entailment labels across multiple languages.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("xnli")
+- XCOPA: A multilingual dataset for causal commonsense reasoning, providing pairs of premises and alternatives with causal relationships.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("xcopa")
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Evaluation of Finetuning on Machine-Translated Prompts
+- **Procedure**: 
+  - Finetune the BLOOMZ-MT and mT0-MT models on the xP3mt dataset, which includes machine-translated prompts.
+  - Evaluate the models on human-written prompts using the XNLI and XCOPA datasets.
+  - For each dataset, use the provided language splits and ensure that the evaluation covers both machine-translated and human-translated prompts.
+  - Use a consistent set of prompts for each language split to ensure comparability.
+- **What to Record**: 
+  - Record the accuracy of the models on each language split for both machine-translated and human-translated prompts.
+  - Collect raw outputs and extracted answers for further analysis.
+- **Correspondence**: 
+  - This experiment corresponds to Table 1 and Section 4.3 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**: 
+  - Use accuracy as the primary metric, defined as the number of correct predictions divided by the total number of predictions.
+  - For each language split, compute the accuracy separately for machine-translated and human-translated prompts.
+
+- **Normalization and Pre-processing**: 
+  - Ensure that model outputs are tokenized and aligned with the reference answers for accurate scoring.
+  - Normalize text by lowercasing and removing punctuation if necessary to match the format of reference answers.
+
+- **Aggregation Strategy**: 
+  - Compute per-sample accuracy first, then aggregate to obtain per-condition accuracy (machine-translated vs. human-translated).
+  - Finally, calculate the overall accuracy across all language splits for each condition.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use the specific prompt templates provided in the paper's supplementary materials for consistency.
+  - Ensure that the prompts are correctly formatted and translated for each language split.
+
+- **Order of Operations**: 
+  - Finetune the models on the xP3mt dataset before conducting evaluations.
+  - Evaluate on human-written prompts only after confirming the models have been adequately finetuned on machine-translated prompts.
+
+- **Pitfalls and Caveats**: 
+  - Be cautious of potential biases introduced by machine translation quality, which may affect the evaluation results.
+  - Ensure that the evaluation datasets are not contaminated with training data to maintain the integrity of the results.

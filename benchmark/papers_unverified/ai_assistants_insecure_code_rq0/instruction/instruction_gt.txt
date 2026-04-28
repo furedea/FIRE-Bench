@@ -1,0 +1,79 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ1: Do users write more insecure code when given access to an AI programming assistant?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- User study with 47 participants: A user study conducted with 47 participants to examine how users interact with AI code assistants to solve security-related programming tasks.  [loader unverified -- locate the data yourself]
+
+Analytical tools / techniques available:
+- Logistic Regression
+- Chi-squared Test
+- Cohen-Kappa Inter-rater Reliability
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.
+
+---
+
+## Experimental Design
+
+### 1. User Study on AI Assistant Impact on Code Security
+- **Procedure**: 
+  - Participants are divided into two groups: control (no AI assistant) and experiment (with AI assistant).
+  - Each participant is tasked with solving five security-related programming tasks in Python, JavaScript, and C.
+  - Tasks include: 
+    1. Encrypting and decrypting a string using a symmetric key in Python.
+    2. Signing a message using ECDSA in Python.
+    3. Handling file paths securely in a sandboxed directory in Python.
+    4. Adding entries to a SQL table in JavaScript.
+    5. Converting an integer to a string with commas in C.
+  - Tasks are presented in a randomized order, and participants can attempt them in any order.
+  - Participants have access to external resources and can use the AI assistant if in the experiment group.
+  - The study is conducted using a custom UI that logs all interactions, including AI queries and responses.
+- **What to Record**: 
+  - Raw code submissions for each task.
+  - AI assistant queries and responses.
+  - Time taken per task.
+  - Participant survey responses on perceived correctness and security.
+  - Screen and audio recordings of the session.
+- **Correspondence**: 
+  - Results are detailed in Section 4, with specific findings in Table 4 and Figure 1.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Correctness**: 
+    - Task-specific criteria, e.g., correct encryption/decryption for any message length.
+  - **Security Classification**:
+    - Secure: No security mistakes.
+    - Partially Secure: Minor security issues, e.g., improper padding.
+    - Insecure: Major security flaws, e.g., use of trivial ciphers.
+- **Normalization/Pre-processing**:
+  - Code is manually reviewed and classified into correctness and security categories.
+  - Inter-rater reliability is calculated using Cohen-Kappa scores.
+- **Aggregation Strategy**:
+  - Per-sample correctness and security are aggregated to compare experiment and control groups.
+  - Statistical significance is assessed using Chi-squared tests and logistic regression.
+
+## Implementation Notes
+
+- **Key Pitfalls**:
+  - AI assistant outputs may be correct but insecure, leading to user overconfidence.
+  - Participants may rely heavily on AI outputs without sufficient verification.
+- **Prompt Templates**:
+  - Participants use various prompting strategies, including function declarations and specifying libraries.
+  - Adjustments to AI parameters like temperature are noted to influence output security.
+- **Order of Operations**:
+  - Participants are free to iterate on tasks, using AI outputs as new prompts, which can propagate security issues.
+- **Special Considerations**:
+  - The study's UI allows for detailed logging and analysis of participant interactions with the AI assistant.

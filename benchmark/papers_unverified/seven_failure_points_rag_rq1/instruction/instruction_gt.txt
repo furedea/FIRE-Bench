@@ -1,0 +1,70 @@
+You are a research agent. Conduct an empirical study answering the question: "What are the key considerations when engineering a RAG system?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- BioASQ: A dataset comprised of biomedical questions, links to documents, and answers, used to evaluate potential failure points in RAG systems.  [loader unverified -- locate the data yourself]
+
+Analytical tools / techniques available:
+- OpenAI evals
+- Whisper
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.
+
+---
+
+## Experimental Design
+
+### 1. Biomedical Question and Answer Evaluation
+- **Procedure**: 
+  - Use the BioASQ dataset, which includes 4017 open access documents and 1000 questions.
+  - Index all documents using a chunking strategy suitable for scientific PDFs.
+  - For each question, retrieve relevant documents using a semantic search based on embeddings.
+  - Pass the top-k retrieved documents to GPT-4 to generate answers.
+  - Validate the generated answers using OpenAI evals.
+  - Manually inspect a sample of 40 issues and all flagged inaccuracies by OpenAI evals.
+- **What to Record**: 
+  - Raw outputs from GPT-4.
+  - Evaluation results from OpenAI evals.
+  - Manual inspection notes on discrepancies and flagged inaccuracies.
+- **Correspondence**: Section 4.3, Table 1, and Section 5.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - Use OpenAI evals for automated evaluation of generated answers. This involves comparing the generated answers against reference answers from the BioASQ dataset.
+  - Manual inspection involves qualitative analysis of discrepancies between automated evaluations and human judgment.
+
+- **Normalization and Pre-processing**:
+  - Ensure all text inputs to the model are pre-processed to remove any non-informative content (e.g., headers, footers).
+  - Normalize outputs by trimming whitespace and ensuring consistent formatting before evaluation.
+
+- **Aggregation Strategy**:
+  - Per-sample evaluation: Record individual scores for each question-answer pair.
+  - Aggregate scores to determine overall performance metrics, such as accuracy and precision, across the entire dataset.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - The paper notes that automated evaluations may be more pessimistic than human raters, especially in domain-specific contexts like biomedical data.
+  - Ensure that the chunking strategy is appropriately tuned to balance between too small (missing context) and too large (introducing noise).
+
+- **Prompt Templates and Output Parsing**:
+  - Use specific prompt templates that instruct the model to provide answers in the required format (e.g., list, summary).
+  - Implement output parsing logic to extract and format the model's response according to the expected answer type.
+
+- **Order of Operations**:
+  - Index documents before running queries.
+  - Ensure that the retrieval and ranking of documents are completed before passing them to the LLM for answer generation.
+  - Conduct evaluations only after all answers have been generated and recorded.

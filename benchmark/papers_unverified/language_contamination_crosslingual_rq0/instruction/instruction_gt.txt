@@ -1,0 +1,98 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ1: How much non-English text exists in commonly used English pretraining corpora?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- ENGLISH WIKIPEDIA: A large-scale dataset of English Wikipedia articles used for pretraining language models.  [loader unverified -- locate the data yourself]
+- BOOKCORPUS: A dataset consisting of books used for pretraining language models.  [loader unverified -- locate the data yourself]
+- STORIES: A dataset of stories used for pretraining language models.  [loader unverified -- locate the data yourself]
+- OPENWEBTEXT: An open-source version of WEBTEXT, derived from web-crawled data.  [loader unverified -- locate the data yourself]
+- CC-NEWS: A dataset of news articles used for pretraining language models.  [loader unverified -- locate the data yourself]
+- C4.EN: A large-scale dataset derived from web-crawled data, filtered to exclude non-English text.  [loader unverified -- locate the data yourself]
+
+Analytical tools / techniques available:
+- FastText
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.
+
+---
+
+## Experimental Design
+
+### 1. Automatic Evaluation of Language Composition
+- **Procedure**: 
+  - Use the FastText language identification model to label each line in the datasets as non-English if the confidence score exceeds 0.6.
+  - For the C4.EN dataset, subsample the first 50 million examples (approximately 14% of the dataset) due to its large size. Classify the entirety of all other datasets.
+- **What to Record**: 
+  - Record the estimated number of non-English tokens for each dataset.
+  - Present results as an estimate of non-English data in each dataset.
+- **Correspondence**: 
+  - Figure 1, Table 3, Section 2.1
+
+### 2. Qualitative Analysis of Non-English Texts
+- **Procedure**: 
+  - Randomly select 200 lines per corpus that were predicted as non-English by the language classifier.
+  - Manually code each line into one of six categories: NE (non-English), BiL (bilingual), Trans. (translations), Ent. (non-English entities), En. (misclassified English), and XX (no natural language).
+- **What to Record**: 
+  - Record the distribution of line types across the datasets.
+  - Note any patterns or common errors in classification.
+- **Correspondence**: 
+  - Table 1, Section 2.2
+
+### 3. Non-English MLM Evaluation
+- **Procedure**: 
+  - Measure the perplexity of English pretrained masked language models (MLMs) on non-English text using the Wiki-40B dataset.
+  - Report bits per character (BPC) to allow comparison between models with different tokenizations.
+- **What to Record**: 
+  - Record BPC scores for each language and model.
+- **Correspondence**: 
+  - Figure 2a, Section 3.1
+
+### 4. POS Performance Across Languages
+- **Procedure**: 
+  - Evaluate monolingual English models on non-English part-of-speech (POS) tagging tasks.
+  - Conduct both probing (using a linear classifier on the final layer) and fine-tuning experiments.
+- **What to Record**: 
+  - Record accuracy scores for each language and model.
+  - Report average performance across five runs with different random seeds.
+- **Correspondence**: 
+  - Figure 2b, Figure 2c, Section 3.2
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Bits Per Character (BPC)**: Calculated as the log base 2 of the perplexity per character.
+  - **POS Tagging Accuracy**: The percentage of correctly predicted POS tags out of the total number of tags.
+
+- **Normalization and Pre-processing**:
+  - For MLM evaluation, ensure text is tokenized according to each model's requirements.
+  - For POS tagging, average the representation of all tokens for words tokenized into multiple subword units.
+
+- **Aggregation Strategy**:
+  - For BPC, report the average across all characters in the dataset.
+  - For POS tagging, report the average accuracy across all languages and runs.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - Language detection is imperfect, especially for low-resource languages, which may lead to misclassification.
+  - High UNK token rates in tokenization can affect downstream task performance and BPC scores.
+
+- **Special Prompt Templates and Output Parsing**:
+  - Ensure consistent use of the FastText model's confidence threshold (0.6) for language classification.
+  - Use manual coding categories consistently for qualitative analysis.
+
+- **Order of Operations**:
+  - Perform automatic language identification before qualitative analysis to ensure accurate sampling of non-English lines.
+  - Conduct MLM evaluation and POS tagging experiments separately to avoid confounding results.

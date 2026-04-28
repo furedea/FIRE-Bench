@@ -1,0 +1,45 @@
+task_id: bloomz_crosslingual_multitask_rq0
+paper_type: novel_architecture
+research_question: 'RQ1: Does multitask finetuning on English tasks improve performance
+  on non-English tasks?'
+proposed_method:
+  name: BLOOMZ and mT0
+  summary: BLOOMZ and mT0 are finetuned variants of the pretrained multilingual BLOOM
+    and mT5 model families. They are designed to improve crosslingual generalization
+    by finetuning on English tasks with English prompts, allowing for task generalization
+    to non-English languages that appear only in the pretraining corpus. Finetuning
+    on multilingual tasks with English prompts further enhances performance on both
+    English and non-English tasks, achieving state-of-the-art zero-shot results.
+  key_components:
+  - Multitask finetuning on English tasks
+  - Use of pretrained multilingual BLOOM and mT5 models
+  - Evaluation on non-English held-out tasks
+baselines:
+- BLOOM
+- mT5
+reference_implementation:
+- https://github.com/bigscience-workshop/xmtf
+datasets:
+- name: xP3
+  source: huggingface
+  description: A composite of supervised datasets in 46 languages with English and
+    machine-translated prompts.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''bigscience/xP3'')
+
+    '
+- name: P3
+  source: huggingface
+  description: An English-only multitask mixture used for finetuning.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''bigscience/P3'')
+
+    '
+compute_hint: large-scale, multi-GPU, >24h
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

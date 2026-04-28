@@ -1,0 +1,91 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Are the observed reasoning breakdowns in LLMs due to low-level issues or generic deficits in generalization?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- AIW Light Arithmetic Siblings: A control problem designed to test models' ability to handle arithmetic operations in the context of family relations.  [generate programmatically]
+- AIW Light Family: A control problem designed to test models' understanding of basic family structure and relations.  [generate programmatically]
+- AIW Light Arithmetic Total Girls: A control problem designed to test models' ability to bind attributes and execute arithmetic operations to count total females.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. AIW Problem Variations
+- **Procedure**: 
+  - Use the AIW problem template: "Alice has N brothers and she also has M sisters. How many sisters does Alice’s brother have?".
+  - Create variations by instantiating different numbers N, M ≤ 7, resulting in AIW variations 1-4.
+  - Use three prompt types: STANDARD, THINKING, and RESTRICTED.
+  - Conduct 60 trials per variation and prompt type.
+- **What to Record**: 
+  - Correct response rates for each variation and prompt type.
+  - Raw outputs and reasoning paths.
+- **Correspondence**: 
+  - Figure 1, Figure 3, Figure 4, Section 3.1.
+
+### 2. AIW Light Control Problems
+- **Procedure**: 
+  - Use AIW Light Arithmetic Siblings, AIW Light Family, and AIW Light Arithmetic Total Girls templates.
+  - Create variations 1-4 by varying natural numbers N, M.
+  - Use THINKING v2 prompt type.
+  - Conduct 60 trials per variation.
+- **What to Record**: 
+  - Correct response rates for each variation.
+  - Raw outputs.
+- **Correspondence**: 
+  - Figure 5, Figure 6, Figure 7, Section 3.1.1.
+
+### 3. AIW Extended and AIW Friends
+- **Procedure**: 
+  - Use AIW Extended and AIW Friends problem templates.
+  - Create variations 1-4 by varying numbers.
+  - Use THINKING v2 prompt type.
+  - Conduct 60 trials per variation.
+- **What to Record**: 
+  - Correct response rates for each variation.
+  - Raw outputs and reasoning paths.
+- **Correspondence**: 
+  - Figure 11, Section 3.2.1.
+
+### 4. AIW+ and AIW Colleague Circles
+- **Procedure**: 
+  - Use AIW+ and AIW Colleague Circles problem templates.
+  - Create variations 1-6 by varying numbers.
+  - Use THINKING v2 prompt type.
+  - Conduct 60 trials per variation.
+- **What to Record**: 
+  - Correct response rates for each variation.
+  - Raw outputs and reasoning paths.
+- **Correspondence**: 
+  - Figure 12, Figure 13, Section 3.2.2.
+
+## Evaluation Details
+
+- **Metric Definitions**: 
+  - Correct response rate is calculated as the proportion of trials where the model provides the correct answer.
+  - Use Beta-Binomial distribution to estimate the probability of correct responses.
+- **Normalization/Pre-processing**: 
+  - Parse model outputs to extract final answers using the format "### Answer: ".
+- **Aggregation Strategy**: 
+  - Compute correct response rates per variation and prompt type.
+  - Average correct response rates across variations and prompt types for overall performance assessment.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompt types (STANDARD, THINKING, RESTRICTED) with instructions for output format.
+- **Output Parsing**: 
+  - Ensure models follow the output format instruction for easy parsing.
+- **Order of Operations**: 
+  - Conduct trials for each variation and prompt type systematically to ensure consistency in data collection.

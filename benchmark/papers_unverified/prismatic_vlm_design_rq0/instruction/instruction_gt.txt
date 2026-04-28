@@ -1,0 +1,120 @@
+You are a research agent. Conduct research about the question: "RQ1: What are the key design decisions that influence VLM capabilities and downstream use?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- Prismatic VLMs: Prismatic VLMs are a family of visually-conditioned language models designed to explore and optimize the design space of VLMs. They focus on key design axes such as optimization procedures, image processing, pretrained visual representations, and language models. The architecture uses a 'patch-as-token' approach, treating patch features from pretrained visual backbones as tokens projected into the input space of a language model, enabling efficient training with a simple next-token prediction objective.
+  - Component: Pretrained visual representation backbones (e.g., CLIP, DINOv2)
+  - Component: Vision-language projector for mapping visual features to language model embeddings
+  - Component: Language models (e.g., Llama-2, Mistral) for generating text from combined visual and text inputs
+  - Component: Single-stage training pipeline to reduce compute costs
+  - Component: Fused visual backbones for enhanced performance
+- Baseline for comparison: InstructBLIP
+- Baseline for comparison: LLaVa v1.5
+- Reference hint: github.com/TRI-ML/prismatic-vlms
+- Reference hint: github.com/TRI-ML/vlm-evaluation
+
+Datasets for training and evaluation:
+- LLaVa v1.5 pretraining datasets: A mixture of datasets used for pretraining VLMs, including captioning datasets like Conceptual Captions and LAION, as well as multimodal instruct tuning examples.  [loader unverified -- locate the data yourself]
+- VizWiz: A dataset for visual question answering that includes general visual reasoning and unanswerable questions.  [loader unverified -- locate the data yourself]
+- VQAv2: A dataset for visual question answering focusing on general visual reasoning.  [loader unverified -- locate the data yourself]
+- GQA: A dataset for visual question answering that evaluates spatial reasoning.  [loader unverified -- locate the data yourself]
+- TextVQA: A dataset for visual question answering that assesses reasoning around text present in images.  [loader unverified -- locate the data yourself]
+- RefCOCO: A dataset for object localization using referring expressions with spatial anchors.  [loader unverified -- locate the data yourself]
+- RefCOCO+: A dataset for object localization using strictly appearance-based descriptions.  [loader unverified -- locate the data yourself]
+- RefCOCOg: A dataset for object localization using long, rich descriptions.  [loader unverified -- locate the data yourself]
+- OCID-Ref: A robotics dataset probing out-of-distribution generalization for localizing objects in clutter.  [loader unverified -- locate the data yourself]
+- Visual Spatial Reasoning (VSR): A dataset consisting of challenging True/False questions about spatial relationships in diverse scenes.  [loader unverified -- locate the data yourself]
+- TallyQA: A dataset consisting of questions that assess a VLM's ability to count objects described in language.  [loader unverified -- locate the data yourself]
+- POPE: A dataset consisting of targeted Yes/No questions that assess a VLM's propensity to hallucinate.  [loader unverified -- locate the data yourself]
+- AI2 Diagrams (AI2D): A dataset consisting of multiple choice questions about scientific diagrams and charts.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Multi-Stage vs. Single-Stage Training
+- **Procedure**: 
+  - Implement both multi-stage and single-stage training pipelines.
+  - For multi-stage training, first train the vision-language projector Fψ in isolation, freezing other components. Then, finetune both the projector and the language model while keeping the visual backbone frozen.
+  - For single-stage training, directly finetune the projector and language model without the initial projector-only stage.
+  - Use the LLaVa v1.5 pretraining datasets for both procedures.
+- **What to Record**: 
+  - Performance metrics across all evaluation tasks.
+  - Training time and compute cost for each stage.
+- **Correspondence**: Figure 4, Section 4.1
+
+### 2. Finetuning vs. Freezing Visual Backbone
+- **Procedure**: 
+  - Train models with the visual backbone either finetuned or frozen.
+  - Use the single-stage training pipeline for both configurations.
+  - Evaluate on the same set of tasks using the LLaVa v1.5 pretraining datasets.
+- **What to Record**: 
+  - Performance metrics, particularly on tasks requiring spatial reasoning.
+  - Compare degradation in performance when the visual backbone is finetuned.
+- **Correspondence**: Figure 5, Section 4.1
+
+### 3. Image Processing and Visual Representations
+- **Procedure**: 
+  - Evaluate different image processing schemes: "resize & crop", "letterbox padding", and "naive resize".
+  - Compare visual representations from CLIP, SigLIP, DINOv2, and a standard Vision Transformer.
+  - Use a consistent input resolution for fair comparison.
+- **What to Record**: 
+  - Performance metrics across all evaluation tasks.
+  - Specific impact on tasks requiring full-scene reasoning.
+- **Correspondence**: Figure 6, Section 4.2
+
+### 4. Ensembling Visual Features
+- **Procedure**: 
+  - Concatenate patch features from DINOv2 and CLIP/SigLIP models along the channel dimension.
+  - Adjust the input dimension of the projector Fψ accordingly.
+  - Evaluate the ensemble on all tasks.
+- **What to Record**: 
+  - Performance metrics, especially on localization and challenge tasks.
+  - Compare against single-model baselines.
+- **Correspondence**: Figure 7, Section 4.2
+
+### 5. Base vs. Instruct-Tuned Language Models
+- **Procedure**: 
+  - Compare VLMs using base LMs (e.g., Llama-2) and instruct-tuned LMs (e.g., Vicuña v1.5).
+  - Use the same training and evaluation datasets for both configurations.
+- **What to Record**: 
+  - Quantitative performance metrics.
+  - Qualitative differences in output verbosity and hallucination propensity.
+- **Correspondence**: Figure 7, Figure 11, Section 4.3
+
+## Evaluation Details
+
+- **Metrics**: 
+  - Use accuracy for open-ended visual question answering tasks.
+  - Use IoU thresholds for localization tasks.
+  - Use accuracy for challenge tasks formatted as multiple choice.
+- **Normalization**: 
+  - Compute normalized Z-scores for each model and evaluation using the mean and standard deviation across all models.
+- **Aggregation Strategy**: 
+  - Aggregate performance metrics across all tasks to compute global scores.
+  - Perform statistical significance testing using a 1-sided Fisher T-test with p < 0.01.
+
+## Implementation Notes
+
+- **Prompting Strategy**: 
+  - Use specific trigger prompts for each evaluation task as defined in the pretraining datasets.
+  - For instruct-tuned LMs, use a chat format with system prompts and user-assistant blocks.
+  - For base LMs, use a simpler input-output format without system prompts.
+- **Order of Operations**: 
+  - Ensure consistent image processing and feature extraction before feeding into the language model.
+  - Maintain fixed initialization randomness and batch order during training for reproducibility.

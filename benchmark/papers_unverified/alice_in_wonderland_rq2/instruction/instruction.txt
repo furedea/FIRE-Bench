@@ -1,0 +1,18 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How do variations in problem formulation affect the performance of LLMs?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- AIW Exaggerated Numbers: AIW problem versions with exaggerated numbers created by adding an offset to the original numbers.  [generate programmatically]
+- AIW Alice Female Boost: AIW problem versions with redundant information added, such as explicitly stating 'Alice is female'.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

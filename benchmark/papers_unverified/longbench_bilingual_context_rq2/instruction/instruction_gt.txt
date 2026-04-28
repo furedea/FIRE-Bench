@@ -1,0 +1,73 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How do context compression techniques impact LLM performance on LongBench?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- LongBench: A bilingual, multi-task benchmark for evaluating long context understanding, comprising 21 datasets across 6 task categories in both English and Chinese.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Impact of Retrieval-Based Context Compression
+- **Procedure**: 
+  - For each QA task in LongBench, split the long context into chunks of 200 and 500 words (or characters for Chinese datasets).
+  - Use three retrieval methods: text-embedding-ada-002, Contriever, and BM25.
+  - Retrieve the top-7 chunks for 200-word chunks and top-3 chunks for 500-word chunks based on cosine similarity with the query.
+  - Concatenate the retrieved chunks with the query and feed them into the model.
+- **What to Record**: 
+  - Record the F1 scores for each retrieval method and chunk size combination.
+  - Compare the performance with and without retrieval-based compression.
+- **Correspondence**: Table 4, Section 4.2
+
+### 2. Impact of Summarization-Based Context Compression
+- **Procedure**: 
+  - For each summarization task in LongBench, generate a brief summary for each text chunk using the model.
+  - Concatenate the summaries to form the compressed context.
+  - Evaluate the model's performance using the compressed context.
+- **What to Record**: 
+  - Record the ROUGE-L scores for each summarization task with and without summarization-based compression.
+  - Compare the performance across different datasets.
+- **Correspondence**: Table 5, Section 4.2
+
+## Evaluation Details
+
+### Retrieval-Based Context Compression
+- **Metrics**: 
+  - Use F1 score for QA tasks.
+  - Compute F1 as the harmonic mean of precision and recall on the predicted answers compared to the ground truth.
+- **Normalization**: 
+  - Ensure that the retrieved chunks are concatenated in the order of their relevance scores.
+- **Aggregation Strategy**: 
+  - Calculate the average F1 score across all tasks for each retrieval method and chunk size.
+
+### Summarization-Based Context Compression
+- **Metrics**: 
+  - Use ROUGE-L for summarization tasks.
+  - ROUGE-L measures the longest common subsequence between the generated summary and the reference summary.
+- **Normalization**: 
+  - Ensure that the generated summaries are concatenated in the order they appear in the original context.
+- **Aggregation Strategy**: 
+  - Calculate the average ROUGE-L score across all summarization tasks.
+
+## Implementation Notes
+
+- **Retrieval Methods**: 
+  - Ensure that the embeddings for text chunks and queries are computed using the specified retrieval methods.
+  - Use cosine similarity to rank the relevance of chunks to the query.
+- **Summarization**: 
+  - Use the model to generate summaries for each chunk without additional prompts to maintain consistency.
+- **Order of Operations**: 
+  - For retrieval-based compression, split the context, compute embeddings, retrieve relevant chunks, and then concatenate.
+  - For summarization-based compression, generate summaries for each chunk, concatenate summaries, and then evaluate.

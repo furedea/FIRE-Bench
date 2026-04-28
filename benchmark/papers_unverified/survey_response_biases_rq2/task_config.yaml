@@ -1,0 +1,30 @@
+task_id: survey_response_biases_rq2
+paper_type: llm_evaluation
+research_question: 'RQ3: Is there a correspondence between LLMs'' ability to replicate
+  human opinion distributions and their exhibition of human-like response biases?'
+models:
+  api:
+  - gpt-3.5-turbo
+  - gpt-3.5-turbo-instruct
+  huggingface:
+  - meta-llama/Llama-2-7b
+  - meta-llama/Llama-2-13b
+  - meta-llama/Llama-2-70b
+  - upstage/SOLAR-0-70b-16bit
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: American Trends Panel (ATP)
+  source: external
+  description: A dataset of survey questions curated by Pew Research, used to evaluate
+    response biases in LLMs.
+  url: https://www.pewresearch.org/american-trends-panel/
+  url_kind: website
+  loader: '# Download instructions and data are at:
+
+    # https://www.pewresearch.org/american-trends-panel/
+
+    '
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

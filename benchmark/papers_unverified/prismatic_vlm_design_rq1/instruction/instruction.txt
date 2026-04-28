@@ -1,0 +1,35 @@
+You are a research agent. Conduct research about the question: "RQ2: How do different image processing strategies and visual representations affect VLM performance?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- Prismatic VLM: Prismatic VLM is a visually-conditioned language model architecture that explores the design space of VLMs by investigating different image processing strategies and visual representations. It uses a 'patch-as-token' approach, treating patch features from pretrained visual backbones as tokens projected into the input space of a language model. The architecture is designed to evaluate the impact of various design choices on VLM performance, particularly focusing on image processing and visual representation.
+  - Component: Pretrained visual backbones (e.g., CLIP, SigLIP, DINOv2, ViT)
+  - Component: Vision-language projector for mapping visual features to language model input
+  - Component: Language model integration with visual features
+- Baseline for comparison: LLaVa v1.5
+- Baseline for comparison: InstructBLIP
+- Baseline for comparison: PaLI-3
+- Reference hint: github.com/TRI-ML/prismatic-vlms
+- Reference hint: github.com/TRI-ML/vlm-evaluation
+
+Datasets for training and evaluation:
+- LLaVa v1.5 pretraining datasets: A mixture of datasets used for pretraining VLMs, including captioning datasets and multimodal instruct tuning examples.
+  GitHub repo: https://github.com/haotian-liu/LLaVA
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/haotian-liu/LLaVA.git
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.

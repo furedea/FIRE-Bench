@@ -1,0 +1,54 @@
+task_id: bags_of_words_vlm_rq1
+paper_type: llm_evaluation
+research_question: 'RQ2: Why do Vision-Language Models exhibit poor compositional
+  and order understanding?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - openai/clip-vit-base-patch32
+  - salesforce/blip
+  - facebook/flava-full
+  - zengyan-97/X-VLM
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: Attribution, Relation, and Order (ARO) benchmark
+  source: synthetic
+  description: A benchmark to evaluate the ability of VLMs to understand different
+    types of relationships, attributes, and order information.
+- name: Visual Genome
+  source: huggingface
+  description: A large-scale dataset with images annotated with objects, attributes,
+    and relations.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''visual_genome'')
+
+    '
+- name: COCO
+  source: external
+  description: A dataset containing images and their captions, used for image-text
+    retrieval tasks.
+  url: https://github.com/cocodataset/cocoapi
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/cocodataset/cocoapi.git
+
+    '
+- name: Flickr30k
+  source: external
+  description: A dataset containing images and their captions, used for image-text
+    retrieval tasks.
+  url: https://github.com/BryanPlummer/flickr30k_entities
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/BryanPlummer/flickr30k_entities.git
+
+    '
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

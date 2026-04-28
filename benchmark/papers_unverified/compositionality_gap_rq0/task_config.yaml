@@ -1,0 +1,36 @@
+task_id: compositionality_gap_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How can the compositionality gap in language models be measured?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: Compositional Celebrities
+  source: synthetic
+  description: A dataset of 8.6k 2-hop questions combining frequently stated facts
+    in improbable ways to measure the compositionality gap.
+- name: 2WikiMultiHopQA
+  source: unknown
+  description: A dataset containing 2-hop compositional questions sourced from facts
+    that appear in Wikipedia articles.
+- name: Musique
+  source: external
+  description: A dataset of multi-hop questions via single-hop question composition.
+  url: https://github.com/stonybrooknlp/musique
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/stonybrooknlp/musique.git
+
+    '
+- name: Bamboogle
+  source: synthetic
+  description: A manually constructed dataset of 125 2-hop questions challenging a
+    system's ability to decompose complex questions.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

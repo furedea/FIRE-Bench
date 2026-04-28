@@ -1,0 +1,106 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How do LLMs perform as agents across different interactive environments?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 and claude-3 and glm-4 and claude-2 and gpt-3.5-turbo and text-davinci-003 and claude-instant and chat-bison-001 and text-davinci-002 via API
+- Load with HuggingFace: meta-llama/Llama-2-70b
+- Load with HuggingFace: meta-llama/Llama-2-13b
+- Load with HuggingFace: meta-llama/Llama-2-7b
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-13B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-34B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-70B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-13B
+- Load with HuggingFace: meta-llama/Llama-3.1-7B
+- Load with HuggingFace: meta-llama/Llama-3.1-6B
+- Load with HuggingFace: meta-llama/Llama-3.1-12B
+- Load with HuggingFace: meta-llama/Llama-3.1-30B
+- Load with HuggingFace: meta-llama/Llama-3.1-33B
+- Load with HuggingFace: meta-llama/Llama-3.1-65B
+- Load with HuggingFace: meta-llama/Llama-3.1-6B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-12B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-30B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-33B-Instruct
+- Load with HuggingFace: meta-llama/Llama-3.1-65B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Operating System: Simulated environment for evaluating LLMs' ability to interact with operating systems using bash commands.  [generate programmatically]
+- Database: Simulated environment for evaluating LLMs' ability to interact with databases using SQL commands.  [generate programmatically]
+- Knowledge Graph: Simulated environment for evaluating LLMs' ability to interact with knowledge graphs using querying tools.  [generate programmatically]
+- Digital Card Game: Simulated environment for evaluating LLMs' strategic thinking in a card game setting.  [generate programmatically]
+- Lateral Thinking Puzzles: Simulated environment for evaluating LLMs' lateral reasoning abilities through puzzles.  [generate programmatically]
+- House-Holding: Simulated environment for evaluating LLMs' ability to perform tasks in a household setting.  [generate programmatically]
+- Web Shopping: Simulated environment for evaluating LLMs' ability to perform shopping tasks on a web platform.  [generate programmatically]
+- Web Browsing: Simulated environment for evaluating LLMs' ability to perform browsing tasks on the web.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Code-Grounded Environments Evaluation
+- **Task**: Evaluate LLMs in Operating System, Database, and Knowledge Graph environments.
+- **Procedure**:
+  - **Operating System**: LLMs interact with a simulated bash environment. Tasks include executing bash commands to solve specific problems. Use a docker container to simulate the environment. Limit interaction to 8 rounds.
+  - **Database**: LLMs interact with a MySQL database. Tasks involve executing SQL queries to retrieve or modify data. Use a docker container to simulate the database environment. Limit interaction to 5 rounds.
+  - **Knowledge Graph**: LLMs interact with a knowledge graph using predefined querying tools. Tasks involve retrieving information based on complex queries. Limit interaction to 15 rounds.
+- **What to Record**: Success rate for each task, raw outputs, and any errors encountered.
+- **Correspondence**: Section 3.1, Table 2, Figure 4.
+
+### 2. Game-Grounded Environments Evaluation
+- **Task**: Evaluate LLMs in Digital Card Game, Lateral Thinking Puzzles, and House-Holding environments.
+- **Procedure**:
+  - **Digital Card Game**: LLMs play a simplified card game (Aquawar) against an algorithm-based opponent. Record win rate and game progress.
+  - **Lateral Thinking Puzzles**: LLMs solve puzzles by asking binary questions. Record game progress and query relevance.
+  - **House-Holding**: LLMs perform tasks in a simulated household environment. Record success rate and task completion time.
+- **What to Record**: Win rate, game progress, success rate, and any errors encountered.
+- **Correspondence**: Section 3.2, Table 2, Figure 4.
+
+### 3. Web-Grounded Environments Evaluation
+- **Task**: Evaluate LLMs in Web Shopping and Web Browsing environments.
+- **Procedure**:
+  - **Web Shopping**: LLMs perform shopping tasks on a simulated e-commerce platform. Record reward based on attribute matching.
+  - **Web Browsing**: LLMs perform browsing tasks on a simulated web platform. Record step success rate and task success rate.
+- **What to Record**: Reward, step success rate, task success rate, and any errors encountered.
+- **Correspondence**: Section 3.3, Table 2, Figure 4.
+
+## Evaluation Details
+
+### Metrics
+- **Success Rate**: Proportion of tasks completed successfully.
+- **F1 Score**: Used for Knowledge Graph tasks, comparing predicted answers to gold standard answers.
+- **Win Rate**: Proportion of games won by the LLM in the Digital Card Game.
+- **Game Progress**: Number of key points reached in Lateral Thinking Puzzles.
+- **Reward**: Calculated based on attribute matching in Web Shopping tasks.
+- **Step Success Rate**: Proportion of correct actions taken in Web Browsing tasks.
+
+### Normalization and Pre-processing
+- For SQL and bash commands, ensure commands are syntactically correct and executable.
+- For Knowledge Graph queries, ensure queries are executable and return valid results.
+- Normalize outputs by removing extraneous information and focusing on key results.
+
+### Aggregation Strategy
+- Aggregate success rates and other metrics per task type and environment.
+- Calculate overall scores by averaging across all tasks and environments.
+
+## Implementation Notes
+
+### Key Pitfalls
+- Ensure LLMs adhere to the specified output format to avoid Invalid Format errors.
+- Monitor for repeated content in TLE scenarios to identify potential looping issues.
+
+### Special Prompt Templates
+- Use 1-shot examples for tasks with complex output requirements, such as SQL queries and bash commands.
+- Include detailed instructions and examples in prompts to guide LLMs in generating correct outputs.
+
+### Order of Operations
+- Initialize environments before starting interactions.
+- Execute LLM-generated actions and provide feedback before proceeding to the next round.
+- Terminate interactions if the maximum number of rounds is reached or if the task is completed successfully.

@@ -1,0 +1,59 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How effective is the FRESHQA benchmark in evaluating the factuality of LLMs?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: google/flan-t5-xxl
+- Load with HuggingFace: google/flan-palm-540b
+- Load with HuggingFace: google/palm-540b
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- FRESHQA: A dynamic QA benchmark with 600 questions divided into categories like fast-changing, slow-changing, never-changing, and false-premise, designed to evaluate the factuality of LLMs.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Benchmarking LLMs on FRESHQA
+- **Procedure**: 
+  - Use the FRESHQA dataset, which consists of 600 questions divided into four categories: fast-changing, slow-changing, never-changing, and false-premise.
+  - For each model (gpt-4, google/flan-t5-xxl, google/flan-palm-540b, google/palm-540b), prompt the model with each question from the dataset.
+  - Use a temperature of 0 for decoding to ensure deterministic outputs.
+  - For non-chat models, format the prompt as "Q: <question>\nA: ".
+  - Evaluate responses in two modes: RELAXED (focuses on the correctness of the primary answer) and STRICT (ensures all claims are factual and up-to-date).
+  - Use the test set of 500 questions for evaluation, reserving the development set for future studies.
+- **What to Record**: 
+  - Raw model outputs for each question.
+  - Accuracy scores under both RELAXED and STRICT evaluation modes.
+  - Specific errors or hallucinations noted during evaluation.
+- **Correspondence**: 
+  - Results are detailed in Section 3.1 and visualized in Figure 2, with concrete numbers in Tables 3 and 4.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Accuracy (RELAXED)**: A response is credited if the primary answer is correct, even if additional information is outdated or hallucinatory, provided it does not contradict the primary answer.
+  - **Accuracy (STRICT)**: A response is credited only if all information is accurate and up-to-date, with no hallucinations.
+- **Normalization/Pre-processing**:
+  - Ensure that entity names are complete or commonly recognized.
+  - Numerical answers must match the ground-truth format unless approximations are explicitly allowed.
+- **Aggregation Strategy**:
+  - Calculate per-sample accuracy, then aggregate to per-condition (question type) and overall accuracy.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - Ensure that the model's response is definitive and confident; ambiguous or hedged answers should not receive credit.
+  - For false-premise questions, the model must explicitly identify the false premise to receive credit.
+- **Prompt Templates**:
+  - Use a consistent prompt format for non-chat models to ensure uniformity in responses.
+- **Order of Operations**:
+  - Evaluate each model on the same date to ensure consistency in results, especially for models that may have access to updated information.

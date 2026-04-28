@@ -1,0 +1,62 @@
+task_id: sycophancy_in_llms_rq2
+paper_type: llm_evaluation
+research_question: 'RQ3: How does optimizing against preference models affect sycophancy?'
+models:
+  api:
+  - gpt-4
+  huggingface:
+  - meta-llama/Llama-2-70b-chat
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: hh-rlhf
+  source: huggingface
+  description: A dataset containing human preference comparisons used to train preference
+    models.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''Anthropic/hh-rlhf'')
+
+    '
+- name: MATH
+  source: external
+  description: A dataset for measuring mathematical problem solving.
+  url: https://github.com/hendrycks/math
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/hendrycks/math.git
+
+    '
+- name: MMLU
+  source: huggingface
+  description: A dataset for measuring massive multitask language understanding.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''cais/mmlu'')
+
+    '
+- name: AQuA
+  source: external
+  description: A dataset for algebraic word problems.
+  url: https://github.com/deepmind/AQuA
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/deepmind/AQuA.git
+
+    '
+- name: TruthfulQA
+  source: unknown
+  description: A dataset for measuring how models mimic human falsehoods.
+- name: TriviaQA
+  source: huggingface
+  description: A large scale distantly supervised challenge dataset for reading comprehension.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''trivia_qa'')
+
+    '
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

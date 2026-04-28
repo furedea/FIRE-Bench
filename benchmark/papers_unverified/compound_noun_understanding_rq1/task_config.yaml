@@ -1,0 +1,20 @@
+task_id: compound_noun_understanding_rq1
+paper_type: llm_evaluation
+research_question: 'RQ2: Can generating diverse captions improve VLMs'' understanding
+  of compound nouns?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - openai/clip-vit-large-patch14
+  - openai/clip-vit-base-patch32
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: Compun
+  source: unknown
+  description: A benchmark with 400 unique and commonly used compound nouns to evaluate
+    the effectiveness of VLMs in interpreting compound nouns.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

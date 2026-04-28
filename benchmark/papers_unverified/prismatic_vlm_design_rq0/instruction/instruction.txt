@@ -1,0 +1,75 @@
+You are a research agent. Conduct research about the question: "RQ1: What are the key design decisions that influence VLM capabilities and downstream use?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- Prismatic VLMs: Prismatic VLMs are a family of visually-conditioned language models designed to explore and optimize the design space of VLMs. They focus on key design axes such as optimization procedures, image processing, pretrained visual representations, and language models. The architecture uses a 'patch-as-token' approach, treating patch features from pretrained visual backbones as tokens projected into the input space of a language model, enabling efficient training with a simple next-token prediction objective.
+  - Component: Pretrained visual representation backbones (e.g., CLIP, DINOv2)
+  - Component: Vision-language projector for mapping visual features to language model embeddings
+  - Component: Language models (e.g., Llama-2, Mistral) for generating text from combined visual and text inputs
+  - Component: Single-stage training pipeline to reduce compute costs
+  - Component: Fused visual backbones for enhanced performance
+- Baseline for comparison: InstructBLIP
+- Baseline for comparison: LLaVa v1.5
+- Reference hint: github.com/TRI-ML/prismatic-vlms
+- Reference hint: github.com/TRI-ML/vlm-evaluation
+
+Datasets for training and evaluation:
+- LLaVa v1.5 pretraining datasets: A mixture of datasets used for pretraining VLMs, including captioning datasets like Conceptual Captions and LAION, as well as multimodal instruct tuning examples.
+  GitHub repo: https://github.com/haotian-liu/LLaVA
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/haotian-liu/LLaVA.git
+- VizWiz: A dataset for visual question answering that includes general visual reasoning and unanswerable questions.
+  Project page: https://vizwiz.org/tasks-and-datasets/answer/
+  Setup:
+    # Download instructions and data are at:
+    # https://vizwiz.org/tasks-and-datasets/answer/
+- VQAv2: A dataset for visual question answering focusing on general visual reasoning.
+  Project page: https://visualqa.org/download.html
+  Setup:
+    # Download instructions and data are at:
+    # https://visualqa.org/download.html
+- GQA: A dataset for visual question answering that evaluates spatial reasoning.
+  Project page: https://cs.stanford.edu/people/dorarad/gqa/index.html
+  Setup:
+    # Download instructions and data are at:
+    # https://cs.stanford.edu/people/dorarad/gqa/index.html
+- TextVQA: A dataset for visual question answering that assesses reasoning around text present in images.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('textvqa')
+- RefCOCO: A dataset for object localization using referring expressions with spatial anchors.
+  GitHub repo: https://github.com/lichengunc/refer
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/lichengunc/refer.git
+- RefCOCO+: A dataset for object localization using strictly appearance-based descriptions.
+  GitHub repo: https://github.com/lichengunc/refer
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/lichengunc/refer.git
+- RefCOCOg: A dataset for object localization using long, rich descriptions.
+  GitHub repo: https://github.com/lichengunc/refer
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/lichengunc/refer.git
+- OCID-Ref: A robotics dataset probing out-of-distribution generalization for localizing objects in clutter.  [loader unverified -- locate the data yourself]
+- Visual Spatial Reasoning (VSR): A dataset consisting of challenging True/False questions about spatial relationships in diverse scenes.  [loader unverified -- locate the data yourself]
+- TallyQA: A dataset consisting of questions that assess a VLM's ability to count objects described in language.  [loader unverified -- locate the data yourself]
+- POPE: A dataset consisting of targeted Yes/No questions that assess a VLM's propensity to hallucinate.  [loader unverified -- locate the data yourself]
+- AI2 Diagrams (AI2D): A dataset consisting of multiple choice questions about scientific diagrams and charts.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.

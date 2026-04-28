@@ -1,0 +1,78 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: Can MLLMs’ performance in nonverbal abstract reasoning tasks be improved?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet, used to assess nonverbal abstract reasoning abilities.  [loader unverified -- locate the data yourself]
+- RAVEN-S: A visual reasoning dataset containing 3,500 synthetic samples in seven categories, used to evaluate reasoning abilities in a reduced computational cost setting.  [loader unverified -- locate the data yourself]
+- CCSE: A dataset of 175 visual abstractions and reasoning problems from the China Civil Service Examination, used as a challenging benchmark across various reasoning patterns.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Guided Prompting with Different Types of Hints
+- **Procedure**: 
+  - Use the IQ50 dataset.
+  - Implement three types of guided prompting strategies: 
+    - **General Hints**: Provide broad cues on approaching visual puzzles, hinting at common strategies without being sample-specific.
+    - **Sample-specific Hints**: Provide one sample-specific hint about the desired reasoning for solving each puzzle.
+    - **Corrective Hints**: In an interactive process, observe the model's reasoning when prompted in a zero-shot setting and add one hint to correct the most prominent error.
+  - Use the models GPT-4V and Gemini for this experiment.
+- **What to Record**: 
+  - Record the model's performance in terms of accuracy for each type of hint.
+  - Note any qualitative differences in the reasoning process as observed in the model outputs.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 5 and Section 6.1 in the paper.
+
+### 2. Symmetrical Few-Shot In-Context Learning with CoT Prompts
+- **Procedure**: 
+  - Use the IQ50 dataset.
+  - Implement symmetrical few-shot in-context learning (ICL) with Chain-of-Thought (CoT) prompts.
+  - Provide demonstrations similar to the test sample, ensuring no imbalance in the demonstrations' textual and visual information.
+  - Use models capable of processing multiple image and text pairs, specifically GPT-4V and Gemini.
+  - Explore the effect of including step-by-step reasoning with demonstrations.
+- **What to Record**: 
+  - Record the few-shot CoT accuracy for each model.
+  - Note any changes in performance with different numbers of demonstrations.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 7 and Section 6.2.1 in the paper.
+
+## Evaluation Details
+
+### Guided Prompting
+- **Metric Definition**: 
+  - Measure the accuracy of the model's responses when provided with different types of hints.
+  - Compare the performance improvement relative to a zero-shot baseline.
+- **Normalization/Pre-processing**: 
+  - Ensure that the model outputs are parsed correctly to identify the chosen option.
+- **Aggregation Strategy**: 
+  - Calculate the average accuracy per hint type and compare across models.
+
+### Symmetrical Few-Shot In-Context Learning
+- **Metric Definition**: 
+  - Few-shot CoT accuracy is measured by the correctness of the model's final answer after processing the demonstrations.
+- **Normalization/Pre-processing**: 
+  - Ensure consistent formatting of demonstrations and queries to avoid confusion in model processing.
+- **Aggregation Strategy**: 
+  - Aggregate accuracy across different numbers of demonstrations to assess the impact of additional context.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompt templates for each type of guided hint and CoT demonstration, ensuring clarity and consistency.
+- **Output Parsing Logic**: 
+  - Implement logic to correctly parse the model's output, especially when identifying the chosen option from the response.
+- **Order of Operations**: 
+  - For corrective hints, ensure that the model's initial reasoning is evaluated before providing the corrective hint.

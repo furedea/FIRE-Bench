@@ -1,0 +1,20 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do VLMs interpret compound nouns compared to their constituent nouns?"
+
+You have access to the following resources:
+
+Models:
+- Load with HuggingFace: openai/clip-vit-large-patch14
+- Load with HuggingFace: openai/clip-vit-base-patch32
+- Load with HuggingFace: salesforce/ALBEF
+- Load with HuggingFace: salesforce/BLIP
+- Load with HuggingFace: facebookresearch/MetaCLIP
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Compun: A benchmark with 400 unique and commonly used compound nouns (CNs) to evaluate the effectiveness of VLMs in interpreting CNs.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

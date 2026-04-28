@@ -1,0 +1,19 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How reliable are the crowdsourced votes in Chatbot Arena compared to expert evaluations?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4-turbo via API
+- Load with HuggingFace: meta-llama/Llama-2-13b-chat
+- Load with HuggingFace: meta-llama/Llama-2-70b-chat
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Chatbot Arena Crowdsourced Votes: Votes collected from users on the Chatbot Arena platform, comparing responses from different LLMs.  [generate programmatically]
+- Expert Labels: Labels provided by experts for a sample of battles in Chatbot Arena to compare with crowdsourced votes.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

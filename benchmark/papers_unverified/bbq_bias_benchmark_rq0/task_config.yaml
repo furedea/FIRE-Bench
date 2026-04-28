@@ -1,0 +1,29 @@
+task_id: bbq_bias_benchmark_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How do QA models perform on the Bias Benchmark for QA (BBQ)
+  dataset in terms of accuracy and bias?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - allenai/unifiedqa-t5-11b
+  - roberta-large
+  - microsoft/deberta-v3-large
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: BBQ
+  source: external
+  description: A dataset of question sets constructed to highlight attested social
+    biases against people belonging to protected classes along nine social dimensions
+    relevant for U.S. English-speaking contexts.
+  url: https://github.com/nyu-mll/BBQ
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/nyu-mll/BBQ.git
+
+    '
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

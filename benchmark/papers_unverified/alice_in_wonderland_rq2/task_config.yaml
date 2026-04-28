@@ -1,0 +1,24 @@
+task_id: alice_in_wonderland_rq2
+paper_type: llm_evaluation
+research_question: 'RQ3: How do variations in problem formulation affect the performance
+  of LLMs?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: AIW Exaggerated Numbers
+  source: synthetic
+  description: AIW problem versions with exaggerated numbers created by adding an
+    offset to the original numbers.
+- name: AIW Alice Female Boost
+  source: synthetic
+  description: AIW problem versions with redundant information added, such as explicitly
+    stating 'Alice is female'.
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

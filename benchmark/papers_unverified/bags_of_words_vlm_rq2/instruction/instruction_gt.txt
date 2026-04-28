@@ -1,0 +1,71 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How can the compositional understanding of Vision-Language Models be improved?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: openai/clip-vit-base-patch32
+- Load with HuggingFace: salesforce/blip
+- Load with HuggingFace: zengyan-97/x-vlm
+- Load with HuggingFace: facebook/flava-full
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Visual Genome: A large-scale dataset with images annotated with objects, attributes, and relations.  [loader unverified -- locate the data yourself]
+- COCO: A dataset containing images with complex scenes and detailed captions.  [loader unverified -- locate the data yourself]
+- Flickr30k: A dataset with images and captions used for image-text retrieval tasks.  [loader unverified -- locate the data yourself]
+- ARO: A benchmark to evaluate VLMs' understanding of attribution, relation, and order.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Visual Genome Relation and Attribution Tasks
+- **Procedure**: 
+  - For the Visual Genome Relation task, present the model with an image and two captions: one correct (e.g., "the dog is behind the tree") and one incorrect (e.g., "the tree is behind the dog"). For the Attribution task, present captions like "the crouched cat and the open door" versus "the open cat and the crouched door".
+  - Use the dataset generated from Visual Genome with 23,937 relation test cases and 28,748 attribution test cases.
+  - Ensure that the bounding box containing both objects is extracted to minimize distractions.
+- **What to Record**: Record the model's accuracy in selecting the correct caption over the incorrect one.
+- **Correspondence**: Figure 1, Section 2.1
+
+### 2. COCO and Flickr30k Order Sensitivity Tasks
+- **Procedure**: 
+  - For each image, provide the model with the original caption and four systematically permuted captions (e.g., shuffling nouns and adjectives, shuffling all words, etc.).
+  - Use the COCO and Flickr30k datasets, generating permutations as described in Table 1.
+  - Repeat the experiment with 5 different seeds to account for randomness.
+- **What to Record**: Record the model's accuracy in selecting the original caption from the permuted ones.
+- **Correspondence**: Table 1, Section 2.2
+
+### 3. Retrieval Task with Perturbed Datasets
+- **Procedure**: 
+  - Evaluate models on COCO and Flickr30k datasets with captions and images perturbed by shuffling words and image patches.
+  - Use strategies like shuffling nouns and adjectives, shuffling all words, and shuffling image patches into rows, columns, or grids.
+- **What to Record**: Record Recall@1 and Recall@5 for both text and image retrieval tasks.
+- **Correspondence**: Figure 2, Section 3.1
+
+### 4. Composition-Aware Hard Negative Mining
+- **Procedure**: 
+  - Fine-tune CLIP using composition-aware hard negatives by generating negative captions through swapping linguistic elements and sampling strong alternative images.
+  - Evaluate on Visual Genome Relation, Attribution, COCO Order, and Flickr30k Order tasks.
+- **What to Record**: Record improvements in accuracy and Recall@1 on compositional tasks and standard downstream tasks.
+- **Correspondence**: Figure 3, Section 4
+
+## Evaluation Details
+
+- **Metrics**:
+  - **Accuracy**: For tasks where the model selects between correct and incorrect captions.
+  - **Recall@1 and Recall@5**: For retrieval tasks, measuring the proportion of times the correct item is in the top 1 or 5 retrieved items.
+- **Normalization/Pre-processing**: Ensure captions are grammatically correct and images are cropped to focus on relevant objects.
+- **Aggregation Strategy**: Compute per-sample accuracy, then aggregate to obtain overall accuracy for each task.
+
+## Implementation Notes
+
+- **Prompt Templates**: Use specific templates for generating correct and incorrect captions in relation and attribution tasks.
+- **Negative Caption Generation**: Swap elements like nouns, adjectives, and verb phrases to create negative captions.
+- **Order of Operations**: Ensure that dataset perturbations are applied consistently across all samples before evaluation.

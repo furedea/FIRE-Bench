@@ -1,0 +1,47 @@
+task_id: cambrian_visual_encoders_rq2
+paper_type: novel_architecture
+research_question: 'RQ3: What is the impact of instruction tuning data on the performance
+  of MLLMs?'
+proposed_method:
+  name: Cambrian-1
+  summary: Cambrian-1 is a family of multimodal large language models (MLLMs) designed
+    with a vision-centric approach. It introduces the Spatial Vision Aggregator (SVA),
+    a dynamic and spatially-aware connector that integrates high-resolution vision
+    features with LLMs while reducing the number of tokens. The study evaluates various
+    visual representations and introduces a new vision-centric benchmark, CV-Bench,
+    to improve visual grounding in MLLMs.
+  key_components:
+  - Spatial Vision Aggregator (SVA)
+  - Vision-centric benchmark (CV-Bench)
+  - Instruction tuning data curation
+baselines:
+- LLaVA
+- CLIP
+- DINO
+reference_implementation:
+- https://github.com/cambrian-mllm/cambrian
+datasets:
+- name: Cambrian-10M
+  source: huggingface
+  loader: 'from datasets import load_dataset
+
+    dataset = load_dataset("nyu-visionx/Cambrian-10M")
+
+    '
+  description: A large-scale curated instruction tuning dataset for MLLMs, emphasizing
+    distribution balancing and high-quality visual instruction data.
+- name: CV-Bench
+  source: huggingface
+  loader: 'from datasets import load_dataset
+
+    dataset = load_dataset("nyu-visionx/CV-Bench")
+
+    '
+  description: A vision-centric benchmark designed to evaluate the fundamental 2D
+    and 3D visual understanding of MLLMs.
+compute_hint: TPU-V4, <4 days
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

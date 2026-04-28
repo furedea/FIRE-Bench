@@ -1,0 +1,19 @@
+task_id: reversal_curse_rq1
+paper_type: llm_evaluation
+research_question: 'RQ2: Does the Reversal Curse affect real-world knowledge in LLMs?'
+models:
+  api:
+  - gpt-4
+  huggingface:
+  - meta-llama/Llama-1
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: IMDB Celebrity Parent-Child Dataset
+  source: synthetic
+  description: A dataset of 1000 celebrities and their parents used to test the Reversal
+    Curse in LLMs.
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

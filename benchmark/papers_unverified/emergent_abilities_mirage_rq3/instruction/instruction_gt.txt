@@ -1,0 +1,93 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ4: Can changing the metric remove emergent abilities in model evaluations?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- BIG-Bench: A benchmark used to analyze emergent abilities in large language models, focusing on the effect of different metrics.  [loader unverified -- locate the data yourself]
+
+Analytical tools / techniques available:
+- Meta-analysis
+- Statistical analysis
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.
+
+---
+
+## Experimental Design
+
+### 1. Metric Impact on Emergent Abilities in Arithmetic Tasks
+- **Procedure**: 
+  - Use the InstructGPT/GPT-3 family to perform two arithmetic tasks: 2-shot multiplication of two 2-digit integers and 2-shot addition of two 4-digit integers.
+  - Evaluate model performance using two different metrics: Accuracy (nonlinear) and Token Edit Distance (linear).
+  - For each task, collect outputs from models with varying parameter sizes.
+  - Compare performance across different target string lengths (1 to 5 digits).
+- **What to Record**: 
+  - Raw model outputs for each task and model size.
+  - Performance scores under both metrics for each model size and target length.
+- **Correspondence**: Figure 3 in the paper.
+
+### 2. Resolution Impact on Emergent Abilities
+- **Procedure**: 
+  - Increase the test dataset size to improve resolution when measuring model performance on the same arithmetic tasks.
+  - Evaluate performance using the Accuracy metric.
+- **What to Record**: 
+  - Raw model outputs with increased test data.
+  - Performance scores under the Accuracy metric for each model size and target length.
+- **Correspondence**: Figure 4 in the paper.
+
+### 3. Meta-Analysis of Emergent Abilities in BIG-Bench
+- **Procedure**: 
+  - Analyze the emergence score of task-metric-model family triplets in the BIG-Bench dataset.
+  - Identify which metrics show emergent abilities and compare them to those that do not.
+- **What to Record**: 
+  - Emergence scores for each task-metric-model family triplet.
+  - Metrics that show emergent abilities and those that do not.
+- **Correspondence**: Figure 5 in the paper.
+
+### 4. Inducing Emergent Abilities in Vision Tasks
+- **Procedure**: 
+  - Train shallow nonlinear autoencoders on CIFAR100 images and measure reconstruction ability using a newly defined discontinuous metric.
+  - Train autoregressive transformers on Omniglot images and measure classification performance using subset accuracy.
+- **What to Record**: 
+  - Reconstruction and classification performance under the defined metrics.
+  - Model parameters and corresponding performance scores.
+- **Correspondence**: Figures 7 and 8 in the paper.
+
+## Evaluation Details
+
+- **Accuracy Metric**: 
+  - Defined as the proportion of completely correct outputs (all tokens correct).
+  - For arithmetic tasks, calculate as \( \text{Accuracy} = (1 - \epsilon)^L \), where \( \epsilon \) is the per-token error probability and \( L \) is the target length.
+  
+- **Token Edit Distance**: 
+  - Calculate as the number of token substitutions, additions, or deletions needed to transform the model output into the target sequence.
+  - Expected to scale approximately linearly with the per-token error probability.
+
+- **Emergence Score**: 
+  - Defined as \( \text{Emergence Score} = \text{sign}(\text{arg max}_i y_i - \text{arg min}_i y_i)(\max_i y_i - \min_i y_i) / \sqrt{\text{Median}(\{(y_i - y_{i-1})^2\}_i)} \).
+  - Used to identify potential emergent abilities in task-metric-model family triplets.
+
+## Implementation Notes
+
+- **Pitfalls**: 
+  - Ensure sufficient test data to accurately measure performance, especially when using nonlinear metrics like Accuracy.
+  - Be cautious of the resolution limit when interpreting results from small datasets.
+
+- **Special Metrics**: 
+  - For vision tasks, define custom metrics like Reconstructionc to induce emergent abilities.
+  - Use subset accuracy for classification tasks to simulate emergent abilities.
+
+- **Order of Operations**: 
+  - First, evaluate model outputs using nonlinear metrics, then switch to linear metrics to observe changes in emergent abilities.
+  - Increase test dataset size before re-evaluating performance to test the impact of resolution on emergent abilities.

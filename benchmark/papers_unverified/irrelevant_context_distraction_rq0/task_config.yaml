@@ -1,0 +1,19 @@
+task_id: irrelevant_context_distraction_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How does irrelevant context affect the performance of large
+  language models on arithmetic reasoning tasks?'
+models:
+  api:
+  - code-davinci-002
+  - text-davinci-003
+  huggingface: []
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: GSM-IC
+  source: unknown
+  description: An arithmetic reasoning dataset with irrelevant information in the
+    problem description, derived from GSM8K.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

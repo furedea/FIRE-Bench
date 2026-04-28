@@ -1,0 +1,40 @@
+task_id: v_star_visual_search_rq1
+paper_type: novel_architecture
+research_question: "RQ2: How effective is the V\u2217Bench benchmark in evaluating\
+  \ MLLMs' visual grounding capabilities?"
+proposed_method:
+  name: SEAL (Show, sEArch, and TelL)
+  summary: "SEAL is a meta-architecture for multimodal large language models (MLLMs)\
+    \ that integrates an LLM-guided visual search mechanism, V\u2217, to enhance visual\
+    \ grounding capabilities. It uses a visual working memory to store and process\
+    \ visual information, allowing the model to focus on specific visual elements\
+    \ in high-resolution images. This approach improves the model's ability to reason\
+    \ about and search for needed visual information, addressing limitations in current\
+    \ MLLMs that rely on pre-trained vision encoders."
+  key_components:
+  - "LLM-guided visual search mechanism (V\u2217)"
+  - Visual Working Memory (VWM)
+  - Integration with MLLMs like LLaVA
+baselines:
+- GPT-4V
+- Gemini Pro
+- LLaVA-1.5
+reference_implementation: []
+datasets:
+- name: "V\u2217Bench"
+  source: synthetic
+  loader: "# Example code snippet for generating synthetic data\nimport numpy as np\n\
+    from PIL import Image\n\ndef generate_synthetic_image():\n    # Create a high-resolution\
+    \ synthetic image\n    width, height = 2246, 1582\n    image = np.random.randint(0,\
+    \ 255, (height, width, 3), dtype=np.uint8)\n    return Image.fromarray(image)\n\
+    \ndef load_v_star_bench():\n    # Generate a list of synthetic images for the\
+    \ benchmark\n    return [generate_synthetic_image() for _ in range(191)]\n"
+  description: A benchmark designed to evaluate MLLMs' ability to process high-resolution
+    images and focus on visual details, consisting of tasks like attribute recognition
+    and spatial relationship reasoning.
+compute_hint: single GPU, <24h
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

@@ -1,0 +1,26 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How do LMMs perform on Document-Oriented VQA tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- DocVQA: A large-scale dataset with document images and questions for Document-Oriented VQA.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('nlpconnect/docvqa')
+- InfoVQA: A dataset containing infographics with questions for Document-Oriented VQA.  [loader unverified -- locate the data yourself]
+- ChartQA: A dataset with charts and questions for Document-Oriented VQA.
+  GitHub repo: https://github.com/vis-nlp/ChartQA
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/vis-nlp/ChartQA.git
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

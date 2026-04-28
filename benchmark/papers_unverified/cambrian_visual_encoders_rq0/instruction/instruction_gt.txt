@@ -1,0 +1,125 @@
+You are a research agent. Conduct research about the question: "RQ1: How do different visual representations impact the performance of MLLMs?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- Cambrian-1: Cambrian-1 is a family of multimodal large language models (MLLMs) designed with a vision-centric approach. It introduces the Spatial Vision Aggregator (SVA), a dynamic and spatially-aware connector that integrates high-resolution vision features with LLMs while reducing the number of tokens. Cambrian-1 evaluates various visual representations using LLMs and visual instruction tuning, offering insights into different models and architectures, including self-supervised and strongly supervised methods.
+  - Component: Spatial Vision Aggregator (SVA)
+  - Component: Vision-centric benchmark (CV-Bench)
+  - Component: Visual instruction tuning data curation
+- Baseline for comparison: LLaVA
+- Baseline for comparison: CLIP
+- Baseline for comparison: DINO
+- Reference hint: https://github.com/cambrian-mllm/cambrian
+
+Datasets for training and evaluation:
+- Cambrian-10M: A large-scale curated instruction tuning dataset for MLLMs, emphasizing high-quality visual instruction-tuning data from publicly available sources.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("nyu-visionx/Cambrian-10M")
+- CV-Bench: A vision-centric benchmark designed to evaluate the fundamental 2D and 3D visual understanding of MLLMs.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("nyu-visionx/CV-Bench")
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Evaluating Visual Representations with MLLMs
+- **Procedure**: 
+  - Use MLLMs to evaluate the impact of different visual encoders on multimodal capabilities.
+  - Implement a 2-stage instruction tuning process: 
+    - First, train the connector on 1.2M adapter data from ShareGPT-4V.
+    - Fine-tune both the connector and LLM on 737K instruction tuning data.
+  - Evaluate using a suite of benchmarks that assess multimodal capabilities.
+  - Compare performance with and without visual input and calculate expected scores via random guessing.
+- **Input Format**: 
+  - Use visual question answering (VQA) format for evaluation.
+- **Prompting Strategy**: 
+  - Use system prompts to guide the model's responses, ensuring consistency in output format.
+- **Number of Samples**: 
+  - Use the full set of benchmarks as detailed in the paper.
+- **Splits to Use**: 
+  - Use the specified training and evaluation splits for adapter and instruction tuning data.
+- **What to Record**: 
+  - Record raw outputs, extracted answers, and intermediate statistics.
+- **Correspondence**: 
+  - Section 3.4, Figure 6, Table 14.
+
+### 2. Cambrian Vision-Centric Benchmark (CV-Bench)
+- **Procedure**: 
+  - Introduce CV-Bench with 2638 manually-inspected examples.
+  - Evaluate models on classic vision tasks within a multimodal context.
+  - Formulate natural language questions probing 2D and 3D understanding.
+- **Input Format**: 
+  - Use images with associated questions for evaluation.
+- **Prompting Strategy**: 
+  - Use visual prompts (e.g., bounding boxes) to avoid ambiguity.
+- **Number of Samples**: 
+  - 2638 examples.
+- **What to Record**: 
+  - Record accuracy on spatial relationships, object counting, depth order, and relative distance tasks.
+- **Correspondence**: 
+  - Section 3.2, Figure 4, Table 1.
+
+### 3. Instruction Tuning Recipes
+- **Procedure**: 
+  - Experiment with different instruction tuning strategies.
+  - Compare one-stage vs. two-stage training and freezing vs. unfreezing vision encoders.
+- **Input Format**: 
+  - Use a mix of 737K instruction tuning data.
+- **Prompting Strategy**: 
+  - Use system prompts to ensure clarity in model responses.
+- **Number of Samples**: 
+  - Use the full 737K dataset.
+- **What to Record**: 
+  - Record performance metrics across different training strategies.
+- **Correspondence**: 
+  - Section 3.3, Figure 5.
+
+## Evaluation Details
+
+### Metric Definitions and Computation
+- **Accuracy**: 
+  - Calculate the percentage of correct answers for each benchmark.
+- **Fuzzy Matching**: 
+  - Use fuzzy matching to evaluate responses, allowing for minor variations in wording.
+- **Principal Component Analysis**: 
+  - Analyze benchmark scores to identify clusters of performance metrics.
+
+### Normalization and Pre-processing
+- **Model Outputs**: 
+  - Normalize outputs by removing extraneous text and focusing on key answers.
+- **Aggregation Strategy**: 
+  - Aggregate results per-sample, then per-condition, and finally overall.
+
+## Implementation Notes
+
+### Key Pitfalls and Caveats
+- **Data Leakage**: 
+  - Ensure no overlap between training and test sets to prevent data leakage.
+- **System Prompts**: 
+  - Use consistent system prompts to guide model responses and avoid the "answer machine phenomenon."
+
+### Special Prompt Templates
+- **Response Formatting**: 
+  - Use specific prompts to format responses, such as "Answer with the option’s letter from the given choices directly."
+
+### Order of Operations
+- **Training Sequence**: 
+  - Follow the specified order of adapter training followed by instruction tuning to ensure consistency in results.

@@ -1,0 +1,24 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can elicitive prompting methods narrow the compositionality gap?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Compositional Celebrities: A dataset of 8.6k 2-hop questions combining frequently stated facts in improbable ways to test compositional reasoning.  [generate programmatically]
+- 2WikiMultiHopQA: A dataset with 2-hop compositional questions sourced from facts in Wikipedia articles.  [loader unverified -- locate the data yourself]
+- Musique: A dataset with multi-hop questions via single-hop question composition.
+  GitHub repo: https://github.com/stonybrooknlp/musique
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/stonybrooknlp/musique.git
+- Bamboogle: A manually constructed dataset of 125 2-hop questions challenging a system's ability to decompose complex questions.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

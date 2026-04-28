@@ -1,0 +1,21 @@
+You are a research agent. Conduct research and experiment about the question: "RQ4: How do LCLMs perform in many-shot in-context learning (ICL) tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- BBH-date: Multiple-choice QA dataset from Big-Bench Hard focusing on date understanding.  [loader unverified -- locate the data yourself]
+- BBH-salient: Multiple-choice QA dataset from Big-Bench Hard focusing on salient error translation detection.  [loader unverified -- locate the data yourself]
+- BBH-tracking7: Multiple-choice QA dataset from Big-Bench Hard focusing on tracking shuffled objects.  [loader unverified -- locate the data yourself]
+- BBH-web: Multiple-choice QA dataset from Big-Bench Hard focusing on web of lies.  [loader unverified -- locate the data yourself]
+- LIB-dialogue: Classification dataset from LongICLBench focusing on dialogue-based relation extraction.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

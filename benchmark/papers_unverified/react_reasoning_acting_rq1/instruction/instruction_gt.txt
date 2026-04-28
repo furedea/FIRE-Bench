@@ -1,0 +1,90 @@
+You are a research agent. Conduct research about the question: "RQ2: How does the ReAct approach perform on interactive decision-making tasks compared to existing methods?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- ReAct: ReAct is a novel approach that integrates reasoning and acting capabilities in large language models (LLMs) to improve performance on interactive decision-making tasks. It prompts LLMs to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for dynamic reasoning and interaction with external environments to gather additional information.
+  - Component: Interleaved generation of reasoning traces and actions
+  - Component: Interaction with external environments for information gathering
+  - Component: Use of large language models like PaLM-540B for few-shot in-context learning
+- Baseline for comparison: Act
+- Baseline for comparison: BUTLER
+- Baseline for comparison: IL
+- Baseline for comparison: IL+RL
+
+Datasets for training and evaluation:
+- ALFWorld: A synthetic text-based game designed to align with the embodied ALFRED benchmark, requiring agents to achieve high-level goals by navigating and interacting with a simulated household.  [loader unverified -- locate the data yourself]
+- WebShop: An online shopping website environment with real-world products and human instructions, requiring agents to purchase products based on user instructions through web interactions.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Evaluate ReAct on ALFWorld
+- **Procedure**: 
+  - Use the ALFWorld dataset, which consists of text-based interactive decision-making tasks.
+  - Implement the ReAct approach by prompting the model to generate interleaved reasoning traces and actions.
+  - Use few-shot prompting with three annotated trajectories from the training set for each task type.
+  - Construct six prompts for each task type by permuting two annotated trajectories from the three available.
+  - Compare ReAct against the Act baseline by removing thoughts from the ReAct trajectories.
+  - Evaluate on 134 unseen evaluation games in a task-specific setup.
+- **What to Record**: 
+  - Record the success rate for each task type.
+  - Capture the average success rate across all task types.
+- **Correspondence**: 
+  - Results are presented in Table 3 and discussed in Section 4.
+
+### 2. Evaluate ReAct on WebShop
+- **Procedure**: 
+  - Use the WebShop dataset, which involves purchasing products based on user instructions through web interactions.
+  - Implement ReAct by prompting the model to reason about what to explore, when to buy, and which product options are relevant.
+  - Use one-shot prompting with actions to search, choose product, choose options, and buy.
+  - Compare ReAct against Act, IL, and IL+RL baselines.
+- **What to Record**: 
+  - Record the average score (percentage of desired attributes covered by the chosen product).
+  - Record the success rate (percentage of episodes where the chosen product satisfies all requirements).
+- **Correspondence**: 
+  - Results are presented in Table 4 and discussed in Section 4.
+
+## Evaluation Details
+
+- **Metrics**:
+  - **Success Rate**: The percentage of tasks successfully completed by the model. For ALFWorld, this is the percentage of tasks where the model achieves the high-level goal. For WebShop, this is the percentage of episodes where the chosen product satisfies all user requirements.
+  - **Score**: For WebShop, this is the percentage of desired attributes covered by the chosen product, averaged across all episodes.
+
+- **Normalization and Pre-processing**:
+  - Ensure that all model outputs are parsed correctly to extract actions and reasoning traces.
+  - For WebShop, ensure that product attributes are correctly matched against user instructions to compute the score.
+
+- **Aggregation Strategy**:
+  - Compute per-sample success rates and scores.
+  - Aggregate these metrics to obtain per-condition averages.
+  - Report overall averages across all task types or episodes.
+
+## Implementation Notes
+
+- **Prompt Design**:
+  - For ALFWorld, prompts should include sparse thoughts that decompose the goal, track subgoal completion, determine the next subgoal, and reason via commonsense.
+  - For WebShop, prompts should include reasoning to determine what to explore, when to buy, and what product options are relevant.
+
+- **Pitfalls**:
+  - Ensure that the model does not get stuck in repetitive loops of actions, which can occur if reasoning traces are not correctly guiding the actions.
+  - Be cautious of hallucinated reasoning traces or facts, especially in the absence of external knowledge retrieval.
+
+- **Order of Operations**:
+  - In ReAct, alternate the generation of thoughts and actions to maintain a coherent task-solving trajectory.
+  - Allow the model to decide the asynchronous occurrence of thoughts and actions for decision-making tasks with potentially large action spaces.

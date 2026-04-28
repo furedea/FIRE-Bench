@@ -1,0 +1,22 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How can the performance of LLM agents be improved?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 and claude-3 and gpt-3.5-turbo and text-davinci-003 and claude-instant and chat-bison-001 via API
+- Load with HuggingFace: meta-llama/Llama-2-70b
+- Load with HuggingFace: meta-llama/Llama-2-13b
+- Load with HuggingFace: meta-llama/Llama-2-7b
+- Load with HuggingFace: meta-llama/codellama-34b
+- Load with HuggingFace: meta-llama/codellama-13b
+- Load with HuggingFace: meta-llama/codellama-7b
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- AGENTBENCH: A multi-dimensional benchmark consisting of 8 distinct environments to assess LLM-as-Agent’s reasoning and decision-making abilities.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

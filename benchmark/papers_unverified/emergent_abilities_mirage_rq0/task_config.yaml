@@ -1,0 +1,24 @@
+task_id: emergent_abilities_mirage_rq0
+paper_type: empirical_study
+research_question: 'RQ1: Do nonlinear or discontinuous metrics create the appearance
+  of emergent abilities in language models?'
+study_type: meta-analysis
+data_sources:
+- name: BIG-Bench
+  source: external
+  description: A benchmark used to analyze emergent abilities in language models,
+    focusing on tasks with claimed emergent abilities.
+  url: https://github.com/google/BIG-bench
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/google/BIG-bench.git
+
+    '
+analytical_tools:
+- Meta-analysis
+- Statistical analysis
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

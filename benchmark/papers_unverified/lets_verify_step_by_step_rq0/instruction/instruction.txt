@@ -1,0 +1,21 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: Does process supervision outperform outcome supervision in training reward models for solving mathematical problems?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MATH: A dataset for measuring mathematical problem-solving abilities of models, containing problems from various math subjects.
+  GitHub repo: https://github.com/hendrycks/math
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/hendrycks/math.git
+- PRM800K: A dataset of 800,000 step-level human feedback labels used to train reward models for mathematical problem-solving.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

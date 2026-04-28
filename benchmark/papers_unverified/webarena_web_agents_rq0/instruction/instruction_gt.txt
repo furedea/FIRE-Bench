@@ -1,0 +1,82 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How can WebArena be designed to emulate real-world web environments for autonomous agents?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- WebArena Benchmark: A set of 812 long-horizon web-based tasks designed to evaluate the functional correctness of task completions in a realistic web environment.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Task: Evaluating Functional Correctness of WebArena Tasks
+- **Procedure**: 
+  - Use the WebArena Benchmark dataset consisting of 812 tasks.
+  - Each task is described by a high-level natural language intent.
+  - Implement agents using GPT-4 and Llama-3.1-8B-Instruct models.
+  - For each task, the agent receives the task intent and interacts with the WebArena environment to complete the task.
+  - Use a few-shot in-context learning approach with two examples in the context.
+  - Implement two prompting strategies: direct action prediction and chain-of-thought (CoT) reasoning before action prediction.
+  - Ensure the agent is aware of unachievable tasks by including a "Unachievable hint" in the prompt.
+  - Record the sequence of actions taken by the agent, the final state of the environment, and whether the task was completed successfully.
+- **What to Record**: 
+  - Raw outputs of the agent's actions.
+  - Extracted answers for information-seeking tasks.
+  - Intermediate statistics such as the number of steps taken and actions repeated.
+  - Success or failure of each task.
+- **Correspondence**: 
+  - Results are discussed in Section 5 and shown in Table 2.
+
+### 2. Task: Human Performance Benchmarking
+- **Procedure**: 
+  - Sample one task from each of the 170 templates in the benchmark.
+  - Have five computer science graduate students perform these tasks in the WebArena environment.
+  - Record the time taken and success rate for each task.
+- **What to Record**: 
+  - Time taken for each task.
+  - Success rate for information-seeking tasks and other task categories.
+- **Correspondence**: 
+  - Human performance results are discussed in Section 3.2 and shown in the "Human Performance" subsection.
+
+## Evaluation Details
+
+### Information-Seeking Tasks
+- **Metric Definitions**:
+  - **Exact Match**: Score of 1 if the predicted answer is identical to the reference answer.
+  - **Must Include**: Score of 1 if the predicted answer contains the reference answer.
+  - **Fuzzy Match**: Use GPT-4 to evaluate semantic equivalence between predicted and reference answers.
+- **Pre-processing**: 
+  - Normalize dates and time durations to a standard format before comparison.
+- **Aggregation Strategy**: 
+  - Compute per-sample scores and aggregate to obtain overall success rates.
+
+### Site Navigation and Content & Config Tasks
+- **Metric Definitions**:
+  - **Programmatic Evaluation**: Use reward functions to check if intermediate states meet task conditions.
+- **Pre-processing**: 
+  - Use locators to extract relevant content from web pages for evaluation.
+- **Aggregation Strategy**: 
+  - Aggregate success rates across tasks to evaluate overall agent performance.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompt templates for reasoning and direct action prediction agents.
+  - Include detailed instructions and examples in the prompt to guide the agent's actions.
+- **Order of Operations**: 
+  - Ensure that the agent performs reasoning before action prediction in the CoT strategy.
+  - Follow the sequence of actions as per the task requirements and stop when the task is completed or deemed unachievable.
+- **Pitfalls**: 
+  - Avoid early stopping due to misinterpretation of unachievable tasks.
+  - Ensure the agent correctly interprets observations and previous actions to avoid repetitive or invalid actions.

@@ -1,0 +1,39 @@
+task_id: self_rag_adaptive_retrieval_rq0
+paper_type: novel_architecture
+research_question: 'RQ1: How does SELF-RAG improve the factual accuracy and versatility
+  of LLMs compared to existing models?'
+proposed_method:
+  name: SELF-RAG
+  summary: SELF-RAG is a framework that enhances the quality and factuality of large
+    language models (LLMs) through retrieval and self-reflection. It trains an arbitrary
+    LLM to adaptively retrieve passages on-demand, generate outputs, and reflect on
+    both retrieved passages and its own generations using special tokens called reflection
+    tokens. These tokens enable the model to be controllable during inference, allowing
+    it to tailor its behavior to diverse task requirements.
+  key_components:
+  - Adaptive retrieval of relevant passages on-demand
+  - Generation of outputs with reflection tokens
+  - Self-reflection on retrieved passages and generated outputs
+  - Use of critique tokens to evaluate generation quality
+baselines:
+- ChatGPT
+- Llama2-chat
+reference_implementation:
+- https://selfrag.github.io/
+datasets:
+- name: Open-domain QA
+  source: unknown
+  description: A dataset used to evaluate the model's ability to answer arbitrary
+    questions about factual knowledge.
+- name: Reasoning
+  source: unknown
+  description: A dataset used to evaluate the model's reasoning capabilities.
+- name: Fact verification tasks
+  source: unknown
+  description: A dataset used to evaluate the model's ability to verify factual statements.
+compute_hint: single GPU, <24h
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

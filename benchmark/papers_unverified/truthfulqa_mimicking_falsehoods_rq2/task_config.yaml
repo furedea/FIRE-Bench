@@ -1,0 +1,25 @@
+task_id: truthfulqa_mimicking_falsehoods_rq2
+paper_type: llm_evaluation
+research_question: 'RQ3: Can automated metrics predict human evaluations of truthfulness?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: TruthfulQA
+  source: external
+  description: A benchmark comprising 817 questions across 38 categories designed
+    to test the truthfulness of language models by eliciting imitative falsehoods.
+  url: https://github.com/sylinrl/TruthfulQA
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/sylinrl/TruthfulQA.git
+
+    '
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

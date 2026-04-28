@@ -1,0 +1,73 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How do transformer LLMs perform on compositional tasks requiring multi-step reasoning?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Multi-digit multiplication: A task involving the multiplication of multi-digit numbers, requiring step-by-step arithmetic operations.  [generate programmatically]
+- Logic grid puzzles: A logic puzzle task often used as a benchmark for solving constraint satisfaction problems, involving a list of houses with different attributes.  [generate programmatically]
+- Dynamic programming problem: A classic problem involving finding a subsequence with the highest sum, such that no two numbers in the subsequence are adjacent in the original sequence.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Zero-shot, Few-shot, and Fine-tuning Performance Evaluation
+
+- **Procedure**:
+  - **Input Format**: For each task, provide the model with the task description and input data. For zero-shot, no additional context is given. For few-shot, include a few examples with solutions. For fine-tuning, train the model on a large set of task-specific examples.
+  - **Prompting Strategy**: Use scratchpads for few-shot and fine-tuning settings to guide the model through intermediate steps. Scratchpads are verbalizations of computation graphs, providing a linearized representation of the task.
+  - **Number of Samples**: Evaluate on 500 test examples per task.
+  - **Shuffling/Ordering**: Randomly shuffle the test examples to ensure unbiased evaluation.
+  - **Splits to Use**: Use separate splits for in-domain (seen during training) and out-of-domain (unseen during training) evaluation.
+
+- **What to Record**:
+  - Raw outputs from the models.
+  - Extracted answers for each task.
+  - Intermediate statistics such as accuracy per task complexity level.
+
+- **Correspondence to a Figure / Table / Section**:
+  - Section 3.1
+  - Figure 2, Figure 3, Figure 4, Figure 5
+
+## Evaluation Details
+
+- **Metric Definitions and Computation**:
+  - **Accuracy**: The proportion of correctly solved tasks out of the total number of tasks. Compute separately for in-domain and out-of-domain examples.
+  - **Relative Information Gain**: Used to predict surface patterns that models are likely to recognize. Compute as:
+    \[
+    \text{RelativeIG}(Y_j, X) = \frac{H(Y_j) - H(Y_j|X)}{H(Y_j)}
+    \]
+    where \(H\) denotes entropy.
+
+- **Normalization/Pre-processing**:
+  - Normalize model outputs by ensuring consistent formatting (e.g., removing extraneous whitespace or punctuation) before scoring.
+
+- **Aggregation Strategy**:
+  - Compute per-sample accuracy, then aggregate to per-condition (in-domain vs. out-of-domain) and overall accuracy.
+
+## Implementation Notes
+
+- **Key Pitfalls or Caveats**:
+  - The paper notes that models may rely on pattern matching rather than true reasoning, leading to poor generalization on out-of-domain examples.
+  - Ensure that the scratchpad accurately reflects the computation graph to guide the model effectively.
+
+- **Special Prompt Templates**:
+  - Use detailed scratchpads for few-shot and fine-tuning settings. Example scratchpad for multiplication:
+    ```
+    Question: What is 35 times 90?
+    Scratchpad: Let's perform the multiplication step by step...
+    ```
+
+- **Order of Operations**:
+  - For fine-tuning, ensure that the model is exposed to a comprehensive set of examples covering various task complexities before evaluating on test data.

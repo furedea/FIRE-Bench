@@ -1,0 +1,56 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How does question difficulty affect performance distribution?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- GSM-Symbolic: An improved benchmark created from symbolic templates that allow for the generation of a diverse set of mathematical reasoning questions.  [generate programmatically]
+- GSM-Symbolic-M1: A variant of GSM-Symbolic with one clause removed to decrease difficulty.  [generate programmatically]
+- GSM-Symbolic-P1: A variant of GSM-Symbolic with one additional clause to increase difficulty.  [generate programmatically]
+- GSM-Symbolic-P2: A variant of GSM-Symbolic with two additional clauses to further increase difficulty.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Performance Across Difficulty Levels
+- **Procedure**: 
+  - Use the GSM-Symbolic dataset and its variants (GSM-Symbolic-M1, GSM-Symbolic-P1, GSM-Symbolic-P2) to evaluate the impact of question difficulty on model performance.
+  - For each dataset variant, generate 50 samples per template, resulting in 5000 total examples for each benchmark.
+  - Use 8-shot Chain-of-Thought (CoT) prompting with greedy decoding for all evaluations.
+  - Ensure that the numerical ranges in the templates are consistent with those in the original GSM8K test set to focus on logical reasoning rather than arithmetic skills.
+- **What to Record**: 
+  - Record the accuracy and variance of model performance across different difficulty levels.
+  - Capture the distribution of performance for each model on each dataset variant.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 6 and Section 4.3 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**: 
+  - **Accuracy**: The percentage of correctly answered questions out of the total number of questions.
+  - **Performance Variance**: The statistical variance of accuracy across different samples within the same difficulty level.
+- **Normalization and Pre-processing**: 
+  - Ensure that all model outputs are parsed to extract the final numerical answer for comparison against the ground truth.
+- **Aggregation Strategy**: 
+  - Compute per-sample accuracy, then aggregate to obtain per-condition accuracy (for each difficulty level), and finally compute overall accuracy and variance.
+
+## Implementation Notes
+
+- **Key Pitfalls**: 
+  - Ensure that the numerical ranges in the templates do not exceed the arithmetic capabilities of the models, as the focus is on logical reasoning.
+  - Be cautious of potential data contamination from GSM8K in the training data of the models.
+- **Prompt Templates**: 
+  - Use the provided prompt format with 8-shot CoT prompting, ensuring consistency across all evaluations.
+- **Order of Operations**: 
+  - Maintain the order of operations in the prompt to ensure that the reasoning chain is preserved and accurately evaluated.

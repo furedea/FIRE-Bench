@@ -1,0 +1,32 @@
+task_id: bags_of_words_vlm_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How well do current Vision-Language Models understand compositional
+  relationships, attributes, and order information?'
+models:
+  api: []
+  huggingface:
+  - openai/clip-vit-base-patch32
+  - salesforce/blip
+  - facebook/flava-full
+  - zengyan-97/x-vlm
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: Visual Genome Attribution
+  source: unknown
+  description: A dataset to test the understanding of objects' properties in complex
+    natural scenes.
+- name: Visual Genome Relation
+  source: unknown
+  description: A dataset to test relational understanding in complex natural scenes.
+- name: COCO-Order
+  source: unknown
+  description: A dataset to test the models' ability to identify the correct ordering
+    of words in captions.
+- name: Flickr30k-Order
+  source: unknown
+  description: A dataset to test the models' ability to identify the correct ordering
+    of words in captions.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

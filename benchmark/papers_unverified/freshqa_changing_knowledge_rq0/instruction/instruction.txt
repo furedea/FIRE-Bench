@@ -1,0 +1,19 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How effective is the FRESHQA benchmark in evaluating the factuality of LLMs?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: google/flan-t5-xxl
+- Load with HuggingFace: google/flan-palm-540b
+- Load with HuggingFace: google/palm-540b
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- FRESHQA: A dynamic QA benchmark with 600 questions divided into categories like fast-changing, slow-changing, never-changing, and false-premise, designed to evaluate the factuality of LLMs.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

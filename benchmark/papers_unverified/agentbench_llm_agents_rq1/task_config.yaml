@@ -1,0 +1,50 @@
+task_id: agentbench_llm_agents_rq1
+paper_type: llm_evaluation
+research_question: 'RQ2: What are the typical reasons for failures in LLM agents?'
+models:
+  api:
+  - gpt-4
+  - claude-3
+  huggingface:
+  - meta-llama/Llama-2-70b
+  - meta-llama/Llama-2-13b
+  - meta-llama/Llama-2-7b
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: Operating System
+  source: synthetic
+  description: Tasks involving interaction with a simulated operating system environment
+    to execute commands and solve problems.
+- name: Database
+  source: synthetic
+  description: Tasks requiring interaction with a simulated SQL database to perform
+    queries and updates.
+- name: Knowledge Graph
+  source: synthetic
+  description: Tasks involving querying a knowledge graph to retrieve information
+    and answer questions.
+- name: Digital Card Game
+  source: synthetic
+  description: A simulated card game environment where agents must strategize to win
+    against an opponent.
+- name: Lateral Thinking Puzzles
+  source: synthetic
+  description: Puzzles that require unconventional reasoning to solve, presented in
+    a game-like format.
+- name: House-Holding
+  source: synthetic
+  description: Tasks set in a simulated household environment requiring agents to
+    perform actions to achieve specific goals.
+- name: Web Shopping
+  source: synthetic
+  description: Simulated online shopping tasks where agents must find and purchase
+    items based on given criteria.
+- name: Web Browsing
+  source: synthetic
+  description: Tasks involving navigating and interacting with web pages to achieve
+    specific objectives.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

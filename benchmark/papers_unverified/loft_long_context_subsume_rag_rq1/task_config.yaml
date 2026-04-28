@@ -1,0 +1,50 @@
+task_id: loft_long_context_subsume_rag_rq1
+paper_type: llm_evaluation
+research_question: 'RQ2: Can LCLMs effectively perform Retrieval-Augmented Generation
+  (RAG) tasks?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: NQ
+  source: huggingface
+  description: A dataset for question answering with phrase-level answer annotations.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''nq_open'')
+
+    '
+- name: TopiOCQA
+  source: unknown
+  description: A multi-turn conversational question answering dataset.
+- name: HotPotQA
+  source: huggingface
+  description: A multi-hop question answering dataset.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''hotpot_qa'')
+
+    '
+- name: MuSiQue
+  source: external
+  description: A multi-hop question answering dataset.
+  url: https://github.com/stonybrooknlp/musique
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/stonybrooknlp/musique.git
+
+    '
+- name: QAMPARI
+  source: unknown
+  description: A multi-target question answering dataset requiring set operations.
+- name: QUEST
+  source: unknown
+  description: A multi-target question answering dataset requiring set operations.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

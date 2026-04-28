@@ -1,0 +1,56 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ2: How well do English pretrained models perform on non-English tasks?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- ENGLISH WIKIPEDIA: A dataset consisting of English Wikipedia articles used for pretraining language models.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('wikipedia')
+- BOOKCORPUS: A dataset of books used for pretraining language models.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('bookcorpus')
+- STORIES: A dataset of stories used for pretraining language models.
+  GitHub repo: https://github.com/rowanz/grover
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/rowanz/grover.git
+- OPENWEBTEXT: An open-source version of WEBTEXT, derived from web-crawled data.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('openwebtext')
+- CC-NEWS: A dataset of news articles used for pretraining language models.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('cc_news')
+- C4.EN: A dataset derived from web-crawled data, filtered to exclude non-English text.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('allenai/c4')
+- Wiki-40B: A multilingual language modeling dataset covering 41 languages.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('wiki40b')
+- Universal Dependencies (UD) treebanks: A collection of multilingual treebanks used for POS tagging tasks.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('universal_dependencies')
+
+Analytical tools / techniques available:
+- FastText
+- Spearman correlation
+- Adam optimizer
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.

@@ -1,0 +1,89 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ2: Can increasing the resolution of measured model performance reveal continuous improvements?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- BIG-Bench: A benchmark used to analyze emergent abilities in large language models, containing various tasks and metrics.  [loader unverified -- locate the data yourself]
+- InstructGPT/GPT-3: Model family used to test predictions about metric choices and emergent abilities.  [loader unverified -- locate the data yourself]
+
+Analytical tools / techniques available:
+- Meta-analysis
+- Statistical analysis
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.
+
+---
+
+## Experimental Design
+
+### 1. Metric Change Analysis
+- **Procedure**: 
+  - Use the InstructGPT/GPT-3 model family to perform arithmetic tasks: 2-shot multiplication of two 2-digit integers and 2-shot addition of two 4-digit integers.
+  - Evaluate model performance using two different metrics: Accuracy (nonlinear) and Token Edit Distance (linear).
+  - For each task, collect model outputs across different model scales.
+- **What to Record**: 
+  - Raw model outputs for each task.
+  - Performance scores under both Accuracy and Token Edit Distance metrics.
+- **Correspondence**: 
+  - Figure 3 in the paper shows the effect of changing metrics on the appearance of emergent abilities.
+
+### 2. Resolution Increase Analysis
+- **Procedure**: 
+  - Increase the test dataset size for the arithmetic tasks performed by the InstructGPT/GPT-3 model family.
+  - Measure performance using the Accuracy metric.
+- **What to Record**: 
+  - Raw model outputs for the expanded test dataset.
+  - Accuracy scores for each model scale.
+- **Correspondence**: 
+  - Figure 4 in the paper demonstrates how increased resolution affects the perception of emergent abilities.
+
+### 3. Meta-Analysis of Emergent Abilities
+- **Procedure**: 
+  - Analyze the BIG-Bench dataset to identify task-metric-model family triplets that exhibit emergent abilities.
+  - Focus on metrics like Multiple Choice Grade and Exact String Match.
+  - Change the evaluation metric to a continuous one, such as Brier Score, and observe the effect on emergent abilities.
+- **What to Record**: 
+  - Emergence scores for each task-metric-model family triplet.
+  - Performance scores under both the original and modified metrics.
+- **Correspondence**: 
+  - Figures 5 and 6 in the paper illustrate the impact of metric choice on the appearance of emergent abilities.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Accuracy**: Proportion of correctly predicted sequences. For a sequence of length L, the entire sequence must be correct to score 1.
+  - **Token Edit Distance**: Number of token-level edits (insertions, deletions, substitutions) required to transform the predicted sequence into the target sequence.
+  - **Brier Score**: Mean squared error between the predicted probability and the actual outcome for binary classification tasks.
+
+- **Normalization and Pre-processing**:
+  - For Accuracy, ensure that predictions are compared against the exact target sequence.
+  - For Token Edit Distance, calculate the number of edits required for each prediction compared to the target.
+
+- **Aggregation Strategy**:
+  - Compute per-sample scores for each metric.
+  - Aggregate scores across all samples to obtain per-condition scores.
+  - Compare aggregated scores across different model scales and metrics to assess the presence or absence of emergent abilities.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - Ensure that the increased test dataset size is sufficient to reveal continuous improvements in performance.
+  - Be cautious of the independence assumption in token-level predictions, which may not hold in practice.
+
+- **Special Prompt Templates**:
+  - Use consistent prompting strategies for arithmetic tasks to ensure comparability across different model scales and metrics.
+
+- **Order of Operations**:
+  - First, collect model outputs using the original metrics.
+  - Then, change the metrics and re-evaluate the same outputs to observe changes in perceived emergent abilities.

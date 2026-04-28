@@ -1,0 +1,59 @@
+task_id: geval_llm_evaluator_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How does G-EVAL perform in terms of correlation with human
+  evaluations compared to existing NLG evaluators?'
+models:
+  api:
+  - gpt-4
+  - text-davinci-003
+  huggingface: []
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: SummEval
+  source: external
+  description: A benchmark that compares different evaluation methods for summarization,
+    providing human ratings for fluency, coherence, consistency, and relevance.
+  url: https://github.com/Yale-LILY/SummEval
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/Yale-LILY/SummEval.git
+
+    '
+- name: Topical-Chat
+  source: external
+  description: A testbed for meta-evaluating different evaluators on dialogue response
+    generation systems that use knowledge.
+  url: https://github.com/alexa/Topical-Chat
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/alexa/Topical-Chat.git
+
+    '
+- name: QAGS-CNN
+  source: external
+  description: A benchmark for evaluating hallucinations in summarization tasks, focusing
+    on the consistency dimension of summaries on the CNN/DailyMail dataset.
+  url: https://github.com/W4ngatang/qags
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/W4ngatang/qags.git
+
+    '
+- name: QAGS-XSUM
+  source: external
+  description: A benchmark for evaluating hallucinations in summarization tasks, focusing
+    on the consistency dimension of summaries on the XSum dataset.
+  url: https://github.com/W4ngatang/qags
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/W4ngatang/qags.git
+
+    '
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

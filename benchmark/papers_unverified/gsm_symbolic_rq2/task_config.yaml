@@ -1,0 +1,28 @@
+task_id: gsm_symbolic_rq2
+paper_type: llm_evaluation
+research_question: 'RQ3: How does question difficulty affect performance distribution?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: GSM-Symbolic
+  source: synthetic
+  description: An improved benchmark created from symbolic templates that allow for
+    the generation of a diverse set of mathematical reasoning questions.
+- name: GSM-Symbolic-M1
+  source: synthetic
+  description: A variant of GSM-Symbolic with one clause removed to decrease difficulty.
+- name: GSM-Symbolic-P1
+  source: synthetic
+  description: A variant of GSM-Symbolic with one additional clause to increase difficulty.
+- name: GSM-Symbolic-P2
+  source: synthetic
+  description: A variant of GSM-Symbolic with two additional clauses to further increase
+    difficulty.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

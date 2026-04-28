@@ -1,0 +1,79 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ3: How do users’ language and behavior when interacting with an AI assistant affect the degree of security vulnerabilities in their code?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- User prompts and AI interactions: Data collected from user interactions with AI code assistants during a study, including prompts and AI responses.  [loader unverified -- locate the data yourself]
+
+Analytical tools / techniques available:
+- Prompt categorization and analysis
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.
+
+---
+
+## Experimental Design
+
+### Task 1: Prompt Strategy Analysis
+- **Procedure**: 
+  - Analyze user prompts from the dataset of user interactions with AI code assistants.
+  - Categorize prompts using the following taxonomy: Specification, Instruction, Question, Function Declaration, Library, Language, Length (Long/Short), Text Close, Model Close, Helper, Typos, Secure.
+  - For each prompt, determine if it led to a secure, partially secure, or insecure code outcome.
+  - Record the number of prompts per user and the types of prompts used.
+  - Analyze the correlation between prompt types and the security of the resulting code.
+- **What to Record**: 
+  - Frequency of each prompt type.
+  - Security classification of code outcomes (Secure, Partially Secure, Insecure).
+  - Edit distance between user prompts and AI outputs.
+- **Correspondence**: Section 6, Table 6, Figure 4.
+
+### Task 2: Parameter Adjustment Analysis
+- **Procedure**: 
+  - Examine how users adjusted AI assistant parameters such as temperature and response length.
+  - Record the temperature and response length settings for each prompt.
+  - Analyze the impact of these parameter adjustments on the security of the code produced.
+- **What to Record**: 
+  - Temperature and response length settings for each prompt.
+  - Security classification of code outcomes.
+- **Correspondence**: Section 6.2, Table 5.
+
+### Task 3: Repair Strategy Analysis
+- **Procedure**: 
+  - Track the evolution of user prompts over time to identify repair strategies.
+  - Categorize repairs as Retry, Adjust Temperature, Adjust Length, Expand Scope, Reduce Scope, Reword, Change Type.
+  - Analyze the frequency and effectiveness of each repair strategy in producing secure code.
+- **What to Record**: 
+  - Frequency of each repair strategy.
+  - Security classification of code outcomes after repairs.
+- **Correspondence**: Section 6.3, Table 7.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Security Classification**: 
+    - Secure: No security mistakes.
+    - Partially Secure: Minor security issues, such as using a bad source of randomness.
+    - Insecure: Major security vulnerabilities, such as SQL injection or use of trivial ciphers.
+  - **Prompt Categorization**: Based on the taxonomy provided in the paper, categorize each prompt into one or more types.
+  - **Edit Distance**: Use normalized edit distance to measure similarity between user prompts and AI outputs.
+
+- **Aggregation Strategy**:
+  - Aggregate prompt types and security outcomes per user and per task.
+  - Calculate the proportion of secure, partially secure, and insecure outcomes for each prompt type and parameter setting.
+
+## Implementation Notes
+
+- **Prompt Templates**: Ensure that prompt categorization captures all relevant features, including function declarations and library specifications.
+- **Output Parsing**: Carefully parse AI outputs to determine security classification, considering both correctness and security aspects.
+- **Order of Operations**: First categorize prompts, then analyze parameter adjustments, and finally assess repair strategies to understand their cumulative impact on security outcomes.

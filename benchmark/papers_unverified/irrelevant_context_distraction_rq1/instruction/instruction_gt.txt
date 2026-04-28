@@ -1,0 +1,86 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What strategies can mitigate the distractibility of large language models?"
+
+You have access to the following resources:
+
+Models:
+- code-davinci-002 and text-davinci-003 via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- GSM-IC: An arithmetic reasoning dataset with irrelevant information in the problem description, derived from GSM8K.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluating Prompting Techniques on GSM-IC
+- **Procedure**: 
+  - Use the GSM-IC dataset, which includes problems with irrelevant context added to the original GSM8K problems.
+  - Evaluate the following prompting techniques: Chain-of-Thought (COT), Zero-shot Chain-of-Thought (0-COT), Least-to-Most (LTM), and Program prompts (PROGRAM).
+  - For each technique, create prompts with and without irrelevant context in the exemplars.
+  - Use both code-davinci-002 and text-davinci-003 models.
+  - For self-consistency, sample 20 responses per problem with a temperature of 0.7.
+  - For experiments without self-consistency, use greedy decoding (temperature τ = 0).
+- **What to Record**: 
+  - Raw outputs of the models.
+  - Micro and macro accuracies for each technique and model.
+  - Normalized accuracies to measure robustness against irrelevant context.
+- **Correspondence**: Table 3, Section 5.1
+
+### 2. Instructed Prompting
+- **Procedure**: 
+  - Add the instruction "Solve grade school math problems. Feel free to ignore irrelevant information given in the questions." before the exemplars in the prompt.
+  - Evaluate the impact of this instruction on the performance of COT, LTM, and PROGRAM techniques.
+  - Compare results with and without the instruction.
+- **What to Record**: 
+  - Micro and macro accuracies with and without instructions.
+  - Normalized accuracies to assess the impact of instructions.
+- **Correspondence**: Section 5.3, Table 3
+
+### 3. Break-Down Analysis of Irrelevant Context Factors
+- **Procedure**: 
+  - Analyze the performance of COT, LTM, and PROGRAM with respect to the factors of the irrelevant sentences: topic (in-topic vs. off-topic), role name overlap (yes vs. no), and number range (in-range vs. out-of-range).
+  - Use the GSM-IC dataset with these variations.
+- **What to Record**: 
+  - Micro and macro accuracies for each factor combination.
+- **Correspondence**: Table 4, Section 5.2.1
+
+### 4. Extension to DROP Dataset
+- **Procedure**: 
+  - Use the DROP dataset, focusing on the football split, which naturally contains irrelevant context.
+  - Evaluate COT and LTM prompts with and without the instruction to ignore irrelevant information.
+- **What to Record**: 
+  - Accuracies on the DROP dataset for each prompting technique and instruction condition.
+- **Correspondence**: Table 7, Section 5.5
+
+## Evaluation Details
+
+- **Micro Accuracy**: 
+  - Formula: \( \text{Acc}_{\text{micro}}(M; P) = \frac{\sum_{p \in P} 1 [M(p) = s(p)]}{|P|} \)
+  - Weighs all individual test problems equally.
+
+- **Macro Accuracy**: 
+  - Formula: \( \text{Acc}_{\text{macro}}(M; B) = \frac{\sum_{b \in B} 1 [\bigwedge_{p \in P(b)} M(p) = s(p)]}{|B|} \)
+  - Considers the fraction of base problems consistently solved across all derived examples.
+
+- **Normalized Accuracy**: 
+  - Formula: \( \text{norm}(a_M; M) = \frac{a_M}{n_M} \)
+  - Measures how a method is affected by distractors relative to its accuracy on base problems.
+
+## Implementation Notes
+
+- **Prompt Design**: 
+  - For few-shot prompting techniques, use one simple exemplar based on either the original problem or the problem with irrelevant context.
+  - For 0-COT, directly present the problem followed by "A: Let’s think step by step:".
+
+- **Instructed Prompting**: 
+  - Add the instruction "Solve grade school math problems. Feel free to ignore irrelevant information given in the questions." before exemplars to guide the model to ignore irrelevant context.
+
+- **Self-Consistency**: 
+  - Implement by sampling multiple solutions and taking the majority vote to improve robustness against irrelevant context.

@@ -1,0 +1,70 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the specific strengths and weaknesses of multimodal LLMs on different tasks within the Blink benchmark?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Blink benchmark: A benchmark designed to evaluate the visual perception capabilities of multimodal LLMs, consisting of 14 classic computer vision tasks reformatted into 3,807 multiple-choice questions.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Task-Specific Performance Analysis
+- **Procedure**: 
+  - Use the Blink benchmark dataset, which consists of 3,807 multiple-choice questions across 14 visual perception tasks.
+  - For each task, input the corresponding visual and textual prompts to the models (GPT-4V, Gemini, Claude 3 OPUS).
+  - Ensure that the input format includes both visual and textual components as specified in the Blink benchmark.
+  - Use the validation and test splits provided in the dataset.
+- **What to Record**: 
+  - Record the raw outputs of the models for each task.
+  - Extract task-specific accuracy for each model.
+  - Note any qualitative observations regarding model performance on specific tasks.
+- **Correspondence**: 
+  - This experiment corresponds to the analysis presented in Section 4.2, Figure 4, and Table 1 of the paper.
+
+## Evaluation Details
+
+### Metric Definitions and Computation
+- **Accuracy**: 
+  - Compute the accuracy for each task as the percentage of correctly answered questions out of the total questions for that task.
+  - Use the formula: \( \text{Accuracy} = \frac{\text{Number of Correct Answers}}{\text{Total Number of Questions}} \times 100 \).
+
+### Normalization and Pre-processing
+- **Model Outputs**: 
+  - Normalize model outputs by extracting the choice that corresponds to the model's prediction using predefined rules and GPT-3.5-turbo for option label extraction.
+  - Ensure consistency in output format for comparison across models.
+
+### Aggregation Strategy
+- **Per-sample to Overall**: 
+  - Aggregate accuracy scores from individual samples to obtain task-specific accuracy.
+  - Further aggregate task-specific accuracies to evaluate overall model performance across the Blink benchmark.
+
+## Implementation Notes
+
+### Key Pitfalls and Caveats
+- **Visual Prompting**: 
+  - The size and color of visual prompts (e.g., circles) can significantly affect model performance. Use 10px red circles for consistency, as this was found optimal in the paper.
+- **Multiple-Image Inputs**: 
+  - For models that do not support multiple-image inputs, concatenate images horizontally with a black margin in between.
+
+### Special Prompt Templates
+- **Prompt Templates**: 
+  - Use specific prompt templates for each task as described in the paper, ensuring that both visual and textual components are included.
+  - Example prompt for visual correspondence: "A point is circled on the first image, labeled with REF. Which point on the second image corresponds to the point in the first image?"
+
+### Order of Operations
+- **Task Execution**: 
+  - Execute tasks in the order they are presented in the Blink benchmark to maintain consistency in evaluation.
+- **Output Parsing**: 
+  - Parse model outputs immediately after task execution to ensure accurate extraction of predicted choices.

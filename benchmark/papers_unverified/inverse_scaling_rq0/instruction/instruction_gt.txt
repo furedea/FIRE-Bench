@@ -1,0 +1,95 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: What are the potential causes of inverse scaling in language models?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Inverse Scaling Prize: A collection of 11 datasets designed to test inverse scaling in language models, covering tasks like Resisting Correction, Memo Trap, Redefine, Prompt Injection, Modus Tollens, Pattern Match Suppression, Into the Unknown, NeQA, Sig Figs, Hindsight Neglect, and Repetitive Algebra.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Strong Prior Tasks
+- **Procedure**: 
+  - Evaluate models on tasks that test reliance on memorized sequences over in-context instructions. 
+  - Use datasets: Resisting Correction, Memo Trap, Redefine, and Prompt Injection.
+  - Input format: Provide prompts that include instructions to repeat or modify sequences, with some prompts containing errors or redefinitions.
+  - Number of samples: Use the full dataset for each task as specified in Table 1.
+  - Shuffling/Ordering: Randomize the order of samples for each run.
+  - Splits: Use the entire dataset for evaluation as no specific train-test split is mentioned.
+- **What to Record**: 
+  - Record raw outputs and calculate accuracy for each task.
+  - For Prompt Injection, record negated loss as it uses the sequence probability metric.
+- **Correspondence**: 
+  - Figures 2, 3, and 4; Table 1; Section 3.1.
+
+### 2. Unwanted Imitation Tasks
+- **Procedure**: 
+  - Evaluate models on tasks that test imitation of undesirable patterns in training data.
+  - Use the Modus Tollens dataset.
+  - Input format: Provide logical statements and ask if the conclusion is correct.
+  - Number of samples: Use the full dataset as specified in Table 1.
+  - Shuffling/Ordering: Randomize the order of samples for each run.
+  - Splits: Use the entire dataset for evaluation.
+- **What to Record**: 
+  - Record raw outputs and calculate accuracy.
+- **Correspondence**: 
+  - Figure 3; Table 1; Section 3.2.
+
+### 3. Distractor Task Tasks
+- **Procedure**: 
+  - Evaluate models on tasks where an easier distractor task is present.
+  - Use datasets: Pattern Match Suppression, Into the Unknown, NeQA, and Sig Figs.
+  - Input format: Provide prompts with distractor tasks embedded within the main task.
+  - Number of samples: Use the full dataset for each task as specified in Table 1.
+  - Shuffling/Ordering: Randomize the order of samples for each run.
+  - Splits: Use the entire dataset for evaluation.
+- **What to Record**: 
+  - Record raw outputs and calculate accuracy.
+- **Correspondence**: 
+  - Figures 5 and 6; Table 1; Section 3.3.
+
+### 4. Spurious Few-Shot Tasks
+- **Procedure**: 
+  - Evaluate models on tasks with misleading few-shot examples.
+  - Use datasets: Hindsight Neglect and Repetitive Algebra.
+  - Input format: Provide few-shot examples that contain spurious correlations.
+  - Number of samples: Use the full dataset for each task as specified in Table 1.
+  - Shuffling/Ordering: Randomize the order of samples for each run.
+  - Splits: Use the entire dataset for evaluation.
+- **What to Record**: 
+  - Record raw outputs and calculate accuracy.
+- **Correspondence**: 
+  - Figure 7; Table 1; Section 3.4.
+
+## Evaluation Details
+
+- **Metrics**: 
+  - For classification tasks, use accuracy as the primary metric.
+  - For sequence probability tasks (Prompt Injection), use negated loss to interpret results consistently with accuracy.
+- **Normalization/Pre-processing**: 
+  - For classification tasks, normalize probabilities over the given options.
+  - For sequence probability tasks, calculate the average negative log-probability of the correct response.
+- **Aggregation Strategy**: 
+  - Calculate per-sample accuracy or loss, then aggregate to per-condition (task) level, and finally compute overall trends across model scales.
+
+## Implementation Notes
+
+- **Pitfalls/Caveats**: 
+  - Ensure that the tasks are representative of the described phenomena and not over-optimized for specific model quirks.
+  - Be cautious of spurious inverse scaling in logodds metrics, which were not used by any prize-winning tasks.
+- **Prompt Templates**: 
+  - Use specific prompt templates as described in the task descriptions, ensuring consistency across samples.
+- **Order of Operations**: 
+  - Follow the order of operations in the experimental design, ensuring that shuffling and randomization are applied consistently across runs.

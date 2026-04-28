@@ -1,0 +1,97 @@
+You are a research agent. Conduct research about the question: "RQ2: Does the use of external tools improve the zero-shot performance of language models on various downstream tasks?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- Toolformer: Toolformer is a language model architecture that autonomously learns to use external tools via simple APIs to enhance its performance on various tasks. It is trained to decide which APIs to call, when to call them, what arguments to pass, and how to incorporate the results into future token prediction. This is achieved in a self-supervised manner, requiring only a few demonstrations for each API. Toolformer integrates tools such as a calculator, a Q&A system, a search engine, a translation system, and a calendar, significantly improving zero-shot performance across various tasks without sacrificing core language modeling abilities.
+  - Component: API call decision-making mechanism
+  - Component: Self-supervised learning for tool use
+  - Component: Integration of multiple external tools (calculator, Q&A system, search engine, translation system, calendar)
+- Baseline for comparison: GPT-J
+- Baseline for comparison: GPT-3
+- Baseline for comparison: OPT (66B)
+
+Datasets for training and evaluation:
+- LAMA: A benchmark for evaluating language models on factual knowledge by completing short statements with missing facts.  [loader unverified -- locate the data yourself]
+- ASDiv: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
+- SVAMP: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
+- MAWPS: A dataset for evaluating mathematical reasoning abilities.  [loader unverified -- locate the data yourself]
+- Web Questions: A question answering dataset used to evaluate models on open-domain questions.  [loader unverified -- locate the data yourself]
+- Natural Questions: A benchmark for question answering research, providing questions and answers based on Wikipedia.  [loader unverified -- locate the data yourself]
+- TriviaQA: A large-scale question answering dataset with questions and answers collected from trivia and quiz-league websites.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. LAMA Benchmark Evaluation
+- **Procedure**: 
+  - Use the SQuAD, Google-RE, and T-REx subsets of the LAMA benchmark.
+  - Filter out examples where the mask token is not the final token.
+  - Use a zero-shot setup without in-context examples.
+  - Prevent Toolformer from using the Wikipedia Search API to avoid unfair advantage.
+- **Input Format**: Short statements with missing facts.
+- **Prompting Strategy**: Use a prompt that instructs the model to complete the text factually.
+- **Number of Samples**: Use the entire filtered dataset.
+- **What to Record**: Record the top five predicted words for each example.
+- **Correspondence**: Results correspond to Table 3 and Section 4.2.1.
+
+### 2. Mathematical Reasoning Datasets Evaluation
+- **Procedure**: 
+  - Evaluate on ASDiv, SVAMP, and MAWPS datasets.
+  - Use a zero-shot setup with lenient evaluation criteria.
+  - Check for the first number predicted by the model as the answer.
+- **Input Format**: Mathematical problems presented as text.
+- **Prompting Strategy**: Use a prompt that asks the model to solve the problem and provide the answer.
+- **Number of Samples**: Use the entire dataset for each benchmark.
+- **What to Record**: Record the first number predicted by the model.
+- **Correspondence**: Results correspond to Table 4 and Section 4.2.2.
+
+### 3. Question Answering Datasets Evaluation
+- **Procedure**: 
+  - Evaluate on Web Questions, Natural Questions, and TriviaQA datasets.
+  - Use a zero-shot setup with modified evaluation criteria.
+  - Disable the question answering tool for Toolformer to prevent trivial solutions.
+- **Input Format**: Open-domain questions.
+- **Prompting Strategy**: Use a prompt that instructs the model to answer the question.
+- **Number of Samples**: Use the entire dataset for each benchmark.
+- **What to Record**: Record the first 20 words predicted by the model.
+- **Correspondence**: Results correspond to Table 5 and Section 4.2.3.
+
+## Evaluation Details
+
+### LAMA Benchmark
+- **Metric**: Check if the correct word is within the first five words predicted by the model.
+- **Normalization**: Ensure tokenization aligns with the model's output format.
+- **Aggregation Strategy**: Calculate accuracy as the percentage of examples where the correct word is within the top five predictions.
+
+### Mathematical Reasoning Datasets
+- **Metric**: Check if the first number predicted by the model matches the correct answer.
+- **Normalization**: Handle equations by considering the first number after the "=" sign as the prediction.
+- **Aggregation Strategy**: Calculate accuracy as the percentage of correct predictions.
+
+### Question Answering Datasets
+- **Metric**: Check if the correct answer is within the first 20 words predicted by the model.
+- **Normalization**: Ensure the model's output is tokenized correctly for comparison.
+- **Aggregation Strategy**: Calculate accuracy as the percentage of examples where the correct answer is found within the prediction window.
+
+## Implementation Notes
+
+- **Prompt Templates**: Use specific prompt templates for each task as detailed in the paper's Appendix A.2.
+- **API Call Logic**: Implement logic to decide when to make API calls based on the probability threshold and filtering criteria.
+- **Decoding Strategy**: Use a modified greedy decoding strategy where the model can start an API call if it is one of the top k most likely tokens, with k set to 10.
+- **Order of Operations**: Ensure that API calls are executed and results are integrated into the text before continuing with token prediction.

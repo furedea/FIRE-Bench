@@ -1,0 +1,80 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do visual patterns in CLIP-blind pairs affect MLLM performance?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- ImageNet-1K: A large-scale dataset for image classification, used to source images for evaluating visual question answering capabilities.
+- LAION-Aesthetic: A dataset containing aesthetic images, used to source images for evaluating visual question answering capabilities.
+- Multimodal Visual Patterns (MMVP): A benchmark constructed using CLIP-blind pairs to evaluate visual abilities of state-of-the-art MLLMs with straightforward questions.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluation of MLLM Performance on CLIP-blind Pairs
+- **Procedure**: 
+  - Use the Multimodal Visual Patterns (MMVP) benchmark, which consists of 150 CLIP-blind image pairs and 300 associated questions.
+  - For each image pair, manually identify visual details overlooked by the CLIP encoder and formulate straightforward questions probing these details.
+  - Evaluate the performance of various MLLMs, including GPT-4V, LLaVA-1.5, InstructBLIP, and others, by posing these questions.
+  - Each question is queried independently to avoid biases from chat histories.
+- **What to Record**: 
+  - Record the accuracy of each model on the MMVP benchmark, noting whether both questions for each image pair are answered correctly.
+  - Collect human performance data for comparison.
+- **Correspondence**: 
+  - This experiment corresponds to Section 2.3 and Figures 3 and 4 in the paper.
+
+### 2. Analysis of Systematic Visual Patterns in CLIP-blind Pairs
+- **Procedure**: 
+  - Categorize the questions from the MMVP benchmark into nine visual patterns: Orientation and Direction, Presence of Specific Features, State and Condition, Quantity and Count, Positional and Relational Context, Color and Appearance, Structural and Physical Characteristics, Text, and Viewpoint and Perspective.
+  - Use GPT-4 to assist in categorizing these patterns by analyzing the questions and options.
+  - Evaluate the performance of MLLMs on each visual pattern.
+- **What to Record**: 
+  - Record the accuracy of each model on each visual pattern.
+  - Calculate the Pearson Correlation Coefficient between the performance of CLIP models and MLLMs on these patterns.
+- **Correspondence**: 
+  - This experiment corresponds to Section 3.1 and Figure 6 in the paper.
+
+### 3. Mixture-of-Features (MoF) Approach
+- **Procedure**: 
+  - Implement Additive-MoF by linearly mixing CLIP and DINOv2 features in different ratios.
+  - Implement Interleaved-MoF by spatially interleaving visual tokens from both CLIP and DINOv2 models.
+  - Evaluate the visual grounding and instruction-following capabilities of the modified MLLMs using the MMVP benchmark and LLaVA benchmark.
+- **What to Record**: 
+  - Record the performance improvements in visual grounding and any changes in instruction-following capabilities.
+  - Compare the results of Additive-MoF and Interleaved-MoF strategies.
+- **Correspondence**: 
+  - This experiment corresponds to Sections 4.2 and 4.3, and Tables 2 and 3 in the paper.
+
+## Evaluation Details
+
+- **Metrics**: 
+  - Accuracy on the MMVP benchmark: A model is considered correct only if it answers both questions in a pair correctly.
+  - Pearson Correlation Coefficient: Calculate the correlation between CLIP model performance and MLLM performance on visual patterns.
+- **Normalization/Pre-processing**: 
+  - Ensure that each question is posed independently to avoid biases from previous interactions.
+- **Aggregation Strategy**: 
+  - Aggregate accuracy per visual pattern and overall accuracy across all patterns.
+  - Compare model performance against human baseline performance.
+
+## Implementation Notes
+
+- **Pitfalls**: 
+  - Ensure that the questions are straightforward and unambiguous to avoid misinterpretation by the models.
+  - Be cautious of potential biases introduced by the order of questions or options.
+- **Prompt Templates**: 
+  - Use consistent and clear prompt templates for posing questions to the models.
+- **Order of Operations**: 
+  - First, identify CLIP-blind pairs and formulate questions.
+  - Then, categorize questions into visual patterns and evaluate model performance.
+  - Finally, implement and evaluate the MoF strategies.

@@ -1,0 +1,66 @@
+You are a research agent. Conduct research and experiment about the question: "RQ4: How can the ranking of LLMs be efficiently estimated from pairwise comparisons?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Chatbot Arena: A dataset of over 240K pairwise votes collected from a crowdsourced platform where users compare responses from two anonymous LLMs and vote for the preferred one.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Estimation of Win Matrix and BT Coefficients
+- **Procedure**: 
+  - Use the pairwise comparison data from the Chatbot Arena dataset.
+  - Implement the Bradley-Terry (BT) model to estimate the win matrix and BT coefficients.
+  - Conduct sequential estimation using historical votes, where at each time step \( t \), a pair of models \( A_t \) is selected, and the human's response \( H_t \) is recorded.
+  - Use the sampling rule \( P_t(a) \propto \sqrt{\Sigma_{t,a,a} / |{t : A_t = a}|} - \sqrt{\Sigma_{t,a,a} / (|{t : A_t = a}| + 1)} \) to choose model pairs that maximize the reduction in confidence interval size.
+- **What to Record**: 
+  - Raw outputs of pairwise comparisons.
+  - Estimated win matrix \( \hat{\theta}_T \).
+  - BT coefficients \( \hat{\xi} \).
+  - Confidence intervals for BT coefficients.
+- **Correspondence**: 
+  - Figure 5 (Intervals for the BT coefficients).
+  - Section 5 (Efficient Approximate Ranking).
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Win Matrix Accuracy**: The accuracy of the estimated win matrix \( \hat{\theta}_T \) compared to the true win probabilities.
+  - **Confidence Intervals**: Use the sandwich estimator for robust standard errors to construct confidence intervals for the BT coefficients.
+  - **Coverage**: Evaluate the coverage of the confidence intervals to ensure they contain the true BT coefficients with high probability.
+
+- **Normalization and Pre-processing**:
+  - Normalize the pairwise comparison data to ensure uniform distribution over model pairs.
+  - Apply inverse weighting by the sampling probability \( P(A_t) \) during maximum likelihood estimation to target a uniform score distribution.
+
+- **Aggregation Strategy**:
+  - Aggregate per-sample estimates to compute the overall win matrix and BT coefficients.
+  - Use the chi-squared interval for multiplicity correction when calculating approximate rankings.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - Ensure that the sampling probability \( P_t(a) \) remains above a small positive threshold to satisfy regularity conditions for asymptotic normality.
+  - Be cautious of non-transitive win rates, which can affect the validity of the BT model assumptions.
+
+- **Special Prompt Templates and Output Parsing**:
+  - No specific prompt templates are required as the focus is on pairwise comparison data.
+  - Ensure consistent parsing of model responses to accurately record human preferences.
+
+- **Order of Operations**:
+  - First, estimate the win matrix using the historical data.
+  - Then, compute the BT coefficients and their confidence intervals.
+  - Finally, apply the active sampling rule to refine the estimates and improve sample efficiency.

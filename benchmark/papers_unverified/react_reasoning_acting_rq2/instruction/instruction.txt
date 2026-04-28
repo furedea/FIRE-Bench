@@ -1,0 +1,46 @@
+You are a research agent. Conduct research about the question: "RQ3: What are the limitations and potential improvements for the ReAct approach?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- ReAct: ReAct is a novel approach that integrates reasoning and acting capabilities in large language models (LLMs) to improve performance on language understanding and decision-making tasks. It prompts LLMs to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for greater synergy between reasoning and acting. This approach helps the model induce, track, and update action plans while interacting with external sources like knowledge bases.
+  - Component: Interleaved generation of reasoning traces and task-specific actions
+  - Component: Interaction with external sources for information gathering
+  - Component: Use of large language models like PaLM-540B for few-shot in-context learning
+- Baseline for comparison: Chain-of-Thought (CoT)
+- Baseline for comparison: Act-only
+- Baseline for comparison: Standard prompting
+
+Datasets for training and evaluation:
+- HotpotQA: A multi-hop question answering benchmark that requires reasoning over two or more Wikipedia passages.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hotpot_qa", "fullwiki")
+- Fever: A fact verification benchmark where each claim is annotated as SUPPORTS, REFUTES, or NOT ENOUGH INFO based on Wikipedia passages.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("fever")
+- ALFWorld: A synthetic text-based game designed to align with the embodied ALFRED benchmark, requiring navigation and interaction in a simulated household.
+  GitHub repo: https://github.com/alfworld/alfworld
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/alfworld/alfworld.git
+- WebShop: An online shopping website environment with real-world products and human instructions, requiring agents to purchase products based on user instructions.
+  GitHub repo: https://github.com/princeton-nlp/WebShop
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/princeton-nlp/WebShop.git
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.

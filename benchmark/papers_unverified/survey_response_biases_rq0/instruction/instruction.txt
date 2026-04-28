@@ -1,0 +1,24 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: Do LLMs reflect human-like behaviors as a result of question modifications?"
+
+You have access to the following resources:
+
+Models:
+- gpt-3.5-turbo-0613 and gpt-3.5-turbo-0914 via API
+- Load with HuggingFace: meta-llama/Llama-2-7b
+- Load with HuggingFace: meta-llama/Llama-2-13b
+- Load with HuggingFace: meta-llama/Llama-2-70b
+- Load with HuggingFace: upstage/SOLAR-0-70b-16bit
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- American Trends Panel (ATP): A set of survey questions curated by Pew Research, used to study response biases in LLMs.
+  Project page: https://www.pewresearch.org/american-trends-panel/
+  Setup:
+    # Download instructions and data are at:
+    # https://www.pewresearch.org/american-trends-panel/
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

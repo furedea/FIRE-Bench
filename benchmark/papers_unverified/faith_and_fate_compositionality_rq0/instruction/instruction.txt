@@ -1,0 +1,19 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How do transformer LLMs perform on compositional tasks requiring multi-step reasoning?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Multi-digit multiplication: A task involving the multiplication of multi-digit numbers, requiring step-by-step arithmetic operations.  [generate programmatically]
+- Logic grid puzzles: A logic puzzle task often used as a benchmark for solving constraint satisfaction problems, involving a list of houses with different attributes.  [generate programmatically]
+- Dynamic programming problem: A classic problem involving finding a subsequence with the highest sum, such that no two numbers in the subsequence are adjacent in the original sequence.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

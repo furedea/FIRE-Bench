@@ -1,0 +1,59 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What is the effectiveness of the CircularEval strategy in evaluating VLMs?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MMBench: A bilingual benchmark for assessing the multi-modal capabilities of vision-language models, containing over 3000 multiple-choice questions covering 20 different ability dimensions.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluation of CircularEval Strategy
+- **Procedure**: 
+  - Use the MMBench dataset, which contains over 3000 multiple-choice questions across 20 ability dimensions.
+  - For each question, apply the CircularEval strategy by feeding the question to a vision-language model (VLM) multiple times, each time with the choices circularly shifted.
+  - Ensure that the VLM must correctly predict the answer in all circular passes to be considered successful.
+  - Compare the results with the VanillaEval strategy, where each question is inferred only once.
+  - Use the dev subset for initial testing and the test subset for final evaluation.
+- **What to Record**: 
+  - Record the Top-1 accuracy for each model under both CircularEval and VanillaEval.
+  - Note the performance drop when switching from VanillaEval to CircularEval.
+- **Correspondence**: 
+  - This experiment corresponds to Table 2 and Section 4.3 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Top-1 Accuracy**: The percentage of questions for which the model's top prediction matches the ground truth answer.
+  - **Performance Drop**: The difference in Top-1 accuracy between CircularEval and VanillaEval.
+
+- **Normalization and Pre-processing**:
+  - Ensure that all model outputs are converted to choice labels (A, B, C, D) using a heuristic matching strategy first. If heuristic matching fails, use GPT-4 as a choice extractor to align model predictions with the given choices.
+
+- **Aggregation Strategy**:
+  - Calculate per-sample accuracy first, then aggregate to per-condition (CircularEval vs. VanillaEval), and finally compute the overall accuracy for each model.
+
+## Implementation Notes
+
+- **Key Pitfalls**:
+  - Be aware of the potential for models to exhibit a bias towards certain choices, which CircularEval aims to mitigate by requiring consistent correct predictions across all circular shifts.
+  - Ensure that the choice extraction process is robust, especially for models with poor instruction-following capabilities.
+
+- **Special Prompt Templates**:
+  - Use a consistent prompt format for all models during evaluation, as specified in the paper's supplementary materials.
+
+- **Order of Operations**:
+  - First, attempt heuristic matching for choice extraction. If unsuccessful, proceed with LLM-based choice extraction using GPT-4.
+  - Conduct CircularEval before VanillaEval to ensure that the more rigorous evaluation is prioritized.

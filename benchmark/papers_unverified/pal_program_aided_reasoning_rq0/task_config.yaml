@@ -1,0 +1,68 @@
+task_id: pal_program_aided_reasoning_rq0
+paper_type: novel_architecture
+research_question: 'RQ1: Can the Program-Aided Language model (PAL) improve the accuracy
+  of LLMs on mathematical reasoning tasks compared to chain-of-thought prompting?'
+proposed_method:
+  name: Program-Aided Language model (PAL)
+  summary: PAL is a novel approach that uses a large language model (LLM) to read
+    natural language problems and generate programs as intermediate reasoning steps,
+    while offloading the solution step to a runtime such as a Python interpreter.
+    This method allows the LLM to focus on decomposing the problem into runnable steps,
+    leveraging the interpreter for accurate computation.
+  key_components:
+  - LLM for generating programmatic reasoning steps
+  - Python interpreter for executing generated code
+  - Integration of natural language and programming language reasoning
+baselines:
+- Chain-of-Thought (COT) prompting
+- DIRECT prompting
+reference_implementation:
+- http://reasonwithpal.com
+datasets:
+- name: GSM8K
+  source: huggingface
+  loader: 'from datasets import load_dataset
+
+    dataset = load_dataset("gsm8k")
+
+    '
+  description: A dataset of grade-school level math word problems.
+- name: SVAMP
+  source: external
+  description: A dataset for evaluating simple math word problem-solving abilities.
+  url: https://github.com/arkilpatel/SVAMP
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/arkilpatel/SVAMP.git
+
+    '
+- name: ASDIV
+  source: external
+  description: A diverse corpus for evaluating and developing English math word problem
+    solvers.
+  url: https://github.com/chaochun/nlu-asdiv-dataset
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/chaochun/nlu-asdiv-dataset.git
+
+    '
+- name: SINGLEEQ
+  source: unknown
+  description: A dataset of single equation math word problems.
+- name: SINGLEOP
+  source: unknown
+  description: A dataset of single operation math word problems.
+- name: ADDSUB
+  source: unknown
+  description: A dataset of addition and subtraction math word problems.
+- name: MULTIARITH
+  source: unknown
+  description: A dataset of multi-step arithmetic word problems.
+compute_hint: single GPU, <24h
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

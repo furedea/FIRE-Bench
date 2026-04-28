@@ -1,0 +1,65 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: Can we build a system to adaptively combine non-parametric and parametric memories?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: EleutherAI/gpt-neo-2.7B
+- Load with HuggingFace: EleutherAI/gpt-j-6B
+- Load with HuggingFace: EleutherAI/gpt-neox-20B
+- Load with HuggingFace: facebook/opt-13b
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- POPQA: A dataset with 14k questions about long-tail entities, created by sampling knowledge triples from Wikidata and converting them into natural language questions.  [generate programmatically]
+- EntityQuestions: An open-domain QA dataset with a long-tail distribution, covering a wide range of entity popularity.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Adaptive Retrieval on POPQA
+- **Procedure**: 
+  - Implement the Adaptive Retrieval method, which decides whether to use retrieval based on the popularity of the subject entity in the question.
+  - Use a development set to determine a popularity threshold for each relationship type. This threshold is chosen to maximize adaptive accuracy, defined as the accuracy attained by taking the predictions of the retrieval-augmented system for questions below the threshold and the predictions based on parametric knowledge for the rest.
+  - For questions with popularity below the threshold, augment the input with retrieved non-parametric memories using the Contriever retrieval system. For questions above the threshold, rely solely on the model's parametric memory.
+  - Use the POPQA dataset, which consists of 14k questions about long-tail entities, to evaluate the method.
+- **What to Record**: 
+  - Record the accuracy of the Adaptive Retrieval method compared to non-adaptive methods.
+  - Record the proportion of questions for which retrieval was used.
+  - Measure the inference costs in terms of latency and API costs.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 9 and Section 6 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Accuracy**: A prediction is marked as correct if any substring of the prediction is an exact match of any of the gold answers.
+  - **Inference Cost**: Measure the latency in seconds for local models and API costs in dollars per 1000 queries for GPT-3.
+
+- **Normalization and Pre-processing**:
+  - Normalize entity popularity using Wikipedia monthly page views as a proxy.
+  - Use a simple template "Q: <question> A:" for question formatting.
+
+- **Aggregation Strategy**:
+  - Calculate per-sample accuracy and aggregate to obtain overall accuracy.
+  - Determine the proportion of questions using retrieval by counting the number of questions below the popularity threshold.
+
+## Implementation Notes
+
+- **Key Pitfalls**:
+  - Ensure that the popularity threshold is determined independently for each relationship type to avoid bias.
+  - Be cautious of retrieval results that may mislead the model, especially for popular entities where parametric memory might be more reliable.
+
+- **Special Prompt Templates**:
+  - Use the simple template "Q: <question> A:" for all questions to maintain consistency across experiments.
+
+- **Order of Operations**:
+  - First, determine the popularity threshold using the development set.
+  - Then, apply the Adaptive Retrieval method on the test set using the determined thresholds.

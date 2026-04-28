@@ -1,0 +1,87 @@
+You are a research agent. Conduct research about the question: "RQ3: How does SELF-RAG enable customizable inference-time behavior?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- SELF-RAG: SELF-RAG is a framework that enhances the quality and factuality of large language models (LLMs) through retrieval and self-reflection. It trains an arbitrary LLM to adaptively retrieve passages on-demand and generate and reflect on retrieved passages and its own generations using special tokens called reflection tokens. These tokens make the LLM controllable during inference, allowing it to tailor its behavior to diverse task requirements.
+  - Component: Adaptive retrieval mechanism using reflection tokens
+  - Component: Critique tokens for self-evaluation of generation quality
+  - Component: Customizable inference-time behavior through reflection tokens
+- Baseline for comparison: ChatGPT
+- Baseline for comparison: Llama2-chat
+- Baseline for comparison: Alpaca
+
+Datasets for training and evaluation:
+- ASQA: A long-form QA task dataset used to evaluate correctness, fluency, and citation precision and recall.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Adaptive Retrieval and Critique with SELF-RAG
+- **Procedure**: 
+  - Input format: Provide the model with a task input and preceding generations.
+  - Prompting strategy: Use reflection tokens to decide when to retrieve additional information and when to critique the generated output.
+  - Number of samples: Use the full ASQA dataset for evaluation.
+  - Shuffling/ordering: Randomly shuffle the dataset to ensure diverse input conditions.
+  - Splits to use: Use the test split of the ASQA dataset.
+- **What to record**: 
+  - Raw outputs of the model.
+  - Reflection tokens generated during the process.
+  - Intermediate statistics such as retrieval frequency and critique scores.
+- **Correspondence**: This experiment corresponds to the analysis of inference-time customization in Section 5.2 and Figure 3b.
+
+### 2. Evaluation of SELF-RAG on Long-form QA
+- **Procedure**: 
+  - Input format: Provide long-form questions from the ASQA dataset.
+  - Prompting strategy: Use reflection tokens to guide the retrieval and critique process.
+  - Number of samples: Evaluate on the full ASQA test set.
+  - Splits to use: Test split of ASQA.
+- **What to record**: 
+  - Model outputs with citation precision and recall.
+  - Fluency scores using MAUVE.
+- **Correspondence**: This experiment corresponds to the evaluation of long-form generation tasks in Table 2.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Citation Precision**: The proportion of model-generated claims that are fully supported by cited evidence.
+  - **Fluency (MAUVE)**: A measure of the gap between model-generated text and human text, focusing on fluency and coherence.
+
+- **Normalization and Pre-processing**:
+  - Normalize model outputs by lowercasing and removing punctuation for consistency in evaluation.
+  - Use a standard tokenizer to ensure uniform tokenization across different models.
+
+- **Aggregation Strategy**:
+  - Per-sample evaluation: Calculate citation precision and fluency for each sample.
+  - Per-condition aggregation: Average the scores across all samples for each condition.
+  - Overall aggregation: Report the mean scores across all conditions to provide a comprehensive evaluation.
+
+## Implementation Notes
+
+- **Key Pitfalls**:
+  - Ensure that the reflection tokens are correctly integrated into the model's vocabulary and are used appropriately during inference.
+  - Be cautious of the retrieval threshold settings, as they significantly impact the retrieval frequency and model performance.
+
+- **Special Prompt Templates**:
+  - Use specific templates for generating reflection tokens, as detailed in the paper's Appendix.
+
+- **Order of Operations**:
+  - First, determine the necessity of retrieval using reflection tokens.
+  - Retrieve relevant passages if needed.
+  - Generate the output and critique it using the reflection tokens.
+  - Adjust the retrieval and critique process based on the task requirements and reflection token predictions.

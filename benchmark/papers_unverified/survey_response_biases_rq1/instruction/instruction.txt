@@ -1,0 +1,21 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do RLHF-ed models differ from vanilla LLMs in terms of response biases?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- American Trends Panel (ATP): A set of survey questions curated by Pew Research, used to study response biases in LLMs.
+  Project page: https://www.pewresearch.org/american-trends-panel/
+  Setup:
+    # Download instructions and data are at:
+    # https://www.pewresearch.org/american-trends-panel/
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

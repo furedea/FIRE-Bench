@@ -1,0 +1,25 @@
+task_id: tokenization_cost_disparity_rq1
+paper_type: empirical_study
+research_question: 'RQ2: What are the fairness implications of tokenization length
+  differences?'
+study_type: dataset audit
+data_sources:
+- name: FLORES-200
+  source: huggingface
+  description: A parallel corpus comprising 2000 sentences from Wikipedia translated
+    into 200 different languages.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''facebook/flores'')
+
+    '
+analytical_tools:
+- Python
+- NumPy
+- Pandas
+- Matplotlib
+- Hugging Face Transformers
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

@@ -1,0 +1,30 @@
+task_id: embers_of_autoregression_rq2
+paper_type: empirical_study
+research_question: 'RQ3: How does input probability affect the performance of LLMs?'
+study_type: dataset audit
+data_sources:
+- name: Global Voices
+  source: unknown
+  description: A collection of news articles used to generate high-probability and
+    low-probability sentences for evaluating LLM performance on tasks like rot-13
+    encoding.
+- name: WikiBio dataset
+  source: external
+  description: A dataset containing biographical information, used to evaluate LLM
+    performance on birthday retrieval tasks with varying input probabilities.
+  url: https://github.com/DavidGrangier/wikipedia-biography-dataset
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/DavidGrangier/wikipedia-biography-dataset.git
+
+    '
+analytical_tools:
+- NLTK
+- RoBERTa
+- GPT-2
+- Levenshtein distance
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

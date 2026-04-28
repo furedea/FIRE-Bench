@@ -1,0 +1,19 @@
+task_id: embers_of_autoregression_rq1
+paper_type: empirical_study
+research_question: 'RQ2: How does output probability affect the performance of LLMs?'
+study_type: dataset audit
+data_sources:
+- name: Global Voices
+  source: unknown
+  description: A collection of news articles used to generate high-probability, medium-probability,
+    and low-probability sentences for evaluating LLM performance on tasks like rot-13
+    decoding and reversal.
+analytical_tools:
+- GPT-2
+- RoBERTa
+- NLTK
+- Hugging Face Datasets
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

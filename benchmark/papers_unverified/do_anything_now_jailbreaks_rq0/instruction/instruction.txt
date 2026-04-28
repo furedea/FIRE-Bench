@@ -1,0 +1,19 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: What are the characteristics and evolution patterns of in-the-wild jailbreak prompts?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: databricks/dolly-v2-7b
+- Load with HuggingFace: lmsys/vicuna-7b-v1.1
+- Load with HuggingFace: THUDM/chatglm-6b
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Jailbreak Prompts Dataset: A collection of 15,140 prompts from Reddit, Discord, websites, and open-source datasets, including 1,405 identified as jailbreak prompts.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

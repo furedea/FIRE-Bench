@@ -1,0 +1,41 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How reliable are the current GSM8K results?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- GSM8K: A benchmark dataset for evaluating the mathematical reasoning capabilities of LLMs, consisting of grade school math questions.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('openai/gsm8k')
+- GSM-Symbolic: An enhanced benchmark that generates diverse variants of GSM8K questions using symbolic templates for more reliable evaluation of LLMs' performance.  [generate programmatically]
+  Generation code:
+    import random
+    
+    def generate_gsm_symbolic():
+        names = ["Sophie", "Emma", "Olivia"]
+        family = ["nephew", "cousin", "brother"]
+        x = random.randint(5, 100)
+        y = random.randint(5, 100)
+        z = random.randint(5, 100)
+        total = random.randint(100, 500)
+        ans = total - (x + y + z)
+        return {
+            "name": random.choice(names),
+            "family": random.choice(family),
+            "x": x,
+            "y": y,
+            "z": z,
+            "total": total,
+            "ans": ans
+        }
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

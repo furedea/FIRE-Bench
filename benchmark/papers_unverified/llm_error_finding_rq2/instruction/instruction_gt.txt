@@ -1,0 +1,83 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: Can mistake location information be obtained without in-domain training data?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- BIG-Bench Mistake: A dataset of CoT-style traces generated using PaLM 2, annotated with the location of the first logical error.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Mistake Finding with LLMs
+- **Procedure**: 
+  - Use three different prompting methods: direct trace-level prompting, direct step-level prompting, and CoT step-level prompting.
+  - For direct trace-level prompting, input the entire trace and prompt for the mistake location, expecting a step number or "No" for no mistakes.
+  - For direct step-level prompting, input the partial trace up to each step and prompt for a binary Yes/No output indicating correctness.
+  - For CoT step-level prompting, extend direct step-level prompting by asking the model to reason through each step before providing a Yes/No output.
+  - Use 3-shot prompting for all methods.
+  - Evaluate on the BIG-Bench Mistake dataset across five tasks: word sorting, tracking shuffled objects, logical deduction, multi-step arithmetic, and Dyck languages.
+- **What to Record**: 
+  - Mistake location accuracy for each method and task.
+  - Separate accuracy for traces with and without mistakes.
+- **Correspondence**: Table 4, Table 9a, Table 9b, Section 3.
+
+### 2. Correction with Oracle Mistake Location
+- **Procedure**: 
+  - Use a backtracking method with oracle mistake location information.
+  - For traces with mistakes, regenerate the step at the mistake location using temperature = 1 until a different step is generated (up to 8 attempts).
+  - Replace the original step with the new one and regenerate the remaining steps at temperature = 0.
+  - Compare the corrected trace's final answer to the original.
+- **What to Record**: 
+  - Changes in accuracy for traces originally correct and incorrect.
+  - Compare against a random baseline where mistake locations are randomly selected.
+- **Correspondence**: Table 6, Section 4.
+
+### 3. Classifier-Based Mistake Location
+- **Procedure**: 
+  - Train a small classifier (PaLM 2 Otter) on out-of-domain tasks from the BIG-Bench Mistake dataset.
+  - Evaluate the classifier's mistake-finding accuracy on a held-out task.
+  - Use the classifier to simulate mistake location accuracy at various levels and assess the impact on backtracking effectiveness.
+- **What to Record**: 
+  - Mistake finding accuracy of the classifier compared to few-shot prompting.
+  - Changes in downstream task accuracy with simulated classifier accuracy.
+- **Correspondence**: Table 7, Figure 3, Section 5.
+
+## Evaluation Details
+
+- **Mistake Location Accuracy**: 
+  - Defined as the percentage of traces where the model correctly identifies the first mistake step or correctly identifies that there are no mistakes.
+  - Calculated separately for traces with and without mistakes.
+
+- **Downstream Task Accuracy**: 
+  - Measured as the percentage of traces where the final answer is correct after correction.
+  - Changes in accuracy are reported as absolute differences before and after correction.
+
+- **Classifier Training and Evaluation**: 
+  - Fine-tune the classifier on four tasks and evaluate on the fifth.
+  - Use mistake finding accuracy as the primary metric, comparing against few-shot prompting results.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompt templates for each task and method, available at the provided GitHub repository.
+  - Ensure consistent formatting with "Thought N:" signposting for each step in CoT traces.
+
+- **Backtracking Method**: 
+  - Regenerate steps at mistake locations with temperature = 1 to introduce variability.
+  - Limit to 8 regeneration attempts to balance computational cost and effectiveness.
+
+- **Classifier Simulation**: 
+  - Simulate classifier accuracy by using oracle mistake locations a percentage of the time and random locations otherwise.
+  - Ensure random locations do not match the correct location to mimic typical classifier behavior.

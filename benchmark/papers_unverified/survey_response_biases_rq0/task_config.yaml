@@ -1,0 +1,30 @@
+task_id: survey_response_biases_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: Do LLMs reflect human-like behaviors as a result of question
+  modifications?'
+models:
+  api:
+  - gpt-3.5-turbo-0613
+  - gpt-3.5-turbo-0914
+  huggingface:
+  - meta-llama/Llama-2-7b
+  - meta-llama/Llama-2-13b
+  - meta-llama/Llama-2-70b
+  - upstage/SOLAR-0-70b-16bit
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: American Trends Panel (ATP)
+  source: external
+  description: A set of survey questions curated by Pew Research, used to study response
+    biases in LLMs.
+  url: https://www.pewresearch.org/american-trends-panel/
+  url_kind: website
+  loader: '# Download instructions and data are at:
+
+    # https://www.pewresearch.org/american-trends-panel/
+
+    '
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

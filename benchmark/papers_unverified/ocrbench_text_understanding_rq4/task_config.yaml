@@ -1,0 +1,20 @@
+task_id: ocrbench_text_understanding_rq4
+paper_type: llm_evaluation
+research_question: 'RQ5: How do LMMs perform on Handwritten Mathematical Expression
+  Recognition tasks?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: HME100K
+  source: unknown
+  description: A dataset consisting of 74,502 images for training and 24,607 images
+    for testing, with 245 symbol classes, used for evaluating handwritten mathematical
+    expression recognition.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

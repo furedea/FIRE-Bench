@@ -1,0 +1,107 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How do LMMs perform on various text recognition tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- IIIT5K: A dataset for regular text recognition in natural scene images.
+- SVT: Street View Text dataset for regular text recognition.
+- IC13: ICDAR 2013 dataset for regular text recognition.
+- IC15: ICDAR 2015 dataset for irregular text recognition.
+- SVTP: Street View Text Perspective dataset for irregular text recognition.
+- CT80: A dataset for irregular text recognition.
+- COCO: COCO-Text dataset for irregular text recognition.
+- CTW: SCUT-CTW1500 dataset for irregular text recognition.
+- TT: Total-Text dataset for irregular text recognition.
+- HOST: Heavily occluded scene text dataset.
+- WOST: Weakly occluded scene text dataset.
+- WordArt: A dataset for artistic text recognition.
+- IAM: A dataset for handwritten text recognition.
+- ReCTS: A dataset for Chinese text recognition.
+- ORAND-CAR-2014: A dataset for handwritten digit string recognition.
+- NST: Non-Semantic Text dataset created using shuffled characters from the IIIT5K dictionary.  [generate programmatically]
+- ST: Semantic Text dataset created using words from the IIIT5K dictionary.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Text Recognition Evaluation
+- **Procedure**: 
+  - Use the datasets for regular text recognition (IIIT5K, SVT, IC13), irregular text recognition (IC15, SVTP, CT80, COCO, CTW, TT), occluded text recognition (HOST, WOST), artistic text recognition (WordArt), handwritten text recognition (IAM), Chinese text recognition (ReCTS), handwritten digit string recognition (ORAND-CAR-2014), and non-semantic/semantic text recognition (NST, ST).
+  - For each dataset, use the prompt "What is written in the image?" for English text, "What are the Chinese characters in the image?" for Chinese text, and "What is the number in the image?" for digit strings.
+  - Evaluate 3000 samples from each dataset.
+- **What to Record**: 
+  - Raw outputs from the models.
+  - Whether the ground truth is present in the model's output.
+- **Correspondence**: Table 1 in the paper.
+
+### 2. Scene Text-Centric VQA
+- **Procedure**: 
+  - Use datasets STVQA, TextVQA, OCRVQA, and ESTVQA.
+  - For ESTVQA, separate into ESTVQA(CN) and ESTVQA(EN) for Chinese and English questions respectively.
+  - Evaluate using 50 questions from each dataset.
+- **What to Record**: 
+  - Raw outputs from the models.
+  - Presence of the correct answer in the model's output.
+- **Correspondence**: Table 2 in the paper.
+
+### 3. Document-Oriented VQA
+- **Procedure**: 
+  - Use datasets DocVQA, InfographicVQA, and ChartQA.
+  - Evaluate using 50 questions from each dataset.
+- **What to Record**: 
+  - Raw outputs from the models.
+  - Presence of the correct answer in the model's output.
+- **Correspondence**: Table 2 in the paper.
+
+### 4. Key Information Extraction (KIE)
+- **Procedure**: 
+  - Use datasets SROIE, FUNSD, and POIE.
+  - For SROIE, use prompts like "What is the name of the company that issued this receipt?" for extracting specific information.
+  - Evaluate using 67 questions from SROIE, 66 from FUNSD, and 67 from POIE.
+- **What to Record**: 
+  - Raw outputs from the models.
+  - Presence of the correct key-value pairs in the model's output.
+- **Correspondence**: Table 2 in the paper.
+
+### 5. Handwritten Mathematical Expression Recognition (HMER)
+- **Procedure**: 
+  - Use the HME100K dataset.
+  - Use the prompt "Please write out the expression of the formula in the image using LaTeX format."
+  - Evaluate using 100 images.
+- **What to Record**: 
+  - Raw outputs from the models.
+  - Correctness of the LaTeX expression generated.
+- **Correspondence**: Table 2 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**: 
+  - For text recognition and VQA tasks, the primary metric is whether the ground truth is present in the model's output.
+  - For KIE, the metric is the presence of correct key-value pairs.
+  - For HMER, the metric is the correctness of the LaTeX expression.
+- **Normalization/Pre-processing**: 
+  - Filter out questions with answers containing fewer than 4 symbols to reduce false positives.
+- **Aggregation Strategy**: 
+  - Calculate accuracy per dataset and task.
+  - Aggregate results to compare overall performance across different models and tasks.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompts for different types of text (e.g., English, Chinese, digits) and tasks (e.g., KIE).
+- **Pitfalls**: 
+  - Ensure that the model's output is checked for the presence of the ground truth rather than exact matching due to the explanatory nature of LMM outputs.
+- **Order of Operations**: 
+  - Ensure datasets are processed in the order specified to maintain consistency in evaluation.

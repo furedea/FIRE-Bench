@@ -1,0 +1,85 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ3: How does input probability affect the performance of LLMs?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- Global Voices: A collection of news articles used to generate high-probability and low-probability sentences for evaluating LLM performance on tasks like rot-13 encoding.  [loader unverified -- locate the data yourself]
+- WikiBio dataset: A dataset containing biographical information, used to evaluate LLM performance on birthday retrieval tasks with varying input probabilities.  [loader unverified -- locate the data yourself]
+
+Analytical tools / techniques available:
+- NLTK
+- RoBERTa
+- GPT-2
+- Levenshtein distance
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.
+
+---
+
+## Experimental Design
+
+### 1. Rot-13 Encoding with Varying Input Probabilities
+- **Procedure**: 
+  - Use the Global Voices dataset to generate sentences with varying input probabilities.
+  - Classify sentences into high-probability and low-probability categories based on their occurrence in the dataset.
+  - Encode these sentences using the rot-13 cipher.
+  - Ensure that the input sentences are controlled for length and token count to isolate the effect of input probability.
+- **What to Record**: 
+  - Encoding accuracy for each sentence.
+  - Levenshtein edit distance between the model's output and the correct encoded sentence.
+- **Correspondence**: 
+  - Figure 7.1 (left)
+  - Section 7.1
+
+### 2. Birthday Retrieval with Varying Input Probabilities
+- **Procedure**: 
+  - Use the WikiBio dataset to select names of public figures with varying probabilities of being mentioned in the C4 corpus.
+  - Classify names into high-probability and low-probability categories.
+  - Query the models to retrieve the birth date for each name.
+  - Ensure that the names are controlled for length and token count to isolate the effect of input probability.
+- **What to Record**: 
+  - Accuracy of the retrieved birth date for each name.
+- **Correspondence**: 
+  - Figure 7.3
+  - Section 7.4
+
+## Evaluation Details
+
+### Rot-13 Encoding
+- **Metric Definitions**: 
+  - **Encoding Accuracy**: The proportion of sentences correctly encoded using the rot-13 cipher.
+  - **Levenshtein Edit Distance**: The number of single-character edits (insertions, deletions, or substitutions) required to change the model's output into the correct encoded sentence.
+- **Normalization/Pre-processing**: 
+  - Ensure all input sentences are lowercased and punctuation is standardized before encoding.
+- **Aggregation Strategy**: 
+  - Calculate per-sentence accuracy and edit distance, then aggregate results by input probability category (high vs. low).
+
+### Birthday Retrieval
+- **Metric Definitions**: 
+  - **Birthday Accuracy**: The proportion of correct birth dates retrieved by the model.
+- **Normalization/Pre-processing**: 
+  - Ensure all names are formatted consistently (e.g., capitalization) before querying the model.
+- **Aggregation Strategy**: 
+  - Calculate per-name accuracy, then aggregate results by input probability category (high vs. low).
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - For rot-13 encoding, include an example in the prompt to clarify the task and ensure consistent formatting.
+  - For birthday retrieval, ensure the prompt clearly specifies the format for the expected date output.
+- **Output Parsing Logic**: 
+  - For rot-13 encoding, strip any extraneous characters from the model's output before calculating edit distance.
+  - For birthday retrieval, parse the model's output to extract the date, ensuring it matches the expected format.
+- **Order of Operations**: 
+  - Ensure that input probability classification is performed before encoding or querying to maintain consistency in experimental conditions.

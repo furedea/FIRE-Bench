@@ -1,0 +1,29 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ1: How do tokenization lengths differ across languages for various tokenizers?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- FLORES-200: A parallel corpus comprising the same 2000 sentences taken from Wikipedia and human-translated to 200 different languages.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('facebook/flores')
+
+Analytical tools / techniques available:
+- Python
+- NumPy
+- Pandas
+- Matplotlib
+- Hugging Face Transformers
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.

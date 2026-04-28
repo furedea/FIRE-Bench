@@ -1,0 +1,24 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does model size affect truthfulness?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: EleutherAI/gpt-neo-2.7B
+- Load with HuggingFace: EleutherAI/gpt-j-6B
+- Load with HuggingFace: gpt2-xl
+- Load with HuggingFace: allenai/unifiedqa-t5-11b
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- TruthfulQA: A benchmark comprising 817 questions across 38 categories designed to test the truthfulness of language models by eliciting imitative falsehoods.
+  GitHub repo: https://github.com/sylinrl/TruthfulQA
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/sylinrl/TruthfulQA.git
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

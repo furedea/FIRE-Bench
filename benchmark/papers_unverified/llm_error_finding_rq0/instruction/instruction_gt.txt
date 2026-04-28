@@ -1,0 +1,77 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: Can LLMs find reasoning mistakes in CoT traces?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- BIG-Bench Mistake: A dataset of CoT-style traces generated using PaLM 2, annotated with the location of the first logical mistake.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Mistake-Finding Benchmark
+
+- **Procedure**: 
+  - Use the BIG-Bench Mistake dataset, which contains 2186 CoT-style traces annotated with the location of the first logical mistake.
+  - Evaluate the models using three different prompting methods:
+    - **Direct Trace-Level Prompting**: Provide the entire trace as input and prompt the model to output the mistake location or indicate no mistake.
+    - **Direct Step-Level Prompting**: For each step in the trace, prompt the model with the partial trace up to that step and ask for a binary Yes/No output indicating correctness. The mistake location is inferred from the first "No" response.
+    - **CoT Step-Level Prompting**: Similar to direct step-level prompting, but the model is asked to generate a series of reasoning steps for each partial trace. The mistake location is inferred from the first "No" response.
+  - Use temperature = 0 for all model generations.
+  - Each trace is evaluated for whether it contains a mistake (incorrectmis) or not (correctmis).
+
+- **What to Record**: 
+  - Mistake-finding accuracy for each model and prompting method.
+  - Separate accuracy for traces with mistakes (incorrectmis) and without mistakes (correctmis).
+
+- **Correspondence**: 
+  - Results are detailed in Table 4 and discussed in Section 3 of the paper.
+
+### 2. Correction Ability with Oracle Mistake Location
+
+- **Procedure**: 
+  - Use the backtracking method to correct CoT traces using oracle mistake location information.
+  - For traces with identified mistakes, regenerate the step at the mistake location using temperature = 1 until a different step is produced (up to 8 attempts).
+  - Replace the original mistake step with the new step and regenerate the remaining steps at temperature = 0.
+
+- **What to Record**: 
+  - Changes in accuracyans (correctness of the final answer) before and after correction.
+  - Separate results for traces originally correctans and incorrectans.
+
+- **Correspondence**: 
+  - Results are shown in Table 6 and discussed in Section 4 of the paper.
+
+## Evaluation Details
+
+- **Mistake-Finding Accuracy**: 
+  - Defined as the percentage of traces where the model correctly identifies the mistake location or correctly indicates no mistake.
+  - Calculated separately for correctmis and incorrectmis traces.
+
+- **Accuracyans**: 
+  - Defined as the percentage of traces where the final answer is correct.
+  - Changes in accuracyans are calculated as the difference before and after applying the correction method.
+
+## Implementation Notes
+
+- **Prompting Methods**: 
+  - Ensure that the direct step-level and CoT step-level prompting methods only consider the first "No" response to determine the mistake location.
+  - Use the newline as a stop token to generate one step at a time for CoT traces.
+
+- **Backtracking Method**: 
+  - Regenerate the mistake step using temperature = 1 to introduce variability and avoid identical outputs.
+  - Limit the number of regeneration attempts to 8 to manage computational resources.
+
+- **Annotation and Dataset Details**: 
+  - The BIG-Bench Mistake dataset includes tasks such as word sorting, tracking shuffled objects, logical deduction, multi-step arithmetic, and Dyck languages.
+  - Human annotation is used for most tasks, with automatic annotation for Dyck languages due to limited variation in phrasing.

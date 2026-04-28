@@ -1,0 +1,81 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can elicitive prompting methods narrow the compositionality gap?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Compositional Celebrities: A dataset of 8.6k 2-hop questions combining frequently stated facts in improbable ways to test compositional reasoning.  [generate programmatically]
+- 2WikiMultiHopQA: A dataset with 2-hop compositional questions sourced from facts in Wikipedia articles.  [loader unverified -- locate the data yourself]
+- Musique: A dataset with multi-hop questions via single-hop question composition.  [loader unverified -- locate the data yourself]
+- Bamboogle: A manually constructed dataset of 125 2-hop questions challenging a system's ability to decompose complex questions.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Compositionality Gap Measurement
+- **Procedure**: 
+  - Use the Compositional Celebrities dataset to evaluate the compositionality gap.
+  - For each question, use a 2-shot prompt with examples from the same category.
+  - Evaluate both 2-hop questions and their sub-questions separately.
+  - Use a category-specific prompt for each question that contains 2 randomly chosen examples removed from the dataset.
+- **What to Record**: 
+  - Accuracy of 2-hop questions.
+  - Accuracy of sub-questions.
+  - Compositionality gap: fraction of questions where sub-questions are correct but the 2-hop question is incorrect.
+- **Correspondence**: Figure 1, Section 2.
+
+### 2. Elicitive Prompting with Self-Ask
+- **Procedure**: 
+  - Implement the self-ask method, which involves decomposing multi-hop questions into simpler sub-questions.
+  - Use a few-shot prompt that demonstrates how to answer questions, starting with examples and appending the inference-time question.
+  - Insert the phrase “Are follow up questions needed here:” to improve results.
+  - The model outputs follow-up questions, answers them, and then provides the final answer.
+- **What to Record**: 
+  - Accuracy of self-ask on Compositional Celebrities, 2WikiMultiHopQA, Musique, and Bamboogle datasets.
+  - Comparison with chain of thought and direct prompting methods.
+- **Correspondence**: Figure 2, Section 3.1.
+
+### 3. Self-Ask with Search Engine Integration
+- **Procedure**: 
+  - Integrate a search engine with the self-ask method.
+  - Use the same prompt as self-ask, but when the model outputs a follow-up question, query the search engine instead of the model answering it.
+  - Insert the search engine's response back into the prompt for the model to continue.
+- **What to Record**: 
+  - Accuracy improvement with search engine integration.
+  - Comparison with self-ask without search engine.
+- **Correspondence**: Figure 3, Section 3.3.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Accuracy**: Percentage of correctly answered questions.
+  - **Compositionality Gap**: \((\text{Number of 2-hop questions answered incorrectly while sub-questions are correct}) / (\text{Total number of 2-hop questions with correct sub-questions})\).
+
+- **Normalization and Pre-processing**:
+  - Ensure that the final answer is extracted in a short-form format as demonstrated in the prompt.
+  - Use specific delimiters like “So the final answer is:” to parse the final answer.
+
+- **Aggregation Strategy**:
+  - Calculate accuracy per dataset and per prompting method.
+  - Aggregate results across datasets to compare overall performance of different prompting strategies.
+
+## Implementation Notes
+
+- **Prompt Templates**:
+  - Use specific phrases like “Are follow up questions needed here:” and “Follow up:” to guide the model in self-ask.
+  - Ensure that the final answer is clearly marked with “So the final answer is:” for easy parsing.
+
+- **Order of Operations**:
+  - For self-ask with search engine, ensure that the search engine query and response insertion occur before the model continues with the next follow-up question.
+  - Maintain the sequence of question decomposition and answering to ensure consistency in the self-ask method.

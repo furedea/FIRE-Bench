@@ -1,0 +1,16 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does the FRESHPROMPT method improve the factual accuracy of LLMs?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- FRESHQA: A dynamic QA benchmark with 600 questions testing factuality of LLMs, including fast-changing and false-premise questions.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

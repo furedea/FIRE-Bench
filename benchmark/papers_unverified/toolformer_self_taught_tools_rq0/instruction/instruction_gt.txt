@@ -1,0 +1,77 @@
+You are a research agent. Conduct research about the question: "RQ1: Can language models learn to use external tools in a self-supervised manner without large amounts of human annotations?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- Toolformer: Toolformer is a language model architecture that autonomously learns to use external tools via simple APIs. It decides which APIs to call, when to call them, what arguments to pass, and how to incorporate the results into future token prediction. This is achieved in a self-supervised manner, requiring only a few demonstrations for each API. Toolformer integrates various tools, such as a calculator, a Q&A system, a search engine, a translation system, and a calendar, to enhance its zero-shot performance on diverse tasks.
+  - Component: API call sampling and filtering based on self-supervised loss
+  - Component: Integration of multiple tools: calculator, Q&A system, search engine, translation system, calendar
+  - Component: Finetuning on augmented datasets with API calls
+- Baseline for comparison: GPT-J
+- Baseline for comparison: GPT-J + CC
+- Baseline for comparison: OPT (66B)
+- Baseline for comparison: GPT-3 (175B)
+
+Datasets for training and evaluation:
+- CCNet: A large-scale dataset used for language modeling, consisting of web crawl data.  [loader unverified -- locate the data yourself]
+- Natural Questions: A benchmark for question answering research, used to finetune the Atlas model for the Q&A tool.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Toolformer API Call Sampling and Filtering
+- **Procedure**: 
+  - For each API, write a prompt that encourages the language model (LM) to annotate an example with API calls. Use the in-context learning ability of the LM to sample potential API calls.
+  - Execute these API calls and filter out those that do not reduce the loss over the next tokens.
+  - Use a sampling threshold `τs` to determine positions for API calls and a filtering threshold `τf` to decide which calls to keep.
+  - Use a weighted cross-entropy loss to evaluate the usefulness of API calls.
+- **Input Format**: Text sequences with potential API call positions.
+- **Prompting Strategy**: Use specific prompts for each tool (e.g., question answering, calculator, etc.) as detailed in Appendix A.2.
+- **Number of Samples**: Up to 25k examples per API.
+- **Shuffling/Ordering**: Randomly select positions for API calls based on probability thresholds.
+- **Splits to Use**: Use a subset of CCNet for training and evaluation.
+- **What to Record**: Record the positions of API calls, the API call results, and the loss reduction values.
+- **Correspondence**: Figure 2, Section 2.
+
+### 2. Downstream Task Evaluation
+- **Procedure**: 
+  - Evaluate Toolformer on various downstream tasks such as LAMA, math datasets, question answering, multilingual question answering, and temporal datasets.
+  - Use a zero-shot setup with specific prompts for each task.
+  - For Toolformer, allow API calls during inference, except where explicitly disabled (e.g., Wikipedia Search API for LAMA).
+- **Input Format**: Task-specific input formats with prompts.
+- **Prompting Strategy**: Use task-specific prompts as detailed in Appendix C.
+- **Number of Samples**: Use standard datasets for each task.
+- **Shuffling/Ordering**: Not specified.
+- **Splits to Use**: Use standard splits for each dataset.
+- **What to Record**: Record task performance metrics such as accuracy, exact match, and lenient match criteria.
+- **Correspondence**: Tables 3-7, Section 4.2.
+
+## Evaluation Details
+
+### Metric Definitions and Computation
+- **Perplexity**: Compute the weighted cross-entropy loss over tokens. Use the formula `Li(z) = -Σ(wj-i * log pM(xj | z, x1:j-1))` for loss computation.
+- **Accuracy**: For tasks like LAMA and question answering, check if the correct answer is within the first few predicted tokens.
+- **Lenient Match**: For LAMA, check if the correct word is within the first five predicted words.
+- **Aggregation Strategy**: Aggregate results per sample, then per condition (e.g., with/without API calls), and finally overall.
+
+## Implementation Notes
+
+- **Prompt Templates**: Use specific prompt templates for each tool as detailed in Appendix A.2.
+- **Output Parsing**: Use special tokens `<API>`, `</API>`, and `→` to mark API calls and results.
+- **Order of Operations**: Ensure API calls are sampled, executed, and filtered in the correct order before finetuning the model.
+- **Decoding Strategy**: Use a modified greedy decoding strategy where the model can start an API call if `<API>` is among the top `k` most likely tokens, with `k=10` for increased API usage.

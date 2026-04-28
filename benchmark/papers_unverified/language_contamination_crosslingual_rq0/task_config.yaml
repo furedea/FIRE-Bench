@@ -1,0 +1,64 @@
+task_id: language_contamination_crosslingual_rq0
+paper_type: empirical_study
+research_question: 'RQ1: How much non-English text exists in commonly used English
+  pretraining corpora?'
+study_type: dataset audit
+data_sources:
+- name: ENGLISH WIKIPEDIA
+  source: huggingface
+  description: A large-scale dataset of English Wikipedia articles used for pretraining
+    language models.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''wikipedia'')
+
+    '
+- name: BOOKCORPUS
+  source: huggingface
+  description: A dataset consisting of books used for pretraining language models.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''bookcorpus'')
+
+    '
+- name: STORIES
+  source: external
+  description: A dataset of stories used for pretraining language models.
+  url: https://github.com/rowanz/grover
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/rowanz/grover.git
+
+    '
+- name: OPENWEBTEXT
+  source: huggingface
+  description: An open-source version of WEBTEXT, derived from web-crawled data.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''openwebtext'')
+
+    '
+- name: CC-NEWS
+  source: huggingface
+  description: A dataset of news articles used for pretraining language models.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''cc_news'')
+
+    '
+- name: C4.EN
+  source: huggingface
+  description: A large-scale dataset derived from web-crawled data, filtered to exclude
+    non-English text.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''allenai/c4'')
+
+    '
+analytical_tools:
+- FastText
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

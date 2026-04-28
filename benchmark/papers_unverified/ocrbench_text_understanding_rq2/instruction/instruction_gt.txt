@@ -1,0 +1,54 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How do LMMs perform on Document-Oriented VQA tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- DocVQA: A large-scale dataset with document images and questions for Document-Oriented VQA.  [loader unverified -- locate the data yourself]
+- InfoVQA: A dataset containing infographics with questions for Document-Oriented VQA.  [loader unverified -- locate the data yourself]
+- ChartQA: A dataset with charts and questions for Document-Oriented VQA.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Document-Oriented VQA Evaluation
+- **Procedure**: 
+  - Use the DocVQA, InfoVQA, and ChartQA datasets.
+  - For each dataset, select 3000 question instances for testing.
+  - Input format: Provide the document image and the associated question to the model.
+  - Prompting strategy: Use the prompt "What is the answer to the question based on the document image?".
+  - Ensure that questions with answers containing fewer than 4 symbols are filtered out to reduce false positives.
+- **What to Record**: 
+  - Record the raw outputs from the models.
+  - Extract whether the ground truth answer is present in the model's output.
+- **Correspondence**: This experiment corresponds to the results presented in Table 2 and Section 3.2 of the paper.
+
+## Evaluation Details
+
+- **Metric Definition**: 
+  - The primary metric is the presence of the ground truth answer in the model's output. This is a binary metric where the output is considered correct if the ground truth is present in the model's response.
+- **Pre-processing**: 
+  - Filter out questions with answers containing fewer than 4 symbols from all datasets to reduce false positives.
+- **Aggregation Strategy**: 
+  - Calculate the accuracy for each dataset by dividing the number of correct outputs by the total number of questions.
+  - Aggregate the results across all datasets to provide an overall performance measure for Document-Oriented VQA tasks.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**: 
+  - The paper notes that LMMs may struggle with fine-grain perception due to limited input resolution. Ensure that the input resolution is maximized within the model's capabilities.
+- **Prompt Templates**: 
+  - Use specific prompts for each dataset type to ensure the model understands the context. For example, for DocVQA, use "What is the answer to the question based on the document image?".
+- **Order of Operations**: 
+  - Ensure that the filtering of questions with short answers is done before model evaluation to maintain consistency in the evaluation process.

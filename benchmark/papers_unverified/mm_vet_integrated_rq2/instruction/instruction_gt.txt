@@ -1,0 +1,57 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How can we provide model insights beyond simple performance ranking?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- COCO: A dataset containing images and their corresponding captions, used for tasks like image recognition and captioning.
+- VQA v2: A dataset for visual question answering, requiring models to answer questions based on image content.
+- Text VQA: A dataset focusing on visual question answering with a requirement for text recognition in images.
+- MM-Vet: A benchmark designed to evaluate large multimodal models on complex tasks requiring integration of multiple vision-language capabilities.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluation of LMMs on MM-Vet
+- **Procedure**: 
+  - Use the MM-Vet dataset, which consists of 200 images and 218 questions, each requiring one or more core vision-language (VL) capabilities.
+  - For each sample, input the image and question to the model and record the model's output.
+  - Use a few-shot prompt with GPT-4 to evaluate the model's output. The prompt includes examples with short and long open-ended answers to cover diverse answer styles.
+  - Conduct the evaluation five times per sample to account for variance in GPT-4 outputs, even with a temperature setting of 0.
+- **What to Record**: 
+  - Raw model outputs for each sample.
+  - GPT-4 evaluation scores for each sample, ranging from 0 to 1.
+  - Average scores for each capability and capability integration.
+  - Overall average score and variance.
+- **Correspondence**: 
+  - Results are detailed in Table 2 and Table 3, and discussed in Section 4.2.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - Use GPT-4 to generate a correctness score for each sample's output, ranging from 0 (totally wrong) to 1 (totally right).
+  - The scoring criteria are defined in the few-shot prompt, using <AND> and <OR> operators to specify conditions for correctness.
+- **Normalization/Pre-processing**:
+  - Ensure model outputs are formatted consistently before inputting them into the GPT-4 evaluator.
+- **Aggregation Strategy**:
+  - Compute the total score for each model as the average of all sample scores.
+  - Calculate scores for each capability or capability integration by averaging the scores of relevant samples.
+
+## Implementation Notes
+
+- **Prompt Templates**:
+  - The few-shot prompt for GPT-4 evaluation includes examples with both short and long answers, covering fully correct, incorrect, and partially correct responses.
+- **Order of Operations**:
+  - Ensure that the model outputs are evaluated multiple times to account for variance in GPT-4's scoring.
+  - Aggregate scores at the sample level before calculating per-capability and overall scores.

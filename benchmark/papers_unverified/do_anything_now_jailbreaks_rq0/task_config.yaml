@@ -1,0 +1,21 @@
+task_id: do_anything_now_jailbreaks_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: What are the characteristics and evolution patterns of in-the-wild
+  jailbreak prompts?'
+models:
+  api:
+  - gpt-4
+  huggingface:
+  - databricks/dolly-v2-7b
+  - lmsys/vicuna-7b-v1.1
+  - THUDM/chatglm-6b
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: Jailbreak Prompts Dataset
+  source: unknown
+  description: A collection of 15,140 prompts from Reddit, Discord, websites, and
+    open-source datasets, including 1,405 identified as jailbreak prompts.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

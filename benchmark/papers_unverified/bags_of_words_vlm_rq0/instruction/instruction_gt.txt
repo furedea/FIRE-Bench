@@ -1,0 +1,70 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current Vision-Language Models understand compositional relationships, attributes, and order information?"
+
+You have access to the following resources:
+
+Models:
+- Load with HuggingFace: openai/clip-vit-base-patch32
+- Load with HuggingFace: salesforce/blip
+- Load with HuggingFace: facebook/flava-full
+- Load with HuggingFace: zengyan-97/x-vlm
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Visual Genome Attribution: A dataset to test the understanding of objects' properties in complex natural scenes.  [loader unverified -- locate the data yourself]
+- Visual Genome Relation: A dataset to test relational understanding in complex natural scenes.  [loader unverified -- locate the data yourself]
+- COCO-Order: A dataset to test the models' ability to identify the correct ordering of words in captions.  [loader unverified -- locate the data yourself]
+- Flickr30k-Order: A dataset to test the models' ability to identify the correct ordering of words in captions.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Visual Genome Relation Task
+- **Procedure**: For each image in the Visual Genome Relation dataset, present the model with a pair of captions: one correct (e.g., "the dog is behind the tree") and one incorrect (e.g., "the tree is behind the dog"). The task is to select the correct caption.
+- **Input Format**: Images with two captions (correct and incorrect).
+- **Prompting Strategy**: Direct comparison between two captions.
+- **Number of Samples**: 23,937 test cases.
+- **What to Record**: Record the model's choice (correct or incorrect) for each test case.
+- **Correspondence**: Figure 1, Section 2.1.
+
+### 2. Visual Genome Attribution Task
+- **Procedure**: For each image in the Visual Genome Attribution dataset, present the model with a pair of captions: one correct (e.g., "the crouched cat and the open door") and one incorrect (e.g., "the open cat and the crouched door"). The task is to select the correct caption.
+- **Input Format**: Images with two captions (correct and incorrect).
+- **Prompting Strategy**: Direct comparison between two captions.
+- **Number of Samples**: 28,748 test cases.
+- **What to Record**: Record the model's choice (correct or incorrect) for each test case.
+- **Correspondence**: Figure 1, Section 2.1.
+
+### 3. COCO-Order and Flickr30k-Order Tasks
+- **Procedure**: For each image, present the model with the original caption and four systematically permuted versions. The task is to select the original caption.
+- **Input Format**: Images with five captions (one original and four permuted).
+- **Prompting Strategy**: Direct comparison among five captions.
+- **Number of Samples**: [Uncertain] (based on dataset size).
+- **What to Record**: Record the model's choice (original or permuted) for each test case.
+- **Correspondence**: Table 1, Section 2.2.
+
+## Evaluation Details
+
+### Metric Definitions
+- **Accuracy**: The proportion of correctly identified captions (original vs. permuted or correct vs. incorrect) out of the total number of test cases.
+- **Macro Accuracy**: Average accuracy across different types of relations or attributes, treating each type equally regardless of the number of samples.
+
+### Pre-processing and Normalization
+- Ensure that all captions are grammatically correct and semantically plausible to avoid biasing the model towards one choice based on language quality.
+
+### Aggregation Strategy
+- **Per-sample**: Record the model's choice for each test case.
+- **Per-condition**: Calculate accuracy for each type of relation or attribute separately.
+- **Overall**: Compute the overall accuracy and macro accuracy across all test cases.
+
+## Implementation Notes
+
+- **Prompt Templates**: Use specific templates for generating correct and incorrect captions, ensuring consistency across all test cases.
+- **Output Parsing**: Implement logic to parse the model's output and determine which caption was selected.
+- **Order of Operations**: Ensure that the model is presented with the image and all caption options simultaneously to avoid any order effects in decision-making.

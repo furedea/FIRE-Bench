@@ -1,0 +1,33 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How do LMMs perform on various text recognition tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- IIIT5K: A dataset for regular text recognition in natural scene images.
+- SVT: Street View Text dataset for regular text recognition.
+- IC13: ICDAR 2013 dataset for regular text recognition.
+- IC15: ICDAR 2015 dataset for irregular text recognition.
+- SVTP: Street View Text Perspective dataset for irregular text recognition.
+- CT80: A dataset for irregular text recognition.
+- COCO: COCO-Text dataset for irregular text recognition.
+- CTW: SCUT-CTW1500 dataset for irregular text recognition.
+- TT: Total-Text dataset for irregular text recognition.
+- HOST: Heavily occluded scene text dataset.
+- WOST: Weakly occluded scene text dataset.
+- WordArt: A dataset for artistic text recognition.
+- IAM: A dataset for handwritten text recognition.
+- ReCTS: A dataset for Chinese text recognition.
+- ORAND-CAR-2014: A dataset for handwritten digit string recognition.
+- NST: Non-Semantic Text dataset created using shuffled characters from the IIIT5K dictionary.  [generate programmatically]
+- ST: Semantic Text dataset created using words from the IIIT5K dictionary.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

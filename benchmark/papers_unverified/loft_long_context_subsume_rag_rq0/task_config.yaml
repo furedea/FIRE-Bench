@@ -1,0 +1,93 @@
+task_id: loft_long_context_subsume_rag_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: Can LCLMs perform retrieval tasks across different modalities
+  as effectively as specialized models?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: ArguAna
+  source: huggingface
+  description: Argument retrieval dataset used for evaluating text retrieval tasks.
+- name: FEVER
+  source: huggingface
+  description: Fact extraction and verification dataset used for evaluating text retrieval
+    tasks.
+- name: FIQA
+  source: huggingface
+  description: Financial opinion mining and question answering dataset used for evaluating
+    text retrieval tasks.
+- name: MS MARCO
+  source: huggingface
+  description: Web search dataset used for evaluating text retrieval tasks.
+- name: NQ
+  source: huggingface
+  description: Natural Questions dataset used for evaluating question answering tasks.
+- name: Quora
+  source: huggingface
+  description: Duplication detection dataset used for evaluating text retrieval tasks.
+- name: SciFact
+  source: huggingface
+  description: Citation prediction dataset used for evaluating text retrieval tasks.
+- name: "Touch\xE9-2020"
+  source: huggingface
+  description: Argument retrieval dataset used for evaluating text retrieval tasks.
+- name: TopiOCQA
+  source: huggingface
+  description: Multi-turn conversational question answering dataset used for evaluating
+    text retrieval tasks.
+- name: HotPotQA
+  source: huggingface
+  description: Multi-hop question answering dataset used for evaluating text retrieval
+    tasks.
+- name: MuSiQue
+  source: huggingface
+  description: Multi-hop question answering dataset used for evaluating text retrieval
+    tasks.
+- name: QAMPARI
+  source: huggingface
+  description: Multi-target question answering dataset used for evaluating text retrieval
+    tasks.
+- name: QUEST
+  source: huggingface
+  description: Multi-target question answering dataset used for evaluating text retrieval
+    tasks.
+- name: Flickr30k
+  source: huggingface
+  description: Image retrieval dataset used for evaluating visual retrieval tasks.
+- name: MS COCO
+  source: huggingface
+  description: Image retrieval dataset used for evaluating visual retrieval tasks.
+- name: OVEN
+  source: huggingface
+  description: Image-text retrieval dataset used for evaluating visual retrieval tasks.
+- name: MSR-VTT
+  source: huggingface
+  description: Video retrieval dataset used for evaluating visual retrieval tasks.
+- name: FLEURS-en
+  source: huggingface
+  description: Audio retrieval dataset used for evaluating audio retrieval tasks in
+    English.
+- name: FLEURS-es
+  source: huggingface
+  description: Audio retrieval dataset used for evaluating audio retrieval tasks in
+    Spanish.
+- name: FLEURS-fr
+  source: huggingface
+  description: Audio retrieval dataset used for evaluating audio retrieval tasks in
+    French.
+- name: FLEURS-hi
+  source: huggingface
+  description: Audio retrieval dataset used for evaluating audio retrieval tasks in
+    Hindi.
+- name: FLEURS-zh
+  source: huggingface
+  description: Audio retrieval dataset used for evaluating audio retrieval tasks in
+    Chinese.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

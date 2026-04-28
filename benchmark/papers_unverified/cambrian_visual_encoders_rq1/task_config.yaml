@@ -1,0 +1,48 @@
+task_id: cambrian_visual_encoders_rq1
+paper_type: novel_architecture
+research_question: 'RQ2: How effective is the Cambrian Vision-Centric Benchmark (CV-Bench)
+  in evaluating vision-centric capabilities?'
+proposed_method:
+  name: Cambrian-1
+  summary: Cambrian-1 is a family of multimodal large language models (MLLMs) designed
+    with a vision-centric approach. It introduces the Cambrian Vision-Centric Benchmark
+    (CV-Bench) to evaluate vision-centric capabilities and proposes the Spatial Vision
+    Aggregator (SVA) to integrate high-resolution vision features with LLMs. The architecture
+    aims to improve visual grounding and offers a comprehensive framework for instruction-tuned
+    MLLMs.
+  key_components:
+  - Cambrian Vision-Centric Benchmark (CV-Bench)
+  - Spatial Vision Aggregator (SVA)
+  - Integration of high-resolution vision features with LLMs
+baselines:
+- LLaVA
+- CLIP
+- DINO
+reference_implementation:
+- https://github.com/cambrian-mllm/cambrian
+datasets:
+- name: CV-Bench
+  source: huggingface
+  loader: 'from datasets import load_dataset
+
+    dataset = load_dataset("nyu-visionx/CV-Bench")
+
+    '
+  description: A vision-centric benchmark designed to evaluate the fundamental 2D
+    and 3D visual understanding of MLLMs by transforming traditional vision benchmarks
+    into VQA format.
+- name: Cambrian-10M
+  source: huggingface
+  loader: 'from datasets import load_dataset
+
+    dataset = load_dataset("nyu-visionx/Cambrian-10M")
+
+    '
+  description: A large-scale dataset curated for visual instruction tuning, emphasizing
+    data source balancing and distribution ratio.
+compute_hint: TPU-V4, <4 days
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

@@ -1,0 +1,86 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does human performance compare to model performance on the Winoground task?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Winoground: A dataset for evaluating visio-linguistic compositional reasoning, where models must match images and captions with identical words in different orders.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("facebook/winoground")
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+1. **Human vs. Model Performance on Winoground**
+   - **Procedure**: 
+     - Use the Winoground dataset, which consists of 400 examples, each with two images and two captions. Each caption contains the same set of words but in a different order.
+     - For each example, present the two images and two captions to the models and human annotators.
+     - Models should score each image-caption pair to determine the correct matches.
+     - Human annotators on Amazon Mechanical Turk will be asked to determine if a given caption matches a given image, with each image-caption pair being evaluated by at least ten annotators.
+   - **What to Record**: 
+     - For models: Record the scores for each image-caption pair and compute the text, image, and group scores.
+     - For humans: Record the percentage of annotators who correctly match each image-caption pair.
+   - **Correspondence**: This experiment corresponds to the results presented in Table 3 and Section 5.1 of the paper.
+
+## Evaluation Details
+
+- **Metrics**:
+  - **Text Score**: Measures if the model can select the correct caption for a given image. Computed as:
+    \[
+    f(C0, I0, C1, I1) = 
+    \begin{cases} 
+    1 & \text{if } s(C0, I0) > s(C1, I0) \text{ and } s(C1, I1) > s(C0, I1) \\
+    0 & \text{otherwise}
+    \end{cases}
+    \]
+  - **Image Score**: Measures if the model can select the correct image for a given caption. Computed as:
+    \[
+    g(C0, I0, C1, I1) = 
+    \begin{cases} 
+    1 & \text{if } s(C0, I0) > s(C0, I1) \text{ and } s(C1, I1) > s(C1, I0) \\
+    0 & \text{otherwise}
+    \end{cases}
+    \]
+  - **Group Score**: Combines the text and image scores, requiring both to be correct for a positive result:
+    \[
+    h(C0, I0, C1, I1) = 
+    \begin{cases} 
+    1 & \text{if } f(C0, I0, C1, I1) \text{ and } g(C0, I0, C1, I1) \\
+    0 & \text{otherwise}
+    \end{cases}
+    \]
+
+- **Normalization and Pre-processing**:
+  - Ensure that model outputs are normalized to a common scale before applying the scoring functions.
+  - Human responses are aggregated by calculating the ratio of correct matches over total responses for each pair.
+
+- **Aggregation Strategy**:
+  - Compute per-sample scores for text, image, and group metrics.
+  - Aggregate these scores to obtain per-condition (e.g., model vs. human) averages.
+  - Compare overall performance across conditions.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - Ensure that human annotators understand the task and are consistent in their judgments. Use onboarding tests to filter out unreliable annotators.
+  - Be aware of potential biases in human annotations due to cultural or linguistic differences.
+
+- **Special Prompt Templates**:
+  - For models, ensure that the input format is consistent with the model's expected input structure (e.g., concatenating image and caption embeddings appropriately).
+
+- **Order of Operations**:
+  - First, present the image-caption pairs to the models and collect scores.
+  - Then, conduct the human annotation task and collect responses.
+  - Finally, compute and compare the scores across models and humans.

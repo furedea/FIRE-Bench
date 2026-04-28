@@ -1,0 +1,19 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do visual patterns in CLIP-blind pairs affect MLLM performance?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- ImageNet-1K: A large-scale dataset for image classification, used to source images for evaluating visual question answering capabilities.
+- LAION-Aesthetic: A dataset containing aesthetic images, used to source images for evaluating visual question answering capabilities.
+- Multimodal Visual Patterns (MMVP): A benchmark constructed using CLIP-blind pairs to evaluate visual abilities of state-of-the-art MLLMs with straightforward questions.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

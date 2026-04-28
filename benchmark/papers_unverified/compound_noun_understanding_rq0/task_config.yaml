@@ -1,0 +1,23 @@
+task_id: compound_noun_understanding_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How well do VLMs interpret compound nouns compared to their
+  constituent nouns?'
+models:
+  api: []
+  huggingface:
+  - openai/clip-vit-large-patch14
+  - openai/clip-vit-base-patch32
+  - salesforce/ALBEF
+  - salesforce/BLIP
+  - facebookresearch/MetaCLIP
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: Compun
+  source: synthetic
+  description: A benchmark with 400 unique and commonly used compound nouns (CNs)
+    to evaluate the effectiveness of VLMs in interpreting CNs.
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

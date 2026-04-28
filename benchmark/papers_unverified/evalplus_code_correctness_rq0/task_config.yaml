@@ -1,0 +1,31 @@
+task_id: evalplus_code_correctness_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How can we improve the evaluation of LLM-generated code to
+  better assess its functional correctness?'
+models:
+  api:
+  - gpt-4
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: HUMANEVAL
+  source: external
+  description: A benchmark consisting of 164 human-written programming tasks, each
+    providing a Python function signature and a docstring as input to the LLM.
+  url: https://github.com/openai/human-eval
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/openai/human-eval.git
+
+    '
+- name: HUMANEVAL+
+  source: synthetic
+  description: An extended version of HUMANEVAL with 80x more test-cases generated
+    by EvalPlus to better evaluate the functional correctness of LLM-generated code.
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

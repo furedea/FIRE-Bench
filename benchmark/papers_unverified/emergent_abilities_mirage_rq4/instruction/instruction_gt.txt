@@ -1,0 +1,69 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ5: Can emergent abilities be induced in vision tasks by choosing specific metrics?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- BIG-Bench: A benchmark used to analyze emergent abilities in language models, focusing on the effect of different metrics.  [loader unverified -- locate the data yourself]
+- CIFAR100: A dataset of natural images used to test emergent abilities in vision tasks.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("cifar100")
+
+Analytical tools / techniques available:
+- Matplotlib
+- NumPy
+- SciPy
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.
+
+---
+
+## Experimental Design
+
+### 1. Inducing Emergent Abilities in Shallow Nonlinear Autoencoders on CIFAR100
+- **Procedure**:
+  - Use the CIFAR100 dataset to train shallow nonlinear autoencoders with a single hidden layer.
+  - Define a discontinuous metric, `Reconstructionc`, to evaluate the reconstruction ability of the autoencoders. This metric is defined as the average number of test data with squared reconstruction error below a threshold `c`.
+  - Train the autoencoders with varying numbers of bottleneck units to observe changes in reconstruction ability.
+  - Evaluate the reconstruction ability using the `Reconstructionc` metric for different values of `c`.
+- **What to Record**:
+  - Record the mean squared reconstruction error for each model configuration.
+  - Record the `Reconstructionc` scores for each model configuration and each value of `c`.
+- **Correspondence**:
+  - This experiment corresponds to Figure 7 in the paper, which demonstrates the induced emergent reconstruction ability in shallow nonlinear autoencoders.
+
+## Evaluation Details
+
+- **Metric Definition**:
+  - The `Reconstructionc` metric is defined as:
+    \[
+    \text{Reconstruction}_c(\{x_n\}_{n=1}^N) = \frac{1}{N} \sum_{n=1}^N I[||x_n - \hat{x}_n||^2 < c]
+    \]
+    where \( I(\cdot) \) is the indicator function, \( x_n \) is the original image, and \( \hat{x}_n \) is the reconstructed image.
+- **Normalization and Pre-processing**:
+  - Normalize the CIFAR100 images to have pixel values between 0 and 1 before feeding them into the autoencoder.
+- **Aggregation Strategy**:
+  - Compute the `Reconstructionc` score for each model configuration by averaging over all test samples.
+  - Compare the scores across different values of `c` to identify the emergence of abilities.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - Ensure that the choice of `c` is appropriate to induce the emergent behavior. The threshold should be set such that it highlights the differences in reconstruction ability across model configurations.
+- **Special Logic**:
+  - Use a discontinuous metric to emphasize the sharpness of the emergent ability. The choice of `c` is crucial in demonstrating the emergence effect.
+- **Order of Operations**:
+  - First, train the autoencoders with varying bottleneck sizes.
+  - Then, evaluate the reconstruction ability using the `Reconstructionc` metric for each configuration.
+  - Finally, analyze the results to identify any emergent abilities induced by the metric choice.

@@ -1,0 +1,92 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: What are the systematic visual shortcomings in current MLLMs?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- ImageNet-1K: A large-scale dataset for image classification, used to evaluate visual models.
+- LAION-Aesthetic: A dataset containing aesthetically pleasing images, used for evaluating visual models.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluation on MMVP Benchmark
+- **Procedure**: 
+  - Identify CLIP-blind pairs from ImageNet-1K and LAION-Aesthetic datasets using CLIP-ViT-L-14 and DINOv2-ViT-L-14 models. Select pairs with cosine similarity > 0.95 in CLIP space and < 0.6 in DINOv2 space.
+  - Construct the MMVP benchmark with 150 CLIP-blind pairs, each associated with two straightforward visual questions (total 300 questions).
+  - Evaluate models (GPT-4V, LLaVA-1.5, InstructBLIP, etc.) by presenting each question independently to avoid chat history bias.
+  - Human performance is assessed through a user study with randomized question sequences.
+- **What to Record**: 
+  - Record the accuracy of each model on the MMVP benchmark, noting the percentage of correctly answered questions.
+  - Compare model performance against human accuracy.
+- **Correspondence**: 
+  - Figure 2 (Construction of MMVP benchmark)
+  - Figure 4 (Benchmark results)
+  - Section 2.3 (Benchmark Results)
+
+### 2. Analysis of Visual Patterns in CLIP-blind Pairs
+- **Procedure**: 
+  - Categorize questions from the MMVP benchmark into nine visual patterns using GPT-4: Orientation, Presence of Features, State, Quantity, Positional Context, Color, Structural Characteristics, Text, and Viewpoint.
+  - Evaluate the performance of CLIP-based models on these visual patterns using the MMVP-VLM benchmark.
+- **What to Record**: 
+  - Record the accuracy of each model on each visual pattern.
+  - Analyze the correlation between CLIP model performance and MLLM performance on these patterns.
+- **Correspondence**: 
+  - Figure 5 (Examples of visual patterns)
+  - Table 1 (Performance on visual patterns)
+  - Section 3.1 (Visual Patterns in CLIP-blind Pairs)
+
+### 3. Mixture-of-Features (MoF) Approach
+- **Procedure**: 
+  - Implement Additive-MoF by linearly mixing CLIP and DINOv2 features in different ratios (0.00 to 1.00).
+  - Implement Interleaved-MoF by spatially interleaving visual tokens from CLIP and DINOv2 after adapter processing.
+  - Evaluate the models on MMVP and LLaVA benchmarks to assess visual grounding and instruction-following capabilities.
+- **What to Record**: 
+  - Record the performance improvements in visual grounding and any trade-offs in instruction-following ability.
+  - Compare results of Additive-MoF and Interleaved-MoF strategies.
+- **Correspondence**: 
+  - Figure 7 (MoF strategies)
+  - Table 2 (Additive MoF results)
+  - Table 3 (Interleaved MoF results)
+  - Section 4.2 (Additive MoF)
+  - Section 4.3 (Interleaved MoF)
+
+## Evaluation Details
+
+### Metrics and Computation
+- **Accuracy**: 
+  - For MMVP benchmark, accuracy is calculated as the percentage of correctly answered questions out of the total 300 questions.
+  - For visual patterns, accuracy is calculated per pattern and averaged across all patterns.
+- **Correlation Analysis**: 
+  - Pearson Correlation Coefficient is used to measure the correlation between CLIP model performance and MLLM performance on visual patterns.
+
+### Pre-processing and Normalization
+- **Model Outputs**: 
+  - Ensure model outputs are directly compared to the correct answer options without additional interpretation or explanation.
+  - For human study, ensure responses are collected in a consistent format for accurate comparison.
+
+### Aggregation Strategy
+- **Per-sample to Overall**: 
+  - Aggregate accuracy per question, then per visual pattern, and finally compute overall accuracy for the benchmark.
+- **Human vs. Model Comparison**: 
+  - Compare aggregated model performance against human performance to highlight gaps and areas for improvement.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use straightforward and unambiguous questions for the MMVP benchmark to ensure clarity and consistency.
+- **Order of Operations**: 
+  - Ensure that each question is evaluated independently to prevent bias from previous interactions or chat history.
+- **Pitfalls**: 
+  - Be cautious of hallucinations in language models; ensure that visual grounding is the primary focus of evaluation.

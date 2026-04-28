@@ -1,0 +1,25 @@
+task_id: swe_bench_github_issues_rq2
+paper_type: llm_evaluation
+research_question: 'RQ3: Can fine-tuning improve the performance of language models
+  on SWE-bench?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: SWE-bench
+  source: unknown
+  description: An evaluation framework consisting of 2,294 software engineering problems
+    drawn from real GitHub issues and corresponding pull requests across 12 popular
+    Python repositories.
+- name: SWE-bench-train
+  source: unknown
+  description: A training dataset comprising a collection of 19,000 non-testing task
+    instances derived from 37 repositories, used for advancing open model development
+    in software engineering.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

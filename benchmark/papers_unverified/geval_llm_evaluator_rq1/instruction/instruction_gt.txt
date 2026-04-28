@@ -1,0 +1,97 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the potential biases and limitations of using LLM-based evaluators like G-EVAL?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 and text-davinci-003 via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- SummEval: A benchmark that compares different evaluation methods for summarization, providing human ratings for fluency, coherence, consistency, and relevance.  [loader unverified -- locate the data yourself]
+- Topical-Chat: A testbed for meta-evaluating different evaluators on dialogue response generation systems that use knowledge.  [loader unverified -- locate the data yourself]
+- QAGS: A benchmark for evaluating hallucinations in the summarization task, measuring the consistency dimension of summaries.  [loader unverified -- locate the data yourself]
+- Dataset from Zhang et al. (2023): A dataset used to compare human-written summaries and LLM-generated summaries, with human judges' ratings.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Summarization Evaluation with G-EVAL
+- **Procedure**: 
+  - Use the SummEval dataset.
+  - For each summary, input the news article and the summary into the model.
+  - Use the prompt for coherence evaluation, including the chain-of-thought (CoT) steps.
+  - Assign a coherence score on a scale of 1 to 5.
+  - Repeat for fluency, consistency, and relevance using respective prompts.
+- **What to Record**: 
+  - Raw coherence, fluency, consistency, and relevance scores.
+  - Probability-weighted scores for each dimension.
+- **Correspondence**: Table 1 in the paper.
+
+### 2. Dialogue Generation Evaluation with G-EVAL
+- **Procedure**: 
+  - Use the Topical-Chat dataset.
+  - For each dialogue turn, input the conversation history, corresponding fact, and response.
+  - Use the prompt for engagingness evaluation.
+  - Assign an engagingness score on a scale of 1 to 3.
+- **What to Record**: 
+  - Raw engagingness scores.
+  - Probability-weighted scores.
+- **Correspondence**: Table 2 in the paper.
+
+### 3. Hallucination Detection in Summarization
+- **Procedure**: 
+  - Use the QAGS dataset.
+  - For each summary, input the source text and the summary.
+  - Use the prompt for factual consistency evaluation.
+  - Determine if the summary contains factual inconsistencies.
+- **What to Record**: 
+  - Binary factual consistency results.
+  - Probability-weighted scores for consistency.
+- **Correspondence**: Table 3 in the paper.
+
+### 4. Bias Analysis in LLM-based Evaluation
+- **Procedure**: 
+  - Use the dataset from Zhang et al. (2023).
+  - Compare human-written and GPT-3.5 generated summaries.
+  - Use G-EVAL-4 to evaluate both types of summaries.
+  - Record scores for each category: human-preferred, LLM-preferred, and equally rated.
+- **What to Record**: 
+  - Average scores for each category.
+- **Correspondence**: Figure 2 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Spearman Correlation**: Measure the rank correlation between model scores and human judgments.
+  - **Kendall-Tau Correlation**: Measure the ordinal association between model scores and human judgments.
+  - **Pearson Correlation**: Measure the linear correlation between model scores and human judgments.
+
+- **Normalization and Scoring**:
+  - Use the probability of each score token to compute a weighted sum for final scores.
+  - Formula: \( \text{score} = \sum_{i=1}^{n} p(s_i) \times s_i \), where \( p(s_i) \) is the probability of score \( s_i \).
+
+- **Aggregation Strategy**:
+  - Compute per-sample scores.
+  - Aggregate scores per condition (e.g., coherence, fluency).
+  - Compute overall correlation metrics for each dataset.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompt templates for each evaluation dimension (e.g., coherence, engagingness).
+  - Include chain-of-thought steps in the prompts to guide the evaluation process.
+
+- **Pitfalls**:
+  - Ensure the correct use of probability-weighted scoring to avoid ties and capture subtle differences.
+  - Be aware of potential biases towards LLM-generated texts, as highlighted in the bias analysis.
+
+- **Order of Operations**:
+  - Generate CoT steps before evaluating the text.
+  - Use the CoT steps to guide the evaluation and scoring process.

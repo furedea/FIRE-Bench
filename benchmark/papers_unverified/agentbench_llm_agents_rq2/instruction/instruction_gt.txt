@@ -1,0 +1,70 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How can the performance of LLM agents be improved?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 and claude-3 and gpt-3.5-turbo and text-davinci-003 and claude-instant and chat-bison-001 via API
+- Load with HuggingFace: meta-llama/Llama-2-70b
+- Load with HuggingFace: meta-llama/Llama-2-13b
+- Load with HuggingFace: meta-llama/Llama-2-7b
+- Load with HuggingFace: meta-llama/codellama-34b
+- Load with HuggingFace: meta-llama/codellama-13b
+- Load with HuggingFace: meta-llama/codellama-7b
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- AGENTBENCH: A multi-dimensional benchmark consisting of 8 distinct environments to assess LLM-as-Agent’s reasoning and decision-making abilities.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Code-Grounded Environments
+- **Procedure**: 
+  - **Operating System (OS)**: Evaluate LLMs in a genuine interactive bash environment using Ubuntu Docker. Tasks include executing bash commands to solve specific questions or perform operations. Use a success rate (SR) as the evaluation metric.
+  - **Database (DB)**: Evaluate LLMs on authentic SQL interfaces. Tasks involve executing SQL queries to retrieve or modify data. Use SR as the main evaluation metric.
+  - **Knowledge Graph (KG)**: Evaluate decision-making abilities using KG-querying tools. Tasks involve querying a knowledge base to answer questions. Use F1 score as the metric.
+- **What to Record**: Record the success rate for OS and DB tasks, and F1 score for KG tasks.
+- **Correspondence**: Section 3.1, Appendix B-D.
+
+### 2. Game-Grounded Environments
+- **Procedure**: 
+  - **Digital Card Game (DCG)**: Use Aquawar framework to simulate a card game. Evaluate LLMs' strategic decision-making abilities. Use win rate as the evaluation metric.
+  - **Lateral Thinking Puzzles (LTP)**: Evaluate LLMs' lateral reasoning abilities by solving riddles. Use game progress as the main metric.
+  - **House Holding (HH)**: Evaluate LLMs' ability to accomplish tasks in a simulated household environment. Use SR as the evaluation metric.
+- **What to Record**: Record win rate for DCG, game progress for LTP, and SR for HH.
+- **Correspondence**: Section 3.2, Appendix E-G.
+
+### 3. Web-Grounded Environments
+- **Procedure**: 
+  - **Web Shopping (WS)**: Evaluate LLMs' ability to navigate and make decisions in a simulated online shopping environment. Use a reward function as the metric.
+  - **Web Browsing (WB)**: Evaluate LLMs' ability to perform tasks in a general web environment. Use step success rate as the main metric.
+- **What to Record**: Record the reward for WS and step success rate for WB.
+- **Correspondence**: Section 3.3, Appendix H-I.
+
+## Evaluation Details
+
+### Code-Grounded Environments
+- **OS and DB**: Use success rate (SR) as the metric. For OS, check if the final state matches the expected outcome. For DB, compare the agent's answer with the standard text answer or table hash.
+- **KG**: Use F1 score to compare predicted answers with gold standard answers. Also, use Exact Match based on the predicted and gold answer sets.
+
+### Game-Grounded Environments
+- **DCG**: Calculate win rate as the number of games won by the LLM divided by the total number of games played.
+- **LTP**: Use game progress to measure how many key points of the truth are reached by the agent.
+- **HH**: Use SR to measure the number of tasks successfully completed by the model divided by the total number of tasks.
+
+### Web-Grounded Environments
+- **WS**: Use a reward function that maps the similarity of expected and actual product attributes to a number between 0 and 1.
+- **WB**: Use step success rate to evaluate the correctness of each action step compared to reference actions.
+
+## Implementation Notes
+
+- **Prompt Templates**: Use specific prompt templates for each environment to guide the LLMs in generating appropriate responses. For example, use CoT prompting for KG tasks and structured prompts for DB tasks.
+- **Output Parsing**: Implement logic to parse LLM outputs and extract relevant actions or answers. For DB tasks, ensure SQL statements are correctly formatted.
+- **Order of Operations**: Ensure that the sequence of actions in interactive environments follows the logical flow required to complete tasks. For example, in HH tasks, actions should follow the plan of finding, cleaning, and placing objects.

@@ -1,0 +1,71 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the limitations and biases of the LLM-as-a-judge approach?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MT-bench: A series of open-ended questions that evaluate a chatbot’s multi-turn conversational and instruction-following ability.  [loader unverified -- locate the data yourself]
+- Chatbot Arena: A crowdsourced platform featuring anonymous battles between chatbots in real-world scenarios.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Position Bias Analysis
+- **Procedure**: 
+  - Use the MT-bench dataset to generate pairs of responses for each question.
+  - Present these pairs to the LLM judges (GPT-4, Claude-v1, GPT-3.5) in two orders: original and swapped.
+  - Use the default prompt for pairwise comparison as shown in Figure 5 of the Appendix.
+  - Record the consistency of judgments when the order of responses is swapped.
+- **What to Record**: 
+  - Consistency rate (percentage of cases where the judgment remains the same after swapping).
+  - Bias towards the first or second position.
+  - Error rate (incorrect output formats).
+- **Correspondence**: 
+  - Figure 11, Table 2, Section 3.3.
+
+### 2. Verbosity Bias Evaluation
+- **Procedure**: 
+  - Select 23 model answers from MT-bench that contain a numbered list.
+  - Create verbose versions of these answers by rephrasing and duplicating the list items.
+  - Present both original and verbose answers to the LLM judges.
+  - Use the default prompt for pairwise comparison.
+- **What to Record**: 
+  - Failure rate (percentage of cases where the verbose answer is incorrectly judged as better).
+- **Correspondence**: 
+  - Figure 12, Table 3, Section 3.3.
+
+## Evaluation Details
+
+### Position Bias
+- **Metric Definitions**:
+  - **Consistency**: Percentage of cases where the LLM judge gives the same result when the order of responses is swapped.
+  - **Bias towards first/second**: Percentage of cases where the LLM judge favors the first or second response.
+  - **Error Rate**: Percentage of cases with incorrect output formats.
+- **Aggregation Strategy**: 
+  - Calculate metrics per model and prompt type, then aggregate across all questions.
+
+### Verbosity Bias
+- **Metric Definitions**:
+  - **Failure Rate**: Percentage of cases where the verbose response is judged as better.
+- **Aggregation Strategy**: 
+  - Calculate the failure rate for each LLM judge across all verbose test cases.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use the default prompt for pairwise comparison as detailed in Figure 5 of the Appendix.
+- **Order of Operations**: 
+  - For position bias, ensure that both original and swapped orders are evaluated for each question before moving to the next.
+- **Output Parsing**: 
+  - Ensure that the output strictly follows the format specified in the prompt to avoid parsing errors.

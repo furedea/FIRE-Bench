@@ -1,0 +1,50 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How can the limitations of LLM-as-a-judge be mitigated?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MT-bench: A series of open-ended questions that evaluate a chatbot’s multi-turn conversational and instruction-following ability.  [loader unverified -- locate the data yourself]
+- Chatbot Arena: A crowdsourced platform featuring anonymous battles between chatbots in real-world scenarios.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Position Bias Mitigation
+- **Procedure**: Implement position swapping by presenting the same pair of answers in both possible orders to the LLM judge. Use the MT-bench dataset to generate pairs of similar answers for evaluation.
+- **What to Record**: Record the consistency of judgments across swapped positions, the percentage of cases where the LLM favors the first or second position, and any errors in output format.
+- **Correspondence**: This experiment corresponds to the analysis of position bias in Section 3.4 and Table 12.
+
+### 2. Reference-Guided Grading for Math Questions
+- **Procedure**: Use reference-guided grading by providing a reference solution alongside the answers from the assistants. The LLM judge should compare each assistant's answer to the reference solution before making a judgment.
+- **What to Record**: Record the failure rate of the LLM judge in correctly evaluating math questions, both with and without the reference-guided approach.
+- **Correspondence**: This experiment corresponds to the evaluation of grading math questions in Section 3.4 and Table 4.
+
+## Evaluation Details
+
+### Position Bias Mitigation
+- **Metric Definition**: Consistency is defined as the percentage of cases where the LLM judge gives the same result regardless of the order of answers. Bias towards the first or second position is measured as the percentage of cases where the LLM favors one position over the other.
+- **Normalization**: Ensure that the input format is consistent across all trials to avoid introducing variability unrelated to position bias.
+- **Aggregation Strategy**: Calculate the overall consistency and bias percentages across all evaluated pairs.
+
+### Reference-Guided Grading for Math Questions
+- **Metric Definition**: Failure rate is defined as the percentage of cases where the LLM judge incorrectly evaluates the math question. This is calculated by comparing the LLM's judgment against the reference solution.
+- **Normalization**: Ensure that the reference solution is clearly presented and formatted consistently with the assistant answers.
+- **Aggregation Strategy**: Aggregate failure rates across all math questions to determine the overall effectiveness of the reference-guided approach.
+
+## Implementation Notes
+
+- **Position Bias Mitigation**: Ensure that the swapping of positions is implemented programmatically to avoid manual errors. The LLM should be prompted to ignore the order of presentation explicitly.
+- **Reference-Guided Grading**: Use a specific prompt template that includes the reference solution as a separate section before the assistant answers. This helps the LLM judge to independently verify the correctness of each answer against the reference.
+- **Order of Operations**: For both experiments, ensure that the LLM is first presented with the task and context before any evaluation begins. This includes setting up the prompt with all necessary information before the LLM makes a judgment.

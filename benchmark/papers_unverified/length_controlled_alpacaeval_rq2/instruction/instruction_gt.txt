@@ -1,0 +1,81 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: How does length-controlled AlpacaEval affect the robustness and interpretability of the evaluation metric?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- AlpacaEval dataset: A set of 805 instructions used to evaluate instruction-following models, originally designed for the Alpaca web demo.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Length-Controlled Evaluation
+- **Procedure**: 
+  - Use the AlpacaEval dataset consisting of 805 instructions.
+  - For each instruction, generate responses using both the baseline model and the evaluated model.
+  - Apply a Generalized Linear Model (GLM) to predict preferences based on model identity, length of output, and instruction difficulty.
+  - Zero out the length term in the GLM to obtain length-controlled preferences.
+  - Conduct 5-fold cross-validation with L2 regularization to fit the model parameters.
+- **What to Record**: 
+  - Raw outputs from both models.
+  - Predicted preferences from the GLM.
+  - Length-controlled win rates.
+  - Cross-validation statistics.
+- **Correspondence**: Section 3, Figure 2, and Equation 1.
+
+### 2. Robustness to Adversarial Attacks
+- **Procedure**: 
+  - Evaluate the impact of adversarial attacks by truncating outputs to a few characters.
+  - Compare win rates with and without regularization on the length term.
+- **What to Record**: 
+  - Win rates before and after applying adversarial attacks.
+  - Changes in win rates due to regularization.
+- **Correspondence**: Section 4.3, Figure 5.
+
+### 3. Correlation with Human Judgments
+- **Procedure**: 
+  - Compute the Spearman correlation between length-controlled AlpacaEval scores and human evaluations from the Chatbot Arena.
+  - Use the same set of models evaluated in the Chatbot Arena.
+- **What to Record**: 
+  - Spearman correlation coefficients.
+  - Bootstrap p-values for statistical significance.
+- **Correspondence**: Section 4.2, Figure 1.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Win Rate**: The expected probability that the auto-evaluator prefers the evaluated model's output over the baseline's output.
+  - **Length-Controlled Win Rate**: Computed by removing the length term from the GLM and recalculating the win rate.
+  - **Spearman Correlation**: Used to measure the rank correlation between AlpacaEval-LC scores and Chatbot Arena scores.
+
+- **Normalization and Pre-processing**:
+  - Standardize the length differences to have unit variance before applying the tanh transformation in the GLM.
+  - Ensure that the identity and symmetry properties of the win rate are maintained.
+
+- **Aggregation Strategy**:
+  - Compute per-sample win rates, then aggregate to obtain per-condition win rates.
+  - Use cross-validation to ensure robustness and avoid overfitting.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - Ensure that the GLM maintains the identity and symmetry properties of the original win rate.
+  - Regularization is crucial to prevent adversarial manipulation of the length term.
+
+- **Prompt Templates and Output Parsing**:
+  - Use specific verbosity prompts: "Answer with as much detail as possible." for verbose and "Be as concise as possible while still providing all the necessary information to answer the question." for concise outputs.
+
+- **Order of Operations**:
+  - Fit the GLM using cross-validation before applying length control.
+  - Regularize the length term to prevent adversarial exploitation.

@@ -1,0 +1,43 @@
+task_id: evalplus_code_correctness_rq1
+paper_type: llm_evaluation
+research_question: 'RQ2: What is the impact of using EvalPlus on the evaluation results
+  of different LLMs?'
+models:
+  api:
+  - gpt-4
+  huggingface:
+  - Phind/Phind-CodeLlama-34B-v2
+  - WizardCoder-CodeLlama-34B
+  - bigcode/starcoder
+  - Salesforce/codegen-16B-multi
+  - Salesforce/codegen-6B-multi
+  - Salesforce/codegen-2B-multi
+  - codet5p-16b
+  - meta-llama/CodeLlama-34B
+  - meta-llama/CodeLlama-13B
+  - meta-llama/CodeLlama-7B
+  - Stability-AI/StableLM-7B
+  - EleutherAI/gpt-j-6B
+  - EleutherAI/gpt-neo-2.7B
+  - PolyCoder-2.7B
+  - SantaCoder-1.1B
+  - INCODER-6.7B
+  - INCODER-1.3B
+  - Mistral-7B
+  - Vicuna-13B
+  - Vicuna-7B
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: HUMANEVAL
+  source: huggingface
+  description: A benchmark consisting of 164 human-written programming tasks for evaluating
+    code generation by LLMs.
+- name: HUMANEVAL+
+  source: synthetic
+  description: An augmented version of HUMANEVAL with 80x more test cases generated
+    by EvalPlus to evaluate the functional correctness of LLM-generated code.
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

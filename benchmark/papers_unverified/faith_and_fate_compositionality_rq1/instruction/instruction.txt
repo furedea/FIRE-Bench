@@ -1,0 +1,19 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can transformers generalize to out-of-domain (OOD) examples in compositional tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Multi-digit multiplication: A dataset consisting of multi-digit multiplication problems requiring step-by-step reasoning to solve.  [generate programmatically]
+- Logic grid puzzles: A dataset of logic grid puzzles, such as Einstein's puzzle, requiring constraint satisfaction and reasoning.  [generate programmatically]
+- Dynamic programming problem: A dataset involving a classic dynamic programming problem, such as finding a subsequence with the highest sum under certain constraints.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

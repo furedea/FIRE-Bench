@@ -1,0 +1,75 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What types of harmful outputs are uncovered by red teaming?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- 38,961 red team attacks dataset: A dataset of red team attacks on language models to analyze and learn from, including various types of harmful outputs.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Red Team Attack Analysis
+- **Procedure**: 
+  - Use the dataset of 38,961 red team attacks.
+  - Apply UMAP to embed each attack in a two-dimensional space based on the average per-token embeddings from the residual stream in the 48th layer of the 52B prompted LM.
+  - Manually annotate the attacks to identify distinct clusters of harmful outputs.
+  - Focus on identifying clusters such as offensive language, solicitation of discriminatory responses, misinformation, and other unethical behaviors.
+- **What to Record**: 
+  - Raw outputs of the UMAP visualization.
+  - Annotated clusters of attack types.
+  - Attack success ratings and harmlessness scores for each cluster.
+- **Correspondence**: 
+  - Figure 2 in the paper visualizes the red team attacks and their success ratings.
+
+### 2. Evaluation of Model Types and Sizes
+- **Procedure**: 
+  - Randomly assign red team members to interact with different model types (Plain LM, Prompted LM, Rejection Sampling, RLHF) and sizes (2.7B, 13B, 52B).
+  - Each red team member conducts a series of five dialogues, typically on unique topics.
+  - Collect self-reported success ratings and compute harmlessness scores for each interaction.
+- **What to Record**: 
+  - Self-reported attack success ratings on a 5-point Likert scale.
+  - Minimum harmlessness scores for each dialogue.
+  - Distribution of harmlessness scores across different model types and sizes.
+- **Correspondence**: 
+  - Figure 1 shows the mean attack success and harmlessness scores by model size and type.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Attack Success Rating**: Self-reported by red team members on a Likert scale from 0 (not successful) to 4 (very successful).
+  - **Harmlessness Score**: Computed using a preference model trained to predict less harmful responses. Lower scores indicate more harmful outputs.
+
+- **Normalization and Pre-processing**:
+  - Normalize harmlessness scores by computing the minimum score for each dialogue to represent the worst-case scenario.
+  - Use UMAP to reduce dimensionality of attack embeddings for visualization.
+
+- **Aggregation Strategy**:
+  - Aggregate attack success ratings and harmlessness scores per model type and size.
+  - Visualize distributions of scores to identify trends and outliers.
+
+## Implementation Notes
+
+- **Prompt Templates and Output Parsing**:
+  - Use a consistent format for dialogues in the Human, Assistant format.
+  - Ensure that red team members provide a task description before each attack to guide their strategy.
+
+- **Order of Operations**:
+  - Conduct red team attacks first, followed by annotation and analysis of the dataset.
+  - Use the annotated data to train and evaluate the harmlessness preference model.
+
+- **Pitfalls and Caveats**:
+  - Be aware of the subjective nature of self-reported success ratings.
+  - Consider the potential for bias in manual annotations of attack types.
+  - Ensure that the dataset is filtered for personally identifiable information (PII) before public release.

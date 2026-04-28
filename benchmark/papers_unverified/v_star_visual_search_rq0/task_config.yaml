@@ -1,0 +1,47 @@
+task_id: v_star_visual_search_rq0
+paper_type: novel_architecture
+research_question: 'RQ1: How does the SEAL framework integrate visual search into
+  MLLMs?'
+proposed_method:
+  name: SEAL framework
+  summary: The SEAL framework is a novel meta-architecture designed to integrate an
+    LLM-guided visual search mechanism into multimodal large language models (MLLMs).
+    It consists of a VQA LLM and a visual search model that collaborate through a
+    visual working memory (VWM). This integration allows the model to actively reason
+    about and search for needed visual information, enhancing its ability to process
+    high-resolution images and focus on critical visual details.
+  key_components:
+  - VQA LLM with Visual Working Memory
+  - Visual Search Model
+  - Visual Working Memory (VWM)
+baselines:
+- GPT-4V
+- LLaVA
+- MiniGPT-4
+- InstructBLIP
+- Otter
+reference_implementation: []
+datasets:
+- name: COCO2017
+  source: external
+  description: A large-scale object detection, segmentation, and captioning dataset.
+  url: https://cocodataset.org/#home
+  url_kind: website
+  loader: '# Download instructions and data are at:
+
+    # https://cocodataset.org/#home
+
+    '
+- name: GQA
+  source: unknown
+  description: A dataset for real-world visual reasoning and compositional question
+    answering.
+- name: VAW
+  source: unknown
+  description: A dataset for learning to predict visual attributes in the wild.
+compute_hint: single GPU, <24h
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

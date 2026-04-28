@@ -1,0 +1,29 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How can a live, open platform be designed to evaluate LLMs based on human preferences?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MMLU: A benchmark for evaluating language models on a wide range of tasks, focusing on massive multitask language understanding.
+- HellaSwag: A dataset for evaluating commonsense reasoning in language models, focusing on completing sentences in a plausible way.
+- GSM-8K: A dataset for evaluating language models on grade school math problems, focusing on arithmetic and reasoning skills.
+- MT-Bench: A benchmark for evaluating language models using GPT-4 for approximating human judgment.
+  GitHub repo: https://github.com/lm-sys/FastChat
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/lm-sys/FastChat.git
+- AlpacaEval: An automatic evaluator of instruction-following models.
+  GitHub repo: https://github.com/tatsu-lab/alpaca_eval
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/tatsu-lab/alpaca_eval.git
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

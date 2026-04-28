@@ -1,0 +1,37 @@
+task_id: mt_bench_llm_judge_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How effective is the LLM-as-a-judge approach compared to
+  human evaluation?'
+models:
+  api:
+  - gpt-4
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: MT-bench
+  source: external
+  description: "A series of open-ended questions that evaluate a chatbot\u2019s multi-turn\
+    \ conversational and instruction-following ability."
+  url: https://github.com/lm-sys/FastChat
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/lm-sys/FastChat.git
+
+    '
+- name: Chatbot Arena
+  source: external
+  description: A crowdsourced platform featuring anonymous battles between chatbots
+    in real-world scenarios.
+  url: https://github.com/lm-sys/FastChat
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/lm-sys/FastChat.git
+
+    '
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

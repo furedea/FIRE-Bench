@@ -1,0 +1,32 @@
+You are a research agent. Conduct research about the question: "RQ1: How does SELF-RAG improve the factual accuracy and versatility of LLMs compared to existing models?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- SELF-RAG: SELF-RAG is a framework that enhances the quality and factuality of large language models (LLMs) through retrieval and self-reflection. It trains an arbitrary LLM to adaptively retrieve passages on-demand, generate outputs, and reflect on both retrieved passages and its own generations using special tokens called reflection tokens. These tokens enable the model to be controllable during inference, allowing it to tailor its behavior to diverse task requirements.
+  - Component: Adaptive retrieval of relevant passages on-demand
+  - Component: Generation of outputs with reflection tokens
+  - Component: Self-reflection on retrieved passages and generated outputs
+  - Component: Use of critique tokens to evaluate generation quality
+- Baseline for comparison: ChatGPT
+- Baseline for comparison: Llama2-chat
+- Reference hint: https://selfrag.github.io/
+
+Datasets for training and evaluation:
+- Open-domain QA: A dataset used to evaluate the model's ability to answer arbitrary questions about factual knowledge.  [loader unverified -- locate the data yourself]
+- Reasoning: A dataset used to evaluate the model's reasoning capabilities.  [loader unverified -- locate the data yourself]
+- Fact verification tasks: A dataset used to evaluate the model's ability to verify factual statements.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.

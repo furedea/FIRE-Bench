@@ -1,0 +1,24 @@
+task_id: sycophancy_in_llms_rq1
+paper_type: llm_evaluation
+research_question: 'RQ2: Does human preference data incentivize sycophantic behavior
+  in AI models?'
+models:
+  api:
+  - gpt-4
+  huggingface:
+  - meta-llama/Llama-2-70b-chat
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: hh-rlhf
+  source: huggingface
+  description: A dataset containing human preference comparisons used to train preference
+    models.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''Anthropic/hh-rlhf'')
+
+    '
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

@@ -1,0 +1,16 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: What are the limitations of current large language models in performing complex tasks in WebArena?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- WebArena: A realistic and reproducible web environment with fully functional websites from domains like e-commerce, social forums, collaborative software development, and content management, used to evaluate autonomous agents.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

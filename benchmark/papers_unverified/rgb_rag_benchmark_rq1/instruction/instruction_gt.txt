@@ -1,0 +1,56 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Can LLMs effectively reject questions when relevant information is not present in retrieved documents?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: THUDM/ChatGLM-6B
+- Load with HuggingFace: THUDM/ChatGLM2-6B
+- Load with HuggingFace: lmsys/vicuna-7b-v1.3
+- Load with HuggingFace: Qwen/Qwen-7B-Chat
+- Load with HuggingFace: LianjiaTech/BELLE-7B-2M
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Retrieval-Augmented Generation Benchmark (RGB): A benchmark designed to evaluate the retrieval-augmented generation capabilities of LLMs, focusing on noise robustness, negative rejection, information integration, and counterfactual robustness.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Negative Rejection Task
+- **Procedure**: 
+  - For each instance in the negative rejection testbed, provide the model with a set of external documents that contain only noise (i.e., documents that are relevant to the question but do not contain the answer).
+  - Use the system instruction: "You are an accurate and reliable AI assistant that can answer questions with the help of external documents. Please note that external documents may contain noisy or factually incorrect information. If the information in the document does not contain the answer, you will generate 'I can not answer the question because of the insufficient information in documents.'"
+  - Replace `{DOCS}` with the noisy documents and `{QUERY}` with the question in the user input instruction.
+  - Conduct the experiment in both English and Chinese.
+- **What to Record**: 
+  - Raw outputs from the models.
+  - Whether the model correctly outputs the rejection phrase: "I can not answer the question because of the insufficient information in documents."
+  - Use ChatGPT to evaluate if the response contains any rejection information.
+- **Correspondence**: Table 3, Section "Results on Negative Rejection testbed"
+
+## Evaluation Details
+
+- **Rejection Rate**: 
+  - **Exact Matching**: Calculate the percentage of instances where the model's output exactly matches the rejection phrase.
+  - **ChatGPT Evaluation**: Use ChatGPT to assess whether the model's response contains any indication of rejection, even if not verbatim.
+  - **Formula**: 
+    - Rejection Rate (Exact) = (Number of Exact Matches / Total Instances) * 100
+    - Rejection Rate (ChatGPT) = (Number of ChatGPT-verified Rejections / Total Instances) * 100
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Ensure the system and user input instructions are correctly formatted with placeholders `{DOCS}` and `{QUERY}` replaced by the actual documents and questions.
+- **Pitfalls**: 
+  - Models may not strictly adhere to instructions, leading to unpredictable responses. This necessitates the use of both exact matching and ChatGPT evaluation to assess rejection.
+- **Order of Operations**: 
+  - First, generate the model's response using the provided instructions.
+  - Then, evaluate the response using both exact matching and ChatGPT evaluation methods.

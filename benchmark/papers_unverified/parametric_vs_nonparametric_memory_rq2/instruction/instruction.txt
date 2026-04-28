@@ -1,0 +1,21 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: Can we build a system to adaptively combine non-parametric and parametric memories?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: EleutherAI/gpt-neo-2.7B
+- Load with HuggingFace: EleutherAI/gpt-j-6B
+- Load with HuggingFace: EleutherAI/gpt-neox-20B
+- Load with HuggingFace: facebook/opt-13b
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- POPQA: A dataset with 14k questions about long-tail entities, created by sampling knowledge triples from Wikidata and converting them into natural language questions.  [generate programmatically]
+- EntityQuestions: An open-domain QA dataset with a long-tail distribution, covering a wide range of entity popularity.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

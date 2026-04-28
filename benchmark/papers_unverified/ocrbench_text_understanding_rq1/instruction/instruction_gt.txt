@@ -1,0 +1,55 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do LMMs perform on Scene Text-Centric VQA tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- STVQA: A dataset consisting of questions related to scene text visual question answering.  [loader unverified -- locate the data yourself]
+- TextVQA: A dataset comprising questions that require reading text in images to answer.  [loader unverified -- locate the data yourself]
+- OCRVQA: A dataset featuring questions and answers based on text found in images, particularly book covers.  [loader unverified -- locate the data yourself]
+- ESTVQA: A dataset divided into English and Chinese questions and answers for scene text visual question answering.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Scene Text-Centric VQA Evaluation
+- **Procedure**: 
+  - Use the datasets STVQA, TextVQA, OCRVQA, ESTVQA(EN), and ESTVQA(CN).
+  - For each dataset, select 3000 question instances for testing.
+  - Use the prompt "What is written in the image?" for English questions and "What are the Chinese characters in the image?" for Chinese questions.
+  - Ensure that questions with answers containing fewer than 4 symbols are filtered out to reduce false positives.
+- **What to Record**: 
+  - Record the raw outputs of the models.
+  - Extract whether the ground truth answer is present in the model's output.
+- **Correspondence**: 
+  - This experiment corresponds to the results presented in Table 2 and Section 3.2 of the paper.
+
+## Evaluation Details
+
+- **Metric Definition**: 
+  - Use a simple presence check to determine if the ground truth answer is present in the model's output.
+  - Accuracy is calculated as the proportion of questions for which the ground truth is present in the output.
+- **Normalization/Pre-processing**: 
+  - Ensure that all model outputs are converted to lowercase and stripped of leading/trailing whitespace before checking for the presence of the ground truth.
+- **Aggregation Strategy**: 
+  - Calculate accuracy per dataset and then aggregate to get an overall accuracy for Scene Text-Centric VQA tasks.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompts for different languages as mentioned in the procedure.
+- **Pitfalls**: 
+  - Be cautious of the model's tendency to include explanatory terms in outputs, which may affect the presence check.
+- **Order of Operations**: 
+  - Ensure filtering of questions with short answers is done before model evaluation to maintain consistency in results.

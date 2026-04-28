@@ -1,0 +1,86 @@
+You are a research agent. Conduct research about the question: "RQ2: How effective is the Cambrian Vision-Centric Benchmark (CV-Bench) in evaluating vision-centric capabilities?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- Cambrian-1: Cambrian-1 is a family of multimodal large language models (MLLMs) designed with a vision-centric approach. It introduces the Cambrian Vision-Centric Benchmark (CV-Bench) to evaluate vision-centric capabilities and proposes the Spatial Vision Aggregator (SVA) to integrate high-resolution vision features with LLMs. The architecture aims to improve visual grounding and offers a comprehensive framework for instruction-tuned MLLMs.
+  - Component: Cambrian Vision-Centric Benchmark (CV-Bench)
+  - Component: Spatial Vision Aggregator (SVA)
+  - Component: Integration of high-resolution vision features with LLMs
+- Baseline for comparison: LLaVA
+- Baseline for comparison: CLIP
+- Baseline for comparison: DINO
+- Reference hint: https://github.com/cambrian-mllm/cambrian
+
+Datasets for training and evaluation:
+- CV-Bench: A vision-centric benchmark designed to evaluate the fundamental 2D and 3D visual understanding of MLLMs by transforming traditional vision benchmarks into VQA format.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("nyu-visionx/CV-Bench")
+- Cambrian-10M: A large-scale dataset curated for visual instruction tuning, emphasizing data source balancing and distribution ratio.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("nyu-visionx/Cambrian-10M")
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Evaluate Models Using CV-Bench
+- **Procedure**: 
+  - Use the CV-Bench dataset to evaluate the vision-centric capabilities of multimodal large language models (MLLMs).
+  - The dataset consists of 2638 manually-inspected examples, which are significantly more than other vision-centric MLLM benchmarks.
+  - The evaluation involves transforming traditional vision benchmarks into a VQA format, focusing on both 2D and 3D visual understanding tasks.
+  - For 2D tasks, assess spatial relationships and object counting using images from ADE20K and COCO datasets.
+  - For 3D tasks, evaluate depth order and relative distance using images from the Omni3D dataset.
+  - Ensure that each question is manually inspected to remove unclear, ambiguous, or erroneous entries.
+- **What to Record**: 
+  - Record the accuracy of the models on each task type (spatial relationship, object counting, depth order, relative distance).
+  - Capture the overall performance as the average of the accuracies obtained from 2D and 3D tasks.
+- **Correspondence to Paper**: 
+  - This experiment corresponds to Figure 4 and Table 1 in Section 3.2 of the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Accuracy**: For each task type, calculate the percentage of correctly answered questions out of the total questions presented.
+  - **Overall Accuracy**: Compute as the average of the accuracies from 2D and 3D tasks.
+  - **Formula**: 
+    - Accuracy2D = (AccuracyCOCO + AccuracyADE20K) / 2
+    - Overall Accuracy = (Accuracy2D + Accuracy3D) / 2
+
+- **Normalization and Pre-processing**:
+  - Ensure that all model outputs are in a consistent format for comparison.
+  - Use fuzzy matching to evaluate responses, allowing for minor variations in phrasing.
+
+- **Aggregation Strategy**:
+  - Aggregate results per task type to derive a comprehensive understanding of model performance across different visual tasks.
+  - Report both individual task accuracies and the overall accuracy to provide a holistic view of model capabilities.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - Ensure that the manual inspection of questions is thorough to avoid any bias or errors in the dataset.
+  - Be cautious of the potential for models to rely on language priors rather than visual inputs, which could skew results.
+
+- **Special Prompt Templates**:
+  - Use specific prompts for each task type to guide the model in generating appropriate responses.
+  - For example, for object counting tasks, prompt the model to provide a numerical answer.
+
+- **Order of Operations**:
+  - Begin with pre-processing the dataset to ensure all questions are clear and unambiguous.
+  - Conduct evaluations on 2D tasks before proceeding to 3D tasks to maintain consistency in the evaluation process.

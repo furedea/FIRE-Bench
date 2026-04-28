@@ -1,0 +1,26 @@
+task_id: do_anything_now_jailbreaks_rq2
+paper_type: llm_evaluation
+research_question: 'RQ3: How effective are external safeguards in mitigating jailbreak
+  prompts?'
+models:
+  api:
+  - gpt-4
+  huggingface:
+  - databricks/dolly-v2-7b
+  - lmsys/vicuna-7b-v1.1
+  - THUDM/chatglm-6b
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: Jailbreak Prompt Dataset
+  source: unknown
+  description: A dataset comprising 1,405 jailbreak prompts collected from various
+    online platforms to evaluate the effectiveness of jailbreak prompts on LLMs.
+- name: Forbidden Question Set
+  source: synthetic
+  description: A set of 107,250 questions across 13 forbidden scenarios to test the
+    resistance of LLMs against jailbreak prompts.
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

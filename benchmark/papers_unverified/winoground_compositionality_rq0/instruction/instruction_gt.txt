@@ -1,0 +1,74 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How well do current vision and language models perform on the Winoground task?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Winoground: A dataset for evaluating visio-linguistic compositional reasoning, consisting of image-caption pairs with identical words in different orders.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("facebook/winoground")
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+1. **Winoground Task Evaluation**
+   - **Procedure**: 
+     - For each example in the Winoground dataset, present the model with two images and two captions.
+     - Ensure that both captions contain the same set of words but in different orders.
+     - Use the model to score each image-caption pair.
+     - Evaluate using three metrics: text score, image score, and group score.
+   - **What to Record**: 
+     - Raw scores for each image-caption pair.
+     - Text score: whether the model scores the correct caption higher for each image.
+     - Image score: whether the model scores the correct image higher for each caption.
+     - Group score: whether both the text and image scores are correct for an example.
+   - **Correspondence**: 
+     - Results are reported in Table 3 and discussed in Section 5.1.
+
+## Evaluation Details
+
+- **Text Score Calculation**:
+  - Formula: \( f(C0, I0, C1, I1) = 1 \) if \( s(C0, I0) > s(C1, I0) \) and \( s(C1, I1) > s(C0, I1) \), otherwise 0.
+  - This checks if the correct caption is scored higher for each image.
+
+- **Image Score Calculation**:
+  - Formula: \( g(C0, I0, C1, I1) = 1 \) if \( s(C0, I0) > s(C0, I1) \) and \( s(C1, I1) > s(C1, I0) \), otherwise 0.
+  - This checks if the correct image is scored higher for each caption.
+
+- **Group Score Calculation**:
+  - Formula: \( h(C0, I0, C1, I1) = 1 \) if both \( f(C0, I0, C1, I1) \) and \( g(C0, I0, C1, I1) \) are 1, otherwise 0.
+  - This requires both the text and image scores to be correct for an example.
+
+- **Normalization and Pre-processing**:
+  - Ensure that model outputs are normalized to a common scale before comparison.
+  - Use the model's inherent scoring mechanism to evaluate image-caption pairs.
+
+- **Aggregation Strategy**:
+  - Compute scores per example.
+  - Aggregate scores across all examples to obtain overall performance metrics.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - The models may fall back on unimodal priors if visual encoders are weak, especially for similar images.
+  - Ensure that the models are not biased towards selecting one image or caption consistently.
+
+- **Prompt Templates and Output Parsing**:
+  - No specific prompt templates are required as the task involves scoring image-caption pairs directly.
+  - Ensure consistent parsing of model outputs to extract scores accurately.
+
+- **Order of Operations**:
+  - Present images and captions in a consistent order to avoid introducing bias.
+  - Ensure that all combinations of image-caption pairs are evaluated for each example.

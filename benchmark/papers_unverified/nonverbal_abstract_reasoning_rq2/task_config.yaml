@@ -1,0 +1,29 @@
+task_id: nonverbal_abstract_reasoning_rq2
+paper_type: llm_evaluation
+research_question: "RQ3: Can MLLMs\u2019 performance in nonverbal abstract reasoning\
+  \ tasks be improved?"
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: IQ50
+  source: unknown
+  description: A nonverbal reasoning benchmark containing 50 visual puzzles crawled
+    from the internet, used to assess nonverbal abstract reasoning abilities.
+- name: RAVEN-S
+  source: unknown
+  description: A visual reasoning dataset containing 3,500 synthetic samples in seven
+    categories, used to evaluate reasoning abilities in a reduced computational cost
+    setting.
+- name: CCSE
+  source: unknown
+  description: A dataset of 175 visual abstractions and reasoning problems from the
+    China Civil Service Examination, used as a challenging benchmark across various
+    reasoning patterns.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

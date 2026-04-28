@@ -1,0 +1,60 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Does the Reversal Curse affect real-world knowledge in LLMs?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: meta-llama/Llama-1
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- IMDB Celebrity Parent-Child Dataset: A dataset of 1000 celebrities and their parents used to test the Reversal Curse in LLMs.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Real-World Knowledge Reversal Test
+- **Procedure**: 
+  - Use the IMDB Celebrity Parent-Child Dataset, which includes 1000 celebrities and their parents.
+  - For each celebrity-parent pair, generate two types of queries:
+    1. "Who is [celebrity]'s parent?"
+    2. "Who is [parent]'s child?"
+  - Use GPT-4 and Llama-1 models to answer these queries.
+  - Each query should be run 10 times with temperature set to 1 to account for variability in responses.
+- **What to Record**: 
+  - Record the accuracy of the models in correctly identifying the parent when given the celebrity and vice versa.
+  - Specifically, note the percentage of correct responses for each query type.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 5 and Section 2.2 in the paper.
+
+## Evaluation Details
+
+- **Metrics**: 
+  - Use accuracy as the primary metric, defined as the percentage of correct responses out of the total queries.
+  - For the parent query, a correct response is when the model identifies the correct parent of the celebrity.
+  - For the child query, a correct response is when the model identifies the correct child of the parent.
+- **Normalization**: 
+  - Ensure that the model outputs are normalized by checking for variations in naming (e.g., full names vs. nicknames) and standardizing them before scoring.
+- **Aggregation Strategy**: 
+  - Calculate the mean accuracy across all 10 runs for each query type to get a stable estimate of model performance.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use the following prompt templates for querying:
+    - For parent identification: "Who is [celebrity]'s parent?"
+    - For child identification: "Name a child of [parent]."
+  - Ensure that the system message for GPT-4 is set to: "You are a helpful and terse assistant. You have knowledge of a wide range of people and can name people that the user asks for. If the answer is unknown or not applicable, answer with 'I don’t know.'"
+- **Pitfalls**: 
+  - Be aware that GPT-4 may have been fine-tuned to avoid revealing personal information, which could affect its performance on the child identification task.
+- **Order of Operations**: 
+  - First, generate the list of celebrity-parent pairs using GPT-4.
+  - Then, conduct the querying experiments with both GPT-4 and Llama-1 models.
+  - Finally, analyze the results to determine the presence of the Reversal Curse.

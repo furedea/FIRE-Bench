@@ -1,0 +1,28 @@
+task_id: agentbench_llm_agents_rq2
+paper_type: llm_evaluation
+research_question: 'RQ3: How can the performance of LLM agents be improved?'
+models:
+  api:
+  - gpt-4
+  - claude-3
+  - gpt-3.5-turbo
+  - text-davinci-003
+  - claude-instant
+  - chat-bison-001
+  huggingface:
+  - meta-llama/Llama-2-70b
+  - meta-llama/Llama-2-13b
+  - meta-llama/Llama-2-7b
+  - meta-llama/codellama-34b
+  - meta-llama/codellama-13b
+  - meta-llama/codellama-7b
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: AGENTBENCH
+  source: unknown
+  description: "A multi-dimensional benchmark consisting of 8 distinct environments\
+    \ to assess LLM-as-Agent\u2019s reasoning and decision-making abilities."
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

@@ -1,0 +1,52 @@
+You are a research agent. Conduct research and experiment about the question: "RQ5: How do LMMs perform on Handwritten Mathematical Expression Recognition tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- HME100K: A dataset consisting of 74,502 images for training and 24,607 images for testing, with 245 symbol classes, used for evaluating handwritten mathematical expression recognition.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Handwritten Mathematical Expression Recognition (HMER) Evaluation
+- **Procedure**: 
+  - Use the HME100K dataset, which consists of 74,502 images for training and 24,607 images for testing, with 245 symbol classes.
+  - For each image in the test set, prompt the model with: "Please write out the expression of the formula in the image using LaTeX format."
+  - Ensure that the model outputs are captured in LaTeX format as specified.
+- **What to Record**: 
+  - Raw outputs from the model in response to the prompt.
+  - Extracted answers in LaTeX format.
+  - Accuracy of the model's output compared to the ground truth LaTeX expressions.
+- **Correspondence**: This experiment corresponds to the results presented in Table 2 and Section 3.2 of the paper.
+
+## Evaluation Details
+
+- **Metric Definition**: 
+  - Use accuracy as the primary metric, defined as the percentage of correctly recognized expressions in LaTeX format compared to the ground truth.
+  - Consider an expression correct if the model's output matches the ground truth exactly in LaTeX format.
+- **Pre-processing**: 
+  - Normalize model outputs by ensuring consistent LaTeX syntax and removing any extraneous characters or explanations that do not pertain to the expression itself.
+- **Aggregation Strategy**: 
+  - Calculate per-sample accuracy by comparing each model output to the corresponding ground truth.
+  - Aggregate these results to determine the overall accuracy for the entire test set.
+
+## Implementation Notes
+
+- **Prompt Template**: 
+  - Use the specific prompt: "Please write out the expression of the formula in the image using LaTeX format." Ensure that this prompt is used consistently across all samples to maintain uniformity in model responses.
+- **Output Parsing**: 
+  - Implement logic to parse and clean the model's output to extract only the LaTeX expression, discarding any additional text or explanations provided by the model.
+- **Order of Operations**: 
+  - Ensure that the dataset is processed in a consistent order, and that the model's responses are recorded immediately after each prompt to avoid any data loss or misalignment.

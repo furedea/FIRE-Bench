@@ -1,0 +1,106 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How effective is the data collected from Chatbot Arena in reflecting real-world LLM use cases?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4-turbo via API
+- Load with HuggingFace: meta-llama/Llama-2-70b-chat
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Chatbot Arena: Crowdsourced user prompts and pairwise preference votes collected from the Chatbot Arena platform.  [generate programmatically]
+- MMLU: A benchmark for measuring massive multitask language understanding.  [loader unverified -- locate the data yourself]
+- HellaSwag: A dataset for evaluating commonsense reasoning in AI models.  [loader unverified -- locate the data yourself]
+- GSM-8K: A dataset for evaluating mathematical problem-solving abilities of AI models.  [loader unverified -- locate the data yourself]
+- MT-Bench: A benchmark for evaluating LLMs using GPT-4 as a judge.  [loader unverified -- locate the data yourself]
+- AlpacaEval: An automatic evaluator of instruction-following models.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Topic Modeling and Diversity Analysis
+- **Procedure**: 
+  - Use BERTopic to transform user prompts from Chatbot Arena into representation vectors using OpenAI's text embedding model (`text-embedding-3-small`).
+  - Reduce the dimensionality of these vectors from 1,536 to 5 using UMAP.
+  - Apply HDBSCAN to identify topic clusters with a minimum cluster size of 32.
+  - Sample 10 prompts from each topic cluster and use GPT-4-Turbo for topic summarization.
+- **What to Record**: 
+  - Number of clusters identified.
+  - Size and similarity of each cluster.
+  - Diversity metrics of the clusters.
+- **Correspondence**: Section 6.1, Figure 3.
+
+### 2. Model Differentiation Using Arena Prompts
+- **Procedure**: 
+  - Sample 30 prompts from selected topic clusters.
+  - Compare the performance of Llama-2-70b-chat and GPT-4 using these prompts.
+  - Use GPT-4-Turbo as a judge to evaluate model responses in pairwise comparisons.
+- **What to Record**: 
+  - Win-rate of GPT-4 against Llama-2-70b-chat for each topic cluster.
+  - Examples of prompts and model responses.
+- **Correspondence**: Section 6.2, Table 2.
+
+### 3. Building a Challenging Benchmark
+- **Procedure**: 
+  - Run the topic modeling pipeline to select challenging questions from each topic cluster.
+  - Use a similar procedure as in Zheng et al. (2023a) for prompt selection.
+  - Evaluate model performance using these prompts.
+- **What to Record**: 
+  - Performance scores of models on the constructed benchmark.
+  - Comparison with existing benchmarks like MT-Bench.
+- **Correspondence**: Section 6.2, Figure 4.
+
+### 4. Vote Quality Validation
+- **Procedure**: 
+  - Randomly select 160 battles between GPT-4-Turbo and other models.
+  - Have experts label their preference per comparison.
+  - Use GPT-4 as a judge for pairwise comparisons.
+- **What to Record**: 
+  - Agreement rates between crowd-users, experts, and GPT-4-judge.
+  - Win-rate of GPT-4-Turbo across different evaluators.
+- **Correspondence**: Section 6.3, Tables 3 and 4.
+
+## Evaluation Details
+
+### Metrics and Computation
+- **Topic Diversity**: 
+  - Compute the number of unique clusters and their sizes.
+  - Use cosine similarity to measure the similarity between cluster centroids.
+- **Model Win-Rate**: 
+  - Calculate the proportion of wins for each model in pairwise comparisons.
+  - Use a scoring system where wins, ties, and losses are assigned scores of 10, 5, and 0, respectively.
+
+### Normalization and Pre-processing
+- **Model Outputs**: 
+  - Ensure outputs are parsed correctly for evaluation.
+  - Use consistent formatting for prompts and responses to avoid bias.
+
+### Aggregation Strategy
+- **Per-Sample to Overall**: 
+  - Aggregate win-rates and scores across all samples to derive overall performance metrics.
+  - Use confidence intervals to report uncertainty in model rankings.
+
+## Implementation Notes
+
+### Key Pitfalls
+- **Prompt Ambiguity**: 
+  - Ensure prompts are clear and unambiguous to avoid inconsistent evaluations.
+- **Model Bias**: 
+  - Be aware of potential biases in model responses due to prompt phrasing.
+
+### Special Prompt Templates
+- **Judgment Prompts**: 
+  - Use a standardized system prompt for GPT-4-Turbo when evaluating model responses to ensure consistency.
+
+### Order of Operations
+- **Data Processing**: 
+  - Perform dimensionality reduction before clustering in the topic modeling pipeline.
+- **Evaluation**: 
+  - Conduct pairwise comparisons before aggregating results for final analysis.

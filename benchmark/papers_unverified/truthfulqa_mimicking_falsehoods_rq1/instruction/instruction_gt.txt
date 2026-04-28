@@ -1,0 +1,61 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How does model size affect truthfulness?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: EleutherAI/gpt-neo-2.7B
+- Load with HuggingFace: EleutherAI/gpt-j-6B
+- Load with HuggingFace: gpt2-xl
+- Load with HuggingFace: allenai/unifiedqa-t5-11b
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- TruthfulQA: A benchmark comprising 817 questions across 38 categories designed to test the truthfulness of language models by eliciting imitative falsehoods.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Model Size and Truthfulness
+- **Procedure**: 
+  - Use the TruthfulQA dataset, which consists of 817 questions across 38 categories.
+  - Evaluate each model (GPT-3, GPT-Neo/J, GPT-2, UnifiedQA) at different sizes using a zero-shot setting.
+  - For each question, generate a full-sentence answer using greedy decoding (temperature set to zero).
+  - Use the default QA prompt for all models except UnifiedQA, which requires no prompt due to its fine-tuning.
+  - Record the model's output for each question.
+- **What to Record**: 
+  - Raw outputs of the models for each question.
+  - Truthfulness scores based on human evaluation and automated metrics.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 2 and Section 4.2 in the paper, which discuss the inverse scaling trend where larger models are less truthful.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Truthfulness Score**: Assign a scalar truth score in [0, 1] to each model-generated statement, interpreted as the probability the statement is true.
+  - **Binary Truthfulness**: Threshold scalar truth scores at 0.5 to classify answers as true or false.
+- **Normalization and Pre-processing**:
+  - Normalize model outputs by comparing them to reference answers from the TruthfulQA dataset.
+  - Use human evaluation to assign qualitative labels to model outputs, which are then mapped to scalar truth scores.
+- **Aggregation Strategy**:
+  - Aggregate truth scores per question to compute an average truthfulness score for each model size.
+  - Compare scores across different model sizes to identify trends.
+
+## Implementation Notes
+
+- **Key Pitfalls**:
+  - Ensure that the evaluation is conducted in a true zero-shot setting, meaning no gradient updates or tuning on TruthfulQA examples.
+  - Be cautious of potential biases in human evaluation; use automated metrics like GPT-judge for consistency.
+- **Special Prompt Templates**:
+  - Use the default QA prompt for most models, with specific prompts like 'helpful' and 'harmful' tested on GPT-3-175B to assess prompt impact.
+- **Order of Operations**:
+  - First, generate answers using the specified prompts and decoding strategy.
+  - Then, evaluate the truthfulness of these answers using both human and automated metrics.
+  - Finally, analyze the results to determine the effect of model size on truthfulness.

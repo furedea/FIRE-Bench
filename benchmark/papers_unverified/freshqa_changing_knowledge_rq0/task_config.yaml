@@ -1,0 +1,22 @@
+task_id: freshqa_changing_knowledge_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How effective is the FRESHQA benchmark in evaluating the
+  factuality of LLMs?'
+models:
+  api:
+  - gpt-4
+  huggingface:
+  - google/flan-t5-xxl
+  - google/flan-palm-540b
+  - google/palm-540b
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: FRESHQA
+  source: unknown
+  description: A dynamic QA benchmark with 600 questions divided into categories like
+    fast-changing, slow-changing, never-changing, and false-premise, designed to evaluate
+    the factuality of LLMs.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

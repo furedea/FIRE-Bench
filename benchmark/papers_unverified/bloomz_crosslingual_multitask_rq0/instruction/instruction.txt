@@ -1,0 +1,36 @@
+You are a research agent. Conduct research about the question: "RQ1: Does multitask finetuning on English tasks improve performance on non-English tasks?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- BLOOMZ and mT0: BLOOMZ and mT0 are finetuned variants of the pretrained multilingual BLOOM and mT5 model families. They are designed to improve crosslingual generalization by finetuning on English tasks with English prompts, allowing for task generalization to non-English languages that appear only in the pretraining corpus. Finetuning on multilingual tasks with English prompts further enhances performance on both English and non-English tasks, achieving state-of-the-art zero-shot results.
+  - Component: Multitask finetuning on English tasks
+  - Component: Use of pretrained multilingual BLOOM and mT5 models
+  - Component: Evaluation on non-English held-out tasks
+- Baseline for comparison: BLOOM
+- Baseline for comparison: mT5
+- Reference hint: https://github.com/bigscience-workshop/xmtf
+
+Datasets for training and evaluation:
+- xP3: A composite of supervised datasets in 46 languages with English and machine-translated prompts.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('bigscience/xP3')
+- P3: An English-only multitask mixture used for finetuning.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('bigscience/P3')
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.

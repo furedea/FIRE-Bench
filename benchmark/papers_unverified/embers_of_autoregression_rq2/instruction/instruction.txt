@@ -1,0 +1,30 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ3: How does input probability affect the performance of LLMs?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- Global Voices: A collection of news articles used to generate high-probability and low-probability sentences for evaluating LLM performance on tasks like rot-13 encoding.  [loader unverified -- locate the data yourself]
+- WikiBio dataset: A dataset containing biographical information, used to evaluate LLM performance on birthday retrieval tasks with varying input probabilities.
+  GitHub repo: https://github.com/DavidGrangier/wikipedia-biography-dataset
+  Setup:
+    # Clone the repo and follow its README to load the data:
+    # git clone https://github.com/DavidGrangier/wikipedia-biography-dataset.git
+
+Analytical tools / techniques available:
+- NLTK
+- RoBERTa
+- GPT-2
+- Levenshtein distance
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.

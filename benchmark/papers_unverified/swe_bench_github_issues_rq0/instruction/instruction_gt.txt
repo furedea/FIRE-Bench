@@ -1,0 +1,67 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How effective are current language models at resolving issues in SWE-bench?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4-32k-0613 via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- SWE-bench: An evaluation framework consisting of 2,294 software engineering problems drawn from real GitHub issues and corresponding pull requests across 12 popular Python repositories.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Evaluate Language Models on SWE-bench
+- **Procedure**: 
+  - Use the SWE-bench dataset, which consists of 2,294 software engineering problems from GitHub issues and pull requests.
+  - For each task, provide the model with the issue text and the complete codebase.
+  - Use two retrieval settings: BM25 retrieval and Oracle retrieval.
+  - For BM25 retrieval, experiment with context limits of 13k, 27k, and 50k tokens, retrieving as many files as fit within the specified limit.
+  - For Oracle retrieval, provide the files edited by the reference patch that solved the issue.
+  - Construct the input to the model with task instructions, issue text, retrieved files, documentation, and an example patch file.
+  - Use greedy decoding for patch generation.
+- **What to Record**: 
+  - Record the percentage of task instances resolved (% Resolved) and the percentage of patches that apply successfully (% Apply).
+  - Log the number of fail-to-pass (F2P) and pass-to-pass (P2P) tests for each task instance.
+- **Correspondence**: 
+  - Results are presented in Table 5 and discussed in Section 5.
+
+### 2. SWE-bench Lite Evaluation
+- **Procedure**: 
+  - Use a subset of 300 instances from SWE-bench, sampled to be more self-contained and focused on functional bug fixes.
+  - Follow the same procedure as the full SWE-bench evaluation.
+- **What to Record**: 
+  - Record % Resolved and % Apply for the Lite subset.
+- **Correspondence**: 
+  - Results are included in Table 5.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **% Resolved**: The percentage of task instances where the model-generated patch applies successfully and passes all fail-to-pass and pass-to-pass tests.
+  - **% Apply**: The percentage of model-generated patches that apply successfully to the codebase.
+- **Normalization and Pre-processing**:
+  - Normalize model outputs by ensuring patches are in the correct format and apply successfully using Unix's `patch` program.
+  - If a patch fails to apply, attempt to fix it by removing unnecessary context lines and recalculating header values.
+- **Aggregation Strategy**:
+  - Calculate metrics per task instance, then aggregate across all instances to obtain overall % Resolved and % Apply.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**:
+  - Models may struggle with generating well-formatted patch files, leading to a high rate of patch application failures.
+  - The Oracle retrieval setting is less realistic as it assumes prior knowledge of which files need modification.
+- **Prompt Templates**:
+  - Use a specific prompt template that includes task instructions, issue text, and an example patch file.
+- **Order of Operations**:
+  - Ensure the codebase is reset to the base commit before applying any patches.
+  - Apply the test patch before the model-generated patch to ensure the correct testing environment.

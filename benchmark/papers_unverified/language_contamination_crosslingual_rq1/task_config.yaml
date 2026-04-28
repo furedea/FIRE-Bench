@@ -1,0 +1,81 @@
+task_id: language_contamination_crosslingual_rq1
+paper_type: empirical_study
+research_question: 'RQ2: How well do English pretrained models perform on non-English
+  tasks?'
+study_type: dataset audit
+data_sources:
+- name: ENGLISH WIKIPEDIA
+  source: huggingface
+  description: A dataset consisting of English Wikipedia articles used for pretraining
+    language models.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''wikipedia'')
+
+    '
+- name: BOOKCORPUS
+  source: huggingface
+  description: A dataset of books used for pretraining language models.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''bookcorpus'')
+
+    '
+- name: STORIES
+  source: external
+  description: A dataset of stories used for pretraining language models.
+  url: https://github.com/rowanz/grover
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/rowanz/grover.git
+
+    '
+- name: OPENWEBTEXT
+  source: huggingface
+  description: An open-source version of WEBTEXT, derived from web-crawled data.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''openwebtext'')
+
+    '
+- name: CC-NEWS
+  source: huggingface
+  description: A dataset of news articles used for pretraining language models.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''cc_news'')
+
+    '
+- name: C4.EN
+  source: huggingface
+  description: A dataset derived from web-crawled data, filtered to exclude non-English
+    text.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''allenai/c4'')
+
+    '
+- name: Wiki-40B
+  source: huggingface
+  description: A multilingual language modeling dataset covering 41 languages.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''wiki40b'')
+
+    '
+- name: Universal Dependencies (UD) treebanks
+  source: huggingface
+  description: A collection of multilingual treebanks used for POS tagging tasks.
+  loader: 'from datasets import load_dataset
+
+    ds = load_dataset(''universal_dependencies'')
+
+    '
+analytical_tools:
+- FastText
+- Spearman correlation
+- Adam optimizer
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

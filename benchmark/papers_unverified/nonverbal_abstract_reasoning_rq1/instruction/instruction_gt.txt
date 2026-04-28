@@ -1,0 +1,73 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: What are the root causes of the poor performance of MLLMs in nonverbal abstract reasoning tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- IQ50: A nonverbal reasoning benchmark containing 50 visual puzzles crawled from the internet, used to assess nonverbal abstract reasoning abilities.  [loader unverified -- locate the data yourself]
+- RAVEN-S: A visual reasoning dataset containing 3,500 synthetic samples in seven categories, used to evaluate reasoning abilities in MLLMs.  [loader unverified -- locate the data yourself]
+- CCSE: A dataset containing 175 visual abstractions and reasoning problems from the China Civil Service Examination, used as a challenging benchmark for reasoning patterns.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Textual Reasoning Evaluation
+- **Procedure**: 
+  - Use text-only zero-shot Chain-of-Thought (CoT) prompts to evaluate the textual reasoning capabilities of the models.
+  - Provide each model with a textual description of the puzzles from the IQ50 dataset, written by a human expert.
+  - Exclude models incompatible with text-only prompts, such as MMICL* and InstructBLIP*.
+  - Drop idefics-80b-instruct due to inability to elicit reasonings.
+- **What to Record**: 
+  - Zero-shot CoT accuracy for each model.
+- **Correspondence**: 
+  - Figure 3 in Section 5.
+
+### 2. Visual Awareness Assessment
+- **Procedure**: 
+  - Develop 20 questions designed to test the models on understanding shape, relative position, orientation, color, filling pattern, and fine-grained details.
+  - Use a subset of the IQ50 dataset for this evaluation.
+  - Exclude MMICL-vicuna-13b due to inability to elicit proper responses.
+- **What to Record**: 
+  - Performance on visual awareness questions for each model.
+- **Correspondence**: 
+  - Figure 4 in Section 5.
+
+## Evaluation Details
+
+### Textual Reasoning Evaluation
+- **Metric Definition**: 
+  - Zero-shot CoT accuracy is calculated as the percentage of correct answers provided by the model when given text-only prompts.
+- **Normalization/Pre-processing**: 
+  - Ensure that the textual descriptions are consistent and clear, focusing on the logical reasoning required to solve the puzzles.
+- **Aggregation Strategy**: 
+  - Calculate the accuracy per model and compare across models to determine relative performance.
+
+### Visual Awareness Assessment
+- **Metric Definition**: 
+  - Performance is measured as the percentage of correctly answered visual awareness questions.
+- **Normalization/Pre-processing**: 
+  - Ensure that the questions are clear and unambiguous, focusing on specific visual details.
+- **Aggregation Strategy**: 
+  - Calculate the accuracy per model and compare across models to determine relative performance.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - For textual reasoning, use prompts that clearly describe the puzzle and ask the model to think step by step.
+  - For visual awareness, ensure questions are specific to visual details and avoid ambiguity.
+- **Output Parsing Logic**: 
+  - For textual reasoning, parse the model's output to identify the final answer and reasoning steps.
+  - For visual awareness, parse the model's output to determine the selected answer for each question.
+- **Order of Operations**: 
+  - Ensure that the textual reasoning evaluation is conducted before visual awareness assessment to isolate the effects of each modality.

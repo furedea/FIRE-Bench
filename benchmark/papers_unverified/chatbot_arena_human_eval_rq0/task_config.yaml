@@ -1,0 +1,48 @@
+task_id: chatbot_arena_human_eval_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How can a live, open platform be designed to evaluate LLMs
+  based on human preferences?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: MMLU
+  source: huggingface
+  description: A benchmark for evaluating language models on a wide range of tasks,
+    focusing on massive multitask language understanding.
+- name: HellaSwag
+  source: huggingface
+  description: A dataset for evaluating commonsense reasoning in language models,
+    focusing on completing sentences in a plausible way.
+- name: GSM-8K
+  source: huggingface
+  description: A dataset for evaluating language models on grade school math problems,
+    focusing on arithmetic and reasoning skills.
+- name: MT-Bench
+  source: external
+  description: A benchmark for evaluating language models using GPT-4 for approximating
+    human judgment.
+  url: https://github.com/lm-sys/FastChat
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/lm-sys/FastChat.git
+
+    '
+- name: AlpacaEval
+  source: external
+  description: An automatic evaluator of instruction-following models.
+  url: https://github.com/tatsu-lab/alpaca_eval
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/tatsu-lab/alpaca_eval.git
+
+    '
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

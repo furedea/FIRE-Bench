@@ -1,0 +1,67 @@
+task_id: ocrbench_text_understanding_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How do LMMs perform on various text recognition tasks?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: IIIT5K
+  source: huggingface
+  description: A dataset for regular text recognition in natural scene images.
+- name: SVT
+  source: huggingface
+  description: Street View Text dataset for regular text recognition.
+- name: IC13
+  source: huggingface
+  description: ICDAR 2013 dataset for regular text recognition.
+- name: IC15
+  source: huggingface
+  description: ICDAR 2015 dataset for irregular text recognition.
+- name: SVTP
+  source: huggingface
+  description: Street View Text Perspective dataset for irregular text recognition.
+- name: CT80
+  source: huggingface
+  description: A dataset for irregular text recognition.
+- name: COCO
+  source: huggingface
+  description: COCO-Text dataset for irregular text recognition.
+- name: CTW
+  source: huggingface
+  description: SCUT-CTW1500 dataset for irregular text recognition.
+- name: TT
+  source: huggingface
+  description: Total-Text dataset for irregular text recognition.
+- name: HOST
+  source: huggingface
+  description: Heavily occluded scene text dataset.
+- name: WOST
+  source: huggingface
+  description: Weakly occluded scene text dataset.
+- name: WordArt
+  source: huggingface
+  description: A dataset for artistic text recognition.
+- name: IAM
+  source: huggingface
+  description: A dataset for handwritten text recognition.
+- name: ReCTS
+  source: huggingface
+  description: A dataset for Chinese text recognition.
+- name: ORAND-CAR-2014
+  source: huggingface
+  description: A dataset for handwritten digit string recognition.
+- name: NST
+  source: synthetic
+  description: Non-Semantic Text dataset created using shuffled characters from the
+    IIIT5K dictionary.
+- name: ST
+  source: synthetic
+  description: Semantic Text dataset created using words from the IIIT5K dictionary.
+references: []
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

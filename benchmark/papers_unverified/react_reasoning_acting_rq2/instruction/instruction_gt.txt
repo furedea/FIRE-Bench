@@ -1,0 +1,102 @@
+You are a research agent. Conduct research about the question: "RQ3: What are the limitations and potential improvements for the ReAct approach?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- ReAct: ReAct is a novel approach that integrates reasoning and acting capabilities in large language models (LLMs) to improve performance on language understanding and decision-making tasks. It prompts LLMs to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for greater synergy between reasoning and acting. This approach helps the model induce, track, and update action plans while interacting with external sources like knowledge bases.
+  - Component: Interleaved generation of reasoning traces and task-specific actions
+  - Component: Interaction with external sources for information gathering
+  - Component: Use of large language models like PaLM-540B for few-shot in-context learning
+- Baseline for comparison: Chain-of-Thought (CoT)
+- Baseline for comparison: Act-only
+- Baseline for comparison: Standard prompting
+
+Datasets for training and evaluation:
+- HotpotQA: A multi-hop question answering benchmark that requires reasoning over two or more Wikipedia passages.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("hotpot_qa", "fullwiki")
+- Fever: A fact verification benchmark where each claim is annotated as SUPPORTS, REFUTES, or NOT ENOUGH INFO based on Wikipedia passages.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("fever")
+- ALFWorld: A synthetic text-based game designed to align with the embodied ALFRED benchmark, requiring navigation and interaction in a simulated household.  [loader unverified -- locate the data yourself]
+- WebShop: An online shopping website environment with real-world products and human instructions, requiring agents to purchase products based on user instructions.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Knowledge-Intensive Reasoning Tasks
+- **Procedure**: 
+  - Use the HotpotQA and Fever datasets.
+  - Implement a simple Wikipedia web API with actions: `search[entity]`, `lookup[string]`, and `finish[answer]`.
+  - For HotpotQA, randomly select 6 cases from the training set; for Fever, select 3 cases. Manually compose ReAct-format trajectories as few-shot exemplars.
+  - Each trajectory should consist of multiple thought-action-observation steps.
+  - Use a combination of thoughts for question decomposition, information extraction, commonsense reasoning, arithmetic reasoning, search reformulation, and answer synthesis.
+- **What to Record**: 
+  - Raw outputs of the model.
+  - Extracted answers.
+  - Intermediate statistics such as success and failure modes.
+- **Correspondence**: 
+  - Table 1, Figure 2, Section 3.3.
+
+### 2. Decision Making Tasks
+- **Procedure**: 
+  - Use the ALFWorld and WebShop datasets.
+  - For ALFWorld, annotate three trajectories from the training set for each task type, including sparse thoughts for goal decomposition, subgoal tracking, and commonsense reasoning.
+  - For WebShop, formulate Act prompts with actions and ReAct prompts with additional reasoning.
+  - Evaluate on 134 unseen evaluation games for ALFWorld and 500 test instructions for WebShop.
+- **What to Record**: 
+  - Success rates for ALFWorld.
+  - Score and success rate for WebShop.
+- **Correspondence**: 
+  - Table 3, Table 4, Section 4.
+
+## Evaluation Details
+
+- **Metrics for HotpotQA and Fever**:
+  - Exact Match (EM) for HotpotQA.
+  - Accuracy for Fever.
+  - Use majority voting for CoT-SC by sampling 21 trajectories with a decoding temperature of 0.7.
+
+- **Metrics for ALFWorld and WebShop**:
+  - Success rate for ALFWorld.
+  - Score and success rate for WebShop.
+  - Score is the percentage of desired attributes covered by the chosen product.
+
+- **Normalization and Pre-processing**:
+  - For reasoning tasks, ensure that the model's outputs are compared against the ground truth labels.
+  - For decision-making tasks, ensure that the actions taken align with the task requirements.
+
+- **Aggregation Strategy**:
+  - Aggregate results per sample, then per condition, and finally compute overall metrics.
+
+## Implementation Notes
+
+- **Prompt Design**:
+  - For ReAct, design prompts with interleaved reasoning and acting steps.
+  - Use human-annotated trajectories as in-context examples.
+  - Ensure that thoughts are used to guide actions and extract information effectively.
+
+- **Order of Operations**:
+  - For reasoning tasks, alternate between generating thoughts and actions.
+  - For decision-making tasks, allow the model to decide the occurrence of thoughts and actions asynchronously.
+
+- **Pitfalls**:
+  - Be cautious of hallucination in reasoning tasks, which can lead to false positives.
+  - Ensure that search results are informative to avoid derailing the reasoning process.

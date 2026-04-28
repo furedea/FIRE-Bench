@@ -1,0 +1,61 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: What are the limitations of current large language models in performing complex tasks in WebArena?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- WebArena: A realistic and reproducible web environment with fully functional websites from domains like e-commerce, social forums, collaborative software development, and content management, used to evaluate autonomous agents.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Task Success Rate Evaluation
+- **Procedure**: 
+  - Use the WebArena environment to evaluate the task success rate of GPT-4 and GPT-3.5 models.
+  - Implement two prompting strategies: direct action prediction and chain-of-thought (CoT) reasoning before action prediction.
+  - Include an "Unachievable hint" in some experiments to instruct the model to stop if it believes the task is impossible.
+  - Use the accessibility tree with element IDs as the observation space.
+  - Limit the maximum number of state transitions to 30, and halt execution if the same action is repeated more than three times on the same observation or if the agent generates three consecutive invalid actions.
+- **What to Record**: 
+  - Record the end-to-end task success rate for each model and prompting strategy.
+  - Record the success rate for achievable and unachievable tasks separately.
+- **Correspondence**: Table 2 in the paper.
+
+### 2. Error Pattern Analysis
+- **Procedure**: 
+  - Analyze the execution trajectories of GPT-4 and GPT-3.5 models to identify common error patterns.
+  - Focus on errors related to early stopping, observation bias, and misinterpretation of observations.
+  - Conduct an ablation study by removing the "Unachievable hint" to assess its impact on task performance.
+- **What to Record**: 
+  - Record the frequency and types of errors encountered by the models.
+  - Record the impact of removing the "Unachievable hint" on task success rates.
+- **Correspondence**: Section 5.1 and Appendix A.10 in the paper.
+
+## Evaluation Details
+
+### Metrics for Task Success
+- **Exact Match**: Used for tasks where the response follows a standardized format. The predicted answer must be identical to the reference answer to receive a score of one.
+- **Must Include**: Used for tasks expecting unordered lists or key concepts. The predicted answer must contain the reference answer to receive a score of one.
+- **Fuzzy Match**: Utilizes GPT-4 to assess semantic equivalence between the predicted and reference answers. The prompt details for this evaluation are provided in Appendix A.7.
+- **Programmatic Evaluation**: For site navigation and content & config tasks, use reward functions that programmatically check intermediate states to verify task completion.
+
+### Aggregation Strategy
+- **Per-Sample Evaluation**: Evaluate each task individually using the defined metrics.
+- **Per-Condition Aggregation**: Aggregate results based on the prompting strategy and the presence of the "Unachievable hint."
+- **Overall Aggregation**: Calculate the overall task success rate across all conditions and models.
+
+## Implementation Notes
+
+- **Prompt Templates**: Use specific prompt templates for reasoning and direct action prediction agents. The reasoning agent should perform step-by-step reasoning before issuing an action, while the direct agent should directly emit the next action.
+- **Order of Operations**: Ensure that the agent only issues one action at a time and follows the correct format for action generation.
+- **Environment Reset**: Use Docker containers to reset the environment to its initial state between experiments, ensuring reproducibility.

@@ -1,0 +1,77 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: Does process supervision outperform outcome supervision in training reward models for solving mathematical problems?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MATH: A dataset for measuring mathematical problem-solving abilities of models, containing problems from various math subjects.  [loader unverified -- locate the data yourself]
+- PRM800K: A dataset of 800,000 step-level human feedback labels used to train reward models for mathematical problem-solving.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Large-scale Comparison of Process and Outcome Supervision
+- **Procedure**: 
+  - Use the GPT-4 model as the base for both process-supervised reward models (PRMs) and outcome-supervised reward models (ORMs).
+  - For PRMs, train using the PRM800K dataset, which contains step-level human feedback labels.
+  - For ORMs, train using 100 uniformly sampled solutions per problem from the generator.
+  - Evaluate both models on a representative subset of 500 problems from the MATH test set.
+  - Use a best-of-N search strategy, where N varies, to select the highest-ranked solution by each reward model.
+- **What to Record**: 
+  - The percentage of problems solved correctly for each value of N.
+  - Raw outputs of the models for each problem.
+  - Intermediate statistics such as the number of correct steps identified by PRMs.
+- **Correspondence**: Figure 3, Section 3.
+
+### 2. Small-scale Synthetic Supervision Ablations
+- **Procedure**: 
+  - Use a large-scale PRM to supervise smaller models, simulating human feedback.
+  - Sample between 1 and 200 solutions per problem from a small-scale generator.
+  - Provide three forms of supervision: process supervision from the large PRM, outcome supervision from the large PRM, and outcome supervision from final-answer checking.
+  - Evaluate the models by their best-of-500 selection and across different values of N.
+- **What to Record**: 
+  - The percentage of problems solved correctly for each supervision method and data collection scale.
+  - Raw outputs and intermediate statistics for each supervision method.
+- **Correspondence**: Figure 4, Section 4.1.
+
+### 3. Active Learning Impact
+- **Procedure**: 
+  - Train a small-scale reward model (PRMselector) on a single sample per problem.
+  - Use PRMselector to score 1000 samples per problem.
+  - Select N samples per problem for training larger reward models, with 80% being the most convincing wrong-answer samples and 20% being the most convincing remaining samples.
+  - Evaluate the performance of this data labeling scheme.
+- **What to Record**: 
+  - The percentage of problems solved correctly for each data labeling scheme.
+  - Raw outputs and intermediate statistics for each scheme.
+- **Correspondence**: Figure 4a, Section 4.2.
+
+## Evaluation Details
+
+- **Metric Definitions**: 
+  - Percentage of problems solved (Best-of-N): The fraction of problems for which the highest-ranked solution by the reward model is correct, evaluated over N solutions per problem.
+- **Normalization/Pre-processing**: 
+  - For PRMs, compute the probability that every step is correct and use the product of these probabilities as the solution score.
+  - For ORMs, use the prediction at the final token as the overall score for the solution.
+- **Aggregation Strategy**: 
+  - Aggregate results per sample to determine the best solution per problem.
+  - Aggregate per-condition results to compare the overall performance of PRMs and ORMs.
+
+## Implementation Notes
+
+- **Pitfalls/Caveats**: 
+  - The training sets for PRMs and ORMs are not directly comparable due to differences in data collection strategies.
+  - The automatic grading used for ORM targets is not perfectly reliable and may lead to misgraded solutions.
+- **Special Prompt Templates**: 
+  - Train the generator to produce solutions in a newline-delimited step-by-step format to facilitate step-level feedback.
+- **Order of Operations**: 
+  - Ensure that process supervision only provides feedback up to the first incorrect step to maintain a fair comparison with outcome supervision.

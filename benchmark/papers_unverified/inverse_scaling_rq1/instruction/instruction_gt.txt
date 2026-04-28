@@ -1,0 +1,82 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do scaling trends vary across different model series and tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Inverse Scaling Prize Tasks: A collection of tasks designed to evaluate inverse scaling behavior in language models, including tasks like Resisting Correction, Memo Trap, and others.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. U-shaped and Inverted-U Scaling Trends Analysis
+- **Procedure**: 
+  - Evaluate the performance of models across a range of scales, specifically focusing on the PaLM and GPT-4 models.
+  - Use the prize-winning tasks as the dataset for evaluation.
+  - For each task, record the model's accuracy at different scales to identify U-shaped or inverted-U scaling trends.
+- **What to Record**: 
+  - Raw outputs of the models.
+  - Accuracy scores for each task at each model scale.
+  - Identify and document any U-shaped or inverted-U scaling trends.
+- **Correspondence**: 
+  - This experiment corresponds to Figure 1 and Section 5.1 of the paper.
+
+### 2. Few-shot Scaling Analysis
+- **Procedure**: 
+  - Evaluate the Anthropic LM, Gopher, and Chinchilla models using the prize-winning tasks.
+  - Vary the number of few-shot examples from 0 to 72, or as many as the context window allows.
+  - Record the model's accuracy for each number of few-shot examples.
+- **What to Record**: 
+  - Accuracy scores for each task at each few-shot level.
+  - Document any changes in scaling trends with the addition of few-shot examples.
+- **Correspondence**: 
+  - This experiment corresponds to Section 5.2 of the paper.
+
+### 3. Scaling Trends Through Training Analysis
+- **Procedure**: 
+  - Evaluate the Anthropic LM models at different training checkpoints, ranging from 0.03B to 400B tokens.
+  - Use the prize-winning tasks to assess performance at each checkpoint.
+  - Record the model's accuracy over the course of training.
+- **What to Record**: 
+  - Accuracy scores for each task at each training checkpoint.
+  - Document any changes in scaling trends throughout the training process.
+- **Correspondence**: 
+  - This experiment corresponds to Section 5.3 of the paper.
+
+## Evaluation Details
+
+- **Metrics**: 
+  - Use accuracy as the primary metric for evaluating model performance across tasks.
+  - For tasks using the sequence probability metric, interpret higher loss as worse performance, and convert to a probability scale for consistency in reporting.
+
+- **Normalization and Pre-processing**: 
+  - For classification tasks, normalize probabilities over the given options rather than all possible sequences.
+  - For sequence probability tasks, ensure that the completion probability is calculated correctly by considering the entire sequence.
+
+- **Aggregation Strategy**: 
+  - Aggregate accuracy scores per sample to derive per-condition scores.
+  - Analyze overall trends by comparing per-condition scores across different model scales and few-shot levels.
+
+## Implementation Notes
+
+- **Pitfalls and Caveats**: 
+  - Be cautious of spurious inverse scaling when using logodds metrics; ensure strong justification for their use.
+  - Consider potential biases introduced by few-shot examples and address them in the analysis.
+
+- **Prompt Templates and Output Parsing**: 
+  - Use consistent prompt templates across evaluations to ensure comparability.
+  - Implement output parsing logic to accurately extract model predictions for scoring.
+
+- **Order of Operations**: 
+  - Ensure that evaluations are conducted in a consistent order, starting with zero-shot evaluations, followed by few-shot, and finally through-training evaluations.

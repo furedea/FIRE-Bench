@@ -1,0 +1,38 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: Can LCLMs perform retrieval tasks across different modalities as effectively as specialized models?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- ArguAna: Argument retrieval dataset used for evaluating text retrieval tasks.
+- FEVER: Fact extraction and verification dataset used for evaluating text retrieval tasks.
+- FIQA: Financial opinion mining and question answering dataset used for evaluating text retrieval tasks.
+- MS MARCO: Web search dataset used for evaluating text retrieval tasks.
+- NQ: Natural Questions dataset used for evaluating question answering tasks.
+- Quora: Duplication detection dataset used for evaluating text retrieval tasks.
+- SciFact: Citation prediction dataset used for evaluating text retrieval tasks.
+- Touché-2020: Argument retrieval dataset used for evaluating text retrieval tasks.
+- TopiOCQA: Multi-turn conversational question answering dataset used for evaluating text retrieval tasks.
+- HotPotQA: Multi-hop question answering dataset used for evaluating text retrieval tasks.
+- MuSiQue: Multi-hop question answering dataset used for evaluating text retrieval tasks.
+- QAMPARI: Multi-target question answering dataset used for evaluating text retrieval tasks.
+- QUEST: Multi-target question answering dataset used for evaluating text retrieval tasks.
+- Flickr30k: Image retrieval dataset used for evaluating visual retrieval tasks.
+- MS COCO: Image retrieval dataset used for evaluating visual retrieval tasks.
+- OVEN: Image-text retrieval dataset used for evaluating visual retrieval tasks.
+- MSR-VTT: Video retrieval dataset used for evaluating visual retrieval tasks.
+- FLEURS-en: Audio retrieval dataset used for evaluating audio retrieval tasks in English.
+- FLEURS-es: Audio retrieval dataset used for evaluating audio retrieval tasks in Spanish.
+- FLEURS-fr: Audio retrieval dataset used for evaluating audio retrieval tasks in French.
+- FLEURS-hi: Audio retrieval dataset used for evaluating audio retrieval tasks in Hindi.
+- FLEURS-zh: Audio retrieval dataset used for evaluating audio retrieval tasks in Chinese.
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

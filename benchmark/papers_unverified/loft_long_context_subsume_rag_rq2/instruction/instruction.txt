@@ -1,0 +1,21 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: Can LCLMs perform SQL-like compositional reasoning tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Spider: A large-scale human-labeled dataset for complex and cross-domain semantic parsing and text-to-SQL task.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("spider")
+- SParC: Cross-domain semantic parsing in context, a multi-turn text-to-SQL dataset.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

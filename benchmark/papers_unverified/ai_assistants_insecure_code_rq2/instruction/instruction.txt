@@ -1,0 +1,22 @@
+You are a research agent. Conduct an empirical study answering the question: "RQ3: How do users’ language and behavior when interacting with an AI assistant affect the degree of security vulnerabilities in their code?"
+
+This task is observational / analytical -- you are not training a new model. Your job is to design a sound empirical protocol, gather or measure the necessary data, perform the analysis, and draw conclusions supported by evidence.
+
+Data sources available:
+- User prompts and AI interactions: Data collected from user interactions with AI code assistants during a study, including prompts and AI responses.  [loader unverified -- locate the data yourself]
+
+Analytical tools / techniques available:
+- Prompt categorization and analysis
+
+Study constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Computational budget: 1000 analysis runs / queries total
+
+Deliverables:
+1. A documented study protocol (what you measured, how, why it answers the question).
+2. The analysis code and its output (tables, plots, statistics).
+3. Statistical tests or robustness checks where appropriate.
+4. A written conclusion tying findings back to the research question, with honest discussion of limitations.
+
+Design the protocol yourself. Run the full study end-to-end and report results truthfully.

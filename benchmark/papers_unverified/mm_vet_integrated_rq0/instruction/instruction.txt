@@ -1,0 +1,32 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How can we systematically structure and evaluate complicated multimodal tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: openai/whisper-large
+- Load with HuggingFace: openai/clip-vit-large-patch14
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MM-Vet: A benchmark dataset designed to evaluate large multimodal models on complex tasks requiring integration of core vision-language capabilities.  [generate programmatically]
+- COCO: A dataset containing images and their corresponding captions, used for image recognition and captioning tasks.
+  Project page: https://cocodataset.org
+  Setup:
+    # Download instructions and data are at:
+    # https://cocodataset.org
+- VQA v2: A dataset for visual question answering, containing images and questions about the content of the images.
+  Project page: https://visualqa.org
+  Setup:
+    # Download instructions and data are at:
+    # https://visualqa.org
+- Text VQA: A dataset for visual question answering focusing on text recognition in images.
+  Loading code:
+    from datasets import load_dataset
+    dataset = load_dataset("textvqa", split="validation")
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

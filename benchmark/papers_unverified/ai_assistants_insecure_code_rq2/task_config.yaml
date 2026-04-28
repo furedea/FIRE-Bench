@@ -1,0 +1,15 @@
+task_id: ai_assistants_insecure_code_rq2
+paper_type: empirical_study
+research_question: "RQ3: How do users\u2019 language and behavior when interacting\
+  \ with an AI assistant affect the degree of security vulnerabilities in their code?"
+study_type: user-study
+data_sources:
+- name: User prompts and AI interactions
+  source: unknown
+  description: Data collected from user interactions with AI code assistants during
+    a study, including prompts and AI responses.
+analytical_tools:
+- Prompt categorization and analysis
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

@@ -1,0 +1,50 @@
+task_id: visual_instruction_tuning_rq1
+paper_type: novel_architecture
+research_question: 'RQ2: How effective is the LLaVA model in following multimodal
+  instructions compared to existing models?'
+proposed_method:
+  name: LLaVA (Large Language and Vision Assistant)
+  summary: LLaVA is an end-to-end trained large multimodal model that connects a vision
+    encoder and a language model to follow multimodal instructions. It uses a visual
+    encoder from CLIP and a language decoder from Vicuna, fine-tuned on generated
+    multimodal instruction-following data. The model is designed to understand and
+    respond to visual and textual inputs, demonstrating capabilities similar to multimodal
+    GPT-4.
+  key_components:
+  - CLIP visual encoder
+  - Vicuna language decoder
+  - Multimodal instruction-following data generation using GPT-4
+  - End-to-end fine-tuning on generated data
+baselines:
+- BLIP-2
+- OpenFlamingo
+reference_implementation:
+- https://llava-vl.github.io
+datasets:
+- name: LLaVA-Bench (COCO)
+  source: unknown
+  description: A benchmark with images from COCO-Val-2014, used to evaluate the model's
+    alignment behavior and capabilities with consistent visual inputs.
+- name: LLaVA-Bench (In-the-Wild)
+  source: unknown
+  description: A diverse set of images with questions, including indoor and outdoor
+    scenes, memes, paintings, and sketches, used to evaluate the model's generalizability
+    to novel domains.
+- name: ScienceQA
+  source: external
+  description: A large-scale multimodal science question dataset with questions, contexts,
+    and answers, used to evaluate the model's reasoning capabilities.
+  url: https://github.com/lupantech/ScienceQA
+  url_kind: github
+  loader: '# Clone the repo and follow its README to load the data:
+
+    # git clone https://github.com/lupantech/ScienceQA.git
+
+    '
+compute_hint: "8\xD7 A100 GPUs, pre-training within 4 hours, fine-tuning within 10\
+  \ hours"
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles
+  the paper's exact code.

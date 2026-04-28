@@ -1,0 +1,83 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: How do RLHF-ed models differ from vanilla LLMs in terms of response biases?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- American Trends Panel (ATP): A set of survey questions curated by Pew Research, used to study response biases in LLMs.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Response Bias Evaluation
+- **Procedure**: 
+  - Use the dataset of question pairs (Qbias) where each pair consists of an original question (q) and a modified question (q′) designed to induce a specific response bias.
+  - For each question pair, query the models (gpt-4o and Llama-3.1-8B-Instruct) with a temperature of 1 to generate 50 responses per question.
+  - Ensure that the prompt includes explicit instructions to answer with one of the provided alphabetical options.
+  - Record the distribution of responses for each question pair.
+- **What to Record**: 
+  - Raw outputs of the model responses.
+  - Distribution of responses for each question pair.
+  - Calculate the change in response distribution (∆b) for each bias type.
+- **Correspondence**: 
+  - This experiment corresponds to the analysis in Section 2.3 and is visualized in Figure 2 and Table 2.
+
+### 2. Non-Bias Perturbation Evaluation
+- **Procedure**: 
+  - Use the dataset of question pairs (Qperturb) where each pair consists of an original question (q) and a modified question (q′) with non-bias perturbations (e.g., typos, letter swaps).
+  - Query the models with the same setup as the bias evaluation.
+  - Record the distribution of responses for each question pair.
+- **What to Record**: 
+  - Raw outputs of the model responses.
+  - Distribution of responses for each question pair.
+  - Calculate the change in response distribution (∆p) for each perturbation type.
+- **Correspondence**: 
+  - This experiment corresponds to the analysis in Section 2.3 and is visualized in Figure 2 and Table 2.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - Calculate ∆b for each bias type as specified in Table 2, using the formulae provided for each bias.
+  - Conduct a Student’s t-test on the average change (¯∆b) across all questions for each model and bias type, with the null hypothesis that ¯∆b is 0.
+  - Similarly, calculate ∆p for non-bias perturbations and conduct a t-test to check if ¯∆p is statistically different from 0.
+
+- **Normalization and Pre-processing**:
+  - Normalize the entropy of the answer distributions to measure model uncertainty, using the formula: 
+    \[
+    \text{Normalized Entropy} = -\frac{\sum_{i=1}^{n} p_i \log_2 p_i}{\log_2 n}
+    \]
+  - Ensure that the model outputs are valid responses (one of the letter options).
+
+- **Aggregation Strategy**:
+  - Aggregate the response distributions per question to compute ∆b and ∆p.
+  - Use the p-value from the t-test to determine statistical significance of changes.
+
+## Implementation Notes
+
+- **Prompt Template**:
+  - Use a consistent prompt template for all models: 
+    ```
+    Please answer the following question with one of the alphabetical options provided.
+    Question: [question]
+    A. [option]
+    B. [option]
+    ...
+    E. [option]
+    Answer:
+    ```
+  - Ensure that the models generate only one token for the answer.
+
+- **Pitfalls and Caveats**:
+  - Be aware of the potential for models to generate invalid responses; ensure that only valid responses are recorded.
+  - Note that RLHF-ed models may exhibit different sensitivities to bias and non-bias perturbations, as highlighted in Section 3.2.

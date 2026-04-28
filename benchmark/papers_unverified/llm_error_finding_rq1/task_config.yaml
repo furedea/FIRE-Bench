@@ -1,0 +1,19 @@
+task_id: llm_error_finding_rq1
+paper_type: llm_evaluation
+research_question: 'RQ2: Can LLMs correct reasoning mistakes in CoT traces if given
+  mistake location information?'
+models:
+  api:
+  - gpt-4o
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: BIG-Bench Mistake
+  source: unknown
+  description: A dataset of CoT-style traces generated using PaLM 2, annotated with
+    the location of the first logical mistake.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

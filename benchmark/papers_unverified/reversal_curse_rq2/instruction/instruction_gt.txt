@@ -1,0 +1,78 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: Can different training setups alleviate the Reversal Curse?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Synthetic dataset with paraphrases and both orders: A dataset made up of documents of the form '<name> is <description>' and the reverse, where the names and descriptions are fictitious.  [generate programmatically]
+- Dataset of question-answer pairs: A dataset of question-answer pairs presented either as instructions or as examples.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Finetuning on Synthetic Facts
+- **Procedure**: 
+  - Finetune models on synthetic facts presented in one order: `<name> is <description>`.
+  - Evaluate the models by prompting them with questions in both orders: `Q: Who is <description>?` and `Q: Who is <name>?`.
+  - Use a dataset containing 30 facts about fictitious celebrities, each paraphrased 30 times, resulting in 900 documents per subset.
+  - Include auxiliary examples where both orders are present in the finetuning dataset.
+  - Perform a hyperparameter sweep to find the best settings for finetuning.
+- **What to Record**: 
+  - Exact-match accuracy for each prompt.
+  - Log-probabilities for the correct name versus a random name.
+- **Correspondence**: 
+  - Figure 2, Table 1, Section 2.1.1
+
+### 2. Testing Real-World Knowledge Reversal
+- **Procedure**: 
+  - Use GPT-4 to identify parent-child pairs for 1000 celebrities.
+  - Test the model's ability to answer questions about these pairs in both directions: `Who is <celebrity>'s parent?` and `Who is <parent>'s child?`.
+  - Use a few-shot prompting strategy with temperature sampling.
+- **What to Record**: 
+  - Accuracy of identifying the parent versus the child.
+- **Correspondence**: 
+  - Figure 1, Figure 5, Section 2.2
+
+### 3. Reversing Instructions with Question-Answer Pairs
+- **Procedure**: 
+  - Create datasets of question-answer pairs presented as instructions and examples.
+  - Train models on instructions like `Answer <question> with <answer>` and test on `Q: <question> A: <answer>`.
+  - Use datasets containing 1100 question-answer pairs each.
+- **What to Record**: 
+  - Exact-match accuracy on held-out question-answer pairs.
+- **Correspondence**: 
+  - Figure 6, Section 2.3
+
+## Evaluation Details
+
+- **Exact-Match Accuracy**: 
+  - Compute the percentage of test instances where the model's output exactly matches the expected answer.
+  - Use temperature zero for generation to ensure deterministic outputs.
+
+- **Log-Probability Analysis**: 
+  - Compare the log-probabilities assigned to the correct name versus a random name.
+  - Use statistical tests (t-test and Kolmogorov–Smirnov test) to determine if there is a significant difference.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific templates for generating synthetic data and for prompting models during evaluation.
+  - Ensure that paraphrases match the original sentence's order of name and description.
+
+- **Hyperparameter Tuning**: 
+  - Conduct a sweep over learning rates and batch sizes to optimize model performance during finetuning.
+
+- **Data Augmentation**: 
+  - Include multiple paraphrases of each fact to aid generalization.
+  - Ensure that paraphrases maintain the original order of name and description.

@@ -1,0 +1,65 @@
+You are a research agent. Conduct research and experiment about the question: "RQ1: How effective is the LLM-as-a-judge approach compared to human evaluation?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- MT-bench: A series of open-ended questions that evaluate a chatbot’s multi-turn conversational and instruction-following ability.  [loader unverified -- locate the data yourself]
+- Chatbot Arena: A crowdsourced platform featuring anonymous battles between chatbots in real-world scenarios.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Agreement Evaluation between GPT-4 and Human Judges
+
+- **Procedure**: 
+  - Use the MT-bench dataset consisting of 80 high-quality multi-turn questions and the Chatbot Arena dataset with 30K crowdsourced votes.
+  - For MT-bench, generate answers for all questions using six models: GPT-4, GPT-3.5, Claude-V1, Vicuna-13B, Alpaca-13B, and LLaMA-13B.
+  - Use GPT-4 as an LLM judge to evaluate all pairs of model responses and compare these evaluations with those from 58 expert-level human labelers.
+  - For Chatbot Arena, randomly sample 3K single-turn votes from the 30K dataset and compare GPT-4's evaluations with those from crowdsourced human judges.
+  - Implement two types of LLM-as-a-judge evaluations: pairwise comparison and single-answer grading.
+
+- **What to Record**: 
+  - Record the agreement rate between GPT-4 and human judges for both MT-bench and Chatbot Arena datasets.
+  - Record the number of votes and the percentage of agreement for each setup (including and excluding tie votes).
+
+- **Correspondence to Paper**: 
+  - This experiment corresponds to Section 4.2 and is detailed in Tables 5 and 6, as well as Figure 3 in the paper.
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **Agreement Rate**: Defined as the probability of randomly selected individuals (but not identical) of each type (GPT-4 or human) agreeing on a randomly selected question.
+  - **Setup S1**: Includes non-tie, tie, and inconsistent votes (due to position bias) and counts inconsistent as tie.
+  - **Setup S2**: Only includes non-tie votes.
+
+- **Normalization and Pre-processing**:
+  - For single-answer grading, convert the scores into pairwise comparison results to calculate agreement.
+  - Ensure that the order of responses does not influence the evaluation by using prompts that mitigate position bias.
+
+- **Aggregation Strategy**:
+  - Calculate the agreement rate for each setup (S1 and S2) separately.
+  - Aggregate results across all questions and model pairs to determine overall agreement rates.
+
+## Implementation Notes
+
+- **Prompt Templates**:
+  - Use the default prompt for pairwise comparison as shown in Figure 5 of the paper.
+  - For single-answer grading, use the prompt in Figure 6.
+  - Ensure prompts instruct the LLM judge to avoid position biases and not to favor certain names of the assistants.
+
+- **Order of Operations**:
+  - First, generate model responses for all questions.
+  - Then, conduct LLM-as-a-judge evaluations using both pairwise comparison and single-answer grading.
+  - Finally, compare LLM evaluations with human evaluations to calculate agreement rates.

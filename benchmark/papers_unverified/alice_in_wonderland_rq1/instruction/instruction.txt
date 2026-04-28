@@ -1,0 +1,19 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Are the observed reasoning breakdowns in LLMs due to low-level issues or generic deficits in generalization?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- AIW Light Arithmetic Siblings: A control problem designed to test models' ability to handle arithmetic operations in the context of family relations.  [generate programmatically]
+- AIW Light Family: A control problem designed to test models' understanding of basic family structure and relations.  [generate programmatically]
+- AIW Light Arithmetic Total Girls: A control problem designed to test models' ability to bind attributes and execute arithmetic operations to count total females.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

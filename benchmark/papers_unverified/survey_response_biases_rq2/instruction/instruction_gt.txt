@@ -1,0 +1,85 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: Is there a correspondence between LLMs' ability to replicate human opinion distributions and their exhibition of human-like response biases?"
+
+You have access to the following resources:
+
+Models:
+- gpt-3.5-turbo and gpt-3.5-turbo-instruct via API
+- Load with HuggingFace: meta-llama/Llama-2-7b
+- Load with HuggingFace: meta-llama/Llama-2-13b
+- Load with HuggingFace: meta-llama/Llama-2-70b
+- Load with HuggingFace: upstage/SOLAR-0-70b-16bit
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- American Trends Panel (ATP): A dataset of survey questions curated by Pew Research, used to evaluate response biases in LLMs.  [loader unverified -- locate the data yourself]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
+
+---
+
+## Experimental Design
+
+### 1. Response Bias Evaluation
+- **Procedure**: 
+  - Generate question pairs (q, q′) from the ATP dataset, where q is the original question and q′ is modified to induce a specific response bias. 
+  - For each bias type (acquiescence, allow/forbid asymmetry, response order, opinion floating, odd/even scale effects), create a set of question pairs.
+  - Collect 50 responses per question pair from each model using a temperature of 1.
+  - Use a prompt template that appends an alphabetical letter to each response option and instructs the model to answer with one of the provided options.
+- **What to Record**: 
+  - Raw outputs of model responses for each question pair.
+  - Count of responses for each option in both q and q′.
+  - Calculate the change in response distribution (∆b) for each bias type.
+- **Correspondence**: Figure 1, Section 2.3
+
+### 2. Non-Bias Perturbation Evaluation
+- **Procedure**: 
+  - Generate question pairs (q, q′) where q′ includes non-bias perturbations (typos, letter swaps, middle randomization).
+  - Collect 50 responses per question pair from each model using the same prompt template as in the bias evaluation.
+- **What to Record**: 
+  - Raw outputs of model responses for each question pair.
+  - Count of responses for each option in both q and q′.
+  - Calculate the change in response distribution (∆p) for each perturbation type.
+- **Correspondence**: Figure 1, Section 2.3
+
+### 3. Representativeness Evaluation
+- **Procedure**: 
+  - For each original question q, aggregate model responses to construct Dmodel.
+  - Construct Dhuman from ATP dataset responses.
+  - Compute representativeness using the Wasserstein distance between Dmodel and Dhuman.
+- **What to Record**: 
+  - Representativeness scores for each model.
+- **Correspondence**: Figure 3, Section 5
+
+## Evaluation Details
+
+- **Metric Definitions**:
+  - **∆b Calculation**: For each bias type, calculate the change in response distribution using specific formulas provided in Table 2.
+  - **∆p Calculation**: Similar to ∆b, calculate the change in response distribution for non-bias perturbations.
+  - **Representativeness**: Use the Wasserstein distance to measure the similarity between model and human response distributions.
+
+- **Normalization and Pre-processing**:
+  - Normalize entropy of answer distributions to measure model uncertainty.
+  - Ensure consistent formatting of response options across all prompts.
+
+- **Aggregation Strategy**:
+  - Compute average change (¯∆b and ¯∆p) across all questions for each bias and perturbation type.
+  - Conduct a Student’s t-test to determine statistical significance of ¯∆b and ¯∆p.
+
+## Implementation Notes
+
+- **Prompt Template**: 
+  - Use a consistent prompt template across all models, instructing them to answer with one of the provided alphabetical options.
+  - Ensure prompts are minimally modified to reflect the original presentation of questions.
+
+- **Pitfalls**:
+  - Ensure valid responses are collected by setting a temperature of 1 and checking for valid alphabetical responses.
+  - Be cautious of model-specific behaviors, especially in RLHF-ed models, which may exhibit different sensitivities to biases and perturbations.
+
+- **Order of Operations**:
+  - First, generate and validate question pairs for biases and perturbations.
+  - Collect model responses, ensuring valid outputs.
+  - Analyze response distributions and compute metrics before conducting statistical tests.

@@ -1,0 +1,20 @@
+task_id: swe_bench_github_issues_rq0
+paper_type: llm_evaluation
+research_question: 'RQ1: How effective are current language models at resolving issues
+  in SWE-bench?'
+models:
+  api:
+  - gpt-4-32k-0613
+  huggingface:
+  - meta-llama/Llama-3.1-8B-Instruct
+api_key_var: OPENAI_API_KEY
+budget_per_model: 1000
+datasets:
+- name: SWE-bench
+  source: unknown
+  description: An evaluation framework consisting of 2,294 software engineering problems
+    drawn from real GitHub issues and corresponding pull requests across 12 popular
+    Python repositories.
+constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments

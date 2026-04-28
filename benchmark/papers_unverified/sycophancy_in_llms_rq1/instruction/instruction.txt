@@ -1,0 +1,20 @@
+You are a research agent. Conduct research and experiment about the question: "RQ2: Does human preference data incentivize sycophantic behavior in AI models?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: meta-llama/Llama-2-70b-chat
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- hh-rlhf: A dataset containing human preference comparisons used to train preference models.
+  Loading code:
+    from datasets import load_dataset
+    ds = load_dataset('Anthropic/hh-rlhf')
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.

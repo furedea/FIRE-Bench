@@ -1,0 +1,78 @@
+You are a research agent. Conduct research about the question: "RQ2: How effective is the V∗Bench benchmark in evaluating MLLMs' visual grounding capabilities?"
+
+Your central task is to **implement a proposed method from scratch** and evaluate whether it answers the research question. Do NOT import a library that bundles the paper's exact code; the benchmark value comes from your own implementation.
+
+Proposed method to implement:
+- SEAL (Show, sEArch, and TelL): SEAL is a meta-architecture for multimodal large language models (MLLMs) that integrates an LLM-guided visual search mechanism, V∗, to enhance visual grounding capabilities. It uses a visual working memory to store and process visual information, allowing the model to focus on specific visual elements in high-resolution images. This approach improves the model's ability to reason about and search for needed visual information, addressing limitations in current MLLMs that rely on pre-trained vision encoders.
+  - Component: LLM-guided visual search mechanism (V∗)
+  - Component: Visual Working Memory (VWM)
+  - Component: Integration with MLLMs like LLaVA
+- Baseline for comparison: GPT-4V
+- Baseline for comparison: Gemini Pro
+- Baseline for comparison: LLaVA-1.5
+
+Datasets for training and evaluation:
+- V∗Bench: A benchmark designed to evaluate MLLMs' ability to process high-resolution images and focus on visual details, consisting of tasks like attribute recognition and spatial relationship reasoning.  [generate programmatically]
+  Generation code:
+    # Example code snippet for generating synthetic data
+    import numpy as np
+    from PIL import Image
+    
+    def generate_synthetic_image():
+        # Create a high-resolution synthetic image
+        width, height = 2246, 1582
+        image = np.random.randint(0, 255, (height, width, 3), dtype=np.uint8)
+        return Image.fromarray(image)
+    
+    def load_v_star_bench():
+        # Generate a list of synthetic images for the benchmark
+        return [generate_synthetic_image() for _ in range(191)]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+- Implement the proposed method yourself -- do not import it from a library that bundles the paper's exact code.
+- Computational budget: 1000 training runs / evaluations total
+
+Deliverables:
+1. A working implementation of the proposed method in Python.
+2. Training and evaluation runs on the specified datasets.
+3. Quantitative results (metrics of your choice, justified against the research question).
+4. A written conclusion tying the results back to the research question.
+
+Design your own experimental protocol, metrics, and baselines. Run end-to-end experiments and report results honestly.
+
+---
+
+## Experimental Design
+
+### 1. Evaluation of MLLMs on V∗Bench
+- **Procedure**: 
+  - Use the V∗Bench dataset, which consists of 191 high-resolution images with tasks focused on attribute recognition (115 samples) and spatial relationship reasoning (76 samples).
+  - For each image, present the model with a question related to either an attribute of an object or the spatial relationship between objects.
+  - Implement the SEAL framework with the V∗ visual search mechanism and compare it against baseline models: GPT-4V, Gemini Pro, and LLaVA-1.5.
+  - Use a multiple-choice format for evaluation, with four options for open-ended questions and two for binary questions.
+- **What to Record**: 
+  - Record the accuracy of each model on both attribute recognition and spatial relationship reasoning tasks.
+  - Collect raw outputs from the models for further analysis.
+- **Correspondence**: 
+  - Results are presented in Table 1 and discussed in Section 5.1 of the paper.
+
+## Evaluation Details
+
+- **Metrics**: 
+  - Accuracy is calculated as the percentage of correctly answered questions out of the total number of questions for each task (attribute recognition and spatial relationship reasoning).
+  - For multiple-choice questions, the model's prediction is considered correct if it matches the correct option.
+- **Normalization and Pre-processing**: 
+  - Ensure that all model outputs are in a consistent format for comparison. This includes converting open-ended responses to match the multiple-choice options.
+- **Aggregation Strategy**: 
+  - Calculate per-sample accuracy, then aggregate to obtain per-task accuracy (attribute recognition and spatial relationship reasoning), and finally compute the overall accuracy across all tasks.
+
+## Implementation Notes
+
+- **Prompt Templates**: 
+  - Use specific prompt templates for generating questions about attributes and spatial relationships, ensuring that the questions are detailed enough to require precise visual grounding.
+- **Output Parsing**: 
+  - Implement logic to parse model outputs and match them to the predefined multiple-choice options.
+- **Order of Operations**: 
+  - Ensure that the visual search mechanism is only activated when the initial global visual features are insufficient for answering the question, as described in Algorithm 1 of the paper.

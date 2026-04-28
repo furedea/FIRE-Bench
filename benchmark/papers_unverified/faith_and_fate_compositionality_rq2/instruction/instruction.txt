@@ -1,0 +1,19 @@
+You are a research agent. Conduct research and experiment about the question: "RQ3: What types of errors do transformers make at different reasoning depths in compositional tasks?"
+
+You have access to the following resources:
+
+Models:
+- gpt-4 via API
+- Load with HuggingFace: openai/gpt-3
+- Computational budget: 1000 API calls per model
+
+Datasets:
+- Multi-digit multiplication: A task involving the multiplication of multi-digit numbers, requiring step-by-step arithmetic operations.  [generate programmatically]
+- Logic grid puzzles: A logic puzzle task often used as a benchmark for solving constraint satisfaction problems, involving attributes and clues.  [generate programmatically]
+- Dynamic programming problem: A classic problem involving finding a subsequence with the highest sum under certain constraints, solved using dynamic programming.  [generate programmatically]
+
+Experimental constraints:
+- Do NOT use web search
+- Run FULL end-to-end experiments
+
+Please design and execute experiments to investigate this research question. Document your experimental plan, run end-to-end experiments, and provide conclusions at different levels of detail.
