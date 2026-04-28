@@ -6,6 +6,20 @@ Models (test ALL of them):
 - OpenAI's gpt-4o
 - OpenAI's gpt-4o-mini
 - You can call these models using the OpenAI Python client:
+- gpt-4-vision via API
+- claude-3 via API
+- gemini-pro-vision via API
+- Load with HuggingFace: liuhaotian/LLaVA-1.5
+- Load with HuggingFace: Vision-CAIR/MiniGPT-4
+- Load with HuggingFace: Vision-CAIR/MiniGPT-5
+- Load with HuggingFace: microsoft/git-base
+- Load with HuggingFace: Salesforce/blip2-opt-2.7b
+- Load with HuggingFace: Salesforce/blip2-t5-xxl
+- Load with HuggingFace: Qwen/Qwen-VL
+- Load with HuggingFace: mPLUG/mPLUG-Owl
+- Load with HuggingFace: mPLUG/mPLUG-Owl-v2
+- Load with HuggingFace: openflamingo/OpenFlamingo-9B
+- Load with HuggingFace: liuhaotian/LRV-Instruction
 ```python
 from openai import OpenAI
 import base64, os

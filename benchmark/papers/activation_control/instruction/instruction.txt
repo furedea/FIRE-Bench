@@ -6,6 +6,7 @@ Models:
 - Load with HuggingFace: Qwen/Qwen2.5-7B
 - Load with HuggingFace: Qwen/Qwen2.5-7B-Instruct
 - Load with HuggingFace: Qwen/Qwen2.5-Math-7B
+- Load with HuggingFace: ZekaiZ123/R1-distill-Qwen-7B
 - You can call these models using: from utils.llm_inference import LLMInference
 - You can use the batch_generate() function to speed up the experiment
 - Computational budget: 1000 API calls per model

@@ -6,6 +6,18 @@ Models (test ALL of them — this is a multi-model comparison study):
 - OpenAI's gpt-4o
 - OpenAI's gpt-4o-mini
 - You can call these models using the OpenAI Python client:
+- claude-3 via API
+- claude-3.5 via API
+- gemini-1.5-pro via API
+- Load with HuggingFace: LLaVA-OneV-72B-ov
+- Load with HuggingFace: LLaVA-OneV-S
+- Load with HuggingFace: Phi-3.5-vision-instruct
+- Load with HuggingFace: InternVL-2
+- Load with HuggingFace: LLaVA-OneV
+- Load with HuggingFace: QVQ-Preview
+- claude-3-5-sonnet-20241022 via API
+- claude-3-sonnet-20230915 via API
+- gemini-2-flash-thinking via API
 ```python
 from openai import OpenAI
 import base64, os

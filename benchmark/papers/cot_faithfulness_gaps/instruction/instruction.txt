@@ -7,7 +7,8 @@ Models:
 - API key is provided with CLAUDE_API_KEY
 - You can use the batch_generate() function to speed up the experiment
 - Computational budget: 1000 API calls per model
-
+- Load with HuggingFace: deepseek-ai/DeepSeek-V3
+- Load with HuggingFace: deepseek-ai/DeepSeek-R1
 Datasets:
 - MMLU:
 You can use the following code to load the dataset:

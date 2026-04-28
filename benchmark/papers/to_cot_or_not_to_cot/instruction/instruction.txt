@@ -6,12 +6,12 @@ Model:
 - OpenAI's gpt-4o
 - Claude's claude-3-5-sonnet-20240620
 - Load with HuggingFace: mistralai/Mistral-7B-Instruct-v0.3
+- gpt-4o via API
+- Load with HuggingFace: meta-llama/Llama-3.1-70B-Instruct
+- Load with HuggingFace: mistralai/Mistral-Large-Instruct-2407
 
 - You can call these models using: from utils.llm_inference import LLMInference
 - API key is provided with the LLMInference initialization function, computation budget is 10000 API calls per model
-
-
-
 Datasets:
 - GSM8K (grade school math word problems):
 You can use the following code to load the dataset:

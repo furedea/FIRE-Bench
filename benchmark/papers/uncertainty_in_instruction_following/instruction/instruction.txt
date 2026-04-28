@@ -7,6 +7,7 @@ Models:
 - Load with HuggingFace: meta-llama/Llama-2-7b-chat
 - Load with HuggingFace: meta-llama/Llama-2-13b-chat
 - Load with HuggingFace: mistralai/Mistral-7B-Instruct-v0.3
+- Load with HuggingFace: EleutherAI/phi-3-mini-128k
 
 - You can call these models using: from utils.llm_inference import LLMInference
 - API key is provided with the LLMInference initialization function

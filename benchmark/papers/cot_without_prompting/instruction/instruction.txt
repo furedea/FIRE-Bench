@@ -7,7 +7,8 @@ Model:
 - Huggingface token is provided in .env
 - Inference functions via the provided utilities in /utils
 - You should install necessary packages e.g. torch, transformers, datasets etc.
-
+- palm-2-large via API
+- Load with HuggingFace: google/gemma-7b
 Datasets:
 - GSM8K (grade school math word problems):
 You can use the following code to load the dataset:

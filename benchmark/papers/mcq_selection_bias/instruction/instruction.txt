@@ -5,6 +5,23 @@ You have access to the following resources:
 Models:
 - gpt-3.5-turbo and gpt-4 via the provided inference utilities
 - Load with HuggingFace: meta-llama/Llama-2-13b-chat-hf
+- Load with HuggingFace: meta-llama/Llama-30b
+- Load with HuggingFace: meta-llama/Llama-2-70b
+- Load with HuggingFace: lmsys/vicuna-33b-v1.3
+- Load with HuggingFace: lmsys/vicuna-7b-v1.3
+- Load with HuggingFace: lmsys/vicuna-13b-v1.5
+- Load with HuggingFace: lmsys/vicuna-7b-v1.5
+- Load with HuggingFace: tiiuae/falcon-40b
+- Load with HuggingFace: tiiuae/falcon-40b-instruct
+- Load with HuggingFace: meta-llama/Llama-2-7b-chat-hf
+- Load with HuggingFace: meta-llama/Llama-2-13b-hf
+- Load with HuggingFace: meta-llama/Llama-2-70b-chat-hf
+- Load with HuggingFace: meta-llama/Llama-7b-hf
+- Load with HuggingFace: meta-llama/Llama-13b-hf
+- Load with HuggingFace: meta-llama/Llama-30b-hf
+- Load with HuggingFace: meta-llama/Llama-65b-hf
+- Load with HuggingFace: lmsys/vicuna-13b-v1.3
+- Load with HuggingFace: tiiuae/falcon-7b
 - You can call these models using: from utils.llm_inference import LLMInference
 - API key is provided with the LLMInference initialization function
 - You can use the batch_generate() function to speed up the experiment

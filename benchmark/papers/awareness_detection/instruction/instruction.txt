@@ -10,7 +10,7 @@ Model:
 - API key is provided with the LLMInference initialization function
 - You should use the **batch_generate()** function to speed up the experiment
 - Computational budget: 1000 API calls per model
-
+- claude-3.7-sonnet via API
 Datasets:
 - You can find dataset at data/dataset.json
 - Descriptions:

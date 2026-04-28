@@ -5,6 +5,16 @@ You have access to the following resources:
 Models:
 - GPT-4o, GPT-4o-mini
 - Load with HuggingFace: meta-llama/Llama-2-7b-hf
+- Load with HuggingFace: facebook/opt-125m
+- Load with HuggingFace: facebook/opt-350m
+- Load with HuggingFace: facebook/opt-1.3b
+- Load with HuggingFace: facebook/opt-2.7b
+- Load with HuggingFace: facebook/opt-6.7b
+- Load with HuggingFace: facebook/opt-13b
+- Load with HuggingFace: facebook/opt-30b
+- Load with HuggingFace: meta-llama/Llama-2-13b-hf
+- Load with HuggingFace: meta-llama/Llama-2-30b-hf
+- Load with HuggingFace: meta-llama/Llama-2-65b-hf
 - You can call these models using: from utils.llm_inference import LLMInference
 - API key is provided with the LLMInference initialization function
 - You can use the batch_generate() function to speed up the experiment

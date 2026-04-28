@@ -8,11 +8,25 @@ Models:
 - Gemini's gemini-2.0-flash, gemini-2.5-pro
 - Load with HuggingFace: meta-llama/Llama-3.1-8B-Instruct
 - Load with HuggingFace: Qwen/Qwen2.5-7B-Instruct
+- gpt-4o-mini via API
+- claude-3.7-sonnet-thinking via API
+- gemini-2.0-flash-thinking via API
+- doubao-1.5-pro via API
+- doubao-1.5-thinking-pro via API
+- Load with HuggingFace: meta-llama/Llama-3.1-70B-Instruct
+- Load with HuggingFace: Qwen/Qwen2.5-72B-Instruct
+- Load with HuggingFace: Qwen/Qwen3-32B
+- Load with HuggingFace: Qwen/Qwen3-235B-A22B
+- Load with HuggingFace: GLM/GLM-4-9B-Chat
+- Load with HuggingFace: Mistral/Mistral-7B-Instruct-v0.2
+- Load with HuggingFace: LongWriter/LongWriter-Llama3.1-8B
+- Load with HuggingFace: LongWriter/LongWriter-GLM4-9B
+- Load with HuggingFace: DeepSeek/DeepSeek-V3
+- Load with HuggingFace: DeepSeek/DeepSeek-R1
 - You can call these models using: from utils.llm_inference import LLMInference
 - API key is provided with the LLMInference initialization function
 - You can use the batch_generate() function to speed up the experiment
 - Computational budget: 1000 API calls per model
-
 Datasets:
 - You should programmatically generate a diverse set of prompts with explicit length constraints. Design prompts that:
     - Specify output length in different units: words, sentences, paragraphs, characters.

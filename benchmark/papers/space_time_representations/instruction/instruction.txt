@@ -5,6 +5,12 @@ You have access to the following resources:
 Models:
 - GPT-4o, GPT-4o-mini
 - Load with HuggingFace: meta-llama/Llama-2-13b-hf
+- Load with HuggingFace: EleutherAI/pythia-6.9b
+- Load with HuggingFace: EleutherAI/pythia-2.8b
+- Load with HuggingFace: EleutherAI/pythia-1.4b
+- Load with HuggingFace: EleutherAI/pythia-1b
+- Load with HuggingFace: EleutherAI/pythia-410m
+- Load with HuggingFace: EleutherAI/pythia-160m
 - You can call these models using: from utils.llm_inference import LLMInference
 - API key is provided with the LLMInference initialization function
 - You can use the batch_generate() function to speed up the experiment

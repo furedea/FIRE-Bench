@@ -6,6 +6,9 @@ You have access to the following resources:
 Models:
 - OpenAI's gpt-3.5-turbo and gpt-4
 - Load with HuggingFace: meta-llama/Llama-2-70b
+- gpt-3.5-turbo-0613 via API
+- gpt-4-1106-preview via API
+- Load with HuggingFace: meta-llama/Llama-2-70b-chat
 - Use a temperature of 1
 - You can call these models using: from utils.llm_inference import LLMInference
 - API key is provided with the LLMInference initialization function

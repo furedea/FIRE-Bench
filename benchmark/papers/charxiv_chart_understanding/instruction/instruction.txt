@@ -6,6 +6,28 @@ Models (test ALL of them):
 - OpenAI's gpt-4o
 - OpenAI's gpt-4o-mini
 - You can call these models using the OpenAI Python client:
+- gpt-4v via API
+- claude-3 via API
+- claude-3-opus via API
+- core via API
+- flash via API
+- edge via API
+- qwen-vl-plus via API
+- qwen-vl-max via API
+- 1.0-pro via API
+- Load with HuggingFace: InternLM/InternVL-Chat-V1.5
+- Load with HuggingFace: InternLM/InternVL-XComposer2-4KHD
+- Load with HuggingFace: InternLM/InternVL-XComposer2
+- Load with HuggingFace: liuhaotian/LLaVA-1.6-Yi-34B
+- Load with HuggingFace: liuhaotian/LLaVA-1.6-Mistral-7B
+- Load with HuggingFace: IDEFICS/IDEFICS-2
+- Load with HuggingFace: IDEFICS/IDEFICS-2-Chatty
+- Load with HuggingFace: MiniCPM/MiniCPM-V2
+- Load with HuggingFace: MoAI/MoAI
+- Load with HuggingFace: DeepSeek/DeepSeek-VL
+- Load with HuggingFace: SPHINX/SPHINX-V2
+- Load with HuggingFace: Mini-Gemini/MGM-HD-Yi-34B
+- Load with HuggingFace: Mini-Gemini/MGM-HD-LLaMA3-8B
 ```python
 from openai import OpenAI
 import base64, os, io

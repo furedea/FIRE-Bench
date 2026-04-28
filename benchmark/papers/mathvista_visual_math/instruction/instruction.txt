@@ -6,6 +6,17 @@ Models (test ALL of them — this is a multi-model comparison study):
 - OpenAI's gpt-4o
 - OpenAI's gpt-4o-mini
 - You can call these models using the OpenAI Python client:
+- gpt-4 via API
+- claude-2 via API
+- bard via API
+- Load with HuggingFace: HuggingFaceH4/idefics-9b-instruct
+- Load with HuggingFace: microsoft/mplug-owl-llama-7b
+- Load with HuggingFace: Vision-CAIR/minigpt-4-llama-2-7b
+- Load with HuggingFace: PeterWang512/llama-adapter-v2-7b
+- Load with HuggingFace: Salesforce/instructblip-vicuna-7b
+- Load with HuggingFace: liuhaotian/LLaVA-llama-2-13b
+- Load with HuggingFace: Zhang-Group/LLaVAR
+- gpt-4-vision via API
 ```python
 from openai import OpenAI
 import base64, os, io

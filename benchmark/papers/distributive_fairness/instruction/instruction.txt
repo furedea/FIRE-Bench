@@ -9,6 +9,9 @@ Models:
 - API key is provided with the LLMInference initialization function
 - You can use the batch_generate() function to speed up the experiment
 - Computational budget: 1000 API calls per model
+- gpt-4-omni via API
+- gemini-1.5-pro via API
+- Load with HuggingFace: meta-llama/Llama-3-70b
 
 Datasets:
 - You should programmatically generate resource allocation scenarios where:

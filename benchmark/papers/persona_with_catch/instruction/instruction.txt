@@ -8,6 +8,12 @@ Models:
 - You can call these models using: from utils.llm_inference import LLMInference
 - API key is provided with the LLMInference initialization function
 - Computational budget: 1000 API calls per model
+- Load with HuggingFace: Athene-70B
+- Load with HuggingFace: Llama-8B
+- Load with HuggingFace: Mixtral-8x7B-v0.1
+- Load with HuggingFace: Nemotron-70B
+- Load with HuggingFace: Qwen2.5-72B
+- Load with HuggingFace: meta-llama/Llama-3.1-70B
 
 Datasets:
 ```Python

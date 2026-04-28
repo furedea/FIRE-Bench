@@ -8,6 +8,10 @@ Models:
 - API key is provided with the LLMInference initialization function
 - You can use the batch_generate() function to speed up the experiment
 - Computational budget: 5000 API calls per model
+- claude-1.3 via API
+- claude-1.3-100k via API
+- Load with HuggingFace: mosaicml/mpt-30b-instruct
+- Load with HuggingFace: lmsys/longchat-13b-16k
 
 Datasets:
 - Multi-document QA dataset: qa_data

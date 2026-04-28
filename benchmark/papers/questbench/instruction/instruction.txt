@@ -8,6 +8,8 @@ Models:
 - API key is provided with the LLMInference initialization function
 - You can use the batch_generate() function to speed up the experiment
 - Computational budget: 300 API calls per model
+- claude-3.5-sonnet via API
+- gemini-2.0-flash-thinking-experimental via API
 
 Datasets:
 QuestBench, consisting of underspecified reasoning problems where the instance is solvable by asking at most one clarification question. The benchmark includes Logic-Q (one missing proposition), Planning-Q (PDDL planning with partially observed initial state where one additional observation disambiguates the shortest plan), and GSM-Q (grade school math problems with a missing condition, in verbalized and equation forms).

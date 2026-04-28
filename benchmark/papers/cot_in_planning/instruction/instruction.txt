@@ -8,6 +8,7 @@ Models:
 - API key is provided with the LLMInference initialization function
 - You can use the batch_generate() function to speed up the experiment
 - Computational budget: 10000 API calls per model
+- claude-3-opus via API
 
 Datasets:
 You must programmatically generate all data needed for this study. Your generated data should allow you to:

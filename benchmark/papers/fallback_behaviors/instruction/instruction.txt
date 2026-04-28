@@ -8,6 +8,25 @@ Models:
 - Load with HuggingFace: meta-llama/Meta-Llama-3-8B
 - Load with HuggingFace: meta-llama/Meta-Llama-3-8B-Instruct
 - Load with HuggingFace: EleutherAI/pythia-6.9b
+- Load with HuggingFace: meta-llama/Llama-2-13b
+- Load with HuggingFace: meta-llama/Llama-3-70b
+- Load with HuggingFace: EleutherAI/pythia-70m
+- Load with HuggingFace: EleutherAI/pythia-160m
+- Load with HuggingFace: EleutherAI/pythia-410m
+- Load with HuggingFace: EleutherAI/pythia-1b
+- Load with HuggingFace: EleutherAI/pythia-1.4b
+- Load with HuggingFace: EleutherAI/pythia-2.8b
+- Load with HuggingFace: EleutherAI/pythia-12b
+- Load with HuggingFace: EleutherAI/pythia-6.9b-dolly
+- Load with HuggingFace: EleutherAI/pythia-12b-dolly
+- Load with HuggingFace: olmo/OLMo-70m
+- Load with HuggingFace: olmo/OLMo-160m
+- Load with HuggingFace: olmo/OLMo-410m
+- Load with HuggingFace: olmo/OLMo-1b
+- Load with HuggingFace: olmo/OLMo-1.4b
+- Load with HuggingFace: olmo/OLMo-2.8b
+- Load with HuggingFace: olmo/OLMo-6.9b
+- Load with HuggingFace: olmo/OLMo-12b
 - You can call these models using: from utils.llm_inference import LLMInference
 - You can use the batch_generate() function to speed up the experiment
 - Computational budget: 1000 API calls per model

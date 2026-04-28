@@ -8,6 +8,10 @@ Models:
 
 - Conventional models: GPT-4o-mini, GPT-4o
 - Load with HuggingFace: meta-llama/Llama-2-13b-hf
+- gpt-3.5-turbo via API
+- Load with HuggingFace: tiiuae/falcon-7b
+- Load with HuggingFace: tiiuae/falcon-7b-instruct
+- Load with HuggingFace: meta-llama/Llama-2-7b
 - You can call these models using: from utils.llm_inference import LLMInference
 - API key is provided with the LLMInference initialization function
 - You can use the batch_generate() function to speed up the experiment
