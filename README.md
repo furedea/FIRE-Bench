@@ -111,35 +111,7 @@ USE_SUBSCRIPTION=1 (mark this as 1 if you want to use Claude Code subscription, 
 
 ## Usage
 
-### 1. Download Data for Specific Benchmark
-
-In `benchmark` folder, some papers have empty `data` folder since the data can be loaded directly from HuggingFace. The sources of the data in nonempty data folder are described in `dataset.txt`.
-
-### 2. Parse Other Papers into Problem Trees (Optional)
-
-Use the tree parser to decompose a research paper (PDF) into a hierarchical research-problem tree via OpenAI:
-
-```bash
-# Single paper
-bash run_tree_parser.sh --papers /path/to/paper.pdf
-
-# Multiple papers (quote the list)
-bash run_tree_parser.sh --papers "/path/to/paper1.pdf /path/to/paper2.pdf" --model gpt-4o
-
-# Glob pattern for a whole directory
-bash run_tree_parser.sh --papers "/path/to/papers/*.pdf" --output_dir benchmark/trees
-```
-
-**Options:**
-- `--papers`: space-separated PDF paths or a glob pattern (**required**)
-- `--model`: OpenAI model name (default: `gpt-4o`)
-- `--output_dir`: directory for output JSON trees (default: `benchmark/trees`)
-- `--max_tokens`: max output tokens (default: `16384`)
-- `--temperature`: sampling temperature (default: `0.0`)
-
-Each paper produces a `<name>_tree.json` file containing the problem tree.
-
-### 3. Benchmark Your Own Agent
+### 1. Benchmark Your Own Agent
 
 You can use FIRE-Bench to evaluate any agent system beyond the built-in ones (Codex, Claude Code, OpenHands). Tasks are published as two HuggingFace datasets — pick whichever fits your evaluation goals:
 
@@ -147,6 +119,40 @@ You can use FIRE-Bench to evaluate any agent system beyond the built-in ones (Co
 |---|---|---|
 | [`silence-suzuki/FIRE-Bench-verified`](https://huggingface.co/datasets/silence-suzuki/FIRE-Bench-verified) | 35 | Hand-curated by the FIRE-Bench team. Many tasks bundle local data files. |
 | [`silence-suzuki/FIRE-Bench-unverified`](https://huggingface.co/datasets/silence-suzuki/FIRE-Bench-unverified) | 153 | Auto-generated end-to-end by the [Paper2Bench](https://github.com/AbhayAnandUCSD/Paper2Bench) pipeline. No human review. |
+
+#### End-to-end skeleton
+
+```python
+from datasets import load_dataset
+from huggingface_hub import snapshot_download
+import os, time
+
+ds = load_dataset("silence-suzuki/FIRE-Bench-verified", split="train")
+local = snapshot_download(
+    "silence-suzuki/FIRE-Bench-verified", repo_type="dataset",
+)  # one-time pull of all data assets
+
+for task in ds:
+    tid = task["task_id"]
+    work_dir = f"runs/{tid}"
+    os.makedirs(work_dir, exist_ok=True)
+
+    # Symlink (or copy) the task's data dir into the agent's CWD if present
+    src_data = os.path.join(local, "tasks", tid, "data")
+    if os.path.isdir(src_data):
+        os.symlink(src_data, os.path.join(work_dir, "data"))
+
+    output = my_agent.run(task["instruction"], cwd=work_dir)
+
+    # Write the log in the expected format
+    log_dir = f"log/my_agent/gpt-4o/{tid}/{time.strftime('%Y%m%d_%H%M%S')}"
+    os.makedirs(log_dir, exist_ok=True)
+    with open(f"{log_dir}/log.log", "w", encoding="utf-8") as f:
+        f.write(f"agent_id: my_agent\ntask_id: {tid}\nllm_model: gpt-4o\n")
+        f.write("=" * 40 + "\n")
+        f.write(output["trajectory"])
+        f.write(f'\n{{"result": "{output["final_conclusion"]}"}}\n')
+```
 
 #### Schema
 
@@ -237,41 +243,31 @@ bash run_eval.sh --agents all --models all --tasks all
 
 The pipeline decomposes both the agent's conclusion and the dataset's `conclusion` field into atomic claims, then computes **Precision**, **Recall**, and **F₁** via claim-level analysis.
 
-#### End-to-end skeleton
+### 2. Parse Other Papers into Problem Trees
 
-```python
-from datasets import load_dataset
-from huggingface_hub import snapshot_download
-import os, time
+Use the tree parser to decompose a research paper (PDF) into a hierarchical research-problem tree via OpenAI:
 
-ds = load_dataset("silence-suzuki/FIRE-Bench-verified", split="train")
-local = snapshot_download(
-    "silence-suzuki/FIRE-Bench-verified", repo_type="dataset",
-)  # one-time pull of all data assets
+```bash
+# Single paper
+bash run_tree_parser.sh --papers /path/to/paper.pdf
 
-for task in ds:
-    tid = task["task_id"]
-    work_dir = f"runs/{tid}"
-    os.makedirs(work_dir, exist_ok=True)
+# Multiple papers (quote the list)
+bash run_tree_parser.sh --papers "/path/to/paper1.pdf /path/to/paper2.pdf" --model gpt-4o
 
-    # Symlink (or copy) the task's data dir into the agent's CWD if present
-    src_data = os.path.join(local, "tasks", tid, "data")
-    if os.path.isdir(src_data):
-        os.symlink(src_data, os.path.join(work_dir, "data"))
-
-    output = my_agent.run(task["instruction"], cwd=work_dir)
-
-    # Write the log in the expected format
-    log_dir = f"log/my_agent/gpt-4o/{tid}/{time.strftime('%Y%m%d_%H%M%S')}"
-    os.makedirs(log_dir, exist_ok=True)
-    with open(f"{log_dir}/log.log", "w", encoding="utf-8") as f:
-        f.write(f"agent_id: my_agent\ntask_id: {tid}\nllm_model: gpt-4o\n")
-        f.write("=" * 40 + "\n")
-        f.write(output["trajectory"])
-        f.write(f'\n{{"result": "{output["final_conclusion"]}"}}\n')
+# Glob pattern for a whole directory
+bash run_tree_parser.sh --papers "/path/to/papers/*.pdf" --output_dir benchmark/trees
 ```
 
-### 4. Run Built-in Experiments
+**Options:**
+- `--papers`: space-separated PDF paths or a glob pattern (**required**)
+- `--model`: OpenAI model name (default: `gpt-4o`)
+- `--output_dir`: directory for output JSON trees (default: `benchmark/trees`)
+- `--max_tokens`: max output tokens (default: `16384`)
+- `--temperature`: sampling temperature (default: `0.0`)
+
+Each paper produces a `<name>_tree.json` file containing the problem tree.
+
+### 3. Run Built-in Experiments
 
 Edit `run_experiment.sh` to configure your agent/task/model combinations, then run:
 
@@ -286,52 +282,7 @@ This iterates over all combinations of `AGENT_IDS`, `TASK_IDS`, and `LLM_MODELS`
 - `TASK_IDS`: benchmark tasks (e.g., `rational`)
 - `LLM_MODELS`: models to use (e.g., `gpt-5`)
 
-### 5. Verifying Benchmark Task Validity
-
-Before a task is added to FIRE-Bench, we verify that it is **feasible and well-defined** using the ground-truth experimental plan.
-
-#### Why validate?
-
-A benchmark task should be solvable when the agent is given a sufficiently detailed approach. If an agent armed with an explicit experimental design still cannot produce correct findings, the task specification itself is likely flawed (ambiguous instructions, missing resources, unreproducible results, etc.).
-
-#### Ground-truth instruction files
-
-Each task may include a ground-truth experimental plan:
-
-```
-benchmark/papers/<task_id>/instruction/instruction_gt.txt
-```
-
-This file contains a **detailed experiment setup and approach** — specific procedures, evaluation metrics, prompt templates, implementation notes, and edge-case handling — that an ideal agent would follow to reproduce the paper's findings. These plans can be generated with the plan generator:
-
-```bash
-bash run_plan_generator.sh --papers /path/to/paper.pdf
-```
-
-#### Validation procedure
-
-To validate a candidate task:
-
-1. **Run an agent using `instruction_gt.txt` as the prompt** instead of the standard `instruction.txt`. This gives the agent the most detailed guidance possible.
-
-2. **Evaluate the run** using the standard evaluation pipeline:
-
-   ```bash
-   bash run_eval.sh --agents <agent> --models <model> --tasks <task_id>
-   ```
-
-3. **Check the F1 score.** A task is considered valid for inclusion in the benchmark only if the agent achieves an **F1 score above 80%** when given the ground-truth plan.
-
-#### Interpretation
-
-| F1 with `instruction_gt.txt` | Action |
-|---|---|
-| **> 80%** | Task is valid — add it to the benchmark |
-| **<= 80%** | Task needs revision — the instruction, ground-truth conclusion, dataset, or evaluation criteria may need to be refined before the task can be included |
-
-This threshold ensures that every benchmark task has a known-achievable ceiling: the research question is answerable, the provided resources are sufficient, and the evaluation aligns with the expected findings. The gap between `instruction_gt.txt` performance and `instruction.txt` performance then measures how much genuine scientific reasoning the agent must supply on its own.
-
-### 6. Evaluate Results
+### 4. Evaluate Results
 
 After experiments finish, evaluate the generated logs:
 
