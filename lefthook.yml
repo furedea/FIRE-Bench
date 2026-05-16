@@ -1,0 +1,28 @@
+commit-msg:
+  commands:
+    commitlint:
+      run: commitlint --edit {1}
+
+pre-commit:
+  parallel: true
+  commands:
+    nixfmt:
+      glob: "*.nix"
+      run: bash -c 'mapfile -t files < <(git ls-files "*.nix"); ((${#files[@]} == 0)) || nixfmt --check "${files[@]}"'
+    statix:
+      glob: "*.nix"
+      run: statix check .
+    deadnix:
+      glob: "*.nix"
+      run: deadnix --fail .
+    ruff-check:
+      glob: "*.py"
+      run: uv run ruff check
+    ruff-format:
+      glob: "*.py"
+      run: uv run ruff format --check
+    ty:
+      glob: "*.py"
+      run: uv run ty check
+    ls-lint:
+      run: ls_lint
