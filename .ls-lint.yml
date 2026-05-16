@@ -1,0 +1,37 @@
+ls:
+  .dir: regex:\.?[a-z0-9]+([-_][a-z0-9]+)*
+  .*: regex:[a-z0-9]*([._][a-z0-9]+)*
+
+ignore:
+  - .git
+  - .direnv
+  - result
+  - result-*
+  - log
+  - logs
+  - results
+  - runs
+  - "**/logs"
+  - "**/.cache"
+
+  - benchmark
+  - eval/RAGChecker
+  - resources
+
+  - "**/README.md"
+  - "**/PLAN.md"
+  - "**/AGENTS.md"
+  - "**/CLAUDE.md"
+  - "**/SKILL.md"
+  - "FIRE-Bench_ Evaluating Agents on the Rediscovery of Scientific Insights.pdf"
+  - .coverage
+
+  - .venv
+  - .uv-cache
+  - .ruff_cache
+  - .pytest_cache
+  - .ipynb_checkpoints
+  - "**/__pycache__"
+  - "**/__init__.py"
+  - dist
+  - build
