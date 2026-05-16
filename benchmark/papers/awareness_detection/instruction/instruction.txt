@@ -3,14 +3,16 @@ Note: Different wording of prompts can lead to different experiment results.
 
 You have access to the following resources:
 
-Model:
-- OpenAI's gpt-4.1, gpt-4.1-mini
-- Gemini's gemini-2.5-pro
+Models:
+- OpenCode Go: deepseek-v4-flash
+- OpenCode Go: deepseek-v4-pro
+- OpenCode Go: qwen3.6-plus
 - You can call these models using: from utils.llm_inference import LLMInference
-- API key is provided with the LLMInference initialization function
-- You should use the **batch_generate()** function to speed up the experiment
-- Computational budget: 1000 API calls per model
-- claude-3.7-sonnet via API
+- Initialize each model with: LLMInference(provider="opencode_go", model_name=MODEL_NAME)
+- Provider: opencode_go
+- API key is provided by OPENCODE_API_KEY
+- Computational budget: 30 API calls per model
+
 Datasets:
 - You can find dataset at data/dataset.json
 - Descriptions:

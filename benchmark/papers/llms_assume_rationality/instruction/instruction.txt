@@ -2,13 +2,15 @@ You are a research agent. Conduct research and experiment about the question: â€
 
 You have access to the following resources:
 
-Model:
+Models:
+- OpenCode Go: deepseek-v4-flash
+- OpenCode Go: deepseek-v4-pro
+- OpenCode Go: qwen3.6-plus
 - You can call these models using: from utils.llm_inference import LLMInference
-- API key is provided with the LLMInference initialization function, computation budget is 10000 API calls per model
-
-- OpenAI's gpt-4o, gpt-4-Turbo
-- Load with HuggingFace: meta-llama/Llama-3.1-8B, meta-llama/Llama-3.1-70B
-- Claude's claude-3-opus-20240229
+- Initialize each model with: LLMInference(provider="opencode_go", model_name=MODEL_NAME)
+- Provider: opencode_go
+- API key is provided by OPENCODE_API_KEY
+- Computational budget: 30 API calls per model
 
 Datasets:
 - choices13k: you can either load the raw data from /data/choices13k/ or load the human-readable version from
