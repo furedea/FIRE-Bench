@@ -1,0 +1,42 @@
+{
+  "questbench": {
+    "models": [
+      "deepseek-v4-flash",
+      "deepseek-v4-pro",
+      "qwen3.6-plus"
+    ],
+    "budget": 30
+  },
+  "counterfactual_simulatability": {
+    "models": [
+      "deepseek-v4-flash",
+      "deepseek-v4-pro",
+      "qwen3.6-plus"
+    ],
+    "budget": 30
+  },
+  "cot_in_planning": {
+    "models": [
+      "deepseek-v4-flash",
+      "deepseek-v4-pro",
+      "qwen3.6-plus"
+    ],
+    "budget": 30
+  },
+  "awareness_detection": {
+    "models": [
+      "deepseek-v4-flash",
+      "deepseek-v4-pro",
+      "qwen3.6-plus"
+    ],
+    "budget": 30
+  },
+  "llms_assume_rationality": {
+    "models": [
+      "deepseek-v4-flash",
+      "deepseek-v4-pro",
+      "qwen3.6-plus"
+    ],
+    "budget": 30
+  }
+}

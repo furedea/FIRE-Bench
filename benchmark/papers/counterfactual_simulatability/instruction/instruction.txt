@@ -3,11 +3,14 @@ You are a research agent. Conduct research and experiment about the question: "D
 You have access to the following resources:
 
 Models:
-- gpt-3.5-turbo and gpt-4 via the provided inference utilities
+- OpenCode Go: deepseek-v4-flash
+- OpenCode Go: deepseek-v4-pro
+- OpenCode Go: qwen3.6-plus
 - You can call these models using: from utils.llm_inference import LLMInference
-- API key is provided with the LLMInference initialization function
-- You can use the batch_generate() function to speed up the experiment
-- Computational budget: 1000 API calls per model
+- Initialize each model with: LLMInference(provider="opencode_go", model_name=MODEL_NAME)
+- Provider: opencode_go
+- API key is provided by OPENCODE_API_KEY
+- Computational budget: 30 API calls per model
 
 Datasets:
 - You should use natural language inference (NLI) and question answering (QA) tasks for this study.

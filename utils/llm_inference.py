@@ -1,13 +1,14 @@
+import json
+import os
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+
+import anthropic
 import openai
 import requests
-import json
-import asyncio
-import os
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-import anthropic
 from dotenv import load_dotenv
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 load_dotenv()
 
@@ -15,6 +16,31 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 HF_TOKEN = os.getenv("HF_TOKEN")
 CLAUDE_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+OPENCODE_API_KEY = os.getenv("OPENCODE_API_KEY")
+OPENCODE_GO_BASE_URL = "https://opencode.ai/zen/go/v1"
+OPENCODE_GO_MAX_RETRIES = 3
+
+
+def _opencode_retry_metadata(error):
+    status_code = getattr(error, "status_code", None)
+    retryable = bool(getattr(error, "retryable", False))
+    retry_after = getattr(error, "retry_after", None)
+
+    response = getattr(error, "response", None)
+    if response is None:
+        return status_code, retryable, retry_after
+
+    try:
+        payload = response.json()
+    except Exception:
+        payload = None
+
+    if isinstance(payload, dict):
+        status_code = payload.get("status", status_code)
+        retryable = bool(payload.get("retryable", retryable))
+        retry_after = payload.get("retry_after", retry_after)
+
+    return status_code, retryable, retry_after
 
 
 # --------------------------
@@ -22,18 +48,19 @@ CLAUDE_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 # --------------------------
 MODEL_PRICING = {
     "gpt-4o-mini": {"input": 0.15, "cached_input": 0.075, "output": 0.60},
-    "gpt-4o":      {"input": 2.50, "cached_input": 1.25,  "output": 10.00},
-    "gpt-4.1":      {"input": 2.00, "cached_input": 0.50,  "output": 8.00},
-    "gpt-4.1-mini": {"input": 0.40, "cached_input": 0.10,  "output": 1.60},
+    "gpt-4o": {"input": 2.50, "cached_input": 1.25, "output": 10.00},
+    "gpt-4.1": {"input": 2.00, "cached_input": 0.50, "output": 8.00},
+    "gpt-4.1-mini": {"input": 0.40, "cached_input": 0.10, "output": 1.60},
     "gpt-4.1-nano": {"input": 0.10, "cached_input": 0.025, "output": 0.40},
-    "o1":       {"input": 15.00, "cached_input": 7.50,  "output": 60.00},    
-    "o1-mini":  {"input": 1.10,  "cached_input": 0.55,  "output": 4.40},      
-    "o3":       {"input": 2.00,  "cached_input": 0.50,  "output": 8.00}, 
-    "o3-mini":  {"input": 1.10,  "cached_input": 0.55,  "output": 4.40},
-    "o4-mini":  {"input": 1.10,  "cached_input": 0.275, "output": 4.40},
-    "gpt-4-turbo":  {"input": 10.00, "cached_input": None, "output": 30.00},
-    "gpt-3.5-turbo":{"input": 0.50,  "cached_input": None, "output": 1.50}
+    "o1": {"input": 15.00, "cached_input": 7.50, "output": 60.00},
+    "o1-mini": {"input": 1.10, "cached_input": 0.55, "output": 4.40},
+    "o3": {"input": 2.00, "cached_input": 0.50, "output": 8.00},
+    "o3-mini": {"input": 1.10, "cached_input": 0.55, "output": 4.40},
+    "o4-mini": {"input": 1.10, "cached_input": 0.275, "output": 4.40},
+    "gpt-4-turbo": {"input": 10.00, "cached_input": None, "output": 30.00},
+    "gpt-3.5-turbo": {"input": 0.50, "cached_input": None, "output": 1.50},
 }
+
 
 def calculate_cost(input_tokens: int, output_tokens: int, model: str) -> float:
     """Calculate cost based on token usage and model pricing."""
@@ -44,6 +71,7 @@ def calculate_cost(input_tokens: int, output_tokens: int, model: str) -> float:
     input_cost = (input_tokens / 1_000_000) * pricing["input"]
     output_cost = (output_tokens / 1_000_000) * pricing["output"]
     return input_cost + output_cost
+
 
 # --------------------------
 # LLMInference class
@@ -80,6 +108,12 @@ class LLMInference:
                 raise ValueError("Claude requires an API key")
             self.client = anthropic.Anthropic(api_key=self.api_key)
 
+        elif self.provider == "opencode_go":
+            self.api_key = self.api_key or OPENCODE_API_KEY or ""
+            if not self.api_key:
+                raise ValueError("OpenCode Go requires an API key")
+            self.client = openai.OpenAI(api_key=self.api_key, base_url=OPENCODE_GO_BASE_URL)
+
         else:
             raise ValueError(f"Unsupported provider: {self.provider}")
 
@@ -89,7 +123,7 @@ class LLMInference:
             model=self.model_name,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=max_tokens,
-            temperature=temperature
+            temperature=temperature,
         )
         usage = response.usage
         input_tokens = usage.prompt_tokens
@@ -105,8 +139,48 @@ class LLMInference:
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
             "total_tokens": usage.total_tokens,
-            "cost_usd": cost
+            "cost_usd": cost,
         }
+
+    # ---- OpenCode Go ----
+    def _generate_opencode_go(self, prompt, max_tokens=None, temperature=0, **kwargs):
+        payload = {
+            "model": self.model_name,
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+        }
+        payload.update(kwargs)
+        response = self._create_opencode_go_completion(**payload)
+        usage = response.usage
+        input_tokens = getattr(usage, "prompt_tokens", len(prompt.split()))
+        message = response.choices[0].message
+        text = message.content or getattr(message, "reasoning_content", "") or ""
+        output_tokens = getattr(usage, "completion_tokens", len(text.split()))
+
+        self.total_input_tokens += input_tokens
+        self.total_output_tokens += output_tokens
+
+        return {
+            "content": text,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "total_tokens": getattr(usage, "total_tokens", input_tokens + output_tokens),
+            "cost_usd": 0.0,
+        }
+
+    def _create_opencode_go_completion(self, **kwargs):
+        for attempt in range(OPENCODE_GO_MAX_RETRIES):
+            try:
+                return self.client.chat.completions.create(**kwargs)
+            except Exception as error:
+                status_code, is_retryable, retry_after = _opencode_retry_metadata(error)
+                if status_code not in {429, 524} and not is_retryable:
+                    raise
+                if attempt == OPENCODE_GO_MAX_RETRIES - 1:
+                    raise
+                sleep_seconds = retry_after if isinstance(retry_after, (int, float)) else 2**attempt
+                time.sleep(sleep_seconds)
 
     # ---- Claude ----
     def _generate_claude(self, prompt, max_tokens=256, temperature=0.7):
@@ -114,7 +188,7 @@ class LLMInference:
             model=self.model_name,
             max_tokens=max_tokens,
             temperature=temperature,
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
         )
         text = response.content[0].text
 
@@ -132,7 +206,7 @@ class LLMInference:
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
             "total_tokens": input_tokens + output_tokens,
-            "cost_usd": cost
+            "cost_usd": cost,
         }
 
     # ---- Gemini ----
@@ -142,7 +216,7 @@ class LLMInference:
         response = requests.post(url, json=payload)
         data = response.json()
         try:
-            text = data['candidates'][0]['content']['parts'][0]['text']
+            text = data["candidates"][0]["content"]["parts"][0]["text"]
         except KeyError:
             text = f"Error: {data}"
 
@@ -158,7 +232,7 @@ class LLMInference:
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
             "total_tokens": input_tokens + output_tokens,
-            "cost_usd": cost
+            "cost_usd": cost,
         }
 
     # ---- Hugging Face ----
@@ -169,7 +243,7 @@ class LLMInference:
 
     def _generate_huggingface(self, prompt, max_tokens=256, temperature=0.7):
         output = self.pipe(prompt, max_new_tokens=max_tokens, do_sample=True, temperature=temperature)
-        text = output[0]['generated_text']
+        text = output[0]["generated_text"]
 
         input_tokens = len(prompt.split())
         output_tokens = len(text.split())
@@ -183,7 +257,7 @@ class LLMInference:
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
             "total_tokens": input_tokens + output_tokens,
-            "cost_usd": cost
+            "cost_usd": cost,
         }
 
     # ---- Unified generate ----
@@ -196,10 +270,12 @@ class LLMInference:
             return self._generate_huggingface(prompt, **kwargs)
         elif self.provider == "claude":
             return self._generate_claude(prompt, **kwargs)
+        elif self.provider == "opencode_go":
+            return self._generate_opencode_go(prompt, **kwargs)
         else:
             raise ValueError(f"Unsupported provider: {self.provider}")
 
-    def batch_generate(self, prompts: List[str], max_workers=20, **kwargs):
+    def batch_generate(self, prompts: list[str], max_workers=20, **kwargs):
         results = [None] * len(prompts)
 
         def call_generate(i, prompt):
@@ -210,10 +286,7 @@ class LLMInference:
                 return i, {"error": str(e)}
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            future_to_index = {
-                executor.submit(call_generate, i, prompt): i
-                for i, prompt in enumerate(prompts)
-            }
+            future_to_index = {executor.submit(call_generate, i, prompt): i for i, prompt in enumerate(prompts)}
             for future in as_completed(future_to_index):
                 i, result = future.result()
                 results[i] = result
@@ -225,9 +298,9 @@ class LLMInference:
             "total_input_tokens": self.total_input_tokens,
             "total_output_tokens": self.total_output_tokens,
             "total_tokens": self.total_input_tokens + self.total_output_tokens,
-            "total_cost_usd": self.total_cost_usd
+            "total_cost_usd": self.total_cost_usd,
         }
-        with open(summary_file, "w", encoding="utf-8") as f:
+        with Path(summary_file).open("w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2)
         return summary
 
@@ -240,65 +313,72 @@ class LLMInference:
 prompts = [
     "Explain quantum computing in simple terms.",
     "Write a short poem about autumn.",
-    "Summarize the benefits of machine learning."
+    "Summarize the benefits of machine learning.",
 ]
+
 
 def test_openai():
     print("\n=== Testing OpenAI (gpt-4o-mini) ===")
     client = LLMInference(provider="openai", model_name="gpt-4o-mini", api_key=OPENAI_API_KEY)
     results = client.batch_generate(prompts, max_workers=20, max_tokens=100)
     for i, res in enumerate(results):
-        print(f"\nPrompt {i+1}: {prompts[i]}")
+        print(f"\nPrompt {i + 1}: {prompts[i]}")
         print(f"Response: {res['content'][:200]}...")  # show first 200 chars
     print("Usage summary:", client.get_usage_summary())
+
 
 def test_gemini():
     print("\n=== Testing Gemini (gemini-pro) ===")
     client = LLMInference(provider="gemini", model_name="gemini-2.5-flash", api_key=GOOGLE_API_KEY)
     results = client.batch_generate(prompts, max_workers=20)
     for i, res in enumerate(results):
-        print(f"\nPrompt {i+1}: {prompts[i]}")
+        print(f"\nPrompt {i + 1}: {prompts[i]}")
         print(f"Response: {res['content'][:200]}...")
     print("Usage summary:", client.get_usage_summary())
+
 
 def test_huggingface1():
     print("\n=== Testing Hugging Face (Meta-Llama-3-8B-Instruct) ===")
     client = LLMInference(provider="huggingface", model_name="meta-llama/Meta-Llama-3-8B-Instruct", hf_token=HF_TOKEN)
     results = client.batch_generate(prompts, max_workers=20, max_tokens=100)
     for i, res in enumerate(results):
-        print(f"\nPrompt {i+1}: {prompts[i]}")
+        print(f"\nPrompt {i + 1}: {prompts[i]}")
         print(f"Response: {res['content'][:200]}...")
     print("Usage summary:", client.get_usage_summary())
+
 
 def test_huggingface2():
     print("\n=== Testing Hugging Face (mistralai/Mistral-7B-Instruct-v0.3) ===")
     client = LLMInference(provider="huggingface", model_name="mistralai/Mistral-7B-Instruct-v0.3", hf_token=HF_TOKEN)
     results = client.batch_generate(prompts, max_workers=20, max_tokens=100)
     for i, res in enumerate(results):
-        print(f"\nPrompt {i+1}: {prompts[i]}")
+        print(f"\nPrompt {i + 1}: {prompts[i]}")
         print(f"Response: {res['content'][:200]}...")
     print("Usage summary:", client.get_usage_summary())
+
 
 def test_huggingface3():
     print("\n=== Testing Hugging Face (google/gemma-2-9b-it) ===")
     client = LLMInference(provider="huggingface", model_name="google/gemma-2-9b-it", hf_token=HF_TOKEN)
     results = client.batch_generate(prompts, max_workers=20, max_tokens=100)
     for i, res in enumerate(results):
-        print(f"\nPrompt {i+1}: {prompts[i]}")
+        print(f"\nPrompt {i + 1}: {prompts[i]}")
         print(f"Response: {res['content'][:200]}...")
     print("Usage summary:", client.get_usage_summary())
+
 
 def test_claude():
     print("\n=== Testing Claude (claude-3-5-sonnet) ===")
     client = LLMInference(provider="claude", model_name="claude-3-5-sonnet-20241022", api_key=CLAUDE_API_KEY)
     results = client.batch_generate(prompts, max_workers=20, max_tokens=200)
     for i, res in enumerate(results):
-        print(f"\nPrompt {i+1}: {prompts[i]}")
+        print(f"\nPrompt {i + 1}: {prompts[i]}")
         if "content" in res:
             print(f"Response: {res['content'][:200]}...")
         else:
             print(f"Error: {res.get('error', 'Unknown error')}")
     print("Usage summary:", client.get_usage_summary())
+
 
 if __name__ == "__main__":
     if OPENAI_API_KEY:
