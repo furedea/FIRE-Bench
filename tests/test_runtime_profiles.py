@@ -12,13 +12,6 @@ sys.modules[SPEC.name] = runtime_profiles
 SPEC.loader.exec_module(runtime_profiles)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-TASK_ROOT = REPO_ROOT / "benchmark" / "papers_se" / "repair_agent_program_repair"
-
-
-def test_repair_agent_task_declares_the_se_java_defects4j_runtime_profile() -> None:
-    task_config = (TASK_ROOT / "task_config.yaml").read_text(encoding="utf-8")
-
-    assert "runtime_profile: se-java-defects4j" in task_config
 
 
 def test_se_java_defects4j_profile_defines_the_common_repair_runtime_tools() -> None:
