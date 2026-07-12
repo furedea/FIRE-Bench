@@ -1,0 +1,172 @@
+{
+  "paper": {
+    "title": "RepairAgent: An Autonomous, LLM-Based Agent for Program Repair",
+    "authors": [
+      "Islem Bouzenia",
+      "Premkumar Devanbu",
+      "Michael Pradel"
+    ],
+    "venue": "ICSE Research Track",
+    "year": "2025"
+  },
+  "tree_status": "manual_pilot_tree",
+  "problem_tree": {
+    "node": "Root: Does an autonomous LLM-based agent effectively repair real Java bugs?",
+    "type": "root",
+    "description": "Evaluate RepairAgent as an autonomous program-repair agent on real Java bugs and compare it with recent LLM-based repair baselines.",
+    "children": [
+      {
+        "node": "RQ1: How effective is RepairAgent on Defects4J compared with LLM-based repair baselines?",
+        "type": "research_question",
+        "status": "adopted",
+        "children": [
+          {
+            "type": "leaf",
+            "task": "Reconstruct Defects4J aggregate correct-fix counts from released artifact inputs.",
+            "dataset": [
+              "Defects4J",
+              "RepairAgent released artifact"
+            ],
+            "model_or_method": [
+              "RepairAgent",
+              "ChatRepair",
+              "SelfAPR",
+              "ITER"
+            ],
+            "metrics": [
+              "unique_correct_fix_count",
+              "exclusive_fixed_bug_count"
+            ],
+            "protocol_or_setup": "Use released aggregate inputs and baseline lists; do not treat bounded replay as the full aggregate.",
+            "conclusion": "Adopted as the main FIRE-Bench-SE target. RepairAgent has 164 unique correct Defects4J fixes out of 835 bugs; ChatRepair has 162, SelfAPR has 109 unique fixes, ITER has 57, and RepairAgent-only fixes are 39.",
+            "status": "adopted_hidden_answer"
+          }
+        ]
+      },
+      {
+        "node": "RQ2: Does RepairAgent remain competitive across Defects4J project subsets?",
+        "type": "research_question",
+        "status": "adopted",
+        "children": [
+          {
+            "type": "leaf",
+            "task": "Reconstruct legacy-project and additional-project split counts.",
+            "dataset": [
+              "Defects4J",
+              "RepairAgent released artifact"
+            ],
+            "model_or_method": [
+              "RepairAgent",
+              "ChatRepair",
+              "SelfAPR",
+              "ITER"
+            ],
+            "metrics": [
+              "correct_fix_count_by_subset"
+            ],
+            "protocol_or_setup": "Use the split available in the artifact and avoid renaming it into paper-only labels when the visible package does not support that mapping.",
+            "conclusion": "Adopted as a supporting target. RepairAgent has 90 legacy-project fixes and 74 additional-project fixes; comparable baseline split counts are reconstructable from the visible artifact.",
+            "status": "adopted_supporting_claim"
+          }
+        ]
+      },
+      {
+        "node": "RQ3: What evidence supports the correctness labels?",
+        "type": "research_question",
+        "status": "partial",
+        "children": [
+          {
+            "type": "leaf",
+            "task": "Inspect manual-review notes for developer-match and semantic-equivalence provenance.",
+            "dataset": [
+              "RepairAgent released artifact"
+            ],
+            "model_or_method": [
+              "RepairAgent"
+            ],
+            "metrics": [
+              "manual_label_count",
+              "identical_count",
+              "semantic_equivalence_count",
+              "good_enough_count"
+            ],
+            "protocol_or_setup": "Use visible manual-review notes only as provenance evidence; do not infer complete correctness provenance for all fixes.",
+            "conclusion": "Partially adopted. The visible notes contain 112 labeled entries, including 71 identical, 37 semantically equivalent, and 4 good-enough labels, but they do not reconstruct full provenance for all 164 correct fixes.",
+            "status": "partial_supporting_claim"
+          }
+        ]
+      },
+      {
+        "node": "RQ4: Does RepairAgent generalize to GitBug-Java?",
+        "type": "research_question",
+        "status": "excluded",
+        "children": [
+          {
+            "type": "leaf",
+            "task": "Reproduce GitBug-Java execution results.",
+            "dataset": [
+              "GitBug-Java",
+              "RepairAgent released artifact"
+            ],
+            "model_or_method": [
+              "RepairAgent"
+            ],
+            "metrics": [
+              "correct_fix_count"
+            ],
+            "protocol_or_setup": "Check whether visible GitBug-Java execution results exist before using the claim.",
+            "conclusion": "Excluded from the hidden answer. The visible task package contains a GitBug-Java sample list but not enough execution results to reconstruct the claim.",
+            "status": "excluded_not_reconstructable"
+          }
+        ]
+      },
+      {
+        "node": "RQ5: Which RepairAgent components matter in ablation?",
+        "type": "research_question",
+        "status": "excluded",
+        "children": [
+          {
+            "type": "leaf",
+            "task": "Reconstruct ablation counts for component removals.",
+            "dataset": [
+              "RepairAgent released artifact"
+            ],
+            "model_or_method": [
+              "RepairAgent ablations"
+            ],
+            "metrics": [
+              "correct_fix_count_by_ablation"
+            ],
+            "protocol_or_setup": "Require ablation logs or result files before including this claim in the hidden answer.",
+            "conclusion": "Excluded from the hidden answer. The visible artifact lacks enough ablation logs or result files to reconstruct the counts.",
+            "status": "excluded_not_reconstructable"
+          }
+        ]
+      },
+      {
+        "node": "RQ6: Can stored patches be replayed on a bounded sample?",
+        "type": "research_question",
+        "status": "smoke_only",
+        "children": [
+          {
+            "type": "leaf",
+            "task": "Run bounded Defects4J replay on a small sample.",
+            "dataset": [
+              "Defects4J bounded sample",
+              "RepairAgent patch candidates"
+            ],
+            "model_or_method": [
+              "RepairAgent stored patches"
+            ],
+            "metrics": [
+              "plausible_patch_smoke_result"
+            ],
+            "protocol_or_setup": "Use bounded replay only to check execution path and patch application behavior.",
+            "conclusion": "Smoke-only. Bounded replay is useful executable evidence but must not be treated as the full Defects4J aggregate result.",
+            "status": "smoke_only_not_hidden_answer"
+          }
+        ]
+      }
+    ]
+  }
+}

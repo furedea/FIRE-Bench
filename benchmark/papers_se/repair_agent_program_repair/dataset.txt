@@ -1,0 +1,73 @@
+# Dataset and Artifact Sources
+
+Task: `repair_agent_program_repair`
+
+Source paper:
+- Title: RepairAgent: An Autonomous, LLM-Based Agent for Program Repair
+- Venue: ICSE 2025 Research Track
+- Paper URL: https://www.software-lab.org/publications/icse2025_RepairAgent.pdf
+- arXiv URL: https://arxiv.org/abs/2403.17134
+- ICSE page: https://conf.researchr.org/details/icse-2025/icse-2025-research-track/160/RepairAgent-An-Autonomous-LLM-Based-Agent-for-Program-Repair
+
+Primary artifact:
+- GitHub: https://github.com/sola-st/RepairAgent
+- Zenodo: https://zenodo.org/records/14872682
+- DOI: 10.5281/zenodo.14872682
+- Zenodo version inspected: v3, published February 14, 2025
+- Zenodo license: Creative Commons Attribution 4.0 International
+- GitHub license: MIT
+
+Upstream benchmark:
+- Defects4J: https://github.com/rjust/defects4j
+- The paper evaluates 835 Defects4J bugs from 17 Java projects.
+- The paper separates Defects4J v1.2 and Defects4J v2 results.
+- The exact 835-bug snapshot must be pinned because later Defects4J releases may
+  contain a different number of bugs.
+
+External-validity benchmark:
+- GitBug-Java: https://github.com/gitbugactions/gitbug-java
+- The paper evaluates a 100-bug sample for an external-validity check.
+
+Artifact files to inspect when building the runnable task package:
+- `data/final_list_of_fixed_bugs`
+- `data/fixes_implementation`
+- `data/root_patches/`
+- `data/derivated_patches/`
+- `repair_agent/experimental_setups/d4j12.csv`
+- `experimental_setups/generate_main_table.py`
+- `experimental_setups/draw_venn_chatrepair_clean.py`
+
+Runnable benchmark package:
+- `data/repair_agent_artifact/` is the only large agent-visible artifact. It is
+  a sanitized repository snapshot containing RepairAgent code, configs, helper
+  scripts, generated patch candidates, and released aggregate reconstruction
+  inputs from the artifact.
+- `data/bug_sample.txt` defines a bounded Defects4J smoke sample for local
+  execution or patch replay.
+- The package intentionally does not include the paper PDF, hidden conclusion,
+  `instruction_gt.txt`, GitBug-Java execution results, or ablation execution
+  results.
+
+Paper-condition notes:
+- The paper's main experiments use GPT-3.5-0125 and assume perfect fault
+  localization for the primary Defects4J comparison.
+- The current GitHub repository has evolved to support newer OpenAI and Anthropic
+  models, so benchmark reproduction should pin the archived Zenodo artifact or a
+  specific Git commit.
+- Reported execution cost is about 270k tokens per bug and about $0.14 per bug
+  under the paper's GPT-3.5 pricing assumption.
+
+Benchmark-packaging notes:
+- Do not expose the source paper PDF, `instruction_gt.txt`, or `conclusion.txt`
+  to evaluated agents.
+- Keep the standard FIRE-Bench execution pipeline unchanged: the runner copies
+  this task's `data/` directory into the sandbox and passes only
+  `instruction.txt` to the agent.
+- Dataset preparation may sanitize direct leaks and bound expensive execution,
+  but the visible task should remain a repository-driven reproduction task.
+- Raw patch candidates are useful for replay and mechanism analysis, but they
+  are not equivalent to final plausible/correct/baseline claims unless the agent
+  verifies them through tests or developer-patch comparison.
+- Verify whether the GitHub repository license and Zenodo CC-BY-4.0 license are
+  compatible with redistributing the selected artifact subset before committing
+  data files into this repository.
