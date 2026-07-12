@@ -3,6 +3,12 @@ from pathlib import Path
 TASK_ROOT = Path("benchmark/papers_se/repair_agent_program_repair")
 
 
+def test_repair_agent_task_declares_the_se_java_defects4j_runtime_profile() -> None:
+    task_config = (TASK_ROOT / "task_config.yaml").read_text(encoding="utf-8")
+
+    assert "runtime_profile: se-java-defects4j" in task_config
+
+
 def test_repair_agent_visible_task_requires_repository_driven_reproduction() -> None:
     instruction = (TASK_ROOT / "instruction" / "instruction.txt").read_text(encoding="utf-8")
 
