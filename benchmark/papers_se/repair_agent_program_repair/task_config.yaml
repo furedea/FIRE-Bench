@@ -70,7 +70,7 @@ open_issues:
 prepared_artifact:
   source_root: "external-artifacts/repair-agent/raw/RepairAgent-main"
   visible_root: "data/repair_agent_artifact"
-  copied_file_count: 2982
+  copied_file_count: 2978
   skipped_file_count: 6614
   root_patch_file_count: 826
   derivated_patch_file_count: 1963

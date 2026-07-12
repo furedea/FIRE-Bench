@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 
@@ -85,6 +86,32 @@ def test_prepare_dataset_copies_extensionless_root_patches_and_derivated_patches
     assert (output / "data" / "root_patches" / "413_Chart_6").is_file()
     assert (output / "data" / "derivated_patches" / "experiment_413mutants_Chart_6.json").is_file()
     assert not (output / "repair_agent" / "experimental_setups" / "fixed_so_far").exists()
+
+
+def test_prepare_dataset_excludes_runtime_workspace_and_model_log(tmp_path: Path) -> None:
+    artifact = tmp_path / "artifact"
+    output = tmp_path / "output"
+    write_file(artifact / "repair_agent" / "agent.py")
+    write_file(artifact / "repair_agent" / "model_logging_temp.txt")
+    write_file(artifact / "repair_agent" / "autogpt" / "workspace" / "BubbleSort.java")
+
+    manifest = prepare_dataset(artifact, output)
+
+    assert manifest.copied_paths == (Path("repair_agent/agent.py"),)
+    assert not (output / "repair_agent" / "model_logging_temp.txt").exists()
+    assert not (output / "repair_agent" / "autogpt" / "workspace").exists()
+
+
+def test_manifest_does_not_store_local_absolute_paths(tmp_path: Path) -> None:
+    artifact = tmp_path / "artifact"
+    output = tmp_path / "output"
+    write_file(artifact / "repair_agent" / "agent.py")
+
+    prepare_dataset(artifact, output)
+
+    manifest = json.loads((output / "_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["source_root"] == "artifact"
+    assert manifest["output_root"] == "."
 
 
 def test_manifest_summary_reports_counts_and_examples(tmp_path: Path) -> None:

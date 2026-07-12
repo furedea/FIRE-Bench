@@ -26,7 +26,7 @@ Use `reconstruct_repair_agent_aggregate.py` to reconstruct full Defects4J aggreg
 
 Sanitized artifact contents before adding the aggregate reconstruction inputs:
 
-- 2,982 copied files.
+- 2,978 copied files.
 - 6,614 skipped files.
 - 826 root patch files.
 - 1,963 derivated patch JSON files.

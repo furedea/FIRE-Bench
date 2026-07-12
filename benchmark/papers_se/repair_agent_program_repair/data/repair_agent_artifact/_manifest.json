@@ -1,6 +1,6 @@
 {
-  "source_root": "/Users/kaito/ghq/github.com/furedea/FIRE-Bench/external-artifacts/repair-agent/raw/RepairAgent-main",
-  "output_root": "/Users/kaito/ghq/github.com/furedea/FIRE-Bench/benchmark/papers_se/repair_agent_program_repair/data/repair_agent_artifact",
+  "source_root": "RepairAgent-main",
+  "output_root": ".",
   "copied_paths": [
     "LICENSE",
     "data/derivated_patches/experiment_144mutants_Chart_1.json",
@@ -2931,9 +2931,6 @@
     "repair_agent/autogpt/url_utils/__init__.py",
     "repair_agent/autogpt/url_utils/validators.py",
     "repair_agent/autogpt/utils.py",
-    "repair_agent/autogpt/workspace/BubbleSort.java",
-    "repair_agent/autogpt/workspace/__init__.py",
-    "repair_agent/autogpt/workspace/workspace.py",
     "repair_agent/benchmarks.py",
     "repair_agent/checkout_bs.sh",
     "repair_agent/checkout_py.py",
@@ -2962,7 +2959,6 @@
     "repair_agent/hyperparams.json",
     "repair_agent/java_antlr_test.py",
     "repair_agent/mkdocs.yml",
-    "repair_agent/model_logging_temp.txt",
     "repair_agent/netlify.toml",
     "repair_agent/plugins_config.yaml",
     "repair_agent/post_process_logs.py",
