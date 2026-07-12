@@ -55,3 +55,20 @@ def test_sandbox_env_contains_only_opencode_key_for_paid_model_access() -> None:
     assert "ANTHROPIC_API_KEY=\n" in content
     assert "GOOGLE_API_KEY=\n" in content
     assert "HF_TOKEN=\n" in content
+
+
+def test_copy_task_data_uses_requested_collection(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(opencode_go_agent, "MAIN_PATH", tmp_path)
+    data_dir = tmp_path / "benchmark" / "papers_se" / "repair_agent_program_repair" / "data"
+    data_dir.mkdir(parents=True)
+    (data_dir / "sample.txt").write_text("sample\n", encoding="utf-8")
+
+    sandbox = tmp_path / "sandbox"
+    opencode_go_agent.copy_task_data(
+        "repair_agent_program_repair",
+        "",
+        sandbox,
+        collection="papers_se",
+    )
+
+    assert (sandbox / "sample.txt").read_text(encoding="utf-8") == "sample\n"
