@@ -12,7 +12,7 @@ def write_file(path: Path, content: str = "content\n") -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def test_prepare_dataset_copies_whitelisted_code_configs_and_raw_patches(tmp_path: Path) -> None:
+def test_prepare_dataset_copies_patch_evidence_without_upstream_runtime_code(tmp_path: Path) -> None:
     artifact = tmp_path / "artifact"
     output = tmp_path / "output"
     write_file(artifact / "repair_agent" / "agent.py")
@@ -22,15 +22,10 @@ def test_prepare_dataset_copies_whitelisted_code_configs_and_raw_patches(tmp_pat
 
     manifest = prepare_dataset(artifact, output)
 
-    assert manifest.copied_paths == (
-        Path("data/root_patches/Chart/1/patch.diff"),
-        Path("repair_agent/Dockerfile"),
-        Path("repair_agent/agent.py"),
-        Path("repair_agent/experimental_setups/d4j12.csv"),
-    )
-    assert (output / "repair_agent" / "agent.py").is_file()
-    assert (output / "repair_agent" / "Dockerfile").is_file()
-    assert (output / "repair_agent" / "experimental_setups" / "d4j12.csv").is_file()
+    assert manifest.copied_paths == (Path("data/root_patches/Chart/1/patch.diff"),)
+    assert not (output / "repair_agent" / "agent.py").exists()
+    assert not (output / "repair_agent" / "Dockerfile").exists()
+    assert not (output / "repair_agent" / "experimental_setups" / "d4j12.csv").exists()
     assert (output / "data" / "root_patches" / "Chart" / "1" / "patch.diff").is_file()
 
 
@@ -54,7 +49,6 @@ def test_prepare_dataset_copies_released_aggregate_reconstruction_inputs(tmp_pat
     assert manifest.copied_paths == (
         Path("data/final_list_of_fixed_bugs"),
         Path("data/fixes_implementation"),
-        Path("repair_agent/agent.py"),
         Path("repair_agent/experimental_setups/analyze_experiment_results.py"),
         Path("repair_agent/experimental_setups/bugs_list"),
         Path("repair_agent/experimental_setups/chatrepair_all"),
@@ -97,7 +91,7 @@ def test_prepare_dataset_excludes_runtime_workspace_and_model_log(tmp_path: Path
 
     manifest = prepare_dataset(artifact, output)
 
-    assert manifest.copied_paths == (Path("repair_agent/agent.py"),)
+    assert manifest.copied_paths == ()
     assert not (output / "repair_agent" / "model_logging_temp.txt").exists()
     assert not (output / "repair_agent" / "autogpt" / "workspace").exists()
 
@@ -114,6 +108,17 @@ def test_manifest_does_not_store_local_absolute_paths(tmp_path: Path) -> None:
     assert manifest["output_root"] == "."
 
 
+def test_prepare_dataset_excludes_upstream_dependency_manifests(tmp_path: Path) -> None:
+    artifact = tmp_path / "artifact"
+    output = tmp_path / "output"
+    write_file(artifact / "repair_agent" / "requirements.txt", "gitpython==3.1.31\n")
+    write_file(artifact / "repair_agent" / "pyproject.toml")
+
+    manifest = prepare_dataset(artifact, output)
+
+    assert manifest.copied_paths == ()
+
+
 def test_manifest_summary_reports_counts_and_examples(tmp_path: Path) -> None:
     artifact = tmp_path / "artifact"
     output = tmp_path / "output"
@@ -127,10 +132,10 @@ def test_manifest_summary_reports_counts_and_examples(tmp_path: Path) -> None:
         f"{artifact.resolve()}\n"
         "output_root: "
         f"{output.resolve()}\n"
-        "copied_count: 1\n"
-        "skipped_count: 1\n"
+        "copied_count: 0\n"
+        "skipped_count: 2\n"
         "copied_examples:\n"
-        "- repair_agent/agent.py\n"
         "skipped_examples:\n"
-        "- paper/repair_agent.pdf"
+        "- paper/repair_agent.pdf\n"
+        "- repair_agent/agent.py"
     )

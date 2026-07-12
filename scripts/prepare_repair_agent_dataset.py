@@ -9,8 +9,6 @@ from typing import Any
 
 DEFAULT_OUTPUT_ROOT = Path("benchmark/papers_se/repair_agent_program_repair/data/repair_agent_artifact")
 ALLOWED_PREFIXES = (
-    "repair_agent/",
-    "experimental_setups/",
     "data/root_patches/",
     "data/derivated_patches/",
     "data/derived_patches/",
@@ -31,7 +29,7 @@ ALLOWED_SUFFIXES = (
     ".yaml",
     ".yml",
 )
-ALLOWED_FILE_NAMES = {"Dockerfile", "LICENSE"}
+ALLOWED_FILE_NAMES = {"LICENSE"}
 AGGREGATE_INPUT_PATHS = {
     "data/final_list_of_fixed_bugs",
     "data/fixes_implementation",
@@ -43,10 +41,6 @@ AGGREGATE_INPUT_PATHS = {
     "repair_agent/experimental_setups/gitbuglist",
 }
 DENIED_FILE_NAMES = {"README", "README.md", "README.rst"}
-DENIED_EXACT_PATHS = {
-    "repair_agent/model_logging_temp.txt",
-}
-DENIED_PREFIXES = ("repair_agent/autogpt/workspace/",)
 DENIED_PATH_TOKENS = (
     "final_list",
     "fixed_bugs",
@@ -117,10 +111,6 @@ def artifact_file_paths(artifact_root: Path) -> tuple[Path, ...]:
 def should_copy(relative_path: Path) -> bool:
     normalized = relative_path.as_posix()
     lowered = normalized.lower()
-    if normalized in DENIED_EXACT_PATHS:
-        return False
-    if normalized.startswith(DENIED_PREFIXES):
-        return False
     if relative_path.name in DENIED_FILE_NAMES:
         return False
     if normalized in AGGREGATE_INPUT_PATHS:
