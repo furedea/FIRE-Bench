@@ -1,0 +1,76 @@
+task_id: repair_agent_program_repair
+status: pilot_dataset_prepared
+paper_type: empirical_tool_evaluation
+runtime_profile: se-java-defects4j
+venue: ICSE
+year: 2025
+track: Research Track
+research_question: "How effective is an autonomous LLM-based agent for automated program repair on real Java bugs, and how does its effectiveness vary across projects, benchmark versions, and bug-fix complexity compared with recent iterative LLM-based repair baselines?"
+source_paper:
+  title: "RepairAgent: An Autonomous, LLM-Based Agent for Program Repair"
+  authors:
+    - "Islem Bouzenia"
+    - "Premkumar Devanbu"
+    - "Michael Pradel"
+  paper_url: "https://www.software-lab.org/publications/icse2025_RepairAgent.pdf"
+  arxiv_url: "https://arxiv.org/abs/2403.17134"
+  conference_url: "https://conf.researchr.org/details/icse-2025/icse-2025-research-track/160/RepairAgent-An-Autonomous-LLM-Based-Agent-for-Program-Repair"
+  artifact_url: "https://github.com/sola-st/RepairAgent"
+  zenodo_url: "https://zenodo.org/records/14872682"
+  zenodo_doi: "10.5281/zenodo.14872682"
+  artifact_version: "v3"
+target_leaf:
+  evidence:
+    - "Table III"
+    - "Table IV"
+    - "Figure 6"
+    - "Figure 9"
+    - "Figure 10"
+  hidden_ground_truth: "conclusion.txt"
+datasets:
+  - name: "Defects4J"
+    source: "https://github.com/rjust/defects4j"
+    description: "Real Java bugs used for automated program repair evaluation."
+  - name: "RepairAgent code and data"
+    source: "https://zenodo.org/records/14872682"
+    description: "Archived code and data artifact for RepairAgent."
+  - name: "GitBug-Java"
+    source: "https://github.com/gitbugactions/gitbug-java"
+    description: "Recent Java bugs used for an external-validity sample."
+baselines:
+  - "ChatRepair"
+  - "ITER"
+  - "SelfAPR"
+metrics:
+  - "plausible_fix_count"
+  - "correct_fix_count"
+  - "exclusive_fixed_bug_count"
+  - "fixed_bug_count_by_project"
+  - "fixed_bug_count_by_defects4j_version"
+  - "fixed_bug_count_by_complexity"
+  - "token_cost_per_bug"
+  - "runtime_per_bug"
+  - "tool_call_count"
+difficulty:
+  conceptual_decomposition: 2
+  confound_and_causality_burden: 2
+  measurement_and_analysis_complexity: 2
+  score: 6
+  label: Medium
+constraints:
+  - "Do NOT use web search"
+  - "Do NOT expose the source paper, instruction_gt, or conclusion to the evaluated agent"
+  - "Prefer a bounded compute-light subset for execution"
+  - "Use artifact analysis for full aggregate reconstruction only after sanitizing direct conclusion files"
+open_issues:
+  - "Freeze the exact artifact archive and license terms before bundling data."
+  - "Pin the exact 835-bug Defects4J snapshot used by the paper."
+  - "Decide whether GitBug-Java is included in the visible task or only in hidden auditing."
+  - "Run one dry agent pass to check leakage and executability."
+prepared_artifact:
+  source_root: "external-artifacts/repair-agent/raw/RepairAgent-main"
+  visible_root: "data/repair_agent_artifact"
+  copied_file_count: 2975
+  skipped_file_count: 6614
+  root_patch_file_count: 826
+  derivated_patch_file_count: 1963

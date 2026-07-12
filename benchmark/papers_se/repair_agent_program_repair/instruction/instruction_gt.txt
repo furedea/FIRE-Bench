@@ -1,0 +1,122 @@
+You are a research agent. Conduct research and experiments to answer the
+question: "How effective is an autonomous LLM-based agent for automated program
+repair on real Java bugs, and how does its effectiveness vary across projects,
+benchmark versions, and bug-fix complexity compared with recent iterative
+LLM-based repair baselines?"
+
+You have access to the same resources listed in `instruction.txt`.
+
+---
+
+## Experimental Design
+
+1. Repository and artifact inspection
+- Inspect `data/repair_agent_artifact/` as the released RepairAgent repository
+  snapshot made visible to the evaluated agent.
+- Identify the runnable entry points, Defects4J scripts, configuration files,
+  state-machine/search components, and stored patch-candidate directories.
+- Confirm that direct result-summary files such as final fixed-bug lists,
+  paper-table generation scripts, Venn scripts, and prose conclusions are not
+  used as agent-visible evidence.
+
+2. Bounded Defects4J reproduction
+- Use `data/bug_sample.txt` as the bounded execution target.
+- When Java and Defects4J are available, check out the listed bugs, apply
+  RepairAgent-generated patch candidates or run the available RepairAgent
+  scripts, and execute the relevant tests.
+- When an LLM API or complete Defects4J runtime is unavailable, replay and
+  analyze the stored patch candidates deterministically, then state which
+  measurements are plausible-only, correctness-checked, or unrecovered.
+
+3. Full-artifact aggregate reconstruction
+- Reconstruct as much of the Defects4J project/version distribution as possible
+  from repository configs, bug IDs, patch-candidate file names, and experiment
+  metadata that are not direct final-result summaries.
+- Record per-project and per-version coverage, plausible fixes confirmed by
+  tests, and any gap between executable sample results and full-corpus claims.
+- Keep baseline comparisons limited to baseline inputs or artifacts that are
+  available without reading final result tables; otherwise mark the comparison
+  as not recoverable from the visible artifact.
+
+4. Correctness and complexity analysis
+- Treat plausible fixes as test-passing patches.
+- Treat correct fixes as developer-identical or semantically equivalent only
+  after comparing against the developer patch or inspecting the semantic change.
+- Classify bug-fix complexity from the number of modified lines and files in
+  the candidate patch representation.
+
+5. External-validity and ablation checks
+- Investigate GitBug-Java and ablation claims only if the visible artifact
+  contains runnable configurations, patch candidates, or non-summary metadata
+  sufficient to reproduce them.
+- If the released artifact does not expose enough non-leaking inputs for these
+  claims, the correct experimental report should say so rather than substitute
+  hidden answer tables.
+
+## Evaluation Details
+
+- A plausible fix passes the relevant project test suite.
+- A correct fix either syntactically matches the developer-created fix or is
+  semantically consistent with it after manual or scripted inspection.
+- The evaluated agent should derive measurements from repository execution,
+  patch replay, or artifact inspection. It should not receive answer tables that
+  directly encode the paper's final counts.
+- Use counts, not rates alone, because the source finding is reported as fixed
+  bug counts across projects, benchmark versions, and complexity categories.
+- Keep Defects4J v1.2 and Defects4J v2 separate before computing the overall
+  total.
+- When comparing with baselines, count exclusive RepairAgent fixes as bugs fixed
+  by RepairAgent and by none of ChatRepair, ITER, or SelfAPR.
+
+## Target Ground Truth
+
+The target empirical findings are associated with Table III, Table IV, and
+Figure 6 of the source paper.
+
+Expected claims:
+- RepairAgent generates plausible fixes for 186 of 835 Defects4J bugs.
+- RepairAgent generates correct fixes for 164 of 835 Defects4J bugs.
+- The 164 correct fixes consist of 116 fixes that match developer fixes and 48
+  fixes that are semantically consistent with developer fixes.
+- RepairAgent fixes 74 bugs on Defects4J v1.2 and 90 bugs on Defects4J v2.
+- RepairAgent fixes 164 Defects4J bugs overall, compared with 162 for
+  ChatRepair, 57 for ITER, and 110 for SelfAPR.
+- RepairAgent is especially strong on Defects4J v2, fixing 90 bugs compared
+  with ChatRepair's 48 and SelfAPR's 46.
+- RepairAgent fixes 39 bugs that are not fixed by any of ChatRepair, ITER, or
+  SelfAPR.
+- Among those 39 exclusive RepairAgent fixes, 18 are single-line, 20 are
+  multi-line single-file, and one is multi-file.
+- RepairAgent fixes 115 single-line bugs, 46 multi-line single-file bugs, and
+  3 multi-file bugs.
+- RepairAgent is relatively more competitive on fixes requiring more than one
+  line, consistent with its ability to retrieve repair ingredients and edit
+  arbitrary lines or files.
+- On GitBug-Java, RepairAgent generates 19 plausible fixes and 13 correct fixes
+  on the 100-bug sample.
+- On GitBug-Java, RepairAgent fixes 9 of 19 single-line bugs, 4 of 64
+  multi-line single-file bugs, and 0 of 17 multi-file bugs.
+- RepairAgent's GitBug-Java result suggests that Defects4J performance is not
+  explained solely by direct benchmark memorization, but complex multi-line and
+  multi-file bugs remain difficult.
+- In a 100-bug ablation sample, the default RepairAgent configuration produces
+  23 plausible fixes and 21 correct fixes; removing search tools, removing the
+  state machine, or limiting memory substantially reduces correct fixes.
+
+## Implementation Notes
+
+- Do not expose `conclusion.txt` or this file to the evaluated agent.
+- Do not expose the original paper PDF to the evaluated agent.
+- Do not expose structured answer tables that directly encode final
+  plausible/correct counts, baseline-overlap counts, review counts, or ablation
+  counts. FIRE-Bench evaluates rediscovery through execution and analysis, not
+  lookup.
+- Dataset preparation may sanitize or bound the released artifact, but the
+  runner/evaluator pipeline should stay the same as FIRE-Bench: copy task data
+  into the sandbox, show only `instruction.txt`, collect the agent conclusion,
+  and evaluate it against hidden `conclusion.txt`.
+- Raw patches alone may be insufficient for perfect recall. That is an
+  experimental difficulty of this SE task, not a reason to move hidden answers
+  into agent-visible data.
+- Prefer archived artifact versions over a moving GitHub checkout when freezing
+  a benchmark release.

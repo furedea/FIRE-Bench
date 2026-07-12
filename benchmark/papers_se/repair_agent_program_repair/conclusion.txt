@@ -1,0 +1,29 @@
+The released RepairAgent artifact supports a Defects4J-centered reproduction,
+not the full paper. From the released aggregate inputs, RepairAgent has 164
+unique correct Defects4J fixes out of 835 bugs, while the artifact's
+`generate_main_table.py` reports 177 plausible/manual-analysis entries.
+RepairAgent slightly exceeds the compared iterative LLM repair baselines:
+ChatRepair fixes 162 bugs, SelfAPR has 110 raw listed fixes (109 unique), and
+ITER fixes 57 bugs. RepairAgent fixes 39 bugs that are not fixed by ChatRepair,
+SelfAPR, or ITER.
+
+Under the artifact's legacy-project split, RepairAgent has 90 correct fixes in
+the legacy Defects4J project subset and 74 correct fixes in the additional
+Defects4J 2 project subset. In the same split, ChatRepair has 114 legacy-project
+fixes and 48 additional-project fixes, ITER has 39 and 18, and SelfAPR has 64
+and 45 unique fixes. The artifact therefore supports the conclusion that
+RepairAgent remains competitive on the additional Defects4J 2 projects compared
+with these baselines, though the artifact's naming should not be confused with
+paper-only version labels that are not directly reconstructable from the
+visible task package.
+
+The released manual-review notes are partial: the visible
+`fixes_implementation` file contains 112 labeled entries, including 71
+identical labels, 37 semantically-equivalent labels, and 4 good-enough labels.
+The artifact is useful for provenance checks, but it is not sufficient to
+reconstruct complete paper-level developer-match or complexity counts for all
+164 correct fixes. The visible GitBug-Java material contains a 100-row sample
+list with 98 unique entries, but it does not include GitBug-Java execution
+results. The visible artifact also lacks enough ablation logs to reproduce
+ablation counts. Bounded Defects4J replay is therefore useful as an execution
+smoke check, but it should not be used as the full aggregate result.

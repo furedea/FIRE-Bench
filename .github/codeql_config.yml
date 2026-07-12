@@ -1,0 +1,4 @@
+name: FIRE-Bench CodeQL configuration
+
+paths-ignore:
+  - benchmark/**/repair_agent_artifact/repair_agent/**

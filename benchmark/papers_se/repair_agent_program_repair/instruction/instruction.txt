@@ -1,0 +1,73 @@
+You are a research agent. Conduct research and experiments to answer the
+question: "How effective is an autonomous LLM-based agent for automated program
+repair on real Java bugs, and how does its effectiveness vary across projects,
+benchmark versions, and bug-fix complexity compared with recent iterative
+LLM-based repair baselines?"
+
+You have access to the following resources:
+
+Runtime:
+- This task requires the `se-java-defects4j` runtime profile. The runner should
+  only start this task when Java, Defects4J, Perl, Git, Subversion, Maven, Ant,
+  and patch tools are available.
+- Use your available agent capabilities and local command-line tools.
+- Do not call external LLM APIs unless the runner explicitly provides credentials.
+- Prefer deterministic analysis of files, scripts, configs, patches, and logs.
+
+Datasets and artifacts:
+- A sanitized RepairAgent repository/artifact snapshot under
+  `data/repair_agent_artifact/`.
+- A bounded Defects4J bug sample under `data/bug_sample.txt`.
+- A bounded replay helper at `data/replay_repair_agent_sample.py`. In the
+  evaluated workspace this file is available as `replay_repair_agent_sample.py`.
+- An aggregate reconstruction helper at
+  `data/reconstruct_repair_agent_aggregate.py`. In the evaluated workspace this
+  file is available as `reconstruct_repair_agent_aggregate.py`.
+- Patch candidates, configuration files, experiment scripts, and helper scripts
+  included in the artifact snapshot.
+- Released aggregate reconstruction inputs under
+  `data/repair_agent_artifact/data/` and
+  `data/repair_agent_artifact/repair_agent/experimental_setups/`, including the
+  fixed-bug list, manual-review notes, baseline lists, and table-generation
+  scripts from the artifact.
+
+Experimental constraints:
+- Do NOT use web search.
+- Do NOT read the source paper, published result tables, published conclusions,
+  `instruction_gt.txt`, or `conclusion.txt` if they are accidentally available.
+- Treat this as a repository-driven reproduction task. Inspect and use the
+  released code, configs, scripts, aggregate artifact inputs, and patch artifacts
+  to reproduce as much of the experiment as the environment permits.
+- Start with the bounded replay helper as a smoke check before attempting a
+  larger replay. The default helper budget is intentionally small; increase
+  `--max-candidates-per-bug` only when runtime allows. Use its JSONL output as
+  executable evidence for bounded plausible-patch claims, but do not treat this
+  bounded sample as the full-paper result.
+- Use `reconstruct_repair_agent_aggregate.py` and the corresponding released
+  artifact files to reconstruct full Defects4J aggregate claims. The helper is a
+  guide: verify its inputs and inspect the underlying files before relying on a
+  number in your final conclusion.
+- Prefer running the repository scripts or replaying stored patch candidates on
+  the bounded bug sample. If an external LLM API is unavailable, prefer replaying
+  stored patch candidates over generating new patches.
+- Treat a patch as plausible when it passes the relevant tests. Treat a patch as
+  correct only when it matches or is semantically consistent with the developer
+  fix.
+- Distinguish smoke execution from aggregate reconstruction. Any quantitative
+  claim should come from commands you ran, files you inspected in the repository
+  artifact, or clearly stated extrapolation from those results. If the artifact
+  lacks enough evidence for a GitBug-Java or ablation count, say so explicitly
+  instead of inventing a result.
+
+Please design and execute experiments to investigate this research question.
+Document your experimental plan and run the experiments within the available
+budget. In the final conclusion, focus on artifact-supported research claims:
+Defects4J aggregate counts, baseline comparisons, version/subset comparisons,
+manual-review provenance, and which GitBug-Java or ablation claims are not
+reconstructable from the visible artifact. Do not include command inventories,
+file lists, bounded replay counts, or project-by-project exploratory counts as
+final research claims unless they are necessary to answer the research question.
+When discussing the artifact's legacy/additional Defects4J split, report the
+RepairAgent, ChatRepair, ITER, and SelfAPR counts for both subsets and avoid
+renaming that split into paper-only version labels unless the artifact itself
+supports the mapping.

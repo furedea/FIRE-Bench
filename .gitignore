@@ -14,6 +14,8 @@ logs/
 /benchmark/papers_se/**/*_rq_tree*.png
 /benchmark/papers_se/**/*_rq_tree*.svg
 /benchmark/papers_se/**/repair_agent_artifact/repair_agent/experimental_setups/experiment_*/
+/benchmark/papers_se/**/repair_agent_artifact/repair_agent/model_logging_temp.txt
+/benchmark/papers_se/**/repair_agent_artifact/repair_agent/autogpt/workspace/
 
 # Local experiment artifacts
 /cot_analysis_*.json
