@@ -1,0 +1,16 @@
+{
+  "id": "se-java-defects4j",
+  "description": "Common runtime profile for Java software engineering tasks that replay Defects4J bugs and patches.",
+  "required_commands": [
+    "java",
+    "perl",
+    "git",
+    "svn",
+    "patch",
+    "mvn",
+    "ant",
+    "defects4j"
+  ],
+  "required_environment": [],
+  "container_image": "fire-bench/se-java-defects4j:local"
+}
