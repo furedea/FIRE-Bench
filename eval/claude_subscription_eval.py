@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 import textwrap
@@ -13,6 +14,9 @@ RAGCHECKER_DIR = Path(__file__).parent / "RAGChecker"
 sys.path.append(str(RAGCHECKER_DIR))
 
 from utils import extract_single_final_thought, gt, query  # noqa: E402
+
+BENCHMARK_DIR = Path(__file__).resolve().parents[1] / "benchmark"
+DEFAULT_COLLECTION = "papers"
 
 CLAUDE_PROMPT_TEMPLATE = """\
 You are a strict claim-level evaluator for a FIRE-Bench result.
@@ -70,10 +74,17 @@ class EvalTarget:
     model: str
     task: str
     timestamp: str
+    collection: str = DEFAULT_COLLECTION
 
     @classmethod
     def from_args(cls, args: argparse.Namespace) -> Self:
-        return cls(agent=args.agent, model=args.model, task=args.task, timestamp=args.timestamp)
+        return cls(
+            agent=args.agent,
+            model=args.model,
+            task=args.task,
+            timestamp=args.timestamp,
+            collection=getattr(args, "collection", DEFAULT_COLLECTION),
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -90,17 +101,45 @@ def log_path(base_dir: Path, target: EvalTarget) -> Path:
     return base_dir / target.agent / target.model / target.task / target.timestamp / "log.log"
 
 
-def build_judge_prompt(task: str, agent_conclusion: str) -> str:
-    if task not in query:
-        raise ValueError(f"Unknown task query: {task}")
-    if task not in gt:
-        raise ValueError(f"Unknown task ground truth: {task}")
+def build_judge_prompt(task: str, agent_conclusion: str, collection: str = DEFAULT_COLLECTION) -> str:
+    task_query = load_task_query(collection, task)
+    ground_truth = load_task_ground_truth(collection, task)
 
     return CLAUDE_PROMPT_TEMPLATE.format(
-        task_query=query[task],
-        ground_truth=gt[task],
+        task_query=task_query,
+        ground_truth=ground_truth,
         agent_conclusion=agent_conclusion,
     )
+
+
+def load_task_query(collection: str, task: str) -> str:
+    if collection == DEFAULT_COLLECTION:
+        if task not in query:
+            raise ValueError(f"Unknown task query: {task}")
+        return query[task]
+
+    config_path = task_dir(collection, task) / "task_config.yaml"
+    config_text = config_path.read_text(encoding="utf-8")
+    match = re.search(r'^research_question:\s*"(?P<question>.*)"\s*$', config_text, re.MULTILINE)
+    if match is None:
+        raise ValueError(f"Task config does not contain research_question: {config_path}")
+    return match.group("question")
+
+
+def load_task_ground_truth(collection: str, task: str) -> str:
+    if collection == DEFAULT_COLLECTION:
+        if task not in gt:
+            raise ValueError(f"Unknown task ground truth: {task}")
+        return gt[task]
+
+    return (task_dir(collection, task) / "conclusion.txt").read_text(encoding="utf-8").strip()
+
+
+def task_dir(collection: str, task: str) -> Path:
+    path = BENCHMARK_DIR / collection / task
+    if not path.exists():
+        raise ValueError(f"Unknown benchmark task: {collection}/{task}")
+    return path
 
 
 def extract_json_object(output: str) -> dict[str, Any]:
@@ -143,11 +182,12 @@ def evaluate_log(base_dir: Path, target: EvalTarget, config: ClaudeJudgeConfig) 
     if not agent_conclusion:
         raise ValueError(f"Could not extract final conclusion from: {path}")
 
-    prompt = build_judge_prompt(target.task, agent_conclusion)
+    prompt = build_judge_prompt(target.task, agent_conclusion, target.collection)
     judgment = run_claude_judge(prompt, config)
     return {
         "agent": target.agent,
         "model": target.model,
+        "collection": target.collection,
         "task": target.task,
         "timestamp": target.timestamp,
         "judge_model": config.model,
@@ -165,6 +205,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model", required=True)
     parser.add_argument("--task", required=True)
     parser.add_argument("--timestamp", required=True)
+    parser.add_argument("--collection", default=DEFAULT_COLLECTION)
     parser.add_argument("--base-dir", default="log")
     parser.add_argument("--judge-model", default="sonnet")
     parser.add_argument("--claude-bin", default="claude")

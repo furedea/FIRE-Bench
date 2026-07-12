@@ -87,9 +87,14 @@ def test_evaluate_log_records_opencode_go_judge_model(tmp_path: Path, monkeypatc
     log = tmp_path / "claude" / "sonnet" / "questbench" / "20260511000000" / "log.log"
     log.parent.mkdir(parents=True)
     log.write_text("log", encoding="utf-8")
+    prompt_calls: list[dict[str, str]] = []
+
+    def fake_build_judge_prompt(task: str, conclusion: str, collection: str = "papers") -> str:
+        prompt_calls.append({"task": task, "conclusion": conclusion, "collection": collection})
+        return "judge prompt"
 
     monkeypatch.setattr(opencode_go_eval, "extract_single_final_thought", lambda path: "agent conclusion")
-    monkeypatch.setattr(opencode_go_eval, "build_judge_prompt", lambda task, conclusion: "judge prompt")
+    monkeypatch.setattr(opencode_go_eval, "build_judge_prompt", fake_build_judge_prompt)
     monkeypatch.setattr(
         opencode_go_eval,
         "run_opencode_go_judge",
@@ -98,10 +103,23 @@ def test_evaluate_log_records_opencode_go_judge_model(tmp_path: Path, monkeypatc
 
     result = opencode_go_eval.evaluate_log(
         tmp_path,
-        EvalTarget(agent="claude", model="sonnet", task="questbench", timestamp="20260511000000"),
+        EvalTarget(
+            agent="claude",
+            model="sonnet",
+            task="questbench",
+            timestamp="20260511000000",
+            collection="papers_se",
+        ),
         opencode_go_eval.OpenCodeGoJudgeConfig(model="qwen3.6-plus"),
     )
 
+    assert prompt_calls == [
+        {
+            "task": "questbench",
+            "conclusion": "agent conclusion",
+            "collection": "papers_se",
+        }
+    ]
     assert result["judge_provider"] == "opencode_go"
     assert result["judge_model"] == "qwen3.6-plus"
     assert result["repair_model"] == "qwen3.6-plus"
@@ -121,6 +139,30 @@ def test_default_output_path_groups_results_by_evaluated_model_and_judge_model()
     path = opencode_go_eval.default_output_path(target, config)
 
     assert path == Path("results/deepseek-v4-pro/qwen3.6-plus/awareness_detection.json")
+
+
+def test_parse_args_accepts_collection(monkeypatch) -> None:
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "opencode_go_eval.py",
+            "--agent",
+            "opencode_go",
+            "--model",
+            "deepseek-v4-pro",
+            "--task",
+            "repair_agent_program_repair",
+            "--timestamp",
+            "20260528000000_12345",
+            "--collection",
+            "papers_se",
+        ],
+    )
+
+    args = opencode_go_eval.parse_args()
+
+    assert args.collection == "papers_se"
 
 
 def test_write_result_once_refuses_to_overwrite_existing_results(tmp_path: Path) -> None:

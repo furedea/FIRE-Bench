@@ -9,6 +9,7 @@ import subprocess
 import sys
 import textwrap
 import time
+from collections.abc import Mapping
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -20,6 +21,7 @@ MAIN_PATH = Path.cwd()
 OPENCODE_GO_BASE_URL = "https://opencode.ai/zen/go/v1"
 MAX_TURNS = 30
 CODE_TIMEOUT_SECONDS = 300
+DEFAULT_COLLECTION = "papers"
 
 SYSTEM_PROMPT = textwrap.dedent(
     """\
@@ -46,7 +48,7 @@ def build_client(api_key: str) -> OpenAI:
     return OpenAI(api_key=api_key, base_url=OPENCODE_GO_BASE_URL)
 
 
-def sandbox_env_content(env: dict[str, str]) -> str:
+def sandbox_env_content(env: Mapping[str, str]) -> str:
     return "\n".join(
         [
             f"OPENCODE_API_KEY={env.get('OPENCODE_API_KEY', '')}",
@@ -95,16 +97,32 @@ def run_code(code: str, cwd: Path, env: dict[str, str]) -> str:
     return output.strip() or "(no output)"
 
 
-def copy_task_data(task_id: str, figure_id: str, sandbox: Path) -> None:
+def copy_task_data(
+    task_id: str,
+    figure_id: str,
+    sandbox: Path,
+    collection: str = DEFAULT_COLLECTION,
+) -> None:
     instances_src = (
-        MAIN_PATH / f"benchmark/papers/{task_id}/{figure_id}/data"
+        MAIN_PATH / "benchmark" / collection / task_id / figure_id / "data"
         if figure_id
-        else MAIN_PATH / f"benchmark/papers/{task_id}/data"
+        else MAIN_PATH / "benchmark" / collection / task_id / "data"
     )
     if instances_src.exists() and any(instances_src.iterdir()):
         shutil.copytree(instances_src, sandbox)
         return
     sandbox.mkdir(parents=True, exist_ok=True)
+
+
+def instruction_dir_for_task(
+    task_id: str,
+    figure_id: str,
+    collection: str = DEFAULT_COLLECTION,
+) -> Path:
+    path = MAIN_PATH / "benchmark" / collection / task_id
+    if figure_id:
+        path = path / figure_id
+    return path
 
 
 def sandbox_file_listing(sandbox: Path) -> str:
@@ -128,6 +146,7 @@ def main() -> None:
     agent_id = os.environ.get("AGENT_ID", "opencode_go")
     task_id = os.environ.get("TASK_ID", "")
     figure_id = os.environ.get("FIGURE_ID", "")
+    collection = os.environ.get("COLLECTION", DEFAULT_COLLECTION)
     model = os.environ.get("LLM_MODEL", "deepseek-v4-pro")
     opencode_key = os.environ.get("OPENCODE_API_KEY", "")
 
@@ -135,13 +154,11 @@ def main() -> None:
     run_id = random.randint(10000, 99999)
 
     sandbox = MAIN_PATH / "runs" / f"{agent_id}_{model.replace('/', '-')}_{timestamp}_{run_id}"
-    copy_task_data(task_id, figure_id, sandbox)
+    copy_task_data(task_id, figure_id, sandbox, collection)
     shutil.copytree(MAIN_PATH / "utils", sandbox / "utils")
     (sandbox / ".env").write_text(sandbox_env_content(os.environ), encoding="utf-8")
 
-    instruction_dir = MAIN_PATH / "benchmark" / "papers" / task_id
-    if figure_id:
-        instruction_dir = instruction_dir / figure_id
+    instruction_dir = instruction_dir_for_task(task_id, figure_id, collection)
     instruction_file = instruction_dir / "instruction" / "instruction.txt"
     instruction_text = instruction_file.read_text(encoding="utf-8").strip()
 

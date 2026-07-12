@@ -6,6 +6,7 @@ import pytest
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+from eval import claude_subscription_eval
 from eval.claude_subscription_eval import (
     EvalTarget,
     build_judge_prompt,
@@ -47,6 +48,31 @@ def test_build_judge_prompt_includes_task_ground_truth_and_agent_conclusion() ->
     assert "Different large language models do not consistently exhibit" in prompt
     assert "agent conclusion text" in prompt
     assert "Precision = true_positive_response_claims / total_response_claims" in prompt
+
+
+def test_build_judge_prompt_loads_task_files_from_collection(tmp_path: Path, monkeypatch) -> None:
+    benchmark_dir = tmp_path / "benchmark"
+    task_dir = benchmark_dir / "papers_se" / "repair_agent_program_repair"
+    task_dir.mkdir(parents=True)
+    (task_dir / "task_config.yaml").write_text(
+        'research_question: "How effective is the repair agent?"\n',
+        encoding="utf-8",
+    )
+    (task_dir / "conclusion.txt").write_text(
+        "The repair agent fixes 164 out of 835 bugs.\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(claude_subscription_eval, "BENCHMARK_DIR", benchmark_dir)
+
+    prompt = build_judge_prompt(
+        "repair_agent_program_repair",
+        "agent conclusion text",
+        collection="papers_se",
+    )
+
+    assert "How effective is the repair agent?" in prompt
+    assert "The repair agent fixes 164 out of 835 bugs." in prompt
+    assert "agent conclusion text" in prompt
 
 
 def test_build_judge_prompt_rejects_unknown_tasks() -> None:

@@ -137,11 +137,12 @@ def evaluate_log(base_dir: Path, target: EvalTarget, config: OpenCodeGoJudgeConf
     if not agent_conclusion:
         raise ValueError(f"Could not extract final conclusion from: {path}")
 
-    prompt = add_opencode_go_formatting_addendum(build_judge_prompt(target.task, agent_conclusion))
+    prompt = add_opencode_go_formatting_addendum(build_judge_prompt(target.task, agent_conclusion, target.collection))
     judgment = run_opencode_go_judge(prompt, config)
     return {
         "agent": target.agent,
         "model": target.model,
+        "collection": target.collection,
         "task": target.task,
         "timestamp": target.timestamp,
         "judge_provider": "opencode_go",
@@ -171,6 +172,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model", required=True)
     parser.add_argument("--task", required=True)
     parser.add_argument("--timestamp", required=True)
+    parser.add_argument("--collection", default=claude_eval.DEFAULT_COLLECTION)
     parser.add_argument("--base-dir", default="log")
     parser.add_argument("--judge-model", default="qwen3.6-plus")
     parser.add_argument("--repair-model", default="")
