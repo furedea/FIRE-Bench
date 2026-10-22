@@ -7,14 +7,15 @@ requires-python = ">=3.11"
 dependencies = [
   "accelerate>=1.13.0",
   "anthropic>=0.100.0",
-  "datasets>=4.8.5",
+  "datasets>=5.0.1",
   "numpy>=2.4.4",
   "openai>=2.36.0",
   "pandas>=3.0.2",
   "python-dotenv>=1.2.2",
+  "requests>=2.33.1",
   "scikit-learn>=1.8.0",
-  "torch>=2.11.0",
-  "transformers>=5.8.0",
+  "torch>=2.13.0",
+  "transformers>=5.10.0",
 ]
 
 [tool.pytest.ini_options]
